@@ -3,307 +3,194 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Conditional Probability Explorer</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <title>Bayesian Data Analysis Portfolio</title>
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --background-color: #f4f6f9;
+            --container-bg: #ffffff;
+            --text-color: #333;
+            --sidebar-text-color: #ecf0f1;
+            --sidebar-link-hover: #ffffff;
+            --shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
-        .latex {
-            font-family: 'Times New Roman', Times, serif;
-            font-style: italic;
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.7;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            margin: 0;
+        }
+        .page-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        .side-panel {
+            width: 320px;
+            flex-shrink: 0; /* Prevent sidebar from shrinking */
+            background-color: var(--primary-color);
+            padding: 40px;
+            box-shadow: 2px 0 15px rgba(0,0,0,0.1);
+            color: var(--sidebar-text-color);
+            transition: margin-left 0.4s ease;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        .side-panel.collapsed {
+            margin-left: -320px; /* Hide by sliding off-screen */
+        }
+        .side-panel h1 {
+            color: var(--sidebar-text-color);
+            text-align: left;
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+            font-size: 1.8em;
+        }
+        .main-content {
+            flex-grow: 1;
+            padding: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow-x: auto; /* Handle content on small screens */
+        }
+        .toggle-btn {
+            position: fixed; /* Keep button in view */
+            top: 25px;
+            left: 25px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            font-size: 24px;
+            cursor: pointer;
+            border-radius: 50%;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: background-color 0.3s ease, transform 0.4s ease;
+        }
+        .content-box {
+            max-width: 800px;
+            text-align: center;
+        }
+        .content-box h2 {
+            font-size: 2.5em;
+            color: var(--primary-color);
+        }
+        .content-box p {
+            font-size: 1.2em;
+            color: #666;
+        }
+        .toc {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .toc > li {
+            margin-bottom: 20px;
+        }
+        .toc h2 {
+            font-size: 1.5em;
+            color: var(--sidebar-text-color);
+            margin-bottom: 10px;
+        }
+        .toc h2 a { /* Style for Home link */
+            text-decoration: none;
+            color: inherit;
+        }
+        .toc ul {
+            list-style-type: none;
+            padding-left: 20px;
+            border-left: 2px solid var(--secondary-color);
+        }
+        .toc ul li {
+            margin: 15px 0;
+            font-size: 1.1em;
+        }
+        .toc a {
+            text-decoration: none;
+            color: var(--sidebar-text-color);
+            font-weight: 500;
+            transition: color 0.3s ease, padding-left 0.3s ease;
+            opacity: 0.8;
+        }
+        .toc a:hover {
+            color: var(--sidebar-link-hover);
+            padding-left: 8px;
+            opacity: 1;
         }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-800 flex flex-col items-center justify-center min-h-screen p-4">
-
-    <div class="w-full max-w-5xl bg-white rounded-xl shadow-lg p-6 md:p-8 space-y-6">
-        
-        <!-- Header -->
-        <div class="text-center">
-            <h1 class="text-2xl md:text-3xl font-bold text-gray-900">Posterior Probability Explorer</h1>
-            <p class="text-gray-600 mt-2">A solution to the conditional probability problem.</p>
-        </div>
-
-        <!-- Problem Statement -->
-        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
-            <h3 class="text-lg font-semibold text-gray-800 mb-2">Problem Statement</h3>
-            <div class="text-gray-700 space-y-2">
-                <p>Suppose that if <span class="latex">&theta;</span> = 1, then <span class="latex">y</span> has a normal distribution with mean 1 and standard deviation <span class="latex">&sigma;</span>, and if <span class="latex">&theta;</span> = 2, then <span class="latex">y</span> has a normal distribution with mean 2 and standard deviation <span class="latex">&sigma;</span>. Also, suppose Pr(<span class="latex">&theta;</span> = 1) = 0.5 and Pr(<span class="latex">&theta;</span> = 2) = 0.5.</p>
-                <ol class="list-decimal list-inside space-y-1 pl-2">
-                    <li>For <span class="latex">&sigma;</span> = 2, write the formula for the marginal probability density for <span class="latex">y</span> and sketch it.</li>
-                    <li>What is Pr(<span class="latex">&theta;</span> = 1|<span class="latex">y</span> = 1), again supposing <span class="latex">&sigma;</span> = 2?</li>
-                    <li>Describe how the posterior density of <span class="latex">&theta;</span> changes in shape as <span class="latex">&sigma;</span> is increased and as it is decreased.</li>
-                </ol>
-            </div>
-        </div>
-
-        <!-- Detailed Explanations -->
-        <div class="space-y-4 pt-4 border-t">
-            <h2 class="text-2xl font-bold text-gray-900 text-center">Detailed Solutions</h2>
-            
-            <!-- Part (a) -->
-            <div class="bg-gray-50 p-4 rounded-lg">
-                <h3 class="text-lg font-semibold text-gray-800 mb-2">(a) Marginal Probability Density for y (when &sigma;=2)</h3>
-                <div class="text-gray-700 space-y-2">
-                    <p>The marginal probability density <span class="latex">p(y)</span> is the sum of the conditional probabilities weighted by the prior probabilities:</p>
-                    <p class="text-center bg-white p-2 rounded-md overflow-x-auto"><span class="latex">p(y) = p(y|&theta;=1)P(&theta;=1) + p(y|&theta;=2)P(&theta;=2)</span></p>
-                    <p>Substituting the Normal PDF formula <span class="latex">N(&mu;, &sigma;<sup>2</sup>)</span> and priors (P=0.5):</p>
-                    <p class="text-center bg-white p-2 rounded-md overflow-x-auto"><span class="latex">p(y) = 0.5 &middot; N(y | &mu;=1, &sigma;<sup>2</sup>=4) + 0.5 &middot; N(y | &mu;=2, &sigma;<sup>2</sup>=4)</span></p>
-                    <p>The result is a mixture of two normal distributions. The interactive graph below shows a sketch of this marginal density (the green line).</p>
-                </div>
-            </div>
-
-            <!-- Part (b) -->
-            <div class="bg-gray-50 p-4 rounded-lg">
-                <h3 class="text-lg font-semibold text-gray-800 mb-2">(b) Posterior Probability Pr(&theta;=1|y=1) (when &sigma;=2)</h3>
-                <div class="text-gray-700 space-y-2">
-                    <p>We use Bayes' Theorem and evaluate it at <span class="latex">y=1</span>. We need the values of the two normal PDFs at this point:</p>
-                    <ul class="list-disc list-inside space-y-1 pl-2">
-                        <li><span class="latex">p(y=1|&theta;=1) = N(1 | &mu;=1, &sigma;<sup>2</sup>=4) &asymp; 0.199</span></li>
-                        <li><span class="latex">p(y=1|&theta;=2) = N(1 | &mu;=2, &sigma;<sup>2</sup>=4) &asymp; 0.176</span></li>
+<body>
+    <button id="toggle-btn" title="Toggle Sidebar">☰</button>
+    <div class="page-container">
+        <nav class="side-panel">
+            <h1>Bayesian Analysis</h1>
+            <ul class="toc">
+                 <li>
+                    <h2><a href="index.html">Home</a></h2>
+                </li>
+                <li>
+                    <h2>1. Probability & Inference</h2>
+                    <ul>
+                        <li>
+                            <a href="ch1_question1.html">Question 1: Conditional Probability</a>
+                        </li>
+                        <li>
+                            <a href="ch1_question3.html">Question 3: Genetics</a>
+                        </li>
+                        <!-- You can add more links to other projects here -->
                     </ul>
-                     <p>Using the formula <span class="latex">P(&theta;=1|y=1) = [p(y=1|&theta;=1)P(&theta;=1)] / p(y=1)</span>. Since the priors are equal, they cancel out:</p>
-                     <p class="text-center bg-white p-2 rounded-md overflow-x-auto"><span class="latex">P(&theta;=1|y=1) = p(y=1|&theta;=1) / [p(y=1|&theta;=1) + p(y=1|&theta;=2)]</span></p>
-                     <p class="text-center bg-white p-2 rounded-md overflow-x-auto"><span class="latex">&asymp; 0.199 / (0.199 + 0.176) &asymp; 0.531</span></p>
-                    <p>The interactive tool below calculates this value for you in real-time.</p>
-                </div>
+                </li>
+                 <!-- You can add more chapters or sections here -->
+            </ul>
+        </nav>
+        <main class="main-content">
+            <div class="content-box">
+                <h2>Welcome to My Portfolio</h2>
+                <p>Please select an analysis from the side panel to view the project.</p>
             </div>
-             <!-- Part (c) -->
-            <div class="bg-gray-50 p-4 rounded-lg">
-                <h3 class="text-lg font-semibold text-gray-800 mb-2">(c) Shape of the Posterior as &sigma; changes</h3>
-                <div class="text-gray-700 space-y-2">
-                    <p>The interactive web app below demonstrates this concept. By moving the slider for <span class="latex">&sigma;</span>, you can observe:</p>
-                    <ul class="list-disc list-inside space-y-1 pl-2">
-                        <li><strong>As <span class="latex">&sigma;</span> decreases</strong>, the distributions become distinct. The data is more informative, and the posterior probability moves towards 0 or 1.</li>
-                        <li><strong>As <span class="latex">&sigma;</span> increases</strong>, the distributions overlap significantly. The data is less informative, and the posterior probability stays close to the prior of 0.5.</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Interactive App Section -->
-        <div class="space-y-4 pt-4 border-t">
-            <h2 class="text-2xl font-bold text-gray-900 text-center">Interactive Web App for Part (c)</h2>
-            <p class="text-center text-gray-600 ">Use the slider to see how standard deviation <span class="latex">&sigma;</span> affects our belief about $\theta$.</p>
-            
-            <!-- Controls -->
-            <div class="bg-gray-50 p-4 rounded-lg">
-                <label for="sigma-slider" class="block text-lg font-medium text-gray-700">Standard Deviation (<span class="latex">&sigma;</span>)</label>
-                <div class="flex items-center space-x-4 mt-2">
-                    <input id="sigma-slider" type="range" min="0.1" max="5" step="0.05" value="2" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
-                    <span id="sigma-value" class="font-mono text-lg text-indigo-600 font-semibold w-20 text-center p-2 bg-indigo-100 rounded-md">2.00</span>
-                </div>
-            </div>
-
-            <!-- Visualization Grid -->
-            <div class="grid md:grid-cols-3 gap-6 items-center">
-                <!-- Main Plot -->
-                <div class="md:col-span-2">
-                     <h3 class="text-center font-semibold text-gray-700 mb-2">Likelihoods and Marginal Density</h3>
-                    <canvas id="probability-chart" class="w-full h-80 rounded-lg border border-gray-200"></canvas>
-                    <div class="flex justify-center items-center space-x-4 mt-3 text-sm">
-                        <div class="flex items-center"><span class="w-4 h-4 bg-blue-500 rounded-sm mr-2"></span><span>p(y|&theta;=1)</span></div>
-                        <div class="flex items-center"><span class="w-4 h-4 bg-red-500 rounded-sm mr-2"></span><span>p(y|&theta;=2)</span></div>
-                        <div class="flex items-center"><span class="w-4 h-4 bg-green-500 rounded-sm mr-2"></span><span>Marginal p(y)</span></div>
-                    </div>
-                </div>
-                <!-- Posterior Plot -->
-                <div class="md:col-span-1">
-                    <h3 class="text-center font-semibold text-gray-700 mb-2">Posterior Probability of &theta;</h3>
-                    <canvas id="posterior-chart" class="w-full h-80 rounded-lg border border-gray-200"></canvas>
-                     <div class="flex justify-center items-center space-x-4 mt-3 text-sm">
-                        <div class="flex items-center"><span class="w-4 h-4 bg-purple-500 rounded-sm mr-2"></span><span>Posterior</span></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Formulas and Results -->
-            <div class="grid md:grid-cols-2 gap-6 pt-6">
-                <!-- Formula Section -->
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-2">Governing Formula: Bayes' Theorem</h3>
-                    <div class="text-gray-700 space-y-2 text-sm md:text-base">
-                        <p>The posterior probability is calculated as:</p>
-                        <p class="text-center bg-white p-3 rounded-md overflow-x-auto">
-                            <span class="latex">P(&theta;=1|y) = p(y|&theta;=1)P(&theta;=1) / p(y)</span>
-                        </p>
-                        <p>Where the marginal probability <span class="latex">p(y)</span> is:</p>
-                        <p class="text-center bg-white p-2 rounded-md overflow-x-auto"><span class="latex">p(y) = p(y|&theta;=1)P(&theta;=1) + p(y|&theta;=2)P(&theta;=2)</span></p>
-                    </div>
-                </div>
-
-                <!-- Results Section -->
-                <div class="bg-indigo-50 p-4 rounded-lg flex flex-col justify-center items-center">
-                    <h3 class="text-lg font-semibold text-indigo-800">Posterior Probability at y=1</h3>
-                    <p class="text-3xl md:text-4xl font-bold text-indigo-600 mt-2" id="posterior-result">0.531</p>
-                    <p class="text-indigo-700 mt-1">This is our updated belief that <span class="latex">&theta;=1</span> given we observe <span class="latex">y=1</span>.</p>
-                </div>
-            </div>
-        </div>
+        </main>
     </div>
 
     <script>
-        // DOM Elements
-        const slider = document.getElementById('sigma-slider');
-        const sigmaValueSpan = document.getElementById('sigma-value');
-        const posteriorResultSpan = document.getElementById('posterior-result');
-        const probCanvas = document.getElementById('probability-chart');
-        const probCtx = probCanvas.getContext('2d');
-        const postCanvas = document.getElementById('posterior-chart');
-        const postCtx = postCanvas.getContext('2d');
+        document.addEventListener('DOMContentLoaded', () => {
+            const toggleBtn = document.getElementById('toggle-btn');
+            const sidePanel = document.querySelector('.side-panel');
 
-        // Constants
-        const MEAN1 = 1;
-        const MEAN2 = 2;
-        const PRIOR = 0.5;
-        const X_MIN = -5;
-        const X_MAX = 8;
-
-        // Set canvas resolution
-        function setupCanvas(canvas) {
-            const dpr = window.devicePixelRatio || 1;
-            const rect = canvas.getBoundingClientRect();
-            canvas.width = rect.width * dpr;
-            canvas.height = rect.height * dpr;
-            const ctx = canvas.getContext('2d');
-            ctx.scale(dpr, dpr);
-            canvas.style.width = `${rect.width}px`;
-            canvas.style.height = `${rect.height}px`;
-        }
-
-        // Helper function for Normal PDF
-        function normalPDF(x, mean, sigma) {
-            const variance = sigma * sigma;
-            const coefficient = 1 / (sigma * Math.sqrt(2 * Math.PI));
-            const exponent = -((x - mean) ** 2) / (2 * variance);
-            return coefficient * Math.exp(exponent);
-        }
-        
-        function drawProbChart(sigma) {
-            const canvasWidth = probCanvas.clientWidth;
-            const canvasHeight = probCanvas.clientHeight;
-            
-            probCtx.clearRect(0, 0, probCanvas.width, probCanvas.height);
-            const yMax = normalPDF(MEAN1, MEAN1, sigma) * 1.2;
-
-            const toCanvasX = (x) => ((x - X_MIN) / (X_MAX - X_MIN)) * canvasWidth;
-            const toCanvasY = (y) => canvasHeight - (y / yMax) * canvasHeight;
-
-            // Draw axes
-            probCtx.beginPath();
-            probCtx.strokeStyle = '#d1d5db';
-            probCtx.lineWidth = 1;
-            const xAxisY = toCanvasY(0);
-            const yAxisX = toCanvasX(0);
-            probCtx.moveTo(0, xAxisY);
-            probCtx.lineTo(canvasWidth, xAxisY);
-            probCtx.moveTo(yAxisX, 0);
-            probCtx.lineTo(yAxisX, canvasHeight);
-            probCtx.stroke();
-
-            probCtx.fillStyle = '#6b7280';
-            probCtx.font = '12px Inter';
-            for (let i = Math.ceil(X_MIN); i <= X_MAX; i++) {
-                if (i % 2 === 0) {
-                    probCtx.fillText(i, toCanvasX(i) - (i < 0 ? 8 : 4), xAxisY + 15);
+            // Function to save the sidebar state
+            const saveState = () => {
+                if (sidePanel.classList.contains('collapsed')) {
+                    localStorage.setItem('sidebarState', 'collapsed');
+                } else {
+                    localStorage.setItem('sidebarState', 'expanded');
                 }
-            }
-
-            const plot = (func, color, width=2.5) => {
-                probCtx.beginPath();
-                probCtx.strokeStyle = color;
-                probCtx.lineWidth = width;
-                for (let x = X_MIN; x <= X_MAX; x += 0.01) {
-                    probCtx.lineTo(toCanvasX(x), toCanvasY(func(x)));
-                }
-                probCtx.stroke();
             };
 
-            plot(x => normalPDF(x, MEAN1, sigma), '#3b82f6');
-            plot(x => normalPDF(x, MEAN2, sigma), '#ef4444');
-            plot(x => normalPDF(x, MEAN1, sigma) * PRIOR + normalPDF(x, MEAN2, sigma) * PRIOR, '#22c55e', 3);
-        }
+            // Function to load the sidebar state
+            const loadState = () => {
+                const state = localStorage.getItem('sidebarState');
+                if (state === 'collapsed') {
+                    sidePanel.classList.add('collapsed');
+                }
+            };
 
-        function drawPosteriorChart(posterior1) {
-            const posterior2 = 1 - posterior1;
-            const canvasWidth = postCanvas.clientWidth;
-            const canvasHeight = postCanvas.clientHeight;
+            // Load state on page load
+            loadState();
 
-            postCtx.clearRect(0, 0, postCanvas.width, postCanvas.height);
-            
-            const barWidth = canvasWidth / 4;
-            const spacing = canvasWidth / 4;
-            
-            const toCanvasY = (p) => canvasHeight - (p * (canvasHeight * 0.9));
-
-            // Draw Y-axis labels and lines
-            postCtx.fillStyle = '#6b7280';
-            postCtx.font = '12px Inter';
-            postCtx.strokeStyle = '#e5e7eb';
-            postCtx.lineWidth = 1;
-
-            for (let p = 0; p <= 1; p += 0.25) {
-                const y = toCanvasY(p) - 5;
-                postCtx.fillText(p.toFixed(2), 5, y + 8);
-                postCtx.beginPath();
-                postCtx.moveTo(40, y + 4);
-                postCtx.lineTo(canvasWidth, y + 4);
-                postCtx.stroke();
+            if (toggleBtn && sidePanel) {
+                toggleBtn.addEventListener('click', () => {
+                    sidePanel.classList.toggle('collapsed');
+                    saveState(); // Save state on toggle
+                });
             }
-
-            // Draw bars
-            postCtx.fillStyle = '#8b5cf6'; // purple-500
-            
-            // Bar for theta=1
-            const x1 = spacing;
-            const barHeight1 = canvasHeight - toCanvasY(posterior1);
-            postCtx.fillRect(x1, toCanvasY(posterior1), barWidth, barHeight1);
-            
-            // Bar for theta=2
-            const x2 = spacing * 2 + barWidth;
-            const barHeight2 = canvasHeight - toCanvasY(posterior2);
-            postCtx.fillRect(x2, toCanvasY(posterior2), barWidth, barHeight2);
-
-            // Draw X-axis labels
-            postCtx.fillStyle = '#1f2937';
-            postCtx.font = '14px Inter';
-            postCtx.textAlign = 'center';
-            postCtx.fillText('\u03B8=1', x1 + barWidth / 2, canvasHeight - 10);
-            postCtx.fillText('\u03B8=2', x2 + barWidth / 2, canvasHeight - 10);
-        }
-
-        function updateAll() {
-            const sigma = parseFloat(slider.value);
-            
-            // Update text value
-            sigmaValueSpan.textContent = sigma.toFixed(2);
-            
-            // Calculate posterior for y=1
-            const p_y1_given_theta1 = normalPDF(1, MEAN1, sigma);
-            const p_y1_given_theta2 = normalPDF(1, MEAN2, sigma);
-            const posterior = p_y1_given_theta1 / (p_y1_given_theta1 + p_y1_given_theta2);
-            posteriorResultSpan.textContent = posterior.toFixed(3);
-
-            // Redraw charts
-            drawProbChart(sigma);
-            drawPosteriorChart(posterior);
-        }
-
-        // Event Listener
-        slider.addEventListener('input', updateAll);
-        window.addEventListener('resize', () => {
-            setupCanvas(probCanvas);
-            setupCanvas(postCanvas);
-            updateAll();
         });
-
-        // Initial setup
-        setupCanvas(probCanvas);
-        setupCanvas(postCanvas);
-        updateAll();
-
     </script>
 </body>
 </html>

@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Genetics Probability Explorer</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+    
+    <!-- MathJax Configuration -->
+    <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      svg: {
+        fontCache: 'global'
+      }
+    };
+    </script>
+    <!-- MathJax Script -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --background-color: #f4f6f9;
+            --container-bg: #ffffff;
+            --text-color: #333;
+            --light-gray: #ecf0f1;
+            --shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.7;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 20px;
+        }
+        .main-container {
+            max-width: 900px;
+            margin: 20px auto;
+        }
+        h1, h2, h3, h4 {
+            color: var(--secondary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+            margin-top: 40px;
+        }
+        h1 {
+            text-align: center;
+            border: none;
+            font-size: 2.5em;
+        }
+        h4 {
+            border-bottom: 1px solid #ccc;
+            color: var(--primary-color);
+        }
+        .container, .derivation {
+            background-color: var(--container-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+        .derivation {
+            background-color: #fdfdfd;
+            border: 1px solid #e0e0e0;
+            padding-left: 40px;
+        }
+        .question-box {
+            background-color: #fffbe6;
+            border-left: 5px solid #6e6b67;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 0 8px 8px 0;
+        }
+        .question-box h2 {
+            border: none;
+            margin-top: 0;
+            color: #a3a3a3;
+        }
+        .formula {
+            background-color: var(--light-gray);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 25px 0;
+            font-size: 1.2em;
+            text-align: center;
+            overflow-x: auto;
+        }
+        .webapp {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+        @media (min-width: 768px) {
+            .webapp {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        .controls, .results {
+            padding: 25px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background-color: #fafafa;
+        }
+        label {
+            display: block;
+            margin-bottom: 15px;
+            font-weight: 600;
+            color: var(--secondary-color);
+        }
+        input[type="range"] {
+            width: 100%;
+            cursor: pointer;
+        }
+        .output {
+            font-size: 1.25em;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-top: 20px;
+            background: #eaf5ff;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        #chartContainer {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 8px;
+            background: var(--container-bg);
+            box-shadow: var(--shadow);
+            height: 300px
+        }
+        code {
+            background-color: #eee;
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+    </style>
+</head>
+<body>
+
+    <main class="main-container">
+        <h1>Genetics and Bayesian Inference: A Case Study</h1>
+
+        <div class="question-box">
+            <h2>Question 3</h2>
+            <p>
+                Suppose that in a large population, a pair of genes (alleles X and x) controls eye color. Individuals with genotype <code>xx</code> have blue eyes, while those with <code>Xx</code> (heterozygotes) or <code>XX</code> have brown eyes. The proportion of blue-eyed individuals is $p^2$ and of heterozygotes is $2p(1-p)$, where $0 < p < 1$. Each parent transmits one of its genes to a child, with random mating assumed.
+            </p>
+            <ol>
+                <li>Show that among brown-eyed children of brown-eyed parents, the expected proportion of heterozygotes is $\frac{2p}{1+2p}$.</li>
+                <li>Suppose Judy, a brown-eyed child of brown-eyed parents, marries a heterozygote. They have $n$ children, all of whom are brown-eyed. Find the posterior probability that Judy is a heterozygote.</li>
+                <li>Using the result from (2), find the probability that her first grandchild has blue eyes, assuming her child mates with a person chosen randomly from the general population.</li>
+            </ol>
+        </div>
+
+        <div class="container">
+            <h2>Part 1: The Prior Probability for Judy's Genotype</h2>
+            <p>
+                This part requires us to find the proportion of heterozygotes among all brown-eyed children from brown-eyed parents. This will be our prior probability for Judy's genotype.
+            </p>
+            <div class="derivation">
+                <h4>Detailed Derivation</h4>
+                <p>First, we establish the probabilities of an individual having each genotype in the general population:</p>
+                <ul>
+                    <li>$P(xx) = p^2$</li>
+                    <li>$P(Xx) = 2p(1-p)$</li>
+                    <li>$P(XX) = 1 - P(xx) - P(Xx) = 1 - p^2 - 2p(1-p) = (1-p)^2$</li>
+                </ul>
+                <p>The total probability of an individual having brown eyes is $P(\text{Brown}) = P(XX) + P(Xx) = (1-p)^2 + 2p(1-p) = 1-p^2$.</p>
+                <p>We are interested in the conditional probability $P(\text{Child is } Xx | \text{Child is Brown, Parents are Brown})$. Using Bayes' rule, this is:</p>
+                $$ \frac{P(\text{Child is } Xx \text{ and Brown, Parents are Brown})}{P(\text{Child is Brown, Parents are Brown})} $$
+                Since an $Xx$ child is always brown-eyed, the numerator simplifies to $P(\text{Child is } Xx, \text{Parents are Brown})$. We find the numerator and denominator by summing over all possible brown-eyed parent pairings ($F_g$ for father's genotype, $M_g$ for mother's):
+                
+                <h4>Numerator: $P(\text{Child is } Xx, \text{Parents are Brown})$</h4>
+                <ul>
+                    <li><b>Pairing 1:</b> $F_g=XX, M_g=Xx$ (and vice-versa). Prob of pairing: $2 \times P(XX)P(Xx) = 4p(1-p)^3$. Prob of $Xx$ child from this pair is $1/2$. Contribution: $4p(1-p)^3 \times \frac{1}{2} = 2p(1-p)^3$.</li>
+                    <li><b>Pairing 2:</b> $F_g=Xx, M_g=Xx$. Prob of pairing: $(2p(1-p))^2 = 4p^2(1-p)^2$. Prob of $Xx$ child is $1/2$. Contribution: $4p^2(1-p)^2 \times \frac{1}{2} = 2p^2(1-p)^2$.</li>
+                </ul>
+                Total Numerator = $2p(1-p)^3 + 2p^2(1-p)^2 = 2p(1-p)^2[(1-p)+p] = 2p(1-p)^2$.
+
+                <h4>Denominator: $P(\text{Child is Brown, Parents are Brown})$</h4>
+                 <ul>
+                    <li><b>Pairing 1:</b> $F_g=XX, M_g=XX$. Prob: $(1-p)^4$. Prob of Brown child: 1. Contribution: $(1-p)^4$.</li>
+                    <li><b>Pairing 2:</b> $F_g=XX, M_g=Xx$ (and vice-versa). Prob: $4p(1-p)^3$. Prob of Brown child: 1. Contribution: $4p(1-p)^3$.</li>
+                    <li><b>Pairing 3:</b> $F_g=Xx, M_g=Xx$. Prob: $4p^2(1-p)^2$. Prob of Brown child: $3/4$. Contribution: $3p^2(1-p)^2$.</li>
+                </ul>
+                Total Denominator = $(1-p)^4 + 4p(1-p)^3 + 3p^2(1-p)^2 = (1-p)^2[(1-p)^2 + 4p(1-p) + 3p^2] = (1-p)^2(1+2p)$.
+
+                <h4>Final Calculation</h4>
+                $$ \frac{\text{Numerator}}{\text{Denominator}} = \frac{2p(1-p)^2}{(1-p)^2(1+2p)} = \frac{2p}{1+2p} $$
+            </div>
+            <p>This result is the prior probability for Judy's genotype being heterozygous.</p>
+            <div class="formula">
+                $$P(\text{Judy is } Xx) = \frac{2p}{1 + 2p}$$
+            </div>
+        </div>
+
+        <div class="container">
+            <h2>Part 2: Updating Beliefs with New Evidence</h2>
+            <p>Here, we use Bayes' theorem to update our prior belief based on the evidence that Judy's $n$ children are all brown-eyed.</p>
+            <div class="derivation">
+                <h4>Detailed Derivation</h4>
+                <p>Let $H_{het}$ be the hypothesis that Judy is $Xx$ and $H_{hom}$ be the hypothesis that she is $XX$. Let $E$ be the evidence of $n$ brown-eyed children.</p>
+                <p>From Part 1, we have the prior probabilities:</p>
+                <ul>
+                    <li>$P(H_{het}) = \frac{2p}{1+2p}$</li>
+                    <li>$P(H_{hom}) = 1 - P(H_{het}) = \frac{1}{1+2p}$</li>
+                </ul>
+                <p>Next, we find the likelihood of the evidence under each hypothesis:</p>
+                <ul>
+                    <li>$P(E | H_{hom})$: If Judy is $XX$ and her husband is $Xx$, all their children will be either $XX$ or $Xx$. All are brown-eyed. So, $P(E | H_{hom}) = 1^n = 1$.</li>
+                    <li>$P(E | H_{het})$: If Judy is $Xx$ and her husband is $Xx$, the probability of a brown-eyed child is $3/4$. The probability of $n$ independent brown-eyed children is $P(E | H_{het}) = (\frac{3}{4})^n$.</li>
+                </ul>
+                 <p>Using Bayes' Theorem, $P(H_{het} | E) = \frac{P(E | H_{het})P(H_{het})}{P(E)}$ where $P(E) = P(E | H_{het})P(H_{het}) + P(E | H_{hom})P(H_{hom})$.</p>
+                $$ P(H_{het} | E) = \frac{(\frac{3}{4})^n \cdot \frac{2p}{1+2p}}{(\frac{3}{4})^n \cdot \frac{2p}{1+2p} + 1 \cdot \frac{1}{1+2p}} $$
+                <p>Multiplying the numerator and denominator by $(1+2p)$ simplifies the expression:</p>
+                $$ P(H_{het} | E) = \frac{2p(\frac{3}{4})^n}{1 + 2p(\frac{3}{4})^n} $$
+            </div>
+            <p>This is the posterior probability that Judy is a heterozygote.</p>
+            <div class="formula">
+                $$P(\text{Judy is } Xx | E) = \frac{2p(\frac{3}{4})^n}{1 + 2p(\frac{3}{4})^n}$$
+            </div>
+        </div>
+        
+        <div class="container">
+            <h2>Part 3: Predicting the Next Generation</h2>
+            <p>The final part requires us to calculate the probability of Judy's first grandchild being blue-eyed, using our updated knowledge about Judy.</p>
+            <div class="derivation">
+                <h4>Detailed Derivation</h4>
+                <p>A grandchild is blue-eyed (<code>xx</code>) if they inherit an <code>x</code> gene from Judy's child (C) and an <code>x</code> gene from their partner (P). Let's find $P(\text{C passes } x)$ and $P(\text{P passes } x)$.</p>
+                
+                <p><b>1. Probability Partner Passes 'x':</b> The partner is from the general population. The probability of passing an 'x' is the frequency of the 'x' allele.
+                $P(\text{P passes } x) = P(Xx)\frac{1}{2} + P(xx)\frac{1}{1} = 2p(1-p)\frac{1}{2} + p^2 = p(1-p)+p^2 = p$.</p>
+
+                <p><b>2. Probability Judy's Child Passes 'x':</b> For the child (C) to pass 'x', they must be a heterozygote ($Xx$). We need $P(\text{C is } Xx | E)$, where E is the evidence about Judy's children.</p>
+                <p>We use the law of total probability, conditioned on Judy's genotype:</p>
+                $$ P(\text{C is } Xx | E) = P(\text{C is } Xx|H_{het}, E)P(H_{het}|E) + P(\text{C is } Xx|H_{hom}, E)P(H_{hom}|E) $$
+                <ul>
+                    <li>If Judy is $Xx$, her brown-eyed children with an $Xx$ partner are $1/3$ $XX$ and $2/3$ $Xx$. So, $P(\text{C is } Xx|H_{het}, E) = 2/3$.</li>
+                    <li>If Judy is $XX$, her brown-eyed children with an $Xx$ partner are $1/2$ $XX$ and $1/2$ $Xx$. So, $P(\text{C is } Xx|H_{hom}, E) = 1/2$.</li>
+                </ul>
+                Substituting our posterior probabilities from Part 2:
+                $$ P(\text{C is } Xx | E) = \left(\frac{2}{3}\right) \left(\frac{2p(\frac{3}{4})^n}{1 + 2p(\frac{3}{4})^n}\right) + \left(\frac{1}{2}\right) \left(\frac{1}{1 + 2p(\frac{3}{4})^n}\right) = \frac{\frac{4}{3}p(\frac{3}{4})^n + \frac{1}{2}}{1 + 2p(\frac{3}{4})^n} $$
+                The probability C passes 'x' is half of this: $P(\text{C passes } x | E) = \frac{1}{2} P(\text{C is } Xx | E)$.
+
+                <p><b>3. Total Probability for Grandchild:</b></p>
+                $$ P(\text{Grandchild is } xx) = P(\text{C passes } x | E) \times P(\text{P passes } x) $$
+                $$ = \left[ \frac{1}{2} \frac{\frac{4}{3}p(\frac{3}{4})^n + \frac{1}{2}}{1 + 2p(\frac{3}{4})^n} \right] \times p = \frac{p \left(\frac{2}{3}p(\frac{3}{4})^n + \frac{1}{4}\right)}{1 + 2p(\frac{3}{4})^n} $$
+            </div>
+            <p>This is the final probability of the grandchild being blue-eyed.</p>
+            <div class="formula">
+                $$P(\text{Grandchild is } xx) = \frac{p \left(\frac{1}{4} + \frac{2}{3}p(\frac{3}{4})^n \right)}{1 + 2p(\frac{3}{4})^n}$$
+            </div>
+        </div>
+
+        <div class="container">
+            <h2>Interactive Explorer</h2>
+            <p>Adjust the sliders to see how the allele frequency ($p$) and the number of brown-eyed children ($n$) affect the probabilities.</p>
+            <div class="webapp">
+                <div class="controls">
+                    <div>
+                        <label for="p_slider">Allele Frequency, $p$ = <span id="p_value">0.10</span></label>
+                        <input type="range" id="p_slider" min="0.01" max="0.99" step="0.01" value="0.1">
+                    </div>
+                    <br>
+                    <div>
+                        <label for="n_slider">Number of Brown-Eyed Children, $n$ = <span id="n_value">1</span></label>
+                        <input type="range" id="n_slider" min="0" max="30" step="1" value="1">
+                    </div>
+                </div>
+                <div class="results">
+                    <h3>Calculated Probabilities:</h3>
+                    <div class="output" id="posterior_output"></div>
+                    <div class="output" id="grandchild_output"></div>
+                </div>
+            </div>
+            <div id="chartContainer">
+                <canvas id="posteriorChart"></canvas>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const pSlider = document.getElementById('p_slider');
+        const nSlider = document.getElementById('n_slider');
+        const pValueSpan = document.getElementById('p_value');
+        const nValueSpan = document.getElementById('n_value');
+        const posteriorOutput = document.getElementById('posterior_output');
+        const grandchildOutput = document.getElementById('grandchild_output');
+        const ctx = document.getElementById('posteriorChart').getContext('2d');
+        let posteriorChart;
+
+        function createOrUpdateChart(hetProb, homProb) {
+            const chartData = {
+                labels: ['Judy is Heterozygote (Xx)', 'Judy is Homozygote (XX)'],
+                datasets: [{
+                    label: 'Posterior Probability',
+                    data: [hetProb, homProb],
+                    backgroundColor: ['rgba(52, 152, 219, 0.8)', 'rgba(44, 62, 80, 0.8)'],
+                    borderColor: ['#3498db', '#2c3e50'],
+                    borderWidth: 2,
+                    borderRadius: 5
+                }]
+            };
+            if (posteriorChart) {
+                posteriorChart.data = chartData;
+                posteriorChart.update();
+            } else {
+                posteriorChart = new Chart(ctx, {
+                    type: 'bar', data: chartData,
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        scales: { y: { beginAtZero: true, max: 1, title: { display: true, text: 'Probability', font: { size: 14 } } }, x: { ticks: { font: { size: 14 } } } },
+                        plugins: {
+                            legend: { display: false },
+                            title: { display: true, text: "Posterior Probability of Judy's Genotype", font: { size: 18, weight: 'bold' }, padding: { top: 10, bottom: 20 } },
+                            tooltip: { callbacks: { label: (context) => `Probability: ${context.parsed.y.toFixed(4)}` } }
+                        }
+                    }
+                });
+            }
+        }
+
+        function calculate() {
+            const p = parseFloat(pSlider.value);
+            const n = parseInt(nSlider.value, 10);
+            pValueSpan.textContent = p.toFixed(2);
+            nValueSpan.textContent = n;
+            const term = Math.pow(0.75, n);
+            const commonDenominator = 1 + 2 * p * term;
+            const posteriorHet = (2 * p * term) / commonDenominator;
+            const grandchildNumerator = p * (0.25 + (2 / 3) * p * term);
+            const grandchildProb = grandchildNumerator / commonDenominator;
+            posteriorOutput.innerHTML = `P(Judy is Xx | E): <strong>${posteriorHet.toFixed(4)}</strong>`;
+            grandchildOutput.innerHTML = `P(Grandchild is xx): <strong>${grandchildProb.toFixed(4)}</strong>`;
+            createOrUpdateChart(posteriorHet, 1 - posteriorHet);
+        }
+
+        pSlider.addEventListener('input', calculate);
+        nSlider.addEventListener('input', calculate);
+        window.addEventListener('load', calculate);
+    </script>
+
+</body>
+</html>
+
