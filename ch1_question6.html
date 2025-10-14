@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Elvis Presley Twin Probability Problem</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #1a237e;
+            text-align: center;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #3f51b5;
+            margin-top: 30px;
+            border-left: 4px solid #3f51b5;
+            padding-left: 10px;
+        }
+        .question, .final-answer {
+            background-color: #e8eaf6;
+            border-left: 5px solid #3f51b5;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .question p {
+            margin: 0;
+            font-style: italic;
+            color: #3d405b;
+        }
+        .final-answer {
+            text-align: center;
+            background-color: #dcedc8;
+            border-left-color: #4caf50;
+        }
+        .final-answer h3 {
+            margin: 0;
+            color: #2e7d32;
+            font-size: 1.5em;
+        }
+        code {
+            font-family: "Courier New", Courier, monospace;
+            background-color: #f1f1f1;
+            padding: 2px 5px;
+            border-radius: 4px;
+        }
+        .math-section {
+            padding: 10px;
+            margin-top: 15px;
+        }
+        .math-step {
+            margin-bottom: 10px;
+        }
+        /* Styles for the DAG */
+        .dag-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .dag-node {
+            display: inline-block;
+            border: 2px solid #5c6bc0;
+            background-color: #c5cae9;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        .dag-arrow {
+            margin: 10px 0;
+            font-size: 2em;
+            color: #333;
+        }
+        .dag-explanation {
+            font-size: 0.9em;
+            color: #555;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>🎸 The Elvis Presley Twin Problem</h1>
+        <p>This is a classic conditional probability puzzle that shows how additional information can dramatically change an outcome's likelihood.</p>
+
+        <div class="question">
+            <p><strong>The Question:</strong> Approximately 1/125 of all births are fraternal twins and 1/300 of births are identical twins. Elvis Presley had a twin brother (who died at birth). What is the probability that Elvis was an identical twin?</p>
+        </div>
+
+        <div class="final-answer">
+            <h3>The probability is 5/11, or approximately 45.5%.</h3>
+        </div>
+
+        <hr>
+
+        <h2>Visualizing the Causal Relationship (DAG)</h2>
+        <p>We can represent the logic of this problem with a Directed Acyclic Graph (DAG). This shows that the <strong>type of twinning</strong> is the cause that influences the <strong>sex of the twins</strong> (the effect).</p>
+        
+        <div class="dag-container">
+            <div class="dag-node">
+                Type of Twinning<br>(Identical or Fraternal)
+            </div>
+            <div class="dag-arrow">
+                &darr;
+            </div>
+            <div class="dag-node">
+                Sex Combination of Twins<br>(BB, GG, BG)
+            </div>
+            <p class="dag-explanation">
+                In this problem, we <strong>observe the effect</strong> (Sex Combination is BB) and use it to infer the probability of the <strong>hidden cause</strong> (Type of Twinning).
+            </p>
+        </div>
+
+        <hr>
+
+        <h2>Step 1: Define the Probabilities of Twin Boys</h2>
+        <p>First, let's calculate the chances of any given birth resulting in two boys (BB) for both identical and fraternal twins.</p>
+        <div class="math-section">
+            <div class="math-step">
+                <p><strong>For Identical Twins (I):</strong></p>
+                <ul>
+                    <li>The probability of a birth being identical is <code>P(I) = 1/300</code>.</li>
+                    <li>Identical twins are always the same sex, so the probability of them being two boys is <code>P(BB | I) = 1/2</code>.</li>
+                    <li>The total probability of a birth being identical twin boys is:<br>
+                    <code>P(I and BB) = P(I) × P(BB | I) = 1/300 × 1/2 = <strong>1/600</strong></code></li>
+                </ul>
+            </div>
+            <div class="math-step">
+                <p><strong>For Fraternal Twins (F):</strong></p>
+                <ul>
+                    <li>The probability of a birth being fraternal is <code>P(F) = 1/125</code>.</li>
+                    <li>The sex of each fraternal twin is independent, so the probability of two boys is <code>P(BB | F) = 1/2 × 1/2 = 1/4</code>.</li>
+                    <li>The total probability of a birth being fraternal twin boys is:<br>
+                    <code>P(F and BB) = P(F) × P(BB | F) = 1/125 × 1/4 = <strong>1/500</strong></code></li>
+                </ul>
+            </div>
+        </div>
+
+        <hr>
+
+        <h2>Step 2: Find the Total Probability of Having Twin Boys</h2>
+        <p>Next, we add the two possibilities together to find the overall probability of any twin birth being two boys.</p>
+        <div class="math-section">
+            <p><code>P(BB) = P(I and BB) + P(F and BB)</code></p>
+            <p><code>P(BB) = 1/600 + 1/500</code></p>
+            <p>To add these, we find a common denominator (3000):</p>
+            <p><code>P(BB) = 5/3000 + 6/3000 = <strong>11/3000</strong></code></p>
+            <p>This means that for every 3000 births, we can expect 11 to be twin boys.</p>
+        </div>
+
+        <hr>
+        
+        <h2>Step 3: Calculate the Conditional Probability</h2>
+        <p>Now we can answer the core question: <strong>Given</strong> that the twins were boys, what's the probability they were identical?</p>
+        <div class="math-section">
+             <p>The formula is: <code>P(Identical | Twin Boys) = P(Identical and Twin Boys) / P(Twin Boys)</code></p>
+             <p>We plug in our calculated values:</p>
+             <p><code>P(I | BB) = (1/600) / (11/3000)</code></p>
+             <p><code>P(I | BB) = 1/600 × 3000/11</code></p>
+             <p><code>P(I | BB) = 3000 / 6600 = <strong>5/11</strong></code></p>
+        </div>
+        
+        <hr>
+
+        <h2>Conclusion</h2>
+        <p>Knowing that Elvis had a twin brother dramatically increases the likelihood of him being an identical twin. The probability jumps from a baseline of 1/300 (about 0.3%) to a much more substantial 5/11 (about 45.5%). This is because a pair of twin boys is slightly more likely to be fraternal (6/3000) than identical (5/3000), but the chances are very close.</p>
+
+    </div>
+
+</body>
+</html>
