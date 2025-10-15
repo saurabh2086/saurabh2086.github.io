@@ -42,6 +42,10 @@
         .timeline-marker.active {
             background-color: #4f46e5; /* indigo-600 */
         }
+        /* New style for patients who have to wait */
+        .timeline-marker.waited.active {
+            background-color: #f97316; /* orange-500 */
+        }
 
         /* Styles for beautiful log */
         .log-entry {
@@ -67,117 +71,114 @@
             <p class="text-lg text-slate-600 mt-2">An interactive breakdown of a classic queuing problem.</p>
         </header>
 
-        <main class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <main class="space-y-8">
             
-            <!-- Column 1: Problem and Animation -->
-            <div class="space-y-8">
-                <!-- The Question Card -->
-                <div class="bg-white p-6 rounded-lg shadow-md">
-                    <h2 class="text-2xl font-semibold mb-4 text-slate-900 border-b pb-2">The Queuing Problem</h2>
-                    <div class="prose max-w-none text-slate-700 space-y-4">
-                        <p>A clinic has three doctors. Patients come into the clinic at random, starting at 9 a.m., according to a Poisson process with a time parameter of 10 minutes. When a patient arrives, they wait until a doctor is available. The time spent by each doctor with each patient is a random variable, uniformly distributed between 5 and 20 minutes.</p>
-                        <p>The office stops admitting new patients at 4 p.m. and closes only when the last patient is finished with their doctor.</p>
-                    </div>
-                </div>
-
-                <!-- The Math Explanation Card -->
-                <div class="bg-white p-6 rounded-lg shadow-md">
-                    <h2 class="text-2xl font-semibold mb-4 text-slate-900 border-b pb-2">The Math Behind the Simulation</h2>
-                    <div class="prose max-w-none text-slate-700 space-y-4">
-                        <p>The simulation uses two different probability distributions to model the randomness of the real world. Understanding these is key to seeing how the simulation works.</p>
-
-                        <h3 class="font-semibold text-lg text-slate-800 pt-2">1. Patient Arrivals: The Exponential Distribution</h3>
-                        <p>This distribution is used to answer the question: "How long until the <em>next</em> random event happens?" It's the perfect model for the time between independent, random events, like patients walking into a clinic. The key idea is that the process has no "memory"—the time of the last arrival has no impact on the next one. This is what the term <strong>Poisson Process</strong> implies.</p>
-                        
-                        <h4 class="font-medium text-md text-slate-800">The Formula:</h4>
-                        <p>The probability of the waiting time `x` is described by the Probability Density Function (PDF):
-                           $$f(x; \lambda) = \lambda e^{-\lambda x}$$
-                           Where `\(\lambda\)` (lambda) is the <strong>rate parameter</strong>, representing the average number of events per unit of time. The problem states the average time between arrivals is 10 minutes. Since the mean is `\(1/\lambda\)`, our rate `\(\lambda\)` is `1/10` or 0.1 patients per minute.
-                        </p>
-
-                        <h3 class="font-semibold text-lg text-slate-800 pt-2">2. Doctor's Service Time: The Uniform Distribution</h3>
-                        <p>This is the most straightforward distribution. It's used when any outcome within a specific range is <strong>equally likely</strong>. For our clinic, it means a doctor's appointment is just as likely to last 6 minutes as it is to last 19 minutes, or any other time between 5 and 20 minutes.</p>
-
-                        <h4 class="font-medium text-md text-slate-800">The Formula:</h4>
-                        <p>The Probability Density Function (PDF) is a simple constant for any value `x` between a minimum `a` and a maximum `b`:
-                           $$f(x) = \frac{1}{b - a}$$
-                           For our simulation, with `a=5` and `b=20`, the formula becomes `\(f(x) = 1/(20-5) = 1/15\)`. This constant value means all service times in the range are equally probable.
-                        </p>
-                    </div>
-                </div>
-
-                <!-- The Animation Card -->
-                <div class="bg-white p-6 rounded-lg shadow-md">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-2xl font-semibold text-slate-900">Live Simulation</h2>
-                        <button id="run-animation-btn" class="bg-indigo-600 text-white font-semibold px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 w-48">
-                            Run Animation
-                        </button>
-                    </div>
-                    
-                    <!-- Visual Status Display -->
-                    <div id="visual-status" class="bg-slate-50 p-4 rounded-md mb-4 border border-slate-200">
-                        <div class="flex justify-between items-center text-lg font-semibold mb-3">
-                            <span class="text-slate-800">Clinic Status</span>
-                            <span id="sim-clock" class="px-3 py-1 bg-slate-200 rounded-full text-sm text-slate-700">Time: 09:00</span>
-                        </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <h3 class="font-semibold mb-2 text-slate-700">Doctors</h3>
-                                <div id="doctors-status" class="space-y-2">
-                                    <!-- Doctor divs will be generated by JS -->
-                                </div>
-                            </div>
-                            <div>
-                                <h3 class="font-semibold mb-2 text-slate-700">Waiting Queue</h3>
-                                <div id="queue-status" class="flex items-center space-x-1 flex-wrap h-16">
-                                    <span id="queue-text" class="text-slate-500">Empty</span>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Timeline Section -->
-                        <div class="mt-4 pt-4 border-t border-slate-200">
-                             <h3 class="font-semibold mb-3 text-slate-700">Patient Arrival Timeline</h3>
-                             <div id="timeline-container" class="relative h-10 flex items-center">
-                                 <div id="timeline-bar" class="w-full h-2 bg-slate-300 rounded-full relative">
-                                     <div id="timeline-progress" class="absolute top-0 left-0 h-2 bg-indigo-400 rounded-full" style="width: 0%;"></div>
-                                     <!-- Markers will be added here by JS -->
-                                 </div>
-                             </div>
-                             <div class="flex justify-between w-full text-xs text-slate-500 mt-1 px-1">
-                                 <span id="timeline-start-label">9 AM</span>
-                                 <span id="timeline-end-label">5 PM</span>
-                             </div>
-                        </div>
-                        <!-- Summary Stats Section -->
-                        <div id="summary-stats" class="mt-4 pt-4 border-t border-slate-200 text-center grid grid-cols-2 gap-4">
-                            <div>
-                                <h4 class="text-sm font-semibold text-slate-600">Total Patients Visited</h4>
-                                <p id="patient-count" class="text-2xl font-bold text-indigo-600">0</p>
-                            </div>
-                            <div>
-                                <h4 class="text-sm font-semibold text-slate-600">Clinic Closed At</h4>
-                                <p id="closing-time" class="text-2xl font-bold text-indigo-600">--:--</p>
-                            </div>
-                            <div>
-                                <h4 class="text-sm font-semibold text-slate-600">Total Wait Time</h4>
-                                <p id="total-wait-time" class="text-2xl font-bold text-indigo-600">0m</p>
-                            </div>
-                            <div>
-                                <h4 class="text-sm font-semibold text-slate-600">Average Wait Time</h4>
-                                <p id="avg-wait-time" class="text-2xl font-bold text-indigo-600">0.0m</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <p class="text-slate-600 mb-4">A step-by-step event log of the simulated day.</p>
-                    <div id="animation-output" class="code-block h-80 overflow-y-scroll text-sm !p-2">
-                        Click "Run Animation" to begin...
-                    </div>
+            <!-- The Question Card -->
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-2xl font-semibold mb-4 text-slate-900 border-b pb-2">The Queuing Problem</h2>
+                <div class="prose max-w-none text-slate-700 space-y-4">
+                    <p>A clinic has three doctors. Patients come into the clinic at random, starting at 9 a.m., according to a Poisson process with a time parameter of 10 minutes. When a patient arrives, they wait until a doctor is available. The time spent by each doctor with each patient is a random variable, uniformly distributed between 5 and 20 minutes.</p>
+                    <p>The office stops admitting new patients at 4 p.m. and closes only when the last patient is finished with their doctor.</p>
                 </div>
             </div>
 
-            <!-- Column 2: Python Solution -->
+            <!-- The Math Explanation Card -->
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-2xl font-semibold mb-4 text-slate-900 border-b pb-2">The Math Behind the Simulation</h2>
+                <div class="prose max-w-none text-slate-700 space-y-4">
+                    <p>The simulation uses two different probability distributions to model the randomness of the real world. Understanding these is key to seeing how the simulation works.</p>
+
+                    <h3 class="font-semibold text-lg text-slate-800 pt-2">1. Patient Arrivals: The Exponential Distribution</h3>
+                    <p>This distribution is used to answer the question: "How long until the <em>next</em> random event happens?" It's the perfect model for the time between independent, random events, like patients walking into a clinic. The key idea is that the process has no "memory"—the time of the last arrival has no impact on the next one. This is what the term <strong>Poisson Process</strong> implies.</p>
+                    
+                    <h4 class="font-medium text-md text-slate-800">The Formula:</h4>
+                    <p>The probability of the waiting time `x` is described by the Probability Density Function (PDF):
+                        $$f(x; \lambda) = \lambda e^{-\lambda x}$$
+                        Where `\(\lambda\)` (lambda) is the <strong>rate parameter</strong>, representing the average number of events per unit of time. The problem states the average time between arrivals is 10 minutes. Since the mean is `\(1/\lambda\)`, our rate `\(\lambda\)` is `1/10` or 0.1 patients per minute.
+                    </p>
+
+                    <h3 class="font-semibold text-lg text-slate-800 pt-2">2. Doctor's Service Time: The Uniform Distribution</h3>
+                    <p>This is the most straightforward distribution. It's used when any outcome within a specific range is <strong>equally likely</strong>. For our clinic, it means a doctor's appointment is just as likely to last 6 minutes as it is to last 19 minutes, or any other time between 5 and 20 minutes.</p>
+
+                    <h4 class="font-medium text-md text-slate-800">The Formula:</h4>
+                    <p>The Probability Density Function (PDF) is a simple constant for any value `x` between a minimum `a` and a maximum `b`:
+                        $$f(x) = \frac{1}{b - a}$$
+                        For our simulation, with `a=5` and `b=20`, the formula becomes `\(f(x) = 1/(20-5) = 1/15\)`. This constant value means all service times in the range are equally probable.
+                    </p>
+                </div>
+            </div>
+
+            <!-- The Animation Card -->
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-semibold text-slate-900">Live Simulation</h2>
+                    <button id="run-animation-btn" class="bg-indigo-600 text-white font-semibold px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 w-48">
+                        Run Animation
+                    </button>
+                </div>
+                
+                <!-- Visual Status Display -->
+                <div id="visual-status" class="bg-slate-50 p-4 rounded-md mb-4 border border-slate-200">
+                    <div class="flex justify-between items-center text-lg font-semibold mb-3">
+                        <span class="text-slate-800">Clinic Status</span>
+                        <span id="sim-clock" class="px-3 py-1 bg-slate-200 rounded-full text-sm text-slate-700">Time: 09:00</span>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <h3 class="font-semibold mb-2 text-slate-700">Doctors</h3>
+                            <div id="doctors-status" class="space-y-2">
+                                <!-- Doctor divs will be generated by JS -->
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold mb-2 text-slate-700">Waiting Queue</h3>
+                            <div id="queue-status" class="flex items-center space-x-1 flex-wrap h-16">
+                                <span id="queue-text" class="text-slate-500">Empty</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Timeline Section -->
+                    <div class="mt-4 pt-4 border-t border-slate-200">
+                            <h3 class="font-semibold mb-3 text-slate-700">Patient Arrival Timeline</h3>
+                            <div id="timeline-container" class="relative h-10 flex items-center">
+                                <div id="timeline-bar" class="w-full h-2 bg-slate-300 rounded-full relative">
+                                    <div id="timeline-progress" class="absolute top-0 left-0 h-2 bg-indigo-400 rounded-full" style="width: 0%;"></div>
+                                    <!-- Markers will be added here by JS -->
+                                </div>
+                            </div>
+                            <div class="flex justify-between w-full text-xs text-slate-500 mt-1 px-1">
+                                <span id="timeline-start-label">9 AM</span>
+                                <span id="timeline-end-label">5 PM</span>
+                            </div>
+                    </div>
+                    <!-- Summary Stats Section -->
+                    <div id="summary-stats" class="mt-4 pt-4 border-t border-slate-200 text-center grid grid-cols-2 gap-4">
+                        <div>
+                            <h4 class="text-sm font-semibold text-slate-600">Total Patients Visited</h4>
+                            <p id="patient-count" class="text-2xl font-bold text-indigo-600">0</p>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-slate-600">Clinic Closed At</h4>
+                            <p id="closing-time" class="text-2xl font-bold text-indigo-600">--:--</p>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-slate-600">Total Wait Time</h4>
+                            <p id="total-wait-time" class="text-2xl font-bold text-indigo-600">0m</p>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-slate-600">Average Wait Time</h4>
+                            <p id="avg-wait-time" class="text-2xl font-bold text-indigo-600">0.0m</p>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="text-slate-600 mb-4">A step-by-step event log of the simulated day.</p>
+                <div id="animation-output" class="code-block h-80 overflow-y-scroll text-sm !p-2">
+                    Click "Run Animation" to begin...
+                </div>
+            </div>
+
+            <!-- The Python Solution Card -->
             <div class="bg-white p-6 rounded-lg shadow-md">
                 <h2 class="text-2xl font-semibold mb-4 text-slate-900 border-b pb-2">The Python Solution</h2>
                 <div class="code-block text-sm">
@@ -329,9 +330,16 @@ def run_single_simulation():
                     const marker = document.createElement('div');
                     marker.className = 'timeline-marker';
                     marker.dataset.time = event.time;
+
+                    if (event.type === 'arrival-queue') {
+                        marker.classList.add('waited');
+                        marker.title = `Patient arrival at ${formatTime(event.time)} (had to wait)`;
+                    } else {
+                         marker.title = `Patient arrival at ${formatTime(event.time)} (seen immediately)`;
+                    }
+
                     const position = ((event.time - startTime) / duration) * 100;
                     marker.style.left = `${position}%`;
-                    marker.title = `Patient arrival at ${formatTime(event.time)}`;
                     timelineBar.appendChild(marker);
                 }
             });
