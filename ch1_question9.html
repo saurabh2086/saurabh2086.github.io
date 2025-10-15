@@ -8,6 +8,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Added Prism CSS for syntax highlighting -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <!-- Added MathJax for formula rendering -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -39,6 +42,21 @@
         .timeline-marker.active {
             background-color: #4f46e5; /* indigo-600 */
         }
+
+        /* Styles for beautiful log */
+        .log-entry {
+            padding: 0.5rem 0.75rem;
+            margin-bottom: 0.25rem;
+            border-left: 4px solid;
+            transition: background-color 0.2s;
+            border-radius: 0 0.25rem 0.25rem 0;
+        }
+        .log-start { border-color: #6b7280; background-color: rgba(107, 114, 128, 0.05); } /* gray */
+        .log-arrival-immediate { border-color: #3b82f6; background-color: rgba(59, 130, 246, 0.05); } /* blue */
+        .log-arrival-queue { border-color: #f97316; background-color: rgba(249, 115, 22, 0.05); } /* orange */
+        .log-service { border-color: #22c55e; background-color: rgba(34, 197, 94, 0.05); } /* green */
+        .log-end { border-color: #ef4444; background-color: rgba(239, 68, 68, 0.05); } /* red */
+
     </style>
 </head>
 <body class="bg-slate-100 text-slate-800">
@@ -59,6 +77,32 @@
                     <div class="prose max-w-none text-slate-700 space-y-4">
                         <p>A clinic has three doctors. Patients come into the clinic at random, starting at 9 a.m., according to a Poisson process with a time parameter of 10 minutes. When a patient arrives, they wait until a doctor is available. The time spent by each doctor with each patient is a random variable, uniformly distributed between 5 and 20 minutes.</p>
                         <p>The office stops admitting new patients at 4 p.m. and closes only when the last patient is finished with their doctor.</p>
+                    </div>
+                </div>
+
+                <!-- The Math Explanation Card -->
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-2xl font-semibold mb-4 text-slate-900 border-b pb-2">The Math Behind the Simulation</h2>
+                    <div class="prose max-w-none text-slate-700 space-y-4">
+                        <p>The simulation uses two different probability distributions to model the randomness of the real world. Understanding these is key to seeing how the simulation works.</p>
+
+                        <h3 class="font-semibold text-lg text-slate-800 pt-2">1. Patient Arrivals: The Exponential Distribution</h3>
+                        <p>This distribution is used to answer the question: "How long until the <em>next</em> random event happens?" It's the perfect model for the time between independent, random events, like patients walking into a clinic. The key idea is that the process has no "memory"—the time of the last arrival has no impact on the next one. This is what the term <strong>Poisson Process</strong> implies.</p>
+                        
+                        <h4 class="font-medium text-md text-slate-800">The Formula:</h4>
+                        <p>The probability of the waiting time `x` is described by the Probability Density Function (PDF):
+                           $$f(x; \lambda) = \lambda e^{-\lambda x}$$
+                           Where `\(\lambda\)` (lambda) is the <strong>rate parameter</strong>, representing the average number of events per unit of time. The problem states the average time between arrivals is 10 minutes. Since the mean is `\(1/\lambda\)`, our rate `\(\lambda\)` is `1/10` or 0.1 patients per minute.
+                        </p>
+
+                        <h3 class="font-semibold text-lg text-slate-800 pt-2">2. Doctor's Service Time: The Uniform Distribution</h3>
+                        <p>This is the most straightforward distribution. It's used when any outcome within a specific range is <strong>equally likely</strong>. For our clinic, it means a doctor's appointment is just as likely to last 6 minutes as it is to last 19 minutes, or any other time between 5 and 20 minutes.</p>
+
+                        <h4 class="font-medium text-md text-slate-800">The Formula:</h4>
+                        <p>The Probability Density Function (PDF) is a simple constant for any value `x` between a minimum `a` and a maximum `b`:
+                           $$f(x) = \frac{1}{b - a}$$
+                           For our simulation, with `a=5` and `b=20`, the formula becomes `\(f(x) = 1/(20-5) = 1/15\)`. This constant value means all service times in the range are equally probable.
+                        </p>
                     </div>
                 </div>
 
@@ -100,15 +144,34 @@
                                      <!-- Markers will be added here by JS -->
                                  </div>
                              </div>
-                             <div id="timeline-labels" class="flex justify-between w-full text-xs text-slate-500 mt-1 px-1">
+                             <div class="flex justify-between w-full text-xs text-slate-500 mt-1 px-1">
                                  <span id="timeline-start-label">9 AM</span>
                                  <span id="timeline-end-label">5 PM</span>
                              </div>
                         </div>
+                        <!-- Summary Stats Section -->
+                        <div id="summary-stats" class="mt-4 pt-4 border-t border-slate-200 text-center grid grid-cols-2 gap-4">
+                            <div>
+                                <h4 class="text-sm font-semibold text-slate-600">Total Patients Visited</h4>
+                                <p id="patient-count" class="text-2xl font-bold text-indigo-600">0</p>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-semibold text-slate-600">Clinic Closed At</h4>
+                                <p id="closing-time" class="text-2xl font-bold text-indigo-600">--:--</p>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-semibold text-slate-600">Total Wait Time</h4>
+                                <p id="total-wait-time" class="text-2xl font-bold text-indigo-600">0m</p>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-semibold text-slate-600">Average Wait Time</h4>
+                                <p id="avg-wait-time" class="text-2xl font-bold text-indigo-600">0.0m</p>
+                            </div>
+                        </div>
                     </div>
 
                     <p class="text-slate-600 mb-4">A step-by-step event log of the simulated day.</p>
-                    <div id="animation-output" class="code-block h-80 overflow-y-scroll text-sm !p-4">
+                    <div id="animation-output" class="code-block h-80 overflow-y-scroll text-sm !p-2">
                         Click "Run Animation" to begin...
                     </div>
                 </div>
@@ -118,7 +181,6 @@
             <div class="bg-white p-6 rounded-lg shadow-md">
                 <h2 class="text-2xl font-semibold mb-4 text-slate-900 border-b pb-2">The Python Solution</h2>
                 <div class="code-block text-sm">
-<!-- Added language-python class for Prism.js -->
 <pre><code class="language-python">
 import random
 import math
@@ -243,11 +305,17 @@ def run_single_simulation():
                  container.appendChild(icon);
             }
         };
+        
+        const updateSummaryStats = (stats) => {
+            document.getElementById('patient-count').textContent = stats.patientCount;
+            document.getElementById('closing-time').textContent = stats.closingTimeStr;
+            document.getElementById('total-wait-time').textContent = `${stats.totalWait.toFixed(1)}m`;
+            document.getElementById('avg-wait-time').textContent = `${stats.avgWait.toFixed(1)}m`;
+        };
 
         // --- Timeline Functions ---
         const setupTimeline = (events, startTime, endTime) => {
             const timelineBar = document.getElementById('timeline-bar');
-            // Clear previous markers
             timelineBar.querySelectorAll('.timeline-marker').forEach(m => m.remove());
 
             document.getElementById('timeline-start-label').textContent = formatTime(startTime);
@@ -257,7 +325,7 @@ def run_single_simulation():
             if (duration <= 0) return;
 
             events.forEach(event => {
-                if (event.type === 'arrival') {
+                if (event.type === 'arrival-immediate' || event.type === 'arrival-queue') {
                     const marker = document.createElement('div');
                     marker.className = 'timeline-marker';
                     marker.dataset.time = event.time;
@@ -276,7 +344,6 @@ def run_single_simulation():
             const progress = Math.min(((currentTime - startTime) / duration) * 100, 100);
             document.getElementById('timeline-progress').style.width = `${progress}%`;
             
-            // Activate markers that have been passed
             document.querySelectorAll('.timeline-marker').forEach(marker => {
                 if (parseFloat(marker.dataset.time) <= currentTime) {
                     marker.classList.add('active');
@@ -307,18 +374,20 @@ def run_single_simulation():
             updateClock(SIMULATION_START_TIME);
             updateDoctorsStatus(Array(3).fill(SIMULATION_START_TIME), SIMULATION_START_TIME);
             updateQueueStatus(0);
+            updateSummaryStats({ patientCount: 0, closingTimeStr: '--:--', totalWait: 0, avgWait: 0 });
             document.getElementById('timeline-progress').style.width = '0%';
         });
         
         // --- Animation Player ---
         async function playAnimation(events, endTime) {
             const outputElement = document.getElementById('animation-output');
-            outputElement.textContent = ''; 
+            outputElement.innerHTML = ''; 
 
             const SIMULATION_START_TIME = 9 * 60;
             updateClock(SIMULATION_START_TIME);
             updateDoctorsStatus(Array(3).fill(SIMULATION_START_TIME), SIMULATION_START_TIME);
             updateQueueStatus(0);
+            updateSummaryStats({ patientCount: 0, closingTimeStr: '--:--', totalWait: 0, avgWait: 0 });
             
             await new Promise(resolve => setTimeout(resolve, 500)); 
 
@@ -328,13 +397,33 @@ def run_single_simulation():
                 updateQueueStatus(event.queueSize);
                 updateTimelineProgress(event.time, SIMULATION_START_TIME, endTime);
                 
+                const avgWait = event.patientsWhoWaited > 0 ? event.totalWaitTime / event.patientsWhoWaited : 0;
+                updateSummaryStats({
+                    patientCount: event.totalPatients,
+                    closingTimeStr: '--:--',
+                    totalWait: event.totalWaitTime,
+                    avgWait: avgWait
+                });
+                
                 const logEntry = document.createElement('div');
-                logEntry.className = 'whitespace-pre-wrap';
+                logEntry.className = `log-entry log-${event.type}`;
                 logEntry.textContent = event.message;
                 outputElement.appendChild(logEntry);
                 outputElement.scrollTop = outputElement.scrollHeight;
 
-                await new Promise(resolve => setTimeout(resolve, 400)); // Slower animation speed
+                await new Promise(resolve => setTimeout(resolve, 400));
+            }
+            
+            const lastEvent = events[events.length - 1];
+            if(lastEvent) {
+                const finalAvgWait = lastEvent.patientsWhoWaited > 0 ? lastEvent.totalWaitTime / lastEvent.patientsWhoWaited : 0;
+                const finalClosingTime = lastEvent.type === 'end' ? lastEvent.time : endTime;
+                 updateSummaryStats({
+                    patientCount: lastEvent.totalPatients,
+                    closingTimeStr: formatTime(finalClosingTime),
+                    totalWait: lastEvent.totalWaitTime,
+                    avgWait: finalAvgWait
+                });
             }
         }
 
@@ -354,7 +443,10 @@ def run_single_simulation():
             let doctor_free_times = Array(NUM_DOCTORS).fill(SIMULATION_START_TIME);
             let patient_queue = [];
             let next_arrival_time = SIMULATION_START_TIME + expovariate(MEAN_ARRIVAL_TIME);
+            
             let total_patients_arrived = 0;
+            let total_wait_time = 0.0;
+            let patients_who_waited = 0;
             let last_patient_finish_time = SIMULATION_START_TIME;
 
             allEvents.push({
@@ -362,7 +454,10 @@ def run_single_simulation():
                 type: 'start',
                 message: `[${formatTime(SIMULATION_START_TIME)}] SIMULATION START. First patient due at ${formatTime(next_arrival_time)}.`,
                 doctorStatus: [...doctor_free_times],
-                queueSize: patient_queue.length
+                queueSize: 0,
+                totalPatients: 0,
+                totalWaitTime: 0,
+                patientsWhoWaited: 0
             });
             
             while (next_arrival_time <= ADMISSIONS_END_TIME || patient_queue.length > 0) {
@@ -377,16 +472,22 @@ def run_single_simulation():
                     next_arrival_time += expovariate(MEAN_ARRIVAL_TIME);
                     allEvents.push({
                         time: current_time,
-                        type: 'arrival',
-                        message: `[${formatTime(current_time)}] Patient #${total_patients_arrived} arrives. All doctors busy. -> Joins queue.`,
+                        type: 'arrival-queue',
+                        message: `[${formatTime(current_time)}] Patient #${total_patients_arrived} arrives. -> Joins queue.`,
                         doctorStatus: [...doctor_free_times],
-                        queueSize: patient_queue.length
+                        queueSize: patient_queue.length,
+                        totalPatients: total_patients_arrived,
+                        totalWaitTime: total_wait_time,
+                        patientsWhoWaited: patients_who_waited
                     });
                 } else {
                     let current_time = earliest_free_time;
                     if (patient_queue.length > 0) {
                         const patient_arrival_time = patient_queue.shift();
                         const wait_time = current_time - patient_arrival_time;
+                        total_wait_time += wait_time;
+                        patients_who_waited++;
+                        
                         const service_time = uniform(MIN_SERVICE_TIME, MAX_SERVICE_TIME);
                         const finish_time = current_time + service_time;
                         doctor_free_times[next_free_doctor_idx] = finish_time;
@@ -394,10 +495,13 @@ def run_single_simulation():
 
                         allEvents.push({
                             time: current_time,
-                            type: 'service_from_queue',
+                            type: 'service',
                             message: `[${formatTime(current_time)}] Dr. #${next_free_doctor_idx + 1} is free. Sees patient from queue (wait: ${wait_time.toFixed(1)}m). -> Busy until ${formatTime(finish_time)}.`,
                             doctorStatus: [...doctor_free_times],
-                            queueSize: patient_queue.length
+                            queueSize: patient_queue.length,
+                            totalPatients: total_patients_arrived,
+                            totalWaitTime: total_wait_time,
+                            patientsWhoWaited: patients_who_waited
                         });
                     } else if (next_arrival_time <= ADMISSIONS_END_TIME) {
                         current_time = next_arrival_time;
@@ -410,22 +514,42 @@ def run_single_simulation():
 
                         allEvents.push({
                             time: current_time,
-                            type: 'arrival', // It's an arrival and immediate service
+                            type: 'arrival-immediate',
                             message: `[${formatTime(current_time)}] Patient #${total_patients_arrived} arrives. Seen immediately by Dr. #${next_free_doctor_idx + 1}. -> Busy until ${formatTime(finish_time)}.`,
                             doctorStatus: [...doctor_free_times],
-                            queueSize: patient_queue.length
+                            queueSize: patient_queue.length,
+                            totalPatients: total_patients_arrived,
+                            totalWaitTime: total_wait_time,
+                            patientsWhoWaited: patients_who_waited
                         });
                     } else {
+                        const finalClosingTime = Math.max(...doctor_free_times, last_patient_finish_time);
                         allEvents.push({
-                            time: current_time,
+                            time: finalClosingTime,
                             type: 'end',
-                            message: `[${formatTime(current_time)}] SIMULATION END. Admissions closed and queue is empty.`,
-                            doctorStatus: [...doctor_free_times],
-                            queueSize: patient_queue.length
+                            message: `[${formatTime(finalClosingTime)}] SIMULATION END. Clinic is closed.`,
+                            doctorStatus: [...doctor_free_times].map(t => Math.min(t, finalClosingTime)),
+                            queueSize: 0,
+                            totalPatients: total_patients_arrived,
+                            totalWaitTime: total_wait_time,
+                            patientsWhoWaited: patients_who_waited
                         });
                         break;
                     }
                 }
+            }
+            if (allEvents[allEvents.length - 1].type !== 'end') {
+                 const finalClosingTime = Math.max(last_patient_finish_time, ADMISSIONS_END_TIME);
+                 allEvents.push({
+                    time: finalClosingTime,
+                    type: 'end',
+                    message: `[${formatTime(finalClosingTime)}] SIMULATION END. Clinic is closed.`,
+                    doctorStatus: [...doctor_free_times].map(t => Math.min(t, finalClosingTime)),
+                    queueSize: 0,
+                    totalPatients: total_patients_arrived,
+                    totalWaitTime: total_wait_time,
+                    patientsWhoWaited: patients_who_waited
+                });
             }
             return { events: allEvents, endTime: Math.max(last_patient_finish_time, ADMISSIONS_END_TIME) };
         }
