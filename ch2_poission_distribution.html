@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Poisson Distribution: An Interactive Derivation</title>
+    <!-- Chosen Palette: Brilliant Blues -->
+    <!-- Application Structure Plan: The SPA is structured as a narrative journey. It begins with a high-level introduction to hook the user, followed immediately by the main interactive visualization tool. This "play first, theory later" approach allows users to build intuition by experimenting with the concepts. After the interactive element, the page presents the formal step-by-step mathematical derivation from the source report, providing the rigorous backup for what the user just observed. This structure is chosen to maximize engagement and comprehension for a potentially complex topic. -->
+    <!-- Visualization & Content Choices: 
+        1. Binomial vs. Poisson Convergence -> Goal: Compare/Change -> Interactive Bar Chart (Binomial) with overlaid Line Chart (Poisson) -> Interaction: Sliders for lambda (average rate) and n (number of trials) update the charts in real-time. -> Justification: This is the most direct and effective way to visualize the core mathematical limit described in the source report, making an abstract concept tangible. -> Library/Method: Chart.js on a Canvas element.
+        2. Interval Discretization -> Goal: Inform -> A timeline of dynamically generated divs -> Interaction: The number of segments in the timeline is directly controlled by the 'n' slider. -> Justification: This provides a simple visual metaphor for the concept of splitting a continuous interval into 'n' discrete trials, which is a foundational idea in the derivation. -> Library/Method: Structured HTML/CSS with Tailwind, updated via JavaScript.
+        3. Mathematical Formulas -> Goal: Inform -> Styled cards with formatted text -> Interaction: Static display. -> Justification: To present the formal derivation from the report in a clear, readable, and aesthetically pleasing manner that fits the infographic style. -> Library/Method: Structured HTML/CSS with Tailwind.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0;400;0;600;1;400&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f0f9ff; color: #0A2463; }
+        .math { font-family: 'Lora', 'Times New Roman', serif; font-style: italic; background-color: #e0f2fe; color: #003554; padding: 2px 8px; border-radius: 4px; }
+        .card { background-color: white; border-radius: 1rem; box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.05); border: 1px solid #e2e8f0; }
+        .formula-box { background-color: #f0f9ff; padding: 1rem; border-radius: 0.5rem; border-left: 4px solid #00A6FB; font-family: 'Lora', serif; text-align: center; font-size: 1.1rem; color: #003554; }
+        .timeline-block { background-color: #0582CA; border-left: 1px solid #003554; }
+        .chart-container { position: relative; width: 100%; max-width: 900px; margin-left: auto; margin-right: auto; height: 300px; max-height: 50vh; }
+        @media (min-width: 768px) { .chart-container { height: 450px; } }
+    </style>
+</head>
+<body>
+
+    <main class="w-full max-w-6xl mx-auto p-4 md:p-8 space-y-16">
+        
+        <header class="text-center py-8">
+            <h1 class="text-4xl md:text-5xl font-bold text-[#0A2463]">From Binomial to Poisson</h1>
+            <p class="text-lg text-slate-600 mt-4 max-w-3xl mx-auto">An interactive infographic exploring how the Poisson distribution emerges as a special case of the Binomial distribution.</p>
+        </header>
+
+        <section id="interactive-tool" class="card p-6 md:p-8">
+            <div class="text-center">
+                <h2 class="text-3xl font-bold text-[#0A2463]">The Transformation Visualized</h2>
+                <p class="mt-4 max-w-3xl mx-auto text-slate-600">This tool demonstrates the core concept of the derivation. The Binomial distribution (blue bars) models discrete trials, while the Poisson (red line) models a continuous rate. Use the sliders to see how the Binomial shape converges to match the Poisson as the number of trials (<span class="math">n</span>) increases.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 my-8 bg-slate-50 p-6 rounded-xl border">
+                <div>
+                    <label for="lambda-slider" class="font-medium text-slate-700">Average Rate (<span class="math">&lambda;</span>): <span id="lambda-value" class="font-bold text-[#00A6FB]">5</span></label>
+                    <input type="range" id="lambda-slider" min="1" max="25" value="5" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                </div>
+                <div>
+                    <label for="n-slider" class="font-medium text-slate-700">Number of Trials (<span class="math">n</span>): <span id="n-value" class="font-bold text-[#00A6FB]">10</span></label>
+                    <input type="range" id="n-slider" min="2" max="500" value="10" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                </div>
+            </div>
+
+            <div class="space-y-8">
+                <div>
+                    <h3 class="text-xl font-semibold text-[#006494] mb-3 text-center">Visualizing the Trials (<span class="math">n</span>)</h3>
+                    <p class="text-center text-sm text-slate-500 mb-3">As 'n' increases, we are slicing the same time interval into more, smaller pieces.</p>
+                    <div id="timeline-container" class="w-full h-10 bg-slate-200 rounded-lg flex overflow-hidden transition-all duration-300"></div>
+                </div>
+
+                <div>
+                    <h3 class="text-xl font-semibold text-[#006494] mb-3 text-center">Probability Distribution Comparison</h3>
+                    <div class="chart-container">
+                        <canvas id="mainChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="derivation-breakdown" class="card p-6 md:p-8">
+            <div class="text-center">
+                <h2 class="text-3xl font-bold text-[#0A2463]">The Mathematical Derivation</h2>
+                <p class="mt-4 max-w-3xl mx-auto text-slate-600">Here’s the formal mathematics behind the visualization. We start with the Binomial formula and apply specific limiting conditions to arrive at the Poisson formula.</p>
+            </div>
+            <div class="mt-10 space-y-8">
+                <div class="space-y-4">
+                    <h3 class="text-2xl font-semibold text-[#006494]">Step 1: The Binomial Starting Point</h3>
+                    <p>We begin with the Binomial PMF, which calculates the probability of exactly <span class="math">k</span> successes in <span class="math">n</span> trials, each with success probability <span class="math">p</span>.</p>
+                    <div class="formula-box">P(X=k) = C(n, k) &sdot; p<sup>k</sup> &sdot; (1-p)<sup>n-k</sup></div>
+                </div>
+                 <div class="space-y-4">
+                    <h3 class="text-2xl font-semibold text-[#006494]">Step 2: The Limiting Conditions</h3>
+                    <p>To model events over a continuous interval, we set <span class="math">n &rarr; &infin;</span> and <span class="math">p &rarr; 0</span>, while keeping the average rate <span class="math">&lambda; = np</span> constant. This gives us the key substitution: <span class="math">p = &lambda;/n</span>.</p>
+                </div>
+                <div class="space-y-4">
+                    <h3 class="text-2xl font-semibold text-[#006494]">Step 3: Analyzing the Formula's Components</h3>
+                    <p>We analyze the limit of each part of the Binomial formula as <span class="math">n &rarr; &infin;</span>.</p>
+                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                        <div class="p-6 bg-slate-50 rounded-lg">
+                            <h4 class="font-bold">Part A: Coefficient & Success Term</h4>
+                            <p class="mt-2">The product <span class="math">C(n,k) &sdot; p<sup>k</sup></span> simplifies as the <span class="math">n<sup>k</sup></span> terms cancel out.</p>
+                            <div class="formula-box mt-3 text-lg">&rarr; &nbsp; &lambda;<sup>k</sup> / k!</div>
+                        </div>
+                        <div class="p-6 bg-slate-50 rounded-lg">
+                            <h4 class="font-bold">Part B: The Failure Term</h4>
+                            <p class="mt-2">The term <span class="math">(1-p)<sup>n-k</sup></span> approaches a limit related to the definition of <span class="math">e</span>.</p>
+                            <div class="formula-box mt-3 text-lg">&rarr; &nbsp; e<sup>-&lambda;</sup></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="space-y-4">
+                    <h3 class="text-2xl font-semibold text-[#006494]">Step 4: The Final Poisson Formula</h3>
+                    <p>Multiplying the limits of the two parts gives us the final Poisson Probability Mass Function, which depends only on the average rate <span class="math">&lambda;</span>.</p>
+                    <div class="formula-box">P(X=k) = (&lambda;<sup>k</sup> e<sup>-&lambda;</sup>) / k!</div>
+                </div>
+            </div>
+        </section>
+
+         <footer class="text-center py-6">
+            <p class="text-slate-500">End of interactive infographic.</p>
+        </footer>
+
+    </main>
+
+    <script>
+        const memoizedFactorials = {};
+        function factorial(n) {
+            if (n < 0) return NaN;
+            if (n === 0 || n === 1) return 1n;
+            if (memoizedFactorials[n]) return memoizedFactorials[n];
+            let result = BigInt(1);
+            for (let i = 2; i <= n; i++) {
+                result *= BigInt(i);
+            }
+            memoizedFactorials[n] = result;
+            return result;
+        }
+
+        function combinations(n, k) {
+            if (k < 0 || k > n) return 0n;
+            return factorial(n) / (factorial(k) * factorial(n - k));
+        }
+
+        function binomialProbability(n, k, p) {
+            if (p < 0 || p > 1) return 0;
+            if (k < 0 || k > n) return 0;
+            const comb = Number(combinations(n, k));
+            if (isNaN(comb) || !isFinite(comb)) return 0;
+            return comb * Math.pow(p, k) * Math.pow(1 - p, n - k);
+        }
+
+        function poissonProbability(k, lambda) {
+            const factK = Number(factorial(k));
+            if (factK === 0) return 0;
+            return (Math.pow(lambda, k) * Math.exp(-lambda)) / factK;
+        }
+
+        const lambdaSlider = document.getElementById('lambda-slider');
+        const nSlider = document.getElementById('n-slider');
+        const lambdaValueSpan = document.getElementById('lambda-value');
+        const nValueSpan = document.getElementById('n-value');
+        const timelineContainer = document.getElementById('timeline-container');
+        const ctx = document.getElementById('mainChart').getContext('2d');
+
+        const chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: [],
+                datasets: [
+                    {
+                        label: 'Binomial Distribution',
+                        data: [],
+                        backgroundColor: '#0582CA',
+                        borderColor: '#006494',
+                        borderWidth: 1,
+                        barPercentage: 0.8,
+                        categoryPercentage: 0.9
+                    },
+                    {
+                        label: 'Poisson Distribution',
+                        data: [],
+                        type: 'line',
+                        borderColor: '#ef4444',
+                        backgroundColor: '#ef4444',
+                        pointRadius: 3,
+                        pointBackgroundColor: '#ef4444',
+                        fill: false,
+                        tension: 0.1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Probability', font: { size: 14 } }
+                    },
+                    x: {
+                        title: { display: true, text: 'Number of Events (k)', font: { size: 14 } }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            title: function(tooltipItems) {
+                                const item = tooltipItems[0];
+                                let label = item.chart.data.labels[item.dataIndex];
+                                if (Array.isArray(label)) {
+                                  return label.join(' ');
+                                } else {
+                                  return 'k = ' + label;
+                                }
+                            }
+                        }
+                    },
+                    legend: {
+                        position: 'top',
+                    }
+                }
+            }
+        });
+
+        function update() {
+            const lambda = +lambdaSlider.value;
+            let n = +nSlider.value;
+
+            if (n < lambda) {
+                n = lambda;
+                nSlider.value = n;
+            }
+            nSlider.min = lambda;
+
+            const p = lambda / n;
+
+            lambdaValueSpan.textContent = lambda;
+            nValueSpan.textContent = n;
+            
+            timelineContainer.innerHTML = '';
+            const fragment = document.createDocumentFragment();
+            const numBlocks = Math.min(n, 500); 
+            for (let i = 0; i < numBlocks; i++) {
+                const block = document.createElement('div');
+                block.className = 'timeline-block flex-grow';
+                fragment.appendChild(block);
+            }
+            timelineContainer.appendChild(fragment);
+
+            const maxK = Math.max(30, Math.ceil(lambda) * 2 + 15);
+            const kValues = Array.from({ length: maxK }, (_, i) => i);
+
+            const binomialData = kValues.map(k => binomialProbability(n, k, p));
+            const poissonData = kValues.map(k => poissonProbability(k, lambda));
+            
+            chart.data.labels = kValues;
+            chart.data.datasets[0].data = binomialData;
+            chart.data.datasets[1].data = poissonData;
+            
+            const maxProb = Math.max(...binomialData, ...poissonData);
+            chart.options.scales.y.max = maxProb > 0 ? maxProb * 1.15 : 0.1;
+
+            chart.update('none');
+        }
+
+        lambdaSlider.addEventListener('input', update);
+        nSlider.addEventListener('input', update);
+        
+        window.addEventListener('load', update);
+    </script>
+</body>
+</html>
