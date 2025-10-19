@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poisson Model Analysis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .latex {
+            font-family: 'Times New Roman', Times, serif;
+            font-style: italic;
+        }
+        .home-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        .home-button:hover {
+            background: #34495e;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 flex flex-col items-center justify-center min-h-screen p-4">
+
+    <a href="index.html" class="home-button">
+        ← Home
+    </a>
+
+    <div class="w-full max-w-5xl bg-white rounded-xl shadow-lg p-6 md:p-8 space-y-6">
+        
+        <!-- Header -->
+        <div class="text-center">
+            <h1 class="text-2xl md:text-3xl font-bold text-gray-900">Poisson Model Analysis</h1>
+            <p class="text-gray-600 mt-2">Bayesian inference for Poisson data with Gamma conjugate prior.</p>
+        </div>
+
+        <!-- Problem Statement -->
+        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <h3 class="text-lg font-semibold text-gray-800 mb-2">Problem Statement</h3>
+            <div class="text-gray-700 space-y-2">
+                <p>Consider a Poisson model where <span class="latex">y ~ Poisson(λ)</span> with unknown rate parameter <span class="latex">λ</span>. We use a Gamma conjugate prior: <span class="latex">λ ~ Gamma(α, β)</span>.</p>
+                <ol class="list-decimal list-inside space-y-1 pl-2">
+                    <li>Derive the posterior distribution <span class="latex">p(λ|y)</span>.</li>
+                    <li>Find the posterior mean and variance.</li>
+                    <li>Analyze the effect of different prior parameters.</li>
+                    <li>Calculate credible intervals for <span class="latex">λ</span>.</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- Detailed Explanations -->
+        <div class="space-y-4 pt-4 border-t">
+            <h2 class="text-2xl font-bold text-gray-900 text-center">Detailed Solutions</h2>
+            
+            <!-- Part (a) -->
+            <div class="bg-gray-50 p-4 rounded-lg">
+                <h3 class="text-lg font-semibold text-gray-800 mb-2">(a) Posterior Distribution</h3>
+                <div class="text-gray-700 space-y-2">
+                    <p>The likelihood for Poisson data is:</p>
+                    <p class="text-center bg-white p-2 rounded-md overflow-x-auto"><span class="latex">p(y|λ) = λ^y e^(-λ) / y!</span></p>
+                    <p>The Gamma prior is:</p>
+                    <p class="text-center bg-white p-2 rounded-md overflow-x-auto"><span class="latex">p(λ) = β^α λ^(α-1) e^(-βλ) / Γ(α)</span></p>
+                    <p>Using Bayes' theorem, the posterior is proportional to:</p>
+                    <p class="text-center bg-white p-2 rounded-md overflow-x-auto"><span class="latex">p(λ|y) ∝ λ^(α+y-1) e^(-(β+1)λ)</span></p>
+                    <p>This is a Gamma distribution: <span class="latex">λ|y ~ Gamma(α+y, β+1)</span></p>
+                </div>
+            </div>
+
+            <!-- Part (b) -->
+            <div class="bg-gray-50 p-4 rounded-lg">
+                <h3 class="text-lg font-semibold text-gray-800 mb-2">(b) Posterior Mean and Variance</h3>
+                <div class="text-gray-700 space-y-2">
+                    <p>For <span class="latex">λ|y ~ Gamma(α+y, β+1)</span>:</p>
+                    <ul class="list-disc list-inside space-y-1 pl-2">
+                        <li><strong>Posterior Mean:</strong> <span class="latex">E[λ|y] = (α+y)/(β+1)</span></li>
+                        <li><strong>Posterior Variance:</strong> <span class="latex">Var[λ|y] = (α+y)/(β+1)²</span></li>
+                    </ul>
+                    <p>The posterior mean combines the prior information with the observed data.</p>
+                </div>
+            </div>
+
+            <!-- Part (c) -->
+            <div class="bg-gray-50 p-4 rounded-lg">
+                <h3 class="text-lg font-semibold text-gray-800 mb-2">(c) Prior Analysis</h3>
+                <div class="text-gray-700 space-y-2">
+                    <p>The interactive tool below shows how different Gamma priors affect the posterior:</p>
+                    <ul class="list-disc list-inside space-y-1 pl-2">
+                        <li><strong>Jeffreys prior</strong> (α=0.5, β=0): Objective Bayesian</li>
+                        <li><strong>Exponential prior</strong> (α=1, β>0): Special case of Gamma</li>
+                        <li><strong>Informative priors</strong>: Express prior beliefs about the rate</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Part (d) -->
+            <div class="bg-gray-50 p-4 rounded-lg">
+                <h3 class="text-lg font-semibold text-gray-800 mb-2">(d) Credible Intervals</h3>
+                <div class="text-gray-700 space-y-2">
+                    <p>For a Gamma distribution, credible intervals can be computed using the inverse cumulative distribution function. The interactive tool calculates 95% credible intervals.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Interactive App Section -->
+        <div class="space-y-4 pt-4 border-t">
+            <h2 class="text-2xl font-bold text-gray-900 text-center">Interactive Poisson Model Explorer</h2>
+            <p class="text-center text-gray-600">Explore how different priors and data affect the posterior distribution.</p>
+            
+            <!-- Controls -->
+            <div class="grid md:grid-cols-2 gap-4">
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">Data Parameters</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <label for="observed-value" class="block text-sm font-medium text-gray-700">Observed value (y)</label>
+                            <input id="observed-value" type="range" min="0" max="20" step="1" value="5" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                            <span id="y-value" class="text-sm text-indigo-600 font-semibold">5</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">Prior Parameters</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <label for="alpha" class="block text-sm font-medium text-gray-700">α (shape parameter)</label>
+                            <input id="alpha" type="range" min="0.1" max="10" step="0.1" value="1" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                            <span id="alpha-value" class="text-sm text-indigo-600 font-semibold">1.0</span>
+                        </div>
+                        <div>
+                            <label for="beta" class="block text-sm font-medium text-gray-700">β (rate parameter)</label>
+                            <input id="beta" type="range" min="0.1" max="5" step="0.1" value="1" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                            <span id="beta-value" class="text-sm text-indigo-600 font-semibold">1.0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Visualization -->
+            <div class="bg-gray-50 p-4 rounded-lg">
+                <h3 class="text-center font-semibold text-gray-700 mb-2">Prior and Posterior Distributions</h3>
+                <canvas id="distribution-chart" class="w-full h-80 rounded-lg border border-gray-200"></canvas>
+                <div class="flex justify-center items-center space-x-4 mt-3 text-sm">
+                    <div class="flex items-center"><span class="w-4 h-4 bg-blue-500 rounded-sm mr-2"></span><span>Prior Gamma(α,β)</span></div>
+                    <div class="flex items-center"><span class="w-4 h-4 bg-red-500 rounded-sm mr-2"></span><span>Posterior Gamma(α+y,β+1)</span></div>
+                </div>
+            </div>
+
+            <!-- Results -->
+            <div class="grid md:grid-cols-3 gap-4">
+                <div class="bg-indigo-50 p-4 rounded-lg text-center">
+                    <h3 class="text-lg font-semibold text-indigo-800">Posterior Mean</h3>
+                    <p class="text-2xl font-bold text-indigo-600" id="posterior-mean">3.000</p>
+                </div>
+                <div class="bg-green-50 p-4 rounded-lg text-center">
+                    <h3 class="text-lg font-semibold text-green-800">Posterior Variance</h3>
+                    <p class="text-2xl font-bold text-green-600" id="posterior-variance">1.500</p>
+                </div>
+                <div class="bg-purple-50 p-4 rounded-lg text-center">
+                    <h3 class="text-lg font-semibold text-purple-800">95% Credible Interval</h3>
+                    <p class="text-lg font-bold text-purple-600" id="credible-interval">[0.6, 7.4]</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const observedValueSlider = document.getElementById('observed-value');
+        const alphaSlider = document.getElementById('alpha');
+        const betaSlider = document.getElementById('beta');
+        
+        const yValueSpan = document.getElementById('y-value');
+        const alphaValueSpan = document.getElementById('alpha-value');
+        const betaValueSpan = document.getElementById('beta-value');
+        
+        const posteriorMeanSpan = document.getElementById('posterior-mean');
+        const posteriorVarianceSpan = document.getElementById('posterior-variance');
+        const credibleIntervalSpan = document.getElementById('credible-interval');
+        
+        const chartCanvas = document.getElementById('distribution-chart');
+        const chartCtx = chartCanvas.getContext('2d');
+
+        // Set canvas resolution
+        function setupCanvas(canvas) {
+            const dpr = window.devicePixelRatio || 1;
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            const ctx = canvas.getContext('2d');
+            ctx.scale(dpr, dpr);
+            canvas.style.width = `${rect.width}px`;
+            canvas.style.height = `${rect.height}px`;
+        }
+
+        // Gamma PDF function
+        function gammaPDF(x, alpha, beta) {
+            if (x <= 0) return 0;
+            
+            const logGamma = (z) => {
+                if (z < 0.5) return Math.log(Math.PI) - Math.log(Math.sin(Math.PI * z)) - logGamma(1 - z);
+                z -= 1;
+                let x = 0.99999999999980993;
+                const coefficients = [676.5203681218851, -1259.1392167224028, 771.32342877765313, -176.61502916214059, 12.507343278686905, -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7];
+                for (let i = 0; i < coefficients.length; i++) {
+                    x += coefficients[i] / (z + i + 1);
+                }
+                const t = z + coefficients.length - 0.5;
+                return 0.5 * Math.log(2 * Math.PI) + (z + 0.5) * Math.log(t) - t + Math.log(x);
+            };
+            
+            const logGammaAlpha = logGamma(alpha);
+            return Math.exp(alpha * Math.log(beta) + (alpha - 1) * Math.log(x) - beta * x - logGammaAlpha);
+        }
+
+        function drawChart() {
+            const y = parseInt(observedValueSlider.value);
+            const alpha = parseFloat(alphaSlider.value);
+            const beta = parseFloat(betaSlider.value);
+            
+            const canvasWidth = chartCanvas.clientWidth;
+            const canvasHeight = chartCanvas.clientHeight;
+            
+            chartCtx.clearRect(0, 0, chartCanvas.width, chartCanvas.height);
+            
+            // Calculate posterior parameters
+            const postAlpha = alpha + y;
+            const postBeta = beta + 1;
+            
+            // Find maximum density for scaling
+            let maxDensity = 0;
+            const maxX = Math.max(10, postAlpha / postBeta + 3 * Math.sqrt(postAlpha) / postBeta);
+            for (let x = 0.01; x < maxX; x += 0.01) {
+                maxDensity = Math.max(maxDensity, gammaPDF(x, postAlpha, postBeta));
+            }
+            
+            const toCanvasX = (x) => (x / maxX) * canvasWidth;
+            const toCanvasY = (density) => canvasHeight - (density / maxDensity) * canvasHeight * 0.9;
+            
+            // Draw axes
+            chartCtx.beginPath();
+            chartCtx.strokeStyle = '#d1d5db';
+            chartCtx.lineWidth = 1;
+            chartCtx.moveTo(0, canvasHeight);
+            chartCtx.lineTo(canvasWidth, canvasHeight);
+            chartCtx.moveTo(0, 0);
+            chartCtx.lineTo(0, canvasHeight);
+            chartCtx.stroke();
+            
+            // Draw prior
+            chartCtx.beginPath();
+            chartCtx.strokeStyle = '#3b82f6';
+            chartCtx.lineWidth = 2;
+            chartCtx.setLineDash([5, 5]);
+            for (let x = 0.01; x < maxX; x += 0.01) {
+                const density = gammaPDF(x, alpha, beta);
+                chartCtx.lineTo(toCanvasX(x), toCanvasY(density));
+            }
+            chartCtx.stroke();
+            chartCtx.setLineDash([]);
+            
+            // Draw posterior
+            chartCtx.beginPath();
+            chartCtx.strokeStyle = '#ef4444';
+            chartCtx.lineWidth = 3;
+            for (let x = 0.01; x < maxX; x += 0.01) {
+                const density = gammaPDF(x, postAlpha, postBeta);
+                chartCtx.lineTo(toCanvasX(x), toCanvasY(density));
+            }
+            chartCtx.stroke();
+            
+            // Add labels
+            chartCtx.fillStyle = '#6b7280';
+            chartCtx.font = '12px Inter';
+            chartCtx.textAlign = 'center';
+            chartCtx.fillText('λ', canvasWidth / 2, canvasHeight - 5);
+            
+            // Update results
+            const posteriorMean = postAlpha / postBeta;
+            const posteriorVariance = postAlpha / (postBeta ** 2);
+            
+            posteriorMeanSpan.textContent = posteriorMean.toFixed(3);
+            posteriorVarianceSpan.textContent = posteriorVariance.toFixed(3);
+            
+            // Approximate credible interval using normal approximation
+            const stdDev = Math.sqrt(posteriorVariance);
+            const lower = Math.max(0, posteriorMean - 1.96 * stdDev);
+            const upper = posteriorMean + 1.96 * stdDev;
+            credibleIntervalSpan.textContent = `[${lower.toFixed(1)}, ${upper.toFixed(1)}]`;
+        }
+
+        function updateAll() {
+            yValueSpan.textContent = observedValueSlider.value;
+            alphaValueSpan.textContent = parseFloat(alphaSlider.value).toFixed(1);
+            betaValueSpan.textContent = parseFloat(betaSlider.value).toFixed(1);
+            
+            drawChart();
+        }
+
+        // Event listeners
+        observedValueSlider.addEventListener('input', updateAll);
+        alphaSlider.addEventListener('input', updateAll);
+        betaSlider.addEventListener('input', updateAll);
+
+        window.addEventListener('resize', () => {
+            setupCanvas(chartCanvas);
+            updateAll();
+        });
+
+        // Initial setup
+        setupCanvas(chartCanvas);
+        updateAll();
+    </script>
+</body>
+</html>
