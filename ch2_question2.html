@@ -3,16 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Poisson Model Analysis</title>
+    <title>Predictive Distributions: Coin Spin Expectation</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" xintegrity="sha384-n8MVd4RsNIU0KOVEMcApdbeGsNNFNdYmM8AEwMwjiJdUT7BMM9q+mkdCIFoQuW" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" xintegrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0i" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" xintegrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE" crossorigin="anonymous"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
+            background-color: #111827;
+            color: #d1d5db;
         }
-        .latex {
-            font-family: 'Times New Roman', Times, serif;
-            font-style: italic;
+        .card {
+            background-color: #1f2937;
+            border: 1px solid #374151;
+            border-radius: 0.75rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);
+        }
+        .slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            background: #374151;
+            outline: none;
+            opacity: 0.7;
+            transition: opacity .2s;
+            border-radius: 9999px;
+        }
+        .slider:hover {
+            opacity: 1;
+        }
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            background: #3b82f6;
+            cursor: pointer;
+            border-radius: 50%;
+            border: 4px solid #1f2937;
+        }
+        .slider::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            background: #3b82f6;
+            cursor: pointer;
+            border-radius: 50%;
+            border: 4px solid #1f2937;
+        }
+        .bar-chart-container {
+            height: 250px;
+        }
+        .bar {
+            transition: height 0.3s ease-in-out, background-color 0.3s ease-in-out;
         }
         .home-button {
             position: fixed;
@@ -41,296 +89,208 @@
         }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-800 flex flex-col items-center justify-center min-h-screen p-4">
+<body class="p-4 sm:p-8">
 
     <a href="index.html" class="home-button">
         ← Home
     </a>
 
-    <div class="w-full max-w-5xl bg-white rounded-xl shadow-lg p-6 md:p-8 space-y-6">
-        
-        <!-- Header -->
-        <div class="text-center">
-            <h1 class="text-2xl md:text-3xl font-bold text-gray-900">Poisson Model Analysis</h1>
-            <p class="text-gray-600 mt-2">Bayesian inference for Poisson data with Gamma conjugate prior.</p>
+    <div class="max-w-4xl mx-auto">
+        <header class="text-center mb-10">
+            <h1 class="text-3xl sm:text-4xl font-bold text-white mb-2">Expected Number of Spins for a Head</h1>
+            <p class="text-lg text-gray-400">Coin Spin Expectation Problem</p>
+        </header>
+
+        <!-- Original Question Card -->
+        <div class="card">
+            <h2 class="text-2xl font-semibold text-white mb-4">The Question</h2>
+            <p class="text-gray-300 leading-relaxed">
+                Consider two coins, $C_1$ and $C_2$, with the following characteristics: $\Pr(\text{heads} | C_1) = 0.6$ and $\Pr(\text{heads} | C_2) = 0.4$. Choose one of the coins at random and imagine spinning it repeatedly. Given that the first two spins from the chosen coin are tails, what is the expectation of the number of additional spins until a head shows up?
+            </p>
         </div>
 
-        <!-- Problem Statement -->
-        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
-            <h3 class="text-lg font-semibold text-gray-800 mb-2">Problem Statement</h3>
-            <div class="text-gray-700 space-y-2">
-                <p>Consider a Poisson model where <span class="latex">y ~ Poisson(λ)</span> with unknown rate parameter <span class="latex">λ</span>. We use a Gamma conjugate prior: <span class="latex">λ ~ Gamma(α, β)</span>.</p>
-                <ol class="list-decimal list-inside space-y-1 pl-2">
-                    <li>Derive the posterior distribution <span class="latex">p(λ|y)</span>.</li>
-                    <li>Find the posterior mean and variance.</li>
-                    <li>Analyze the effect of different prior parameters.</li>
-                    <li>Calculate credible intervals for <span class="latex">λ</span>.</li>
-                </ol>
-            </div>
-        </div>
-
-        <!-- Detailed Explanations -->
-        <div class="space-y-4 pt-4 border-t">
-            <h2 class="text-2xl font-bold text-gray-900 text-center">Detailed Solutions</h2>
-            
-            <!-- Part (a) -->
-            <div class="bg-gray-50 p-4 rounded-lg">
-                <h3 class="text-lg font-semibold text-gray-800 mb-2">(a) Posterior Distribution</h3>
-                <div class="text-gray-700 space-y-2">
-                    <p>The likelihood for Poisson data is:</p>
-                    <p class="text-center bg-white p-2 rounded-md overflow-x-auto"><span class="latex">p(y|λ) = λ^y e^(-λ) / y!</span></p>
-                    <p>The Gamma prior is:</p>
-                    <p class="text-center bg-white p-2 rounded-md overflow-x-auto"><span class="latex">p(λ) = β^α λ^(α-1) e^(-βλ) / Γ(α)</span></p>
-                    <p>Using Bayes' theorem, the posterior is proportional to:</p>
-                    <p class="text-center bg-white p-2 rounded-md overflow-x-auto"><span class="latex">p(λ|y) ∝ λ^(α+y-1) e^(-(β+1)λ)</span></p>
-                    <p>This is a Gamma distribution: <span class="latex">λ|y ~ Gamma(α+y, β+1)</span></p>
-                </div>
-            </div>
-
-            <!-- Part (b) -->
-            <div class="bg-gray-50 p-4 rounded-lg">
-                <h3 class="text-lg font-semibold text-gray-800 mb-2">(b) Posterior Mean and Variance</h3>
-                <div class="text-gray-700 space-y-2">
-                    <p>For <span class="latex">λ|y ~ Gamma(α+y, β+1)</span>:</p>
-                    <ul class="list-disc list-inside space-y-1 pl-2">
-                        <li><strong>Posterior Mean:</strong> <span class="latex">E[λ|y] = (α+y)/(β+1)</span></li>
-                        <li><strong>Posterior Variance:</strong> <span class="latex">Var[λ|y] = (α+y)/(β+1)²</span></li>
+        <!-- Detailed Solution Card -->
+        <div class="card">
+            <h2 class="text-2xl font-semibold text-white mb-4">Detailed Step-by-Step Solution</h2>
+            <div class="space-y-6 text-gray-300 leading-relaxed">
+                <div>
+                    <h3 class="font-semibold text-lg text-blue-400 mb-2">Part 1: Updating Our Beliefs (Bayesian Inference)</h3>
+                    <p>We start by assuming we have no information other than a coin was chosen "at random". This means our initial beliefs (prior probabilities) are equal.</p>
+                    <ul class="list-disc list-inside mt-2 space-y-1 pl-2">
+                        <li><span class="font-semibold">Prior $P(C_1)$:</span> 0.5</li>
+                        <li><span class="font-semibold">Prior $P(C_2)$:</span> 0.5</li>
                     </ul>
-                    <p>The posterior mean combines the prior information with the observed data.</p>
-                </div>
-            </div>
-
-            <!-- Part (c) -->
-            <div class="bg-gray-50 p-4 rounded-lg">
-                <h3 class="text-lg font-semibold text-gray-800 mb-2">(c) Prior Analysis</h3>
-                <div class="text-gray-700 space-y-2">
-                    <p>The interactive tool below shows how different Gamma priors affect the posterior:</p>
-                    <ul class="list-disc list-inside space-y-1 pl-2">
-                        <li><strong>Jeffreys prior</strong> (α=0.5, β=0): Objective Bayesian</li>
-                        <li><strong>Exponential prior</strong> (α=1, β>0): Special case of Gamma</li>
-                        <li><strong>Informative priors</strong>: Express prior beliefs about the rate</li>
+                    <p class="mt-4">Next, we incorporate the new evidence: two tails in a row (TT). We calculate the probability of this evidence occurring for each coin (the likelihood).</p>
+                     <ul class="list-disc list-inside mt-2 space-y-1 pl-2">
+                        <li><span class="font-semibold">$P(\text{Tails} | C_1) = 1 - 0.6 = 0.4$.</span> So, $P(\text{TT} | C_1) = 0.4 \times 0.4 = 0.16$.</li>
+                        <li><span class="font-semibold">$P(\text{Tails} | C_2) = 1 - 0.4 = 0.6$.</span> So, $P(\text{TT} | C_2) = 0.6 \times 0.6 = 0.36$.</li>
+                    </ul>
+                    <p class="mt-4">Using Bayes' Theorem, we find the updated (posterior) probabilities. We see that observing two tails makes it more likely we have Coin 2.</p>
+                    <ul class="list-disc list-inside mt-2 space-y-1 pl-2">
+                        <li><span class="font-semibold">Posterior $P(C_1 | \text{TT})$:</span> $\frac{0.16 \times 0.5}{0.16 \times 0.5 + 0.36 \times 0.5} = \frac{0.08}{0.26} = \mathbf{\frac{4}{13}} \approx 0.308$</li>
+                        <li><span class="font-semibold">Posterior $P(C_2 | \text{TT})$:</span> $\frac{0.36 \times 0.5}{0.16 \times 0.5 + 0.36 \times 0.5} = \frac{0.18}{0.26} = \mathbf{\frac{9}{13}} \approx 0.692$</li>
                     </ul>
                 </div>
-            </div>
-
-            <!-- Part (d) -->
-            <div class="bg-gray-50 p-4 rounded-lg">
-                <h3 class="text-lg font-semibold text-gray-800 mb-2">(d) Credible Intervals</h3>
-                <div class="text-gray-700 space-y-2">
-                    <p>For a Gamma distribution, credible intervals can be computed using the inverse cumulative distribution function. The interactive tool calculates 95% credible intervals.</p>
+                <div>
+                    <h3 class="font-semibold text-lg text-blue-400 mb-2">Part 2: Calculating the Final Expectation</h3>
+                    <p>The number of spins until a success (a head) follows a Geometric distribution. The expected number of trials for an event with probability $p$ is $\frac{1}{p}$.</p>
+                     <ul class="list-disc list-inside mt-2 space-y-1 pl-2">
+                        <li><span class="font-semibold">Expected Spins for $C_1$:</span> $E[\text{Spins}|C_1] = \frac{1}{P(\text{Heads} | C_1)} = \frac{1}{0.6} = \frac{5}{3} \approx 1.67$</li>
+                        <li><span class="font-semibold">Expected Spins for $C_2$:</span> $E[\text{Spins}|C_2] = \frac{1}{P(\text{Heads} | C_2)} = \frac{1}{0.4} = \frac{5}{2} = 2.5$</li>
+                    </ul>
+                    <p class="mt-4">Finally, we calculate the total expectation by taking a weighted average, using our posterior probabilities as the weights.</p>
+                    <div class="mt-2 pl-4 border-l-4 border-blue-500 bg-gray-800 p-3 rounded-r-lg overflow-x-auto">
+                        $E[\text{Spins}] = P(C_1 | \text{TT}) \times E[\text{Spins}|C_1] + P(C_2 | \text{TT}) \times E[\text{Spins}|C_2]$<br>
+                        $E[\text{Spins}] = \left(\frac{4}{13}\right) \times \left(\frac{5}{3}\right) + \left(\frac{9}{13}\right) \times \left(\frac{5}{2}\right)$<br>
+                        $E[\text{Spins}] = \frac{20}{39} + \frac{45}{26} = \frac{40}{78} + \frac{135}{78} = \frac{175}{78} \approx \mathbf{2.24 \text{ spins}}$
+                    </div>
                 </div>
             </div>
         </div>
         
-        <!-- Interactive App Section -->
-        <div class="space-y-4 pt-4 border-t">
-            <h2 class="text-2xl font-bold text-gray-900 text-center">Interactive Poisson Model Explorer</h2>
-            <p class="text-center text-gray-600">Explore how different priors and data affect the posterior distribution.</p>
-            
-            <!-- Controls -->
-            <div class="grid md:grid-cols-2 gap-4">
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-2">Data Parameters</h3>
-                    <div class="space-y-3">
-                        <div>
-                            <label for="observed-value" class="block text-sm font-medium text-gray-700">Observed value (y)</label>
-                            <input id="observed-value" type="range" min="0" max="20" step="1" value="5" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
-                            <span id="y-value" class="text-sm text-indigo-600 font-semibold">5</span>
-                        </div>
-                    </div>
-                </div>
+        <!-- Interactive Web App Card -->
+        <div class="card">
+            <h2 class="text-2xl font-semibold text-white mb-2">Interactive Calculator</h2>
+            <p class="text-gray-400 mb-6">Use the slider to see how the posterior probabilities and expected spins change as you observe more tails in a row.</p>
 
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-2">Prior Parameters</h3>
-                    <div class="space-y-3">
-                        <div>
-                            <label for="alpha" class="block text-sm font-medium text-gray-700">α (shape parameter)</label>
-                            <input id="alpha" type="range" min="0.1" max="10" step="0.1" value="1" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
-                            <span id="alpha-value" class="text-sm text-indigo-600 font-semibold">1.0</span>
-                        </div>
-                        <div>
-                            <label for="beta" class="block text-sm font-medium text-gray-700">β (rate parameter)</label>
-                            <input id="beta" type="range" min="0.1" max="5" step="0.1" value="1" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
-                            <span id="beta-value" class="text-sm text-indigo-600 font-semibold">1.0</span>
-                        </div>
-                    </div>
-                </div>
+            <!-- Slider -->
+            <div class="mb-6">
+                <label for="tails-slider" class="block mb-2 font-medium text-gray-300">Number of Initial Tails: <span id="slider-value" class="font-bold text-blue-400">2</span></label>
+                <input id="tails-slider" type="range" min="1" max="10" value="2" class="slider">
             </div>
 
-            <!-- Visualization -->
-            <div class="bg-gray-50 p-4 rounded-lg">
-                <h3 class="text-center font-semibold text-gray-700 mb-2">Prior and Posterior Distributions</h3>
-                <canvas id="distribution-chart" class="w-full h-80 rounded-lg border border-gray-200"></canvas>
-                <div class="flex justify-center items-center space-x-4 mt-3 text-sm">
-                    <div class="flex items-center"><span class="w-4 h-4 bg-blue-500 rounded-sm mr-2"></span><span>Prior Gamma(α,β)</span></div>
-                    <div class="flex items-center"><span class="w-4 h-4 bg-red-500 rounded-sm mr-2"></span><span>Posterior Gamma(α+y,β+1)</span></div>
+            <!-- Results Display -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Expected Value Display -->
+                <div class="bg-gray-800 p-6 rounded-lg text-center">
+                    <h3 class="text-lg font-semibold text-gray-300 mb-2">Expected Additional Spins for a Head</h3>
+                    <p id="expected-value" class="text-4xl font-bold text-white">2.24</p>
                 </div>
-            </div>
 
-            <!-- Results -->
-            <div class="grid md:grid-cols-3 gap-4">
-                <div class="bg-indigo-50 p-4 rounded-lg text-center">
-                    <h3 class="text-lg font-semibold text-indigo-800">Posterior Mean</h3>
-                    <p class="text-2xl font-bold text-indigo-600" id="posterior-mean">3.000</p>
-                </div>
-                <div class="bg-green-50 p-4 rounded-lg text-center">
-                    <h3 class="text-lg font-semibold text-green-800">Posterior Variance</h3>
-                    <p class="text-2xl font-bold text-green-600" id="posterior-variance">1.500</p>
-                </div>
-                <div class="bg-purple-50 p-4 rounded-lg text-center">
-                    <h3 class="text-lg font-semibold text-purple-800">95% Credible Interval</h3>
-                    <p class="text-lg font-bold text-purple-600" id="credible-interval">[0.6, 7.4]</p>
+                <!-- PMF Chart -->
+                <div class="bg-gray-800 p-6 rounded-lg">
+                    <h3 class="text-lg font-semibold text-gray-300 mb-4 text-center">Posterior Probability of Each Coin</h3>
+                    <div class="flex flex-col">
+                        <!-- Row for Percentage Labels -->
+                        <div class="flex justify-around w-full">
+                            <div id="prob-c1-text" class="text-sm font-medium text-blue-400 mb-1 w-1/3 text-center">30.8%</div>
+                            <div id="prob-c2-text" class="text-sm font-medium text-indigo-400 mb-1 w-1/3 text-center">69.2%</div>
+                        </div>
+
+                        <!-- Row for the Bars themselves -->
+                        <div class="flex justify-around items-end bar-chart-container">
+                            <div id="bar-c1" class="w-1/3 bg-blue-500 rounded-t-md bar"></div>
+                            <div id="bar-c2" class="w-1/3 bg-indigo-500 rounded-t-md bar"></div>
+                        </div>
+
+                        <!-- Row for Coin Name Labels -->
+                        <div class="flex justify-around w-full border-t border-gray-700 pt-2 mt-2">
+                             <p class="text-sm font-medium w-1/3 text-center">Coin 1</p>
+                             <p class="text-sm font-medium w-1/3 text-center">Coin 2</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+
     </div>
 
     <script>
-        // DOM Elements
-        const observedValueSlider = document.getElementById('observed-value');
-        const alphaSlider = document.getElementById('alpha');
-        const betaSlider = document.getElementById('beta');
+        // --- DOM Elements ---
+        const slider = document.getElementById('tails-slider');
+        const sliderValueDisplay = document.getElementById('slider-value');
+        const expectedValueDisplay = document.getElementById('expected-value');
+        const probC1Text = document.getElementById('prob-c1-text');
+        const probC2Text = document.getElementById('prob-c2-text');
+        const barC1 = document.getElementById('bar-c1');
+        const barC2 = document.getElementById('bar-c2');
+
+        // --- Constants ---
+        const P_HEADS_C1 = 0.6;
+        const P_HEADS_C2 = 0.4;
+        const P_TAILS_C1 = 1 - P_HEADS_C1;
+        const P_TAILS_C2 = 1 - P_HEADS_C2;
+        const PRIOR_C1 = 0.5;
+        const PRIOR_C2 = 0.5;
         
-        const yValueSpan = document.getElementById('y-value');
-        const alphaValueSpan = document.getElementById('alpha-value');
-        const betaValueSpan = document.getElementById('beta-value');
-        
-        const posteriorMeanSpan = document.getElementById('posterior-mean');
-        const posteriorVarianceSpan = document.getElementById('posterior-variance');
-        const credibleIntervalSpan = document.getElementById('credible-interval');
-        
-        const chartCanvas = document.getElementById('distribution-chart');
-        const chartCtx = chartCanvas.getContext('2d');
+        const EXPECTED_SPINS_C1 = 1 / P_HEADS_C1;
+        const EXPECTED_SPINS_C2 = 1 / P_HEADS_C2;
 
-        // Set canvas resolution
-        function setupCanvas(canvas) {
-            const dpr = window.devicePixelRatio || 1;
-            const rect = canvas.getBoundingClientRect();
-            canvas.width = rect.width * dpr;
-            canvas.height = rect.height * dpr;
-            const ctx = canvas.getContext('2d');
-            ctx.scale(dpr, dpr);
-            canvas.style.width = `${rect.width}px`;
-            canvas.style.height = `${rect.height}px`;
-        }
+        /**
+         * Calculates and updates the UI based on the number of tails observed.
+         */
+        function calculateAndUpdate() {
+            const numTails = parseInt(slider.value);
+            sliderValueDisplay.textContent = numTails;
 
-        // Gamma PDF function
-        function gammaPDF(x, alpha, beta) {
-            if (x <= 0) return 0;
-            
-            const logGamma = (z) => {
-                if (z < 0.5) return Math.log(Math.PI) - Math.log(Math.sin(Math.PI * z)) - logGamma(1 - z);
-                z -= 1;
-                let x = 0.99999999999980993;
-                const coefficients = [676.5203681218851, -1259.1392167224028, 771.32342877765313, -176.61502916214059, 12.507343278686905, -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7];
-                for (let i = 0; i < coefficients.length; i++) {
-                    x += coefficients[i] / (z + i + 1);
-                }
-                const t = z + coefficients.length - 0.5;
-                return 0.5 * Math.log(2 * Math.PI) + (z + 0.5) * Math.log(t) - t + Math.log(x);
-            };
-            
-            const logGammaAlpha = logGamma(alpha);
-            return Math.exp(alpha * Math.log(beta) + (alpha - 1) * Math.log(x) - beta * x - logGammaAlpha);
-        }
+            // 1. Calculate Likelihoods: P(Data | Hypothesis)
+            // Using Math.pow for exponentiation.
+            const likelihoodC1 = Math.pow(P_TAILS_C1, numTails);
+            const likelihoodC2 = Math.pow(P_TAILS_C2, numTails);
 
-        function drawChart() {
-            const y = parseInt(observedValueSlider.value);
-            const alpha = parseFloat(alphaSlider.value);
-            const beta = parseFloat(betaSlider.value);
+            // 2. Calculate Joint Probabilities: P(Data and Hypothesis)
+            const jointC1 = likelihoodC1 * PRIOR_C1;
+            const jointC2 = likelihoodC2 * PRIOR_C2;
+
+            // 3. Calculate Evidence (Total Probability of Data): P(Data)
+            const evidence = jointC1 + jointC2;
             
-            const canvasWidth = chartCanvas.clientWidth;
-            const canvasHeight = chartCanvas.clientHeight;
-            
-            chartCtx.clearRect(0, 0, chartCanvas.width, chartCanvas.height);
-            
-            // Calculate posterior parameters
-            const postAlpha = alpha + y;
-            const postBeta = beta + 1;
-            
-            // Find maximum density for scaling
-            let maxDensity = 0;
-            const maxX = Math.max(10, postAlpha / postBeta + 3 * Math.sqrt(postAlpha) / postBeta);
-            for (let x = 0.01; x < maxX; x += 0.01) {
-                maxDensity = Math.max(maxDensity, gammaPDF(x, postAlpha, postBeta));
+            // Handle case where evidence is zero to avoid division by zero
+            if (evidence === 0) {
+                // This would only happen if probabilities are 0 or 1, and the outcome is impossible.
+                // For this problem, it's not a concern but good practice.
+                updateUI(0, 0, 0);
+                return;
             }
+
+            // 4. Calculate Posterior Probabilities: P(Hypothesis | Data)
+            const posteriorC1 = jointC1 / evidence;
+            const posteriorC2 = jointC2 / evidence;
+
+            // 5. Calculate Final Weighted Expectation
+            const totalExpectation = (posteriorC1 * EXPECTED_SPINS_C1) + (posteriorC2 * EXPECTED_SPINS_C2);
             
-            const toCanvasX = (x) => (x / maxX) * canvasWidth;
-            const toCanvasY = (density) => canvasHeight - (density / maxDensity) * canvasHeight * 0.9;
-            
-            // Draw axes
-            chartCtx.beginPath();
-            chartCtx.strokeStyle = '#d1d5db';
-            chartCtx.lineWidth = 1;
-            chartCtx.moveTo(0, canvasHeight);
-            chartCtx.lineTo(canvasWidth, canvasHeight);
-            chartCtx.moveTo(0, 0);
-            chartCtx.lineTo(0, canvasHeight);
-            chartCtx.stroke();
-            
-            // Draw prior
-            chartCtx.beginPath();
-            chartCtx.strokeStyle = '#3b82f6';
-            chartCtx.lineWidth = 2;
-            chartCtx.setLineDash([5, 5]);
-            for (let x = 0.01; x < maxX; x += 0.01) {
-                const density = gammaPDF(x, alpha, beta);
-                chartCtx.lineTo(toCanvasX(x), toCanvasY(density));
-            }
-            chartCtx.stroke();
-            chartCtx.setLineDash([]);
-            
-            // Draw posterior
-            chartCtx.beginPath();
-            chartCtx.strokeStyle = '#ef4444';
-            chartCtx.lineWidth = 3;
-            for (let x = 0.01; x < maxX; x += 0.01) {
-                const density = gammaPDF(x, postAlpha, postBeta);
-                chartCtx.lineTo(toCanvasX(x), toCanvasY(density));
-            }
-            chartCtx.stroke();
-            
-            // Add labels
-            chartCtx.fillStyle = '#6b7280';
-            chartCtx.font = '12px Inter';
-            chartCtx.textAlign = 'center';
-            chartCtx.fillText('λ', canvasWidth / 2, canvasHeight - 5);
-            
-            // Update results
-            const posteriorMean = postAlpha / postBeta;
-            const posteriorVariance = postAlpha / (postBeta ** 2);
-            
-            posteriorMeanSpan.textContent = posteriorMean.toFixed(3);
-            posteriorVarianceSpan.textContent = posteriorVariance.toFixed(3);
-            
-            // Approximate credible interval using normal approximation
-            const stdDev = Math.sqrt(posteriorVariance);
-            const lower = Math.max(0, posteriorMean - 1.96 * stdDev);
-            const upper = posteriorMean + 1.96 * stdDev;
-            credibleIntervalSpan.textContent = `[${lower.toFixed(1)}, ${upper.toFixed(1)}]`;
+            // 6. Update the UI with the new values
+            updateUI(totalExpectation, posteriorC1, posteriorC2);
         }
 
-        function updateAll() {
-            yValueSpan.textContent = observedValueSlider.value;
-            alphaValueSpan.textContent = parseFloat(alphaSlider.value).toFixed(1);
-            betaValueSpan.textContent = parseFloat(betaSlider.value).toFixed(1);
+        /**
+         * Updates the DOM with the calculated values.
+         * @param {number} expectation - The calculated expected number of spins.
+         * @param {number} posterior1 - The posterior probability of Coin 1.
+         * @param {number} posterior2 - The posterior probability of Coin 2.
+         */
+        function updateUI(expectation, posterior1, posterior2) {
+            expectedValueDisplay.textContent = expectation.toFixed(2);
             
-            drawChart();
+            const posterior1Percent = (posterior1 * 100).toFixed(1);
+            const posterior2Percent = (posterior2 * 100).toFixed(1);
+
+            probC1Text.textContent = `${posterior1Percent}%`;
+            probC2Text.textContent = `${posterior2Percent}%`;
+            
+            barC1.style.height = `${posterior1Percent}%`;
+            barC2.style.height = `${posterior2Percent}%`;
         }
 
-        // Event listeners
-        observedValueSlider.addEventListener('input', updateAll);
-        alphaSlider.addEventListener('input', updateAll);
-        betaSlider.addEventListener('input', updateAll);
+        // --- Event Listener ---
+        slider.addEventListener('input', calculateAndUpdate);
 
-        window.addEventListener('resize', () => {
-            setupCanvas(chartCanvas);
-            updateAll();
+        // --- Initial Calculation ---
+        // Run the calculation once on page load to set the initial state.
+        document.addEventListener('DOMContentLoaded', () => {
+            renderMathInElement(document.body, {
+              delimiters: [
+                  {left: '$$', right: '$$', display: true},
+                  {left: '$', right: '$', display: false},
+                  {left: '\\(', right: '\\)', display: false},
+                  {left: '\\[', right: '\\]', display: true}
+              ],
+              throwOnError : false
+            });
+            calculateAndUpdate();
         });
-
-        // Initial setup
-        setupCanvas(chartCanvas);
-        updateAll();
     </script>
+
 </body>
 </html>
