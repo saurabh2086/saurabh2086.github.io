@@ -3,359 +3,280 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Binomial Model Analysis</title>
+    <title>Bayesian Inference: Coin Spinning</title>
+    <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chart.js for plotting -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- KaTeX for rendering mathematical formulas -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" xintegrity="sha384-n8MVd4RsNIU0KOV3LQjfzLzJAZvGnAseemiXTJhA73hc9qsByp7KWYNsztBavUdW" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" xintegrity="sha384-XjKyOOlV1e1YOFcoCmbcaHLtxNaBQrqsoJmTb4tXllMcfCo3RgZaXYwebkitEVgL" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" xintegrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
         }
-        .latex {
-            font-family: 'Times New Roman', Times, serif;
-            font-style: italic;
-        }
-        .home-button {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            background: #2c3e50;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 25px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-            transition: all 0.3s ease;
-            z-index: 1000;
-        }
-        .home-button:hover {
-            background: #34495e;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        }
+        .katex { font-size: 1.1em; }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-800 flex flex-col items-center justify-center min-h-screen p-4">
+<body class="bg-gray-900 text-gray-200 antialiased">
 
-    <a href="index.html" class="home-button">
-        ← Home
-    </a>
+    <div class="container mx-auto p-4 md:p-8 max-w-5xl">
 
-    <div class="w-full max-w-5xl bg-white rounded-xl shadow-lg p-6 md:p-8 space-y-6">
-        
-        <!-- Header -->
-        <div class="text-center">
-            <h1 class="text-2xl md:text-3xl font-bold text-gray-900">Binomial Model Analysis</h1>
-            <p class="text-gray-600 mt-2">Bayesian inference for binomial data with beta conjugate prior.</p>
+        <header class="text-center mb-10">
+            <h1 class="text-4xl font-bold text-cyan-400">Bayesian Inference Explorer</h1>
+            <p class="text-lg text-gray-400 mt-2">Updating Beliefs About a Spun Coin</p>
+        </header>
+
+        <!-- Part 1: Original Problem and Solution -->
+        <div class="bg-gray-800 p-6 rounded-lg shadow-xl mb-12">
+            <h2 class="text-3xl font-semibold mb-4 border-b-2 border-cyan-500 pb-2">Problem Statement</h2>
+            <p class="text-gray-300 leading-relaxed">
+                Suppose you have a $\text{Beta}(4,4)$ prior distribution on the probability $\theta$ that a coin will yield a ‘head’ when spun. The coin is independently spun ten times, and ‘heads’ appear fewer than 3 times. You are not told exactly how many heads were seen, only that the number is less than 3. Calculate your exact posterior density for $\theta$ and sketch it.
+            </p>
         </div>
 
-        <!-- Problem Statement -->
-        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
-            <h3 class="text-lg font-semibold text-gray-800 mb-2">Problem Statement</h3>
-            <div class="text-gray-700 space-y-2">
-                <p>Consider a binomial model where <span class="latex">y ~ Binomial(n, θ)</span> with unknown success probability <span class="latex">θ</span>. We use a Beta conjugate prior: <span class="latex">θ ~ Beta(α, β)</span>.</p>
-                <ol class="list-decimal list-inside space-y-1 pl-2">
-                    <li>Derive the posterior distribution <span class="latex">p(θ|y)</span>.</li>
-                    <li>Find the posterior mean and variance.</li>
-                    <li>Compare the posterior with different prior parameters.</li>
-                    <li>Calculate credible intervals for <span class="latex">θ</span>.</li>
-                </ol>
-            </div>
-        </div>
-
-        <!-- Detailed Explanations -->
-        <div class="space-y-4 pt-4 border-t">
-            <h2 class="text-2xl font-bold text-gray-900 text-center">Detailed Solutions</h2>
+        <div class="bg-gray-800 p-6 rounded-lg shadow-xl mb-12">
+            <h2 class="text-3xl font-semibold mb-4 border-b-2 border-cyan-500 pb-2">Step-by-Step Solution</h2>
             
-            <!-- Part (a) -->
-            <div class="bg-gray-50 p-4 rounded-lg">
-                <h3 class="text-lg font-semibold text-gray-800 mb-2">(a) Posterior Distribution</h3>
-                <div class="text-gray-700 space-y-2">
-                    <p>The likelihood for binomial data is:</p>
-                    <p class="text-center bg-white p-2 rounded-md overflow-x-auto"><span class="latex">p(y|θ) = C(n,y) θ^y (1-θ)^(n-y)</span></p>
-                    <p>The Beta prior is:</p>
-                    <p class="text-center bg-white p-2 rounded-md overflow-x-auto"><span class="latex">p(θ) = θ^(α-1) (1-θ)^(β-1) / B(α,β)</span></p>
-                    <p>Using Bayes' theorem, the posterior is proportional to:</p>
-                    <p class="text-center bg-white p-2 rounded-md overflow-x-auto"><span class="latex">p(θ|y) ∝ θ^(y+α-1) (1-θ)^(n-y+β-1)</span></p>
-                    <p>This is a Beta distribution: <span class="latex">θ|y ~ Beta(α+y, β+n-y)</span></p>
+            <div class="space-y-6">
+                <div>
+                    <h3 class="text-xl font-semibold text-cyan-400">1. The Prior Distribution</h3>
+                    <p>Our prior belief about $\theta$ is given by a Beta distribution, $\text{Beta}(4,4)$. The probability density function (PDF) is proportional to:
+                    $$ p(\theta) \propto \theta^{\alpha-1}(1-\theta)^{\beta-1} = \theta^{4-1}(1-\theta)^{4-1} = \theta^3(1-\theta)^3 $$
+                    This distribution is symmetric around $\theta=0.5$, indicating we initially believe the coin is fair.
+                    </p>
+                </div>
+
+                <div>
+                    <h3 class="text-xl font-semibold text-cyan-400">2. The Likelihood Function</h3>
+                    <p>The number of heads, $y$, in $n=10$ spins follows a Binomial distribution. The data we observed is $y < 3$, which means $y$ could be 0, 1, or 2. The likelihood is the probability of this data given $\theta$:
+                    $$ P(\text{data}|\theta) = P(y=0|\theta) + P(y=1|\theta) + P(y=2|\theta) $$
+                    $$ P(\text{data}|\theta) = \binom{10}{0}\theta^0(1-\theta)^{10} + \binom{10}{1}\theta^1(1-\theta)^9 + \binom{10}{2}\theta^2(1-\theta)^8 $$
+                    After simplifying, this gives:
+                    $$ P(\text{data}|\theta) \propto (1-\theta)^8(1 + 8\theta + 36\theta^2) $$
+                    </p>
+                </div>
+
+                <div>
+                    <h3 class="text-xl font-semibold text-cyan-400">3. The Posterior Distribution</h3>
+                    <p>Using Bayes' theorem, the posterior is proportional to the prior times the likelihood:
+                    $$ p(\theta|\text{data}) \propto p(\text{data}|\theta) \times p(\theta) $$
+                    $$ p(\theta|\text{data}) \propto \left[ (1-\theta)^8(1 + 8\theta + 36\theta^2) \right] \times \left[ \theta^3(1-\theta)^3 \right] $$
+                    Combining terms, we get the final posterior density:
+                    $$ p(\theta|\text{data}) \propto \theta^3(1-\theta)^{11}(1 + 8\theta + 36\theta^2) $$
+                    </p>
                 </div>
             </div>
 
-            <!-- Part (b) -->
-            <div class="bg-gray-50 p-4 rounded-lg">
-                <h3 class="text-lg font-semibold text-gray-800 mb-2">(b) Posterior Mean and Variance</h3>
-                <div class="text-gray-700 space-y-2">
-                    <p>For <span class="latex">θ|y ~ Beta(α+y, β+n-y)</span>:</p>
-                    <ul class="list-disc list-inside space-y-1 pl-2">
-                        <li><strong>Posterior Mean:</strong> <span class="latex">E[θ|y] = (α+y)/(α+β+n)</span></li>
-                        <li><strong>Posterior Variance:</strong> <span class="latex">Var[θ|y] = (α+y)(β+n-y)/((α+β+n)²(α+β+n+1))</span></li>
-                    </ul>
-                    <p>The posterior mean can be written as a weighted average of the prior mean and sample proportion.</p>
-                </div>
+            <div class="mt-8">
+                <canvas id="solutionChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Part 2: Interactive Tool -->
+        <div class="bg-gray-800 p-6 rounded-lg shadow-xl">
+            <h2 class="text-3xl font-semibold mb-4 border-b-2 border-cyan-500 pb-2">Interactive Tool</h2>
+            <p class="mb-4 text-gray-300">What if we knew the <span class="font-bold text-cyan-400">exact</span> number of heads? When we observe exactly $y$ heads in $n=10$ spins, the Beta-Binomial conjugate pair relationship simplifies things. The posterior becomes another Beta distribution:
+            $$ \text{Posterior} = \text{Beta}(\alpha + y, \beta + n - y) = \text{Beta}(4+y, 4+10-y) = \text{Beta}(4+y, 14-y) $$
+            Use the slider below to see how the posterior distribution shifts as the number of observed heads changes.
+            </p>
+
+            <div class="my-6">
+                <label for="headsSlider" class="block mb-2 font-medium">Number of Heads (y): <span id="headsValue" class="font-bold text-cyan-400 text-lg">3</span></label>
+                <input type="range" id="headsSlider" min="0" max="10" value="3" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
             </div>
 
-            <!-- Part (c) -->
-            <div class="bg-gray-50 p-4 rounded-lg">
-                <h3 class="text-lg font-semibold text-gray-800 mb-2">(c) Prior Comparison</h3>
-                <div class="text-gray-700 space-y-2">
-                    <p>The interactive tool below shows how different Beta priors affect the posterior:</p>
-                    <ul class="list-disc list-inside space-y-1 pl-2">
-                        <li><strong>Uniform prior</strong> (α=1, β=1): Non-informative</li>
-                        <li><strong>Jeffreys prior</strong> (α=0.5, β=0.5): Objective Bayesian</li>
-                        <li><strong>Informative priors</strong>: Express prior beliefs</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Part (d) -->
-            <div class="bg-gray-50 p-4 rounded-lg">
-                <h3 class="text-lg font-semibold text-gray-800 mb-2">(d) Credible Intervals</h3>
-                <div class="text-gray-700 space-y-2">
-                    <p>For a Beta distribution, credible intervals can be computed using the inverse cumulative distribution function. The interactive tool calculates 95% credible intervals.</p>
-                </div>
+            <div class="mt-8">
+                <canvas id="interactiveChart"></canvas>
             </div>
         </div>
         
-        <!-- Interactive App Section -->
-        <div class="space-y-4 pt-4 border-t">
-            <h2 class="text-2xl font-bold text-gray-900 text-center">Interactive Binomial Model Explorer</h2>
-            <p class="text-center text-gray-600">Explore how different priors and data affect the posterior distribution.</p>
-            
-            <!-- Controls -->
-            <div class="grid md:grid-cols-2 gap-4">
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-2">Data Parameters</h3>
-                    <div class="space-y-3">
-                        <div>
-                            <label for="n-trials" class="block text-sm font-medium text-gray-700">Number of trials (n)</label>
-                            <input id="n-trials" type="range" min="1" max="50" step="1" value="20" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
-                            <span id="n-value" class="text-sm text-indigo-600 font-semibold">20</span>
-                        </div>
-                        <div>
-                            <label for="y-successes" class="block text-sm font-medium text-gray-700">Number of successes (y)</label>
-                            <input id="y-successes" type="range" min="0" max="50" step="1" value="8" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
-                            <span id="y-value" class="text-sm text-indigo-600 font-semibold">8</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-2">Prior Parameters</h3>
-                    <div class="space-y-3">
-                        <div>
-                            <label for="alpha" class="block text-sm font-medium text-gray-700">α (shape parameter)</label>
-                            <input id="alpha" type="range" min="0.1" max="10" step="0.1" value="1" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
-                            <span id="alpha-value" class="text-sm text-indigo-600 font-semibold">1.0</span>
-                        </div>
-                        <div>
-                            <label for="beta" class="block text-sm font-medium text-gray-700">β (shape parameter)</label>
-                            <input id="beta" type="range" min="0.1" max="10" step="0.1" value="1" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
-                            <span id="beta-value" class="text-sm text-indigo-600 font-semibold">1.0</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Visualization -->
-            <div class="bg-gray-50 p-4 rounded-lg">
-                <h3 class="text-center font-semibold text-gray-700 mb-2">Prior and Posterior Distributions</h3>
-                <canvas id="distribution-chart" class="w-full h-80 rounded-lg border border-gray-200"></canvas>
-                <div class="flex justify-center items-center space-x-4 mt-3 text-sm">
-                    <div class="flex items-center"><span class="w-4 h-4 bg-blue-500 rounded-sm mr-2"></span><span>Prior Beta(α,β)</span></div>
-                    <div class="flex items-center"><span class="w-4 h-4 bg-red-500 rounded-sm mr-2"></span><span>Posterior Beta(α+y,β+n-y)</span></div>
-                </div>
-            </div>
-
-            <!-- Results -->
-            <div class="grid md:grid-cols-3 gap-4">
-                <div class="bg-indigo-50 p-4 rounded-lg text-center">
-                    <h3 class="text-lg font-semibold text-indigo-800">Posterior Mean</h3>
-                    <p class="text-2xl font-bold text-indigo-600" id="posterior-mean">0.409</p>
-                </div>
-                <div class="bg-green-50 p-4 rounded-lg text-center">
-                    <h3 class="text-lg font-semibold text-green-800">Posterior Variance</h3>
-                    <p class="text-2xl font-bold text-green-600" id="posterior-variance">0.008</p>
-                </div>
-                <div class="bg-purple-50 p-4 rounded-lg text-center">
-                    <h3 class="text-lg font-semibold text-purple-800">95% Credible Interval</h3>
-                    <p class="text-lg font-bold text-purple-600" id="credible-interval">[0.25, 0.58]</p>
-                </div>
-            </div>
-        </div>
     </div>
 
     <script>
-        // DOM Elements
-        const nTrialsSlider = document.getElementById('n-trials');
-        const ySuccessesSlider = document.getElementById('y-successes');
-        const alphaSlider = document.getElementById('alpha');
-        const betaSlider = document.getElementById('beta');
-        
-        const nValueSpan = document.getElementById('n-value');
-        const yValueSpan = document.getElementById('y-value');
-        const alphaValueSpan = document.getElementById('alpha-value');
-        const betaValueSpan = document.getElementById('beta-value');
-        
-        const posteriorMeanSpan = document.getElementById('posterior-mean');
-        const posteriorVarianceSpan = document.getElementById('posterior-variance');
-        const credibleIntervalSpan = document.getElementById('credible-interval');
-        
-        const chartCanvas = document.getElementById('distribution-chart');
-        const chartCtx = chartCanvas.getContext('2d');
+        // === Helper Functions ===
+        // Unnormalized Beta PDF for plotting shape
+        const unnormalizedBetaPDF = (x, alpha, beta) => {
+            if (x < 0 || x > 1) return 0;
+            return Math.pow(x, alpha - 1) * Math.pow(1 - x, beta - 1);
+        };
 
-        // Set canvas resolution
-        function setupCanvas(canvas) {
-            const dpr = window.devicePixelRatio || 1;
-            const rect = canvas.getBoundingClientRect();
-            canvas.width = rect.width * dpr;
-            canvas.height = rect.height * dpr;
-            const ctx = canvas.getContext('2d');
-            ctx.scale(dpr, dpr);
-            canvas.style.width = `${rect.width}px`;
-            canvas.style.height = `${rect.height}px`;
-        }
+        // Unnormalized posterior for the original problem (y < 3)
+        const unnormalizedPosteriorY_lt_3 = (theta) => {
+            if (theta < 0 || theta > 1) return 0;
+            return Math.pow(theta, 3) * Math.pow(1 - theta, 11) * (1 + 8 * theta + 36 * Math.pow(theta, 2));
+        };
+        
+        // Function to generate plot data points
+        const generatePlotData = (pdfFunc, ...args) => {
+            const data = [];
+            for (let i = 0; i <= 100; i++) {
+                const x = i / 100;
+                data.push({ x: x, y: pdfFunc(x, ...args) });
+            }
+            // Normalize data for better plotting
+            const maxY = Math.max(...data.map(p => p.y));
+            if (maxY > 0) {
+                 return data.map(p => ({ x: p.x, y: p.y / maxY }));
+            }
+            return data;
+        };
 
-        // Beta PDF function
-        function betaPDF(x, alpha, beta) {
-            if (x <= 0 || x >= 1) return 0;
-            const logGamma = (z) => {
-                if (z < 0.5) return Math.log(Math.PI) - Math.log(Math.sin(Math.PI * z)) - logGamma(1 - z);
-                z -= 1;
-                let x = 0.99999999999980993;
-                const coefficients = [676.5203681218851, -1259.1392167224028, 771.32342877765313, -176.61502916214059, 12.507343278686905, -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7];
-                for (let i = 0; i < coefficients.length; i++) {
-                    x += coefficients[i] / (z + i + 1);
+        // === Chart 1: Solution for y < 3 ===
+        const ctx1 = document.getElementById('solutionChart').getContext('2d');
+        const priorData1 = generatePlotData(unnormalizedBetaPDF, 4, 4);
+        const posteriorData1 = generatePlotData(unnormalizedPosteriorY_lt_3);
+
+        const solutionChart = new Chart(ctx1, {
+            type: 'line',
+            data: {
+                datasets: [
+                    {
+                        label: 'Prior: Beta(4, 4)',
+                        data: priorData1,
+                        borderColor: 'rgb(255, 99, 132)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        tension: 0.1
+                    },
+                    {
+                        label: 'Posterior: For y < 3',
+                        data: posteriorData1,
+                        borderColor: 'rgb(22, 163, 74)',
+                        backgroundColor: 'rgba(22, 163, 74, 0.5)',
+                        borderWidth: 3,
+                        pointRadius: 0,
+                        tension: 0.1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                parsing: {
+                    xAxisKey: 'x',
+                    yAxisKey: 'y'
+                },
+                scales: {
+                    x: {
+                        type: 'linear',
+                        title: {
+                            display: true,
+                            text: 'θ (Probability of Heads)',
+                            color: '#d1d5db'
+                        },
+                        ticks: { color: '#9ca3af' },
+                        grid: { color: 'rgba(156, 163, 175, 0.2)' }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Relative Density',
+                            color: '#d1d5db'
+                        },
+                        ticks: { color: '#9ca3af' },
+                        grid: { color: 'rgba(156, 163, 175, 0.2)' }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: '#d1d5db'
+                        }
+                    }
                 }
-                const t = z + coefficients.length - 0.5;
-                return 0.5 * Math.log(2 * Math.PI) + (z + 0.5) * Math.log(t) - t + Math.log(x);
-            };
-            
-            const logBeta = logGamma(alpha) + logGamma(beta) - logGamma(alpha + beta);
-            return Math.exp((alpha - 1) * Math.log(x) + (beta - 1) * Math.log(1 - x) - logBeta);
-        }
-
-        // Inverse incomplete beta function approximation
-        function inverseBeta(p, alpha, beta) {
-            // Simple approximation for demonstration
-            if (alpha === beta) {
-                return p; // For symmetric case
             }
-            // More sophisticated implementation would use numerical methods
-            return p;
-        }
+        });
+        
+        // === Chart 2: Interactive Tool ===
+        const ctx2 = document.getElementById('interactiveChart').getContext('2d');
+        const slider = document.getElementById('headsSlider');
+        const headsValue = document.getElementById('headsValue');
 
-        function drawChart() {
-            const n = parseInt(nTrialsSlider.value);
-            const y = parseInt(ySuccessesSlider.value);
-            const alpha = parseFloat(alphaSlider.value);
-            const beta = parseFloat(betaSlider.value);
-            
-            const canvasWidth = chartCanvas.clientWidth;
-            const canvasHeight = chartCanvas.clientHeight;
-            
-            chartCtx.clearRect(0, 0, chartCanvas.width, chartCanvas.height);
-            
-            // Calculate posterior parameters
-            const postAlpha = alpha + y;
-            const postBeta = beta + n - y;
-            
-            // Find maximum density for scaling
-            let maxDensity = 0;
-            for (let x = 0.01; x < 0.99; x += 0.01) {
-                maxDensity = Math.max(maxDensity, betaPDF(x, postAlpha, postBeta));
+        const priorData2 = generatePlotData(unnormalizedBetaPDF, 4, 4);
+        
+        const interactiveChart = new Chart(ctx2, {
+            type: 'line',
+            data: {
+                datasets: [
+                     {
+                        label: 'Prior: Beta(4, 4)',
+                        data: priorData2,
+                        borderColor: 'rgb(255, 99, 132)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        tension: 0.1
+                    },
+                    {
+                        label: 'Posterior: Beta(7, 11)', // Initial state
+                        data: [], // Initially empty
+                        borderColor: 'rgb(59, 130, 246)',
+                        backgroundColor: 'rgba(59, 130, 246, 0.5)',
+                        borderWidth: 3,
+                        pointRadius: 0,
+                        tension: 0.1
+                    }
+                ]
+            },
+            options: {
+                 responsive: true,
+                parsing: {
+                    xAxisKey: 'x',
+                    yAxisKey: 'y'
+                },
+                scales: {
+                    x: {
+                        type: 'linear',
+                        title: {
+                            display: true,
+                            text: 'θ (Probability of Heads)',
+                            color: '#d1d5db'
+                        },
+                        ticks: { color: '#9ca3af' },
+                        grid: { color: 'rgba(156, 163, 175, 0.2)' }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Relative Density',
+                            color: '#d1d5db'
+                        },
+                         ticks: { color: '#9ca3af' },
+                         grid: { color: 'rgba(156, 163, 175, 0.2)' }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: '#d1d5db'
+                        }
+                    }
+                }
             }
-            
-            const toCanvasX = (x) => x * canvasWidth;
-            const toCanvasY = (density) => canvasHeight - (density / maxDensity) * canvasHeight * 0.9;
-            
-            // Draw axes
-            chartCtx.beginPath();
-            chartCtx.strokeStyle = '#d1d5db';
-            chartCtx.lineWidth = 1;
-            chartCtx.moveTo(0, canvasHeight);
-            chartCtx.lineTo(canvasWidth, canvasHeight);
-            chartCtx.moveTo(0, 0);
-            chartCtx.lineTo(0, canvasHeight);
-            chartCtx.stroke();
-            
-            // Draw prior
-            chartCtx.beginPath();
-            chartCtx.strokeStyle = '#3b82f6';
-            chartCtx.lineWidth = 2;
-            chartCtx.setLineDash([5, 5]);
-            for (let x = 0.01; x < 0.99; x += 0.01) {
-                const density = betaPDF(x, alpha, beta);
-                chartCtx.lineTo(toCanvasX(x), toCanvasY(density));
-            }
-            chartCtx.stroke();
-            chartCtx.setLineDash([]);
-            
-            // Draw posterior
-            chartCtx.beginPath();
-            chartCtx.strokeStyle = '#ef4444';
-            chartCtx.lineWidth = 3;
-            for (let x = 0.01; x < 0.99; x += 0.01) {
-                const density = betaPDF(x, postAlpha, postBeta);
-                chartCtx.lineTo(toCanvasX(x), toCanvasY(density));
-            }
-            chartCtx.stroke();
-            
-            // Add labels
-            chartCtx.fillStyle = '#6b7280';
-            chartCtx.font = '12px Inter';
-            chartCtx.textAlign = 'center';
-            chartCtx.fillText('θ', canvasWidth / 2, canvasHeight - 5);
-            
-            // Update results
-            const posteriorMean = postAlpha / (postAlpha + postBeta);
-            const posteriorVariance = (postAlpha * postBeta) / ((postAlpha + postBeta) ** 2 * (postAlpha + postBeta + 1));
-            
-            posteriorMeanSpan.textContent = posteriorMean.toFixed(3);
-            posteriorVarianceSpan.textContent = posteriorVariance.toFixed(3);
-            
-            // Approximate credible interval
-            const lower = Math.max(0, posteriorMean - 1.96 * Math.sqrt(posteriorVariance));
-            const upper = Math.min(1, posteriorMean + 1.96 * Math.sqrt(posteriorVariance));
-            credibleIntervalSpan.textContent = `[${lower.toFixed(2)}, ${upper.toFixed(2)}]`;
-        }
-
-        function updateAll() {
-            nValueSpan.textContent = nTrialsSlider.value;
-            yValueSpan.textContent = ySuccessesSlider.value;
-            alphaValueSpan.textContent = parseFloat(alphaSlider.value).toFixed(1);
-            betaValueSpan.textContent = parseFloat(betaSlider.value).toFixed(1);
-            
-            // Ensure y <= n
-            const n = parseInt(nTrialsSlider.value);
-            const y = parseInt(ySuccessesSlider.value);
-            if (y > n) {
-                ySuccessesSlider.value = n;
-                yValueSpan.textContent = n;
-            }
-            
-            drawChart();
-        }
-
-        // Event listeners
-        nTrialsSlider.addEventListener('input', updateAll);
-        ySuccessesSlider.addEventListener('input', updateAll);
-        alphaSlider.addEventListener('input', updateAll);
-        betaSlider.addEventListener('input', updateAll);
-
-        window.addEventListener('resize', () => {
-            setupCanvas(chartCanvas);
-            updateAll();
         });
 
-        // Initial setup
-        setupCanvas(chartCanvas);
-        updateAll();
+        const updateChart = () => {
+            const y = parseInt(slider.value);
+            headsValue.textContent = y;
+
+            const alpha_post = 4 + y;
+            const beta_post = 14 - y;
+            
+            const posteriorData = generatePlotData(unnormalizedBetaPDF, alpha_post, beta_post);
+            interactiveChart.data.datasets[1].data = posteriorData;
+            interactiveChart.data.datasets[1].label = `Posterior: Beta(${alpha_post}, ${beta_post})`;
+            interactiveChart.update();
+        };
+
+        slider.addEventListener('input', updateChart);
+        
+        // Initial render for the interactive chart
+        document.addEventListener('DOMContentLoaded', () => {
+             renderMathInElement(document.body);
+             updateChart();
+        });
     </script>
 </body>
 </html>
