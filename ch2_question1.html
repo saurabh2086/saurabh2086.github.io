@@ -274,7 +274,13 @@
         
         // Initial render for the interactive chart
         document.addEventListener('DOMContentLoaded', () => {
-             renderMathInElement(document.body);
+             renderMathInElement(document.body, {
+                // customised options
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false}
+                ]
+            });
              updateChart();
         });
     </script>
