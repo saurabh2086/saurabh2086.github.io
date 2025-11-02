@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizing Nuisance Parameters</title>
+    
+    <!-- Library for LaTeX formulas -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    
+    <!-- Configures MathJax to recognize $...$ as inline math. -->
+    <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      svg: {
+        fontCache: 'global'
+      }
+    };
+    </script>
+    
+    <!-- 
+      Changed from tex-mml-chtml.js to tex-svg.js
+      This loads the SVG output jax, which Plotly is requesting.
+    -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+    
+    <!-- 
+      This script tells Plotly to use its own internal MathJax
+      and not conflict with the global MathJax instance on the page.
+    -->
+    <script>
+        window.PlotlyConfig = {MathJaxConfig: 'local'};
+    </script>
+    
+    <!-- Library for plotting - UPDATED to a newer, explicit version -->
+    <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
+    
+    <!-- Library for stats functions (sampling) -->
+    <script src="https://cdn.jsdelivr.net/npm/jstat@latest/dist/jstat.min.js"></script>
+
+    <style>
+        /* This rule makes padding and borders count towards an 
+         * element's total width, not add to it.
+         */
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f9f9f9;
+            color: #333;
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 5px;
+        }
+        .section {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .plot-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            align-items: center;
+        }
+        .plot {
+            width: 100%;
+            min-height: 350px;
+        }
+        /* This is the new rule to make the 3D plot taller */
+        #plot3D {
+            min-height: 500px;
+        }
+        .half-plot {
+            width: 100%;
+        }
+        @media (min-width: 768px) {
+            .half-plot {
+                width: 48%;
+            }
+        }
+        .slider-container {
+            width: 100%;
+            padding: 20px 5%;
+        }
+        /* This new rule targets the slider */
+        input[type="range"] {
+            width: 100%;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        code {
+            background: #eee;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Visualizing Nuisance Parameters</h1>
+    <p>This page demonstrates the concept of "averaging over nuisance parameters" in Bayesian statistics, as discussed in the text.</p>
+
+    <!-- 
+        SECTION 1: THE "MIXTURE" INTERPRETATION (THE 'WHY')
+    -->
+    <div class="section">
+        <h2>Section 1: The 'Why' — A Mixture of Distributions</h2>
+        <p>
+            The text shows that the marginal posterior $p(\theta_1|y)$ is a "mixture" of all possible conditional posteriors, weighted by the plausibility of the nuisance parameter $\theta_2$.
+        </p>
+        <p>
+            $$p(\theta_1|y) = \int \underbrace{p(\theta_1|\theta_2, y)}_{\text{Component}} \cdot \underbrace{p(\theta_2|y)}_{\text{Weight}} d\theta_2$$
+        </p>
+        <p>
+            Let's visualize this. We'll use a concrete example:
+        </p>
+        <ul>
+            <li><b>Weight $p(\theta_2|y)$</b>: We'll model this as a Normal distribution $N(\mu=5, \sigma=1)$.</li>
+            <li><b>Component $p(\theta_1|\theta_2, y)$</b>: We'll model this as $N(\mu=\theta_2, \sigma=1)$. The mean of our parameter of interest $\theta_1$ depends on the value of $\theta_2$.</li>
+            <li><b>Mixture $p(\theta_1|y)$</b>: From the rules of probability, this mixture results in a new Normal distribution $N(\mu=5, \sigma=\sqrt{1^2+1^2} \approx 1.414)$.</li>
+        </ul>
+        <p>
+            Use the slider below to select a single value for $\theta_2$ and see how its "component" contributes to the final "mixture".
+        </p>
+
+        <div class="plot-container">
+            <div id="plot1A" class="half-plot"></div>
+            <div id="plot1B" class="half-plot"></div>
+        </div>
+        <div class="slider-container">
+            <label for="theta2_slider"><b>Select a value for $\theta_2$:</b> <span id="slider_value">5.0</span></label>
+            <!-- The inline style was removed from here -->
+            <input type="range" id="theta2_slider" min="1" max="9" value="5" step="0.1">
+        </div>
+        <div id="plot1C" class="plot"></div>
+    </div>
+
+    <!-- 
+        SECTION 2: THE SIMULATION (THE 'HOW')
+    -->
+    <div class="section">
+        <h2>Section 2: The 'How' — Marginal & Conditional Simulation</h2>
+        <p>
+            The text says we "rarely evaluate the integral explicitly." Instead, we use a two-step simulation, which performs the integration indirectly.
+        </p>
+        <ol>
+            <li><b>Step 1:</b> Draw $\theta_2$ from its marginal posterior $p(\theta_2|y)$.</li>
+            <li><b>Step 2:</b> Draw $\theta_1$ from its conditional posterior $p(\theta_1|\theta_2, y)$, using the value of $\theta_2$ from Step 1.</li>
+        </ol>
+        <p>
+            Press the buttons below to see this process. The histogram of $\theta_1$ samples will be built up, and you will see it "discover" the true mixture distribution from Section 1.
+        </p>
+        <div>
+            <button onclick="generateSamples(1)">Generate 1 Sample</button>
+            <button onclick="generateSamples(5000)">Generate 5000 Samples</button>
+            <button onclick="resetSimulation()">Reset</button>
+        </div>
+        
+        <div class="plot-container">
+            <div id="plot2A" class="half-plot"></div>
+            <div id="plot2B" class="half-plot"></div>
+        </div>
+        <div id="plot2C" class="plot"></div>
+    </div>
+
+    <!-- 
+        SECTION 3: THE 3D VIEW (THE 'WHAT')
+    -->
+    <div class="section">
+        <h2>Section 3: The 'What' — The Joint Distribution</h2>
+        <p>
+            This 3D plot shows the full <b>joint posterior distribution</b> $p(\theta_1, \theta_2|y)$. The marginal distribution $p(\theta_1|y)$ (our goal) is the 2D "shadow" this 3D shape casts on the $\theta_1$ axis.
+        </p>
+        <p>
+             $$p(\theta_1|y) = \int p(\theta_1, \theta_2|y) d\theta_2$$
+        </p>
+        <p>
+            Click and drag the plot to rotate it. Look "down" the $\theta_2$ axis to see the shape of $p(\theta_1|y)$ (the $N(5, \sqrt{2})$ mixture).
+        </p> <!-- *** THIS WAS THE FIX: changed </s to </p> *** -->
+        <div id="plot3D" class="plot"></div>
+    </div>
+
+
+    <!-- 
+        JAVASCRIPT
+    -->
+    <script>
+        // We wrap all the code in window.onload to ensure Plotly and jStat
+        // are loaded before we try to use them.
+        window.onload = function() {
+
+            // === Global Variables & Helper Functions ===
+            const MEAN_THETA_2 = 5;
+            const STD_THETA_2 = 1;
+            const STD_THETA_1_COND = 1;
+            
+            // Final marginal distribution parameters
+            const MEAN_THETA_1 = MEAN_THETA_2;
+            const STD_THETA_1 = Math.sqrt(STD_THETA_2**2 + STD_THETA_1_COND**2);
+
+            // jStat provides PDF
+            function normalPDF(x, mean, std) {
+                return jStat.normal.pdf(x, mean, std);
+            }
+
+            // Generate a range of x values
+            function linspace(start, end, n) {
+                const arr = [];
+                const step = (end - start) / (n - 1);
+                for (let i = 0; i < n; i++) {
+                    arr.push(start + i * step);
+                }
+                return arr;
+            }
+
+            // Define plot layouts
+            const layout1A = {
+                title: 'Plot A: "Weight" $p(\\theta_2|y)$',
+                xaxis: { title: '$\\theta_2$' },
+                yaxis: { title: 'Density' },
+                autosize: true
+            };
+            const layout1B = {
+                title: 'Plot B: "Component" $p(\\theta_1|\\theta_2, y)$',
+                xaxis: { title: '$\\theta_1$' },
+                yaxis: { title: 'Density' },
+                autosize: true
+            };
+            const layout1C = {
+                title: 'Plot C: Final "Mixture" $p(\\theta_1|y)$',
+                xaxis: { title: '$\\theta_1$' },
+                yaxis: { title: 'Density' },
+                autosize: true,
+                legend: { x: 0.01, y: 0.99 }
+            };
+            
+            // Clone layouts for Section 2
+            const layout2A = JSON.parse(JSON.stringify(layout1A));
+            layout2A.title = 'Step 1: Sample from $p(\\theta_2|y)$';
+            const layout2B = JSON.parse(JSON.stringify(layout1B));
+            layout2B.title = 'Step 2: Sample from $p(\\theta_1|\\theta_2, y)$';
+            const layout2C = JSON.parse(JSON.stringify(layout1C));
+            layout2C.title = 'Result: Histogram of $\\theta_1$ samples';
+
+            // === Section 1: The 'Why' (Mixture) ===
+            
+            // Generate data for the static plots
+            const x_theta2 = linspace(MEAN_THETA_2 - 4*STD_THETA_2, MEAN_THETA_2 + 4*STD_THETA_2, 100);
+            const y_theta2_pdf = x_theta2.map(x => normalPDF(x, MEAN_THETA_2, STD_THETA_2));
+            
+            const x_theta1 = linspace(MEAN_THETA_1 - 4*STD_THETA_1, MEAN_THETA_1 + 4*STD_THETA_1, 100);
+            const y_theta1_pdf = x_theta1.map(x => normalPDF(x, MEAN_THETA_1, STD_THETA_1));
+
+            // Initial Plot 1A: Weights
+            const trace1A_pdf = {
+                x: x_theta2,
+                y: y_theta2_pdf,
+                type: 'scatter',
+                mode: 'lines',
+                name: '$p(\\theta_2|y)$'
+            };
+            const trace1A_slider = {
+                x: [MEAN_THETA_2],
+                y: [normalPDF(MEAN_THETA_2, MEAN_THETA_2, STD_THETA_2)],
+                type: 'scatter',
+                mode: 'markers',
+                marker: { color: 'red', size: 12 },
+                name: 'Selected $\\theta_2$'
+            };
+            Plotly.newPlot('plot1A', [trace1A_pdf, trace1A_slider], layout1A);
+
+            // Initial Plot 1B: Component
+            let initial_theta_2 = 5.0;
+            const y_theta1_cond_pdf = x_theta1.map(x => normalPDF(x, initial_theta_2, STD_THETA_1_COND));
+            const trace1B_pdf = {
+                x: x_theta1,
+                y: y_theta1_cond_pdf,
+                type: 'scatter',
+                mode: 'lines',
+                name: '$p(\\theta_1|\\theta_2, y)$'
+            };
+            Plotly.newPlot('plot1B', [trace1B_pdf], layout1B);
+
+            // Initial Plot 1C: Mixture
+            const trace1C_mixture = {
+                x: x_theta1,
+                y: y_theta1_pdf,
+                type: 'scatter',
+                mode: 'lines',
+                line: { color: 'black', width: 3 },
+                name: 'True Mixture $p(\\theta_1|y)$'
+            };
+            const trace1C_component = {
+                x: x_theta1,
+                y: y_theta1_cond_pdf,
+                type: 'scatter',
+                mode: 'lines',
+                line: { color: 'red', dash: 'dot', width: 2 },
+                name: 'Component $p(\\theta_1|\\theta_2, y)$'
+            };
+            Plotly.newPlot('plot1C', [trace1C_mixture, trace1C_component], layout1C);
+
+            // Slider interaction
+            const slider = document.getElementById('theta2_slider');
+            const sliderValue = document.getElementById('slider_value');
+            
+            slider.addEventListener('input', () => {
+                const theta_2_val = parseFloat(slider.value);
+                sliderValue.textContent = theta_2_val.toFixed(1);
+                
+                // Update Plot 1A
+                const new_y_slider = normalPDF(theta_2_val, MEAN_THETA_2, STD_THETA_2);
+                Plotly.restyle('plot1A', { x: [[theta_2_val]], y: [[new_y_slider]] }, [1]);
+                
+                // Update Plot 1B
+                const new_y_cond = x_theta1.map(x => normalPDF(x, theta_2_val, STD_THETA_1_COND));
+                Plotly.restyle('plot1B', { y: [new_y_cond] }, [0]);
+                
+                // Update Plot 1C
+                Plotly.restyle('plot1C', { y: [new_y_cond] }, [1]);
+            });
+
+            // === Section 2: The 'How' (Simulation) ===
+            
+            let theta_1_samples = [];
+            
+            // Plot 2A: Weights
+            Plotly.newPlot('plot2A', [{...trace1A_pdf, name: '$p(\\theta_2|y)$'}], layout2A);
+            
+            // Plot 2B: Component
+            Plotly.newPlot('plot2B', [{...trace1B_pdf, name: '$p(\\theta_1|\\theta_2, y)$'}], layout2B);
+            
+            // Plot 2C: Histogram
+            const trace2C_hist = {
+                x: theta_1_samples,
+                type: 'histogram',
+                histnorm: 'probability density',
+                name: 'Samples of $\\theta_1$',
+                marker: { color: 'rgba(52, 152, 219, 0.7)' }
+            };
+            const trace2C_truth = {
+                x: x_theta1,
+                y: y_theta1_pdf,
+                type: 'scatter',
+                mode: 'lines',
+                line: { color: 'black', width: 3 },
+                name: 'True Mixture'
+            };
+            Plotly.newPlot('plot2C', [trace2C_hist, trace2C_truth], layout2C);
+            
+            // Make functions available globally so buttons can call them
+            window.generateSamples = function(n) {
+                for (let i = 0; i < n; i++) {
+                    // Step 1: Draw from p(theta_2|y)
+                    let theta_2_sample = jStat.normal.sample(MEAN_THETA_2, STD_THETA_2);
+                    
+                    // Step 2: Draw from p(theta_1|theta_2, y)
+                    let theta_1_sample = jStat.normal.sample(theta_2_sample, STD_THETA_1_COND);
+                    
+                    theta_1_samples.push(theta_1_sample);
+
+                    if (i === n - 1) { // On the last sample (or only sample)
+                        // Animate Plot 2A
+                        const y_dot_A = normalPDF(theta_2_sample, MEAN_THETA_2, STD_THETA_2);
+                        Plotly.react('plot2A', [
+                            {...trace1A_pdf, name: '$p(\\theta_2|y)$'}, 
+                            { x: [theta_2_sample], y: [y_dot_A], mode: 'markers', marker: {color: 'red', size: 12}, name: '$\\theta_2$ sample' }
+                        ], layout2A);
+
+                        // Animate Plot 2B
+                        const y_cond_pdf_B = x_theta1.map(x => normalPDF(x, theta_2_sample, STD_THETA_1_COND));
+                        const y_dot_B = normalPDF(theta_1_sample, theta_2_sample, STD_THETA_1_COND);
+                        Plotly.react('plot2B', [
+                            { x: x_theta1, y: y_cond_pdf_B, type: 'scatter', mode: 'lines', name: '$p(\\theta_1|\\theta_2, y)$' },
+                            { x: [theta_1_sample], y: [y_dot_B], mode: 'markers', marker: {color: 'red', size: 12}, name: '$\\theta_1$ sample' }
+                        ], layout2B);
+                    }
+                }
+                
+                // Update Plot 2C Histogram
+                Plotly.restyle('plot2C', { x: [theta_1_samples] }, [0]);
+            }
+
+            window.resetSimulation = function() {
+                theta_1_samples = [];
+                Plotly.restyle('plot2C', { x: [theta_1_samples] }, [0]);
+                Plotly.react('plot2A', [{...trace1A_pdf, name: '$p(\\theta_2|y)$'}], layout2A);
+                Plotly.react('plot2B', [{...trace1B_pdf, name: '$p(\\theta_1|\\theta_2, y)$'}], layout2B);
+            }
+
+            // === Section 3: The 'What' (3D View) ===
+            
+            // We need the joint PDF: p(t1, t2) = p(t1|t2) * p(t2)
+            // p(t1, t2) = N(t1 | t2, std1_cond) * N(t2 | mean2, std2)
+            function jointPDF(t1, t2) {
+                let p_t1_given_t2 = normalPDF(t1, t2, STD_THETA_1_COND);
+                let p_t2 = normalPDF(t2, MEAN_THETA_2, STD_THETA_2);
+                return p_t1_given_t2 * p_t2;
+            }
+
+            const grid_t1 = linspace(MEAN_THETA_1 - 4*STD_THETA_1, MEAN_THETA_1 + 4*STD_THETA_1, 50);
+            const grid_t2 = linspace(MEAN_THETA_2 - 4*STD_THETA_2, MEAN_THETA_2 + 4*STD_THETA_2, 50);
+            const z_data = [];
+            
+            for (let i = 0; i < grid_t2.length; i++) {
+                let z_row = [];
+                for (let j = 0; j < grid_t1.length; j++) {
+                    z_row.push(jointPDF(grid_t1[j], grid_t2[i]));
+                }
+                z_data.push(z_row);
+            }
+
+            const data3D = [{
+                x: grid_t1, // Corresponds to t1
+                y: grid_t2, // Corresponds to t2
+                z: z_data,
+                type: 'surface',
+                colorscale: 'Viridis'
+            }];
+
+            const layout3D = {
+                title: 'Joint Posterior $p(\\theta_1, \\theta_2|y)$',
+                scene: {
+                    xaxis: { title: '$\\theta_1$ (Interest)' },
+                    yaxis: { title: '$\\theta_2$ (Nuisance)' },
+                    zaxis: { title: 'Density' }
+                },
+                autosize: true,
+                margin: { l: 0, r: 0, b: 0, t: 40 }
+            };
+
+            Plotly.newPlot('plot3D', data3D, layout3D);
+
+        }; // End of window.onload
+    </script>
+
+</body>
+</html>
+
+
