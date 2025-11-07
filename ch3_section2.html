@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Changed Title -->
+    <title>Normal data with a noninformative prior distribution</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Load KaTeX -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css" xintegrity="sha384-EkOEBvEe9UYagMUDgZ4vALxNIDUHBH/w3EV4exzDEBdcNQZZHnVMK7Y5CR/BEOHc" crossorigin="anonymous">
+    <!-- Removed defer from KaTeX scripts for potentially faster rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js" xintegrity="sha384-hIoBPJb1jCypoRF0NxKEB+mf9T3MwhvS/I/CgzUVuMIIYBTD+4XQ/c/QD0YwA+cM" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js" xintegrity="sha384-4GPhgS/fTsF_kpLDoL4ObGABcbUfSBDESlXzP2Nr2lktA+YLhTPO/v4RTYBwnI0V" crossorigin="anonymous"></script>
+    <script>
+      // This script finds and renders all LaTeX math on the page.
+      document.addEventListener("DOMContentLoaded", function() {
+          renderMathInElement(document.body, {
+              delimiters: [
+                  {left: '$$', right: '$$', display: true},  // for display math
+                  {left: '\\[', right: '\\]', display: true}, // for display math
+                  {left: '$', right: '$', display: false},    // for inline math
+                  {left: '\\(', right: '\\)', display: false}  // for inline math
+              ]
+          });
+      });
+    </script>
+
+    <!-- Set Inter font -->
+    <style>
+        html {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        
+        /* KaTeX font size adjustment */
+        .katex {
+            font-size: 1.1em;
+        }
+        .katex-display {
+            font-size: 1.2em;
+            padding: 0.75rem 0;
+        }
+
+        .math-header {
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            color: #4f46e5; /* indigo-600 */
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <div class="container mx-auto max-w-4xl p-4 md:p-8">
+
+        <!-- Header -->
+        <header class="mb-10">
+            <!-- Changed heading -->
+            <h1 class="text-2xl md:text-2xl font-bold text-gray-800 mb-3">3.2 Normal data with a noninformative prior distribution</h1>
+            <p class="text-lg text-gray-700">
+                This page walks through the complete mathematical derivation for estimating the unknown mean ($\mu$) and variance ($\sigma^2$) of a normal distribution using Bayesian inference, assuming a noninformative prior.
+            </p>
+        </header>
+
+        <!-- Table of Contents -->
+        <nav class="bg-white shadow-md rounded-lg p-6 mb-10 top-4 z-10">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Table of Contents</h2>
+            <ul class="space-y-2">
+                <li><a href="#part-1" class="text-indigo-600 hover:text-indigo-800 hover:underline">Part 1: The Joint Posterior Distribution</a></li>
+                <li><a href="#part-2" class="text-indigo-600 hover:text-indigo-800 hover:underline">Part 2: Simplifying the Exponent (The Algebra Trick)</a></li>
+                <li><a href="#part-3" class="text-indigo-600 hover:text-indigo-800 hover:underline">Part 3: Marginal Posterior for Variance ($p(\sigma^2 \mid y)$)</a></li>
+                <li><a href="#part-4" class="text-indigo-600 hover:text-indigo-800 hover:underline">Part 4: Marginal Posterior for Mean ($p(\mu \mid y)$)</a></li>
+                <li><a href="#part-5" class="text-indigo-600 hover:text-indigo-800 hover:underline">Part 5: Summary of Results</a></li>
+            </ul>
+        </nav>
+
+        <!-- == PART 1: The Joint Posterior == -->
+        <section id="part-1" class="bg-white shadow-lg rounded-lg p-6 md:p-8 mb-8">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">Part 1: The Joint Posterior Distribution</h2>
+            <p class="text-gray-700 leading-relaxed mb-4">
+                Our first goal is to find the <strong>joint posterior distribution</strong>, $p(\mu, \sigma^2 \mid y)$. This represents all our knowledge about both parameters after observing the data $y$. We get this using Bayes' Theorem:
+            </p>
+            
+            $$ \text{Posterior} \propto \text{Likelihood} \times \text{Prior} $$
+            $$ p(\mu, \sigma^2 \mid y) \propto p(y \mid \mu, \sigma^2) \times p(\mu, \sigma^2) $$
+
+            <h3 class="text-lg font-semibold text-gray-700 mt-6 mb-2">1.1: The Prior</h3>
+            <p class="text-gray-700 leading-relaxed mb-4">
+                We start with a "noninformative" prior to represent a vague initial belief. This is:
+            </p>
+            $$ p(\mu, \sigma^2) \propto (\sigma^2)^{-1} \quad (\text{or } 1/\sigma^2) $$
+
+            <h3 class="text-lg font-semibold text-gray-700 mt-6 mb-2">1.2: The Likelihood</h3>
+            <p class="text-gray-700 leading-relaxed mb-4">
+                The likelihood $p(y \mid \mu, \sigma^2)$ is the probability of our $n$ independent data points, $y_1, ..., y_n$. Since each is from a Normal $N(\mu, \sigma^2)$ distribution, the joint likelihood is the product of their individual probability densities:
+            </p>
+            $$ p(y \mid \mu, \sigma^2) = \prod_{i=1}^n \left[ (2\pi\sigma^2)^{-1/2} \exp\left( - \frac{(y_i - \mu)^2}{2\sigma^2} \right) \right] $$
+            $$ p(y \mid \mu, \sigma^2) \propto (\sigma^2)^{-n/2} \exp\left( - \frac{1}{2\sigma^2} \sum_{i=1}^n (y_i - \mu)^2 \right) $$
+            <p class="text-gray-700 leading-relaxed mt-4">
+                (We drop the $(2\pi)^{-n/2}$ term as it's a constant).
+            </p>
+
+            <h3 class="text-lg font-semibold text-gray-700 mt-6 mb-2">1.3: Combining to Find the Joint Posterior</h3>
+            <p class="text-gray-700 leading-relaxed mb-4">
+                Now we multiply the Likelihood and the Prior:
+            </p>
+            $$ p(\mu, \sigma^2 \mid y) \propto \left[ (\sigma^2)^{-n/2} \exp( \dots ) \right] \times \left[ (\sigma^2)^{-1} \right] $$
+            $$ p(\mu, \sigma^2 \mid y) \propto (\sigma^2)^{-n/2 - 1} \exp\left( - \frac{1}{2\sigma^2} \sum_{i=1}^n (y_i - \mu)^2 \right) $$
+            $$ p(\mu, \sigma^2 \mid y) \propto (\sigma^2)^{-(n+2)/2} \exp\left( - \frac{1}{2\sigma^2} \sum_{i=1}^n (y_i - \mu)^2 \right) $$
+            <p class="text-gray-700 leading-relaxed mt-4">
+                The next critical step is to simplify that sum $\sum_{i=1}^n (y_i - \mu)^2$ in the exponent.
+            </p>
+        </section>
+
+        <!-- == PART 2: Simplifying the Exponent == -->
+        <section id="part-2" class="bg-white shadow-lg rounded-lg p-6 md:p-8 mb-8">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">Part 2: Simplifying the Exponent (The Algebra Trick)</h2>
+            <p class="text-gray-700 leading-relaxed mb-4">
+                This is the key algebraic manipulation. We want to rewrite $\sum (y_i - \mu)^2$ by introducing the sample mean, $\bar{y} = \frac{1}{n}\sum y_i$.
+            </p>
+
+            <h3 class="text-lg font-semibold text-gray-700 mt-6 mb-2">2.1: The "Add and Subtract $\bar{y}$" Trick</h3>
+            <p class="text-gray-700 leading-relaxed mb-4">
+                We add and subtract $\bar{y}$ inside the square:
+            </p>
+            $$ \sum (y_i - \mu)^2 = \sum (y_i - \bar{y} + \bar{y} - \mu)^2 $$
+
+            <h3 class="text-lg font-semibold text-gray-700 mt-6 mb-2">2.2: Group and Expand</h3>
+            <p class="text-gray-700 leading-relaxed mb-4">
+                Group into two parts, $A = (y_i - \bar{y})$ and $B = (\bar{y} - \mu)$, and expand $(A+B)^2$:
+            </p>
+            $$ \sum\left[ (y_i - \bar{y}) + (\bar{y} - \mu) \right]^2 = \sum\left[ (y_i - \bar{y})^2 + 2(y_i - \bar{y})(\bar{y} - \mu) + (\bar{y} - \mu)^2 \right] $$
+
+            <h3 class="text-lg font-semibold text-gray-700 mt-6 mb-2">2.3: Distribute the Summation</h3>
+            <p class="text-gray-700 leading-relaxed mb-4">
+                We split this into three separate terms:
+            </p>
+            $$ \begin{align*} & \text{(Term 1)} \quad \sum (y_i - \bar{y})^2 \\ & \text{(Term 2)} + \sum \left[ 2(y_i - \bar{y})(\bar{y} - \mu) \right] \\ & \text{(Term 3)} + \sum (\bar{y} - \mu)^2 \end{align*} $$
+            
+            <h3 class="text-lg font-semibold text-gray-700 mt-6 mb-2">2.4: Simplify Each Term</h3>
+            <p class="text-gray-700 leading-relaxed mb-4">
+                <strong>Term 2 (The Cross-Term):</strong> The terms $2$ and $(\bar{y} - \mu)$ are constants relative to $i$, so we pull them out:
+            </p>
+            $$ 2(\bar{y} - \mu) \sum (y_i - \bar{y}) $$
+            <p class="text-gray-700 leading-relaxed mb-4">
+                By the definition of the mean, the sum of deviations from the mean $\sum (y_i - \bar{y})$ is <strong>always zero</strong>. So, Term 2 = 0.
+            </p>
+
+            <p class="text-gray-700 leading-relaxed mb-4">
+                <strong>Term 1 (The Data Term):</strong> The sample variance is defined as $s^2 = \frac{1}{n-1}\sum (y_i - \bar{y})^2$. Therefore:
+            </p>
+            $$ \sum (y_i - \bar{y})^2 = (n-1)s^2 $$
+
+            <p class="text-gray-700 leading-relaxed mb-4">
+                <strong>Term 3 (The Parameter Term):</strong> The term $(\bar{y} - \mu)^2$ is a constant added to itself $n$ times:
+            </p>
+            $$ \sum (\bar{y} - \mu)^2 = n(\bar{y} - \mu)^2 $$
+
+            <h3 class="text-lg font-semibold text-gray-700 mt-6 mb-2">2.5: The Final Simplified Form</h3>
+            <p class="text-gray-700 leading-relaxed mb-4">
+                Let's substitute our simplified terms back in:
+            </p>
+            $$ \sum (y_i - \mu)^2 = (n-1)s^2 + 0 + n(\bar{y} - \mu)^2 $$
+            $$ \sum (y_i - \mu)^2 = (n-1)s^2 + n(\bar{y} - \mu)^2 $$
+
+            <h3 class="text-lg font-semibold text-gray-700 mt-6 mb-2">2.6: The Complete Joint Posterior</h3>
+            <p class="text-gray-700 leading-relaxed mb-4">
+                Now we plug this simplified exponent back into our joint posterior from Part 1. This gives us the final, usable form of the joint posterior:
+            </p>
+            <div class="math-header">Joint Posterior - Final Form</div>
+            $$ p(\mu, \sigma^2 \mid y) \propto (\sigma^2)^{-(n+2)/2} \exp\left( - \frac{1}{2\sigma^2} \left[ (n-1)s^2 + n(\bar{y} - \mu)^2 \right] \right) $$
+            <p class="text-gray-700 leading-relaxed mt-4">
+                This is a huge step! We've boiled all $n$ data points down to just two <strong>sufficient statistics</strong>: $s^2$ and $\bar{y}$.
+            </p>
+        </section>
+
+        <!-- == PART 3: Marginal for Variance == -->
+        <section id="part-3" class="bg-white shadow-lg rounded-lg p-6 md:p-8 mb-8">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">Part 3: Marginal Posterior for Variance ($p(\sigma^2 \mid y)$)</h2>
+            <p class="text-gray-700 leading-relaxed mb-4">
+                To find the distribution for <em>just</em> the variance $\sigma^2$, we must integrate our joint posterior over the other parameter, $\mu$ (i.e., "integrate $\mu$ out").
+            </p>
+            $$ p(\sigma^2 \mid y) = \int_{-\infty}^{\infty} p(\mu, \sigma^2 \mid y) \,d\mu $$
+
+            <h3 class="text-lg font-semibold text-gray-700 mt-6 mb-2">3.1: Set Up the Integral</h3>
+            <p class="text-gray-700 leading-relaxed mb-4">
+                We substitute our joint posterior. We can pull any term that *doesn't* depend on $\mu$ outside the integral.
+            </p>
+            $$ p(\sigma^2 \mid y) \propto \int_{-\infty}^{\infty} (\sigma^2)^{-(n+2)/2} \exp\left( - \frac{(n-1)s^2}{2\sigma^2} \right) \exp\left( - \frac{n(\bar{y} - \mu)^2}{2\sigma^2} \right) \,d\mu $$
+            $$ p(\sigma^2 \mid y) \propto (\sigma^2)^{-(n+2)/2} \exp\left( - \frac{(n-1)s^2}{2\sigma^2} \right) \times \int_{-\infty}^{\infty} \exp\left( - \frac{n(\bar{y} - \mu)^2}{2\sigma^2} \right) \,d\mu $$
+
+            <h3 class="text-lg font-semibold text-gray-700 mt-6 mb-2">3.2: Solve the Integral</h3>
+            <p class="text-gray-700 leading-relaxed mb-4">
+                Let's look at the integral we need to solve:
+            </p>
+            $$ \int_{-\infty}^{\infty} \exp\left( - \frac{n(\bar{y} - \mu)^2}{2\sigma^2} \right) \,d\mu = \int_{-\infty}^{\infty} \exp\left( - \frac{(\mu - \bar{y})^2}{2\sigma^2/n} \right) \,d\mu $$
+            <p class="text-gray-700 leading-relaxed mb-4">
+                This is the <strong>kernel</strong> (the core part) of a Normal distribution for $\mu$, with:
+            </p>
+            <ul class="list-disc list-inside text-gray-700 mb-4">
+                <li><strong>Mean:</strong> $\bar{y}$</li>
+                <li><strong>Variance:</strong> $\sigma^2/n$</li>
+            </ul>
+            <p class="text-gray-700 leading-relaxed mb-4">
+                The integral of a *full* PDF is 1. The full PDF is $(1 / C) \times \text{Kernel}$, where $C$ is the normalizing constant. Therefore, the integral of *just* the kernel is equal to $C$.
+            </p>
+            $$ C = \sqrt{2\pi \times \text{Variance}} = \sqrt{2\pi\sigma^2/n} $$
+            <p class="text-gray-700 leading-relaxed mb-4">
+                So, our integral evaluates to $(2\pi\sigma^2/n)^{1/2}$.
+            </p>
+            
+            <h3 class="text-lg font-semibold text-gray-700 mt-6 mb-2">3.3: Re-assemble and Simplify</h3>
+            <p class="text-gray-700 leading-relaxed mb-4">
+                Let's plug this result back in, dropping the $(2\pi/n)^{1/2}$ constant.
+            </p>
+            $$ p(\sigma^2 \mid y) \propto \left[ (\sigma^2)^{-(n+2)/2} \exp\left( - \frac{(n-1)s^2}{2\sigma^2} \right) \right] \times (\sigma^2)^{1/2} $$
+            <p class="text-gray-700 leading-relaxed mb-4">
+                Now, combine the $\sigma^2$ exponents:
+            </p>
+            $$ \text{Exponent} = -\frac{n+2}{2} + \frac{1}{2} = \frac{-n - 2 + 1}{2} = -\frac{n+1}{2} $$
+
+            <h3 class="text-lg font-semibold text-gray-700 mt-6 mb-2">3.4: The Final Form for Variance</h3>
+            <p class="text-gray-700 leading-relaxed mb-4">
+                This gives us the final marginal posterior for $\sigma^2$:
+            </p>
+            <div class="math-header">Marginal Posterior for Variance - Final Form</div>
+            $$ p(\sigma^2 \mid y) \propto (\sigma^2)^{-(n+1)/2} \exp\left( - \frac{(n-1)s^2}{2\sigma^2} \right) $$
+            <p class="text-gray-700 leading-relaxed mt-4">
+                This is a standard, named distribution. Because the variable $\sigma^2$ is in the denominator of the exponent, this is a <strong>Scaled Inverse-Chi-Squared</strong> distribution.
+            </p>
+            <div class="math-header">Posterior for Variance - Summary</div>
+            $$ \sigma^2 \mid y \sim \text{Scaled-Inv-}\chi^2( n-1, s^2 ) $$
+            <p class="text-gray-700 leading-relaxed mt-4">
+                This means our posterior belief about the variance $\sigma^2$ is centered around the sample variance $s^2$, with $n-1$ degrees of freedom.
+            </p>
+        </section>
+
+        <!-- == PART 4: Marginal for Mean == -->
+        <section id="part-4" class="bg-white shadow-lg rounded-lg p-6 md:p-8 mb-8">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">Part 4: Marginal Posterior for Mean ($p(\mu \mid y)$)</h2>
+            <p class="text-gray-700 leading-relaxed mb-4">
+                Now we do the reverse. To find the distribution for <em>just</em> the mean $\mu$, we integrate our joint posterior over $\sigma^2$.
+            </p>
+            $$ p(\mu \mid y) = \int_{0}^{\infty} p(\mu, \sigma^2 \mid y) \,d(\sigma^2) $$
+
+            <h3 class="text-lg font-semibold text-gray-700 mt-6 mb-2">4.1: Set Up the Integral</h3>
+            <p class="text-gray-700 leading-relaxed mb-4">
+                We use the joint posterior from (3.2). This time, $\mu$ is treated as a constant by the integral.
+            </p>
+            $$ p(\mu \mid y) \propto \int_{0}^{\infty} (\sigma^2)^{-(n+2)/2} \exp\left( - \frac{1}{2\sigma^2} \left[ (n-1)s^2 + n(\bar{y} - \mu)^2 \right] \right) \,d(\sigma^2) $$
+            <p class="text-gray-700 leading-relaxed mb-4">
+                Let's group the entire exponent term into a constant $A$, where $A$ depends on $\mu$:
+            </p>
+            $$ \text{Let } A = (n-1)s^2 + n(\bar{y} - \mu)^2 $$
+            $$ p(\mu \mid y) \propto \int_{0}^{\infty} (\sigma^2)^{-(n+2)/2} \exp\left( - \frac{A}{2\sigma^2} \right) \,d(\sigma^2) $$
+            
+            <h3 class="text-lg font-semibold text-gray-700 mt-6 mb-2">4.2: Solve the Integral</h3>
+            <p class="text-gray-700 leading-relaxed mb-4">
+                This integral has a standard form (it's related to the Gamma distribution). It evaluates to:
+            </p>
+            $$ \int_0^\infty (x)^{-k-1} \exp(-C/x) \,dx \propto C^{-k} $$
+            <p class="text-gray-700 leading-relaxed mb-4">
+                In our case, $x = \sigma^2$, $k = n/2$, and $C = A/2$. The integral evaluates to be proportional to $A^{-n/2}$.
+            </p>
+            $$ p(\mu \mid y) \propto A^{-n/2} $$
+            
+            <h3 class="text-lg font-semibold text-gray-700 mt-6 mb-2">4.3: Substitute Back and Simplify</h3>
+            <p class="text-gray-700 leading-relaxed mb-4">
+                Now, we substitute the definition of $A$ back in:
+            </p>
+            $$ p(\mu \mid y) \propto \left[ (n-1)s^2 + n(\bar{y} - \mu)^2 \right]^{-n/2} $$
+            <p class="text-gray-700 leading-relaxed mb-4">
+                This is our unnormalized posterior for $\mu$! To make it look like a standard distribution, we factor out the $(n-1)s^2$ term from inside the brackets:
+            </p>
+            $$ p(\mu \mid y) \propto \left[ (n-1)s^2 \left( 1 + \frac{n(\bar{y} - \mu)^2}{(n-1)s^2} \right) \right]^{-n/2} $$
+            $$ p(\mu \mid y) \propto \left[ (n-1)s^2 \right]^{-n/2} \times \left[ 1 + \frac{n(\mu - \bar{y})^2}{(n-1)s^2} \right]^{-n/2} $$
+            <p class="text-gray-700 leading-relaxed mb-4">
+                The first term is just a constant (it doesn't depend on $\mu$), so we can drop it:
+            </p>
+            $$ p(\mu \mid y) \propto \left[ 1 + \frac{n(\mu - \bar{y})^2}{(n-1)s^2} \right]^{-n/2} $$
+
+            <h3 class="text-lg font-semibold text-gray-700 mt-6 mb-2">4.4: The Final Form for Mean</h3>
+            <p class="text-gray-700 leading-relaxed mb-4">
+                This is the kernel of a <strong>Student's t-distribution</strong>. A t-distribution with $\nu$ degrees of freedom has the form $\left(1 + t^2/\nu\right)^{-(\nu+1)/2}$.
+            </p>
+            <p class="text-gray-700 leading-relaxed mb-4">
+                Let's check our exponent: $-n/2$. If we set $\nu = n-1$, the t-distribution's exponent is $-((n-1) + 1) / 2 = -n/2$. It's a perfect match!
+            </p>
+            <p class="text-gray-700 leading-relaxed mb-4">
+                This confirms $\nu = n-1$. Now let's match the $t^2$ part:
+            </p>
+            $$ \begin{align*} \frac{t^2}{\nu} &= \frac{n(\mu - \bar{y})^2}{(n-1)s^2} \\ \frac{t^2}{n-1} &= \frac{n(\mu - \bar{y})^2}{(n-1)s^2} \\ t^2 &= \frac{n(\mu - \bar{y})^2}{s^2} \\ t^2 &= \frac{(\mu - \bar{y})^2}{s^2/n} \end{align*} $$
+            <p class="text-gray-700 leading-relaxed mb-4">
+                Taking the square root gives us the final variable:
+            </p>
+            $$ t = \frac{\mu - \bar{y}}{s / \sqrt{n}} $$
+            
+            <div class="math-header">Posterior for Mean - Summary</div>
+            $$ \frac{\mu - \bar{y}}{s / \sqrt{n}} \quad \Bigg| \quad y \sim t_{n-1} $$
+            <p class="text-gray-700 leading-relaxed mt-4">
+                This means our posterior belief about the mean $\mu$ is a Student's t-distribution, centered at the sample mean $\bar{y}$, with a scale of $s^2/n$ and $n-1$ degrees of freedom.
+            </p>
+        </section>
+
+        <!-- == PART 5: Summary == -->
+        <section id="part-5" class="bg-indigo-700 text-white rounded-lg p-6 md:p-8 mb-8">
+            <h2 class="text-2xl font-semibold mb-4">Part 5: Summary of Results</h2>
+            <p class="text-indigo-100 leading-relaxed mb-4">
+                After starting with a noninformative prior $p(\mu, \sigma^2) \propto 1/\sigma^2$ and combining it with data from a Normal $N(\mu, \sigma^2)$ distribution, we derived the two key marginal posterior distributions:
+            </p>
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Variance Result -->
+                <div class="bg-indigo-600 rounded-lg p-4">
+                    <h3 class="text-lg font-semibold text-white mb-2">Posterior for Variance ($\sigma^2$)</h3>
+                    $$ \sigma^2 \mid y \sim \text{Scaled-Inv-}\chi^2( n-1, s^2 ) $$
+                    <p class="text-indigo-200 mt-2 text-sm">
+                        Our belief about the variance follows a Scaled Inverse-Chi-Squared distribution.
+                    </p>
+                </div>
+                <!-- Mean Result -->
+                <div class="bg-indigo-600 rounded-lg p-4">
+                    <h3 class="text-lg font-semibold text-white mb-2">Posterior for Mean ($\mu$)</h3>
+                    $$ \frac{\mu - \bar{s}}{s / \sqrt{n}} \quad \Bigg| \quad y \sim t_{n-1} $$
+                    <p class="text-indigo-200 mt-2 text-sm">
+                        Our belief about the mean follows a Student's t-distribution.
+                    </p>
+                </div>
+            </div>
+            <p class="text-indigo-100 leading-relaxed mt-6">
+                The next step in a full analysis would be to use these posteriors to create a <strong>posterior predictive distribution</strong>, which would allow us to predict the value of a future observation, $\tilde{y}$.
+            </p>
+        </section>
+
+    </div>
+
+</body>
+</html>
