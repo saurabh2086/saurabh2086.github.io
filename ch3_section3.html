@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bayesian Derivation: Normal Data with Conjugate Prior</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Load KaTeX -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css" xintegrity="sha384-EkOEBvEe9UYagMUDgZ4vALxNIDUHBH/w3EV4exzDEBdcNQZZHnVMK7Y5CR/BEOHc" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js" xintegrity="sha384-hIoBPJb1jCypoRF0NxKEB+mf9T3MwhvS/I/CgzUVuMIIYBTD+4XQ/c/QD0YwA+cM" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js" xintegrity="sha384-4GPhgS/fTsF_kpLDoL4ObGABcbUfSBDESlXzP2Nr2lktA+YLhTPO/v4RTYBwnI0V" crossorigin="anonymous"></script>
+    <script>
+      // This script finds and renders all LaTeX math on the page.
+      document.addEventListener("DOMContentLoaded", function() {
+          renderMathInElement(document.body, {
+              delimiters: [
+                  {left: '$$', right: '$$', display: true},  // for display math
+                  {left: '\\[', right: '\\]', display: true}, // for display math
+                  {left: '$', right: '$', display: false},    // for inline math
+                  {left: '\\(', right: '\\)', display: false}  // for inline math
+              ]
+          });
+      });
+    </script>
+
+    <!-- Set Inter font -->
+    <style>
+        html {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        
+        .katex { font-size: 1.1em; }
+        .katex-display { font-size: 1.2em; padding: 0.75rem 0; }
+
+        .math-header {
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            color: #4f46e5; /* indigo-600 */
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+        }
+        /* Home button */
+        .home-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #2c3e50;
+            color: #fff;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        .home-button:hover {
+            background: #34495e;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <a href="index.html" class="home-button">← Home</a>
+
+    <div class="container mx-auto max-w-4xl p-4 md:p-8">
+
+        <!-- Header -->
+        <header class="mb-10">
+            <h1 class="text-2xl md:text-2xl font-bold text-gray-900 mb-3">3.3 Bayesian Derivation: Normal Data with a Conjugate Prior</h1>
+            <p class="text-lg text-gray-700">
+                Deriving the posterior distributions for a Normal model with unknown mean and variance using a conjugate prior.
+            </p>
+        </header>
+
+        <!-- Section 1: Introduction & Problem -->
+        <section id="part-1" class="bg-white shadow-lg rounded-lg p-6 md:p-8 mb-8">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">
+                1. The Problem & Goal
+            </h2>
+            <p class="text-gray-700 leading-relaxed mb-4">
+                Given a set of $n$ observed data points, $y = (y_1, ..., y_n)$, we want to find the <strong>joint posterior distribution</strong>, $p(\mu, \sigma^2 | y)$. We achieve this using Bayes' theorem, which states that the posterior is proportional to the likelihood times the prior:
+            </p>
+            <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 my-4">
+                        $$
+                        p(\mu, \sigma^2 | y) \propto p(y | \mu, \sigma^2) \times p(\mu, \sigma^2)
+                        $$
+                    </div>
+        </section>
+
+        <!-- Section 2: Assumptions & Model Setup -->
+        <section id="part-2" class="bg-white shadow-lg rounded-lg p-6 md:p-8 mb-8">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">
+                2. Assumptions & Model Setup
+            </h2>
+
+            <h3 class="text-xl font-semibold text-gray-700 mt-6 mb-3">2.1. The Likelihood: $p(y | \mu, \sigma^2)$</h3>
+            <p class="text-gray-700 leading-relaxed mb-4">
+                We assume our data $y = (y_1, ..., y_n)$ are independent and identically distributed (i.i.d.) draws from a Normal distribution with a known mean $\mu$ and variance $\sigma^2$.
+            </p>
+            <div class="pl-4">
+                        $$
+                        y_i \sim N(\mu, \sigma^2)
+                        $$
+                    </div>
+
+            <h3 class="text-xl font-semibold text-gray-700 mt-6 mb-3">2.2. The Prior: $p(\mu, \sigma^2)$</h3>
+            <p class="text-gray-700 leading-relaxed mb-4">
+                We choose a <strong>conjugate prior</strong>, which ensures that our posterior distribution will belong to the same family of distributions as the prior. For the Normal distribution, the conjugate prior is the <strong>Normal-Inverse-Chi-squared</strong> (N-Inv-$\chi^2$) distribution.
+            </p>
+            <p class="text-gray-700 leading-relaxed mb-4">
+                This prior is specified hierarchically, which defines the joint prior $p(\mu, \sigma^2) = p(\mu | \sigma^2) \times p(\sigma^2)$:
+            </p>
+            <ul class="list-disc list-inside space-y-2 mb-4 pl-4">
+                        <li>The variance $\sigma^2$ follows an Inverse-Chi-squared distribution with $\nu_0$ degrees of freedom and scale $\sigma_0^2$.
+                            <br>
+                            $p(\sigma^2) \sim \text{Inv-}\chi^2(\nu_0, \sigma_0^2)$
+                        </li>
+                        <li>The mean $\mu$, conditional on the variance $\sigma^2$, follows a Normal distribution with mean $\mu_0$ and variance scaled by $\sigma^2$.
+                            <br>
+                            $p(\mu | \sigma^2) \sim N(\mu_0, \sigma^2/\kappa_0)$
+                        </li>
+                    </ul>
+            <p class="text-gray-700 leading-relaxed mb-4">
+                The four hyperparameters $\nu_0, \sigma_0^2, \mu_0, \kappa_0$ represent our prior beliefs about the parameters.
+            </p>
+        </section>
+        
+        <!-- Section 3: Step-by-Step Derivation -->
+        <section id="part-3" class="bg-white shadow-lg rounded-lg p-6 md:p-8 mb-8">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">
+                3. Step-by-Step Derivation
+            </h2>
+            <p class="text-gray-700 leading-relaxed mb-4">
+                We will now derive the posterior by finding the kernels (the parts of the PDF that depend on the parameters) for the prior and the likelihood, and then multiplying them.
+            </p>
+
+            <h3 class="text-xl font-semibold text-gray-700 mt-6 mb-3">Step 1: The Joint Prior Kernel</h3>
+            <p class="text-gray-700 leading-relaxed mb-4">
+                        We multiply the kernels of the two prior distributions, $p(\mu | \sigma^2)$ and $p(\sigma^2)$.
+                    </p>
+                    <ul class="list-disc list-inside space-y-2 mb-4 pl-4">
+                        <li>$p(\mu | \sigma^2) \propto (\sigma^2)^{-1/2} \exp\left( - \frac{\kappa_0 (\mu - \mu_0)^2}{2\sigma^2} \right)$</li>
+                        <li>$p(\sigma^2) \propto (\sigma^2)^{-(\nu_0/2 + 1)} \exp\left( - \frac{\nu_0 \sigma_0^2}{2\sigma^2} \right)$</li>
+                    </ul>
+                    <p class="text-gray-700 leading-relaxed mb-4">
+                        Multiplying them gives the joint prior kernel (Equation 3.6 in the text):
+                    </p>
+                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 my-4 overflow-x-auto">
+                        $$
+                        \begin{aligned}
+                        p(\mu, \sigma^2) &\propto (\sigma^2)^{-(\nu_0/2 + 1) - 1/2} \exp\left( - \frac{\nu_0 \sigma_0^2}{2\sigma^2} - \frac{\kappa_0 (\mu - \mu_0)^2}{2\sigma^2} \right) \\
+                        &\propto (\sigma^2)^{-\frac{\nu_0+3}{2}} \exp\left( - \frac{1}{2\sigma^2} \left[ \nu_0 \sigma_0^2 + \kappa_0(\mu - \mu_0)^2 \right] \right)
+                        \end{aligned}
+                        $$
+                    </div>
+
+                    <h3 class="text-xl font-semibold text-gray-700 mt-6 mb-3">Step 2: The Likelihood Kernel</h3>
+                    <p class="text-gray-700 leading-relaxed mb-4">
+                        The likelihood for $n$ i.i.d. data points is the product of their individual densities.
+                    </p>
+                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 my-4 overflow-x-auto">
+                        $$
+                        \begin{aligned}
+                        p(y | \mu, \sigma^2) &= \prod_{i=1}^{n} p(y_i | \mu, \sigma^2) \propto \prod_{i=1}^{n} (\sigma^2)^{-1/2} \exp\left(-\frac{(y_i - \mu)^2}{2\sigma^2}\right) \\
+                        &\propto (\sigma^2)^{-n/2} \exp\left(-\frac{1}{2\sigma^2} \sum_{i=1}^{n} (y_i - \mu)^2\right)
+                        \end{aligned}
+                        $$
+                    </div>
+                    <p class="text-gray-700 leading-relaxed mb-4">
+                        We use the standard identity $\sum (y_i - \mu)^2 = \sum (y_i - \bar{y})^2 + n(\bar{y} - \mu)^2$, where $s^2 = \frac{1}{n-1}\sum (y_i - \bar{y})^2$. This gives $\sum (y_i - \mu)^2 = (n-1)s^2 + n(\bar{y} - \mu)^2$.
+                    </p>
+                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 my-4 overflow-x-auto">
+                        $$
+                        p(y | \mu, \sigma^2) \propto (\sigma^2)^{-n/2} \exp\left( - \frac{1}{2\sigma^2} \left[ (n-1)s^2 + n(\bar{y} - \mu)^2 \right] \right)
+                        $$
+                    </div>
+
+                    <h3 class="text-xl font-semibold text-gray-700 mt-6 mb-3">Step 3: The Joint Posterior (Raw Form)</h3>
+                    <p class="text-gray-700 leading-relaxed mb-4">
+                        We find the joint posterior by multiplying the **Prior** (Step 1) and the **Likelihood** (Step 2).
+                    </p>
+                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 my-4 overflow-x-auto">
+                        $$
+                        p(\mu, \sigma^2 | y) \propto \left[ (\sigma^2)^{-\frac{\nu_0+3}{2}} \exp\left( - \frac{1}{2\sigma^2} \left[ \dots \right] \right) \right] \times \left[ (\sigma^2)^{-n/2} \exp\left( - \frac{1}{2\sigma^2} \left[ \dots \right] \right) \right]
+                        $$
+                    </div>
+                    <p class="text-gray-700 leading-relaxed mb-4">
+                        We combine terms by adding the exponents:
+                    </p>
+                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 my-4 overflow-x-auto">
+                        $$
+                        p(\mu, \sigma^2 | y) \propto (\sigma^2)^{-\frac{\nu_0 + n + 3}{2}} \exp\left( - \frac{1}{2\sigma^2} \left[ \nu_0\sigma_0^{2} + (n-1)s^{2} + \kappa_0(\mu - \mu_0)^{2} + n(\bar{y} - \mu)^{2} \right] \right)
+                        $$
+                    </div>
+                    <p class="text-gray-700 leading-relaxed mb-4">
+                        This is the correct, but "messy", form of the posterior. Our goal is to simplify it into the "clean" N-Inv-$\chi^2$ form.
+                    </p>
+
+                    <h3 class="text-xl font-semibold text-gray-700 mt-6 mb-3">Step 4: Finding Posterior Parameters (Completing the Square)</h3>
+                    <p class="text-gray-700 leading-relaxed mb-4">
+                        We know the posterior must be a new N-Inv-$\chi^2$ distribution with parameters $\mu_n, \kappa_n, \nu_n, \sigma_n^2$:
+                    </p>
+                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 my-4 overflow-x-auto">
+                        $$
+                        p(\mu, \sigma^2 | y) \propto (\sigma^2)^{-\frac{\nu_n + 3}{2}} \exp\left( - \frac{1}{2\sigma^2} \left[ \nu_n\sigma_n^{2} + \kappa_n(\mu - \mu_n)^{2} \right] \right)
+                        $$
+                    </div>
+                    <p class="text-gray-700 leading-relaxed mb-4">
+                        We find the new parameters by matching terms between the "messy" (Step 3) and "clean" (above) forms.
+                    </p>
+                    
+                    <ul class="list-disc list-inside space-y-4 mb-4 pl-4">
+                        <li>
+                            <strong>Deriving $\nu_n$:</strong>
+                            <br>
+                            By matching the $\sigma^2$ exponent:
+                            <br>
+                            $\frac{\nu_n + 3}{2} = \frac{\nu_0 + n + 3}{2} \implies$ <strong>$\nu_n = \nu_0 + n$</strong>
+                        </li>
+                        
+                        <li>
+                            <strong>Deriving $\kappa_n$ and $\mu_n$:</strong>
+                            <br>
+                            We expand and match the $\mu$-dependent terms in the exponent:
+                            <br>
+                            $\kappa_n(\mu - \mu_n)^2 = \kappa_0(\mu - \mu_0)^2 + n(\bar{y} - \mu)^2$
+                            <br>
+                            $\kappa_n\mu^2 - 2\kappa_n\mu_n\mu + \dots = (\kappa_0+n)\mu^2 - 2(\kappa_0\mu_0 + n\bar{y})\mu + \dots$
+                            <br>
+                            Matching $\mu^2$ coefficients: <strong>$\kappa_n = \kappa_0 + n$</strong>
+                            <br>
+                            Matching $\mu$ coefficients:
+                            <br>
+                            $2\kappa_n\mu_n = 2(\kappa_0\mu_0 + n\bar{y}) \implies$ <strong>$\mu_n = \frac{\kappa_0\mu_0 + n\bar{y}}{\kappa_0 + n}$</strong>
+                        </li>
+                        
+                        <li>
+                            <strong>Deriving $\nu_n\sigma_n^2$:</strong>
+                            <br>
+                            We match all the remaining constant terms in the exponent.
+                            <br>
+                            $\nu_n\sigma_n^2 = [\nu_0\sigma_0^2 + (n-1)s^2] + [\kappa_0\mu_0^2 + n\bar{y}^2] - [\kappa_n\mu_n^2]$
+                            <br>
+                            The algebraic magic happens by simplifying the $\mu$-related constants:
+                            <br>
+                            $[\kappa_0\mu_0^2 + n\bar{y}^2] - \kappa_n\mu_n^2 = [\kappa_0\mu_0^2 + n\bar{y}^2] - \frac{(\kappa_0\mu_0 + n\bar{y})^2}{\kappa_0 + n} = \frac{\kappa_0 n(\bar{y} - \mu_0)^2}{\kappa_0 + n}$
+                            <br>
+                            This gives the final result:
+                            <br>
+                            <strong>$\nu_n\sigma_n^2 = \nu_0\sigma_0^2 + (n-1)s^2 + \frac{\kappa_0 n}{\kappa_0 + n}(\bar{y} - \mu_0)^2$</strong>
+                        </li>
+                    </ul>
+
+                    <h3 class="text-xl font-semibold text-gray-700 mt-6 mb-3">Step 5: Deriving the Marginal Posterior $p(\sigma^2 | y)$</h3>
+                    <p class="text-gray-700 leading-relaxed mb-4">
+                        To find the marginal for $\sigma^2$, we integrate $\mu$ out of the joint posterior:
+                    </p>
+                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 my-4 overflow-x-auto">
+                        $$
+                        \begin{aligned}
+                        p(\sigma^2 | y) &= \int p(\mu, \sigma^2 | y) \, d\mu \\
+                        &\propto \int (\sigma^2)^{-\frac{\nu_n + 3}{2}} \exp\left( - \frac{\nu_n\sigma_n^{2}}{2\sigma^2} \right) \exp\left( - \frac{\kappa_n(\mu - \mu_n)^{2}}{2\sigma^2} \right) \, d\mu
+                        \end{aligned}
+                        $$
+                    </div>
+                    <p class="text-gray-700 leading-relaxed mb-4">
+                        This is the kernel of an <strong>$\text{Inv-}\chi^2(\nu_n, \sigma_n^2)$</strong> distribution. (Eq. 3.9)
+                    </p>
+
+                    <h3 class="text-xl font-semibold text-gray-700 mt-6 mb-3">Step 6: Deriving the Conditional Posterior $p(\mu | \sigma^2, y)$</h3>
+                    <p class="text-gray-700 leading-relaxed mb-4">
+                        To find the conditional for $\mu$, we look at the joint posterior $p(\mu, \sigma^2 | y)$ and treat $\sigma^2$ as a given constant. We drop all terms that are constant with respect to $\mu$.
+                    </p>
+                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 my-4 overflow-x-auto">
+                        $$
+                        \begin{aligned}
+                        p(\mu | \sigma^2, y) &\propto p(\mu, \sigma^2 | y) \\
+                        &\propto \underbrace{(\sigma^2)^{-\frac{\nu_n + 3}{2}} \exp\left( - \frac{\nu_n\sigma_n^{2}}{2\sigma^2} \right)}_{\text{Constant w.r.t. } \mu \text{ (drop)}} \times \exp\left( - \frac{\kappa_n(\mu - \mu_n)^{2}}{2\sigma^2} \right) \\
+                        &\propto \exp\left( - \frac{(\mu - \mu_n)^{2}}{2(\sigma^2/\kappa_n)} \right)
+                        \end{aligned}
+                        $$
+                    </div>
+                    <p class="text-gray-700 leading-relaxed mb-4">
+                        This is the kernel of a <strong>$N(\mu_n, \sigma^2/\kappa_n)$</strong> distribution. (Eq. 3.8)
+                    </p>
+                </section>
+
+        <!-- Section 4: Summary & Conclusion -->
+        <section id="part-4" class="bg-white shadow-lg rounded-lg p-6 md:p-8 mb-8">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">
+                4. Summary & Conclusion
+            </h2>
+            <p class="text-gray-700 leading-relaxed mb-4">
+                We have successfully derived the full set of posterior distributions. We confirmed that the N-Inv-$\chi^2$ distribution is a conjugate prior for the Normal likelihood.
+            </p>
+            <p class="text-gray-700 leading-relaxed mb-4">
+                        The final posterior distributions and their parameters are summarized below.
+                    </p>
+
+                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 my-6 space-y-4">
+                        <h3 class="text-xl font-bold text-indigo-600">Final Posterior Distributions</h3>
+                        
+                        <div class="overflow-x-auto">
+                            <p class="font-semibold text-gray-700">Joint Posterior for $(\mu, \sigma^2)$:</p>
+                            $$
+                            (\mu, \sigma^2 | y) \sim \text{N-Inv-}\chi^2(\mu_n, \sigma_n^2/\kappa_n; \nu_n, \sigma_n^2)
+                            $$
+                        </div>
+                        
+                        <div class="overflow-x-auto">
+                            <p class="font-semibold text-gray-700">Marginal Posterior for $\sigma^2$:</p>
+                            $$
+                            (\sigma^2 | y) \sim \text{Inv-}\chi^2(\nu_n, \sigma_n^2)
+                            $$
+                        </div>
+                        
+                        <div class="overflow-x-auto">
+                            <p class="font-semibold text-gray-700">Conditional Posterior for $\mu$:</p>
+                            $$
+                            (\mu | \sigma^2, y) \sim N(\mu_n, \sigma^2/\kappa_n)
+                            $$
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 my-6 space-y-4">
+                        <h3 class="text-xl font-bold text-gray-800">Updated Hyperparameters</h3>
+                        
+                        <div class="overflow-x-auto">
+                            <p class="font-semibold text-gray-700">Posterior Mean ($\mu_n$):</p>
+                            $$
+                            \begin{aligned}
+                            \mu_n &= \frac{\kappa_0\mu_0 + n\bar{y}}{\kappa_0 + n} \\
+                            &= \left(\frac{\kappa_0}{\kappa_0 + n}\right)\mu_0 + \left(\frac{n}{\kappa_0 + n}\right)\bar{y}
+                            \end{aligned}
+                            $$
+                            <p class="text-sm text-gray-600 pl-2">A weighted average of the prior mean and the sample mean.</p>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <p class="font-semibold text-gray-700">Posterior Mean "Sample Size" ($\kappa_n$):</p>
+                            $$
+                            \kappa_n = \kappa_0 + n
+                            $$
+                            <p class="text-sm text-gray-600 pl-2">The prior "sample size" plus the new sample size.</p>
+                        </div>
+                        
+                        <div class="overflow-x-auto">
+                            <p class="font-semibold text-gray-700">Posterior Degrees of Freedom ($\nu_n$):</p>
+                            $$
+                            \nu_n = \nu_0 + n
+                            $$
+                            <p class="text-sm text-gray-600 pl-2">The prior degrees of freedom plus the new sample size.</p>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <p class="font-semibold text-gray-700">Posterior Sum of Squares ($\nu_n\sigma_n^2$):</p>
+                            $$
+                            \nu_n\sigma_n^2 = \nu_0\sigma_0^2 + (n-1)s^2 + \frac{\kappa_0 n}{\kappa_0 + n}(\bar{y} - \mu_0)^2
+                            $$
+                            <p class="text-sm text-gray-600 pl-2">Prior SoS + Sample SoS + SoS from difference in means.</p>
+                        </div>
+                    </div>
+                </section>
+                
+    </div>
+
+</body>
+</html>
