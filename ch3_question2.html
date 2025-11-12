@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Case of the Debate Shift</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Font: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- MathJax Configuration -->
+    <script>
+        MathJax = {
+          tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            displayMath: [['$$', '$$'], ['\\[', '\\]']]
+          }
+        };
+    </script>
+    <!-- UPDATED: MathJax CDN from cdnjs -->
+    <script id="MathJax-script" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-chtml.js"></script>
+    
+    <!-- Added Chart.js and jStat for simulation and plotting -->
+    <!-- *** FIX: Replaced jsDelivr CDN with cdnjs for jStat *** -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jstat/1.9.6/jstat.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .home-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        .home-button:hover {
+            background: #34495e;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        /* Custom style for code/math blocks */
+        .math-block {
+            background-color: #f8fafc; /* slate-50 */
+            padding: 1rem;
+            border-radius: 0.5rem; /* rounded-lg */
+            border: 1px solid #e2e8f0; /* slate-200 */
+            overflow-x: auto;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        }
+        h2 {
+            font-size: 1.5rem; /* text-2xl */
+            font-weight: 700; /* font-bold */
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #e2e8f0; /* border-slate-200 */
+            padding-bottom: 0.5rem;
+            color: #1e3a8a; /* blue-900 */
+        }
+        h3 {
+            font-size: 1.25rem; /* text-xl */
+            font-weight: 600; /* font-semibold */
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: #1e40af; /* blue-800 */
+        }
+        /* Style for the results box */
+        .results-box {
+            background-color: #f0f9ff; /* blue-50 */
+            border: 1px solid #bae6fd; /* blue-200 */
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800">
+    <a href="index.html" class="home-button">
+        ← Home
+    </a>
+
+    <div class="max-w-5xl mx-auto p-4 sm:p-8">
+        <article class="bg-white shadow-xl rounded-lg overflow-hidden">
+            
+            <!-- Header -->
+            <div class="bg-blue-800 text-white p-6 sm:p-8">
+                <div class="flex items-center space-x-4">
+                    <!-- Detective Icon (Magnifying Glass) -->
+                    <svg class="h-12 w-12 text-blue-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                    </svg>
+                    <div>
+                        <h1 class="text-3xl font-bold">The Case of the Debate Shift</h1>
+                        <p class="text-lg text-blue-200 mt-1">An Investigative Report (BDA Exercise 3.10.2)</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 1: The Case File -->
+            <div class="p-6 sm:p-8 prose prose-lg max-w-none">
+                <h2>The Case File</h2>
+                <p>A new case has come in, Detective. It appears a presidential debate may have caused a shift in public opinion. We have two independent surveys, one taken just before and one just after the 1988 debate between George Bush and Michael Dukakis.</p>
+                <p>Your mission is to analyze the data to determine if there was a statistically significant shift in preference. The details are in the file below.</p>
+
+                <blockquote class="border-l-4 border-slate-300 pl-4 text-slate-600 italic">
+                    <p>
+                        <b>2. Comparison of two multinomial observations:</b> on September 25, 1988, the evening of a presidential campaign debate, ABC News conducted a survey of registered voters in the United States; 639 persons were polled before the debate, and 639 different persons were polled after. The results are displayed in Table 3.2. Assume the surveys are independent simple random samples from the population of registered voters. Model the data with two different multinomial distributions. For $j = 1, 2$, let $\alpha_j$ be the proportion of voters who preferred Bush, out of those who had a preference for either Bush or Dukakis at the time of survey $j$.
+                    </p>
+                    <p>(a) Plot a histogram of the posterior density for $\alpha_2 - \alpha_1$.</p>
+                    <p>(b) What is the posterior probability that there was a shift toward Bush?</p>
+                </blockquote>
+
+                <h3>Table 3.2: Data from the Pre- and Post-Debate Surveys</h3>
+                <div class="overflow-x-auto rounded-lg border border-slate-200 my-4">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-slate-50">
+                            <tr>
+                                <th class="p-3 font-semibold">Survey</th>
+                                <th class="p-3 font-semibold">Bush</th>
+                                <th class="p-3 font-semibold">Dukakis</th>
+                                <th class="p-3 font-semibold">No opinion/other</th>
+                                <th class="p-3 font-semibold">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200">
+                            <tr>
+                                <td class="p-3">pre-debate</td>
+                                <td class="p-3">294</td>
+                                <td class="p-3">307</td>
+                                <td class="p-3">38</td>
+                                <td class="p-3">639</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3">post-debate</td>
+                                <td class="p-3">288</td>
+                                <td class="p-3">332</td>
+                                <td class="p-3">19</td>
+                                <td class="p-3">639</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+            
+            <!-- Solution will go here in subsequent steps -->
+            <div class="p-6 sm:p-8 prose prose-lg max-w-none border-t-2 border-slate-200">
+                <h2>The Investigation: Isolating the Suspects</h2>
+                <p>You've correctly deduced the strategy, detective. We have two independent crime scenes (the pre- and post-debate polls) and two independent suspects, $\alpha_1$ and $\alpha_2$. Our main person of interest is the <em>difference</em> between them, $\delta = \alpha_2 - \alpha_1$.</p>
+                <p>First, we must build a profile for each suspect individually. We'll use the aggregation property from the previous case (Exercise 3.10.1) to ignore the "No opinion/other" category and focus only on the counts for Bush and Dukakis.</p>
+
+                <h3>Suspect 1: Pre-Debate Proportion ($\alpha_1$)</h3>
+                <p>For the pre-debate poll ($j=1$), our "person of interest" is $\alpha_1 = \frac{\theta_{1, \text{Bush}}}{\theta_{1, \text{Bush}} + \theta_{1, \text{Dukakis}}}$.</p>
+                <ul>
+                    <li><b>Likelihood:</b> We treat this as a Binomial problem. The number of "successes" (Bush supporters) is $y_1 = 294$. The total number of relevant trials is $n_1 = 294 \text{ (Bush)} + 307 \text{ (Dukakis)} = 601$.</li>
+                    <li><b>Prior:</b> We have no specific prior information on the debate outcome, so a noninformative uniform prior is appropriate. This is a $\text{Beta}(1, 1)$ distribution.</li>
+                    <li><b>Posterior:</b> Using the "Binomial-Beta" conjugate model:
+                        <div class="math-block">$$ p(\alpha_1 | y_1, n_1) \sim \text{Beta}(1 + y_1, 1 + n_1 - y_1) $$</div>
+                        <div class="math-block">$$ p(\alpha_1 | y) \sim \text{Beta}(1 + 294, 1 + 307) = \text{Beta}(295, 308) $$</div>
+                    </li>
+                </ul>
+
+                <h3>Suspect 2: Post-Debate Proportion ($\alpha_2$)</h3>
+                <p>For the post-debate poll ($j=2$), our "person of interest" is $\alpha_2 = \frac{\theta_{2, \text{Bush}}}{\theta_{2, \text{Bush}} + \theta_{2, \text{Dukakis}}}$.</p>
+                <ul>
+                    <li><b>Likelihood:</b> The number of "successes" (Bush supporters) is $y_2 = 288$. The total number of relevant trials is $n_2 = 288 \text{ (Bush)} + 332 \text{ (Dukakis)} = 620$.</li>
+                    <li><b>Prior:</b> We use the same independent $\text{Beta}(1, 1)$ prior.</li>
+                    <li><b>Posterior:</b>
+                        <div class="math-block">$$ p(\alpha_2 | y_2, n_2) \sim \text{Beta}(1 + y_2, 1 + n_2 - y_2) $$</div>
+                        <div class="math-block">$$ p(\alpha_2 | y) \sim \text{Beta}(1 + 288, 1 + 332) = \text{Beta}(289, 333) $$</div>
+                    </li>
+                </ul>
+
+                <h3>The Next Step</h3>
+                <p>We have successfully identified the posterior distributions for our two main suspects. They are independent, and we have:</p>
+                <ul class="list-none">
+                    <li>$\alpha_1 | y \sim \text{Beta}(295, 308)$</li>
+                    <li>$\alpha_2 | y \sim \text{Beta}(289, 333)$</li>
+                </ul>
+                <p>Now we must find the distribution of the <em>difference</em>, $\delta = \alpha_2 - \alpha_1$, to answer the case questions.</p>
+
+            </div>
+
+            <!-- Solution Part (a) and (b) -->
+            <div class="p-6 sm:p-8 prose prose-lg max-w-none border-t-2 border-slate-200">
+                <h2>Case Closed: The Findings</h2>
+                <p>The distribution of a difference between two independent Beta variables is not a simple analytic function. The most direct "forensic" technique is to simulate it. We will:</p>
+                <ol>
+                    <li>Draw thousands of random samples from $p(\alpha_1 | y) \sim \text{Beta}(295, 308)$.</li>
+                    <li>Draw thousands of random samples from $p(\alpha_2 | y) \sim \text{Beta}(289, 333)$.</li>
+                    <li>Compute the difference, $\delta^{(s)} = \alpha_2^{(s)} - \alpha_1^{(s)}$, for each sample $s$.</li>
+                </ol>
+                <p>The histogram of these $\delta^{(s)}$ values *is* our posterior distribution for the shift in preference. The script on this page performs 50,000 such simulations every time it is loaded.</p>
+                
+                <h3>(a) Histogram of the Posterior Density for the Shift ($\alpha_2 - \alpha_1$)</h3>
+                <p>The plot below shows the posterior distribution for the change in Bush's support among decided voters. A positive value indicates a shift <em>toward</em> Bush; a negative value indicates a shift <em>away</em> from Bush (that is, toward Dukakis).</p>
+                
+                <div class="my-6">
+                    <canvas id="shiftHistogram"></canvas>
+                </div>
+
+                <h3>(b) Posterior Probability of a Shift Toward Bush</h3>
+                <p>To answer this question, we simply count the proportion of simulation draws $\delta^{(s)}$ that are greater than zero. A "shift toward Bush" corresponds to $\alpha_2 - \alpha_1 > 0$.</p>
+
+                <div class="results-box">
+                    <h3 class="!mt-0 !mb-2 text-blue-900">Final Conclusion:</h3>
+                    <p id="probabilityResult" class="text-lg font-medium text-slate-700">Calculating...</p>
+                </div>
+                <p>Based on the simulation, the evidence for a shift toward Bush is extremely weak. The vast majority of the posterior distribution is on the negative side, suggesting the debate may have actually helped Dukakis among voters who had a preference.</p>
+            </div>
+
+        </article>
+    </div>
+
+    <script>
+        window.onload = function() {
+            // --- Run the Simulation ---
+            const num_sims = 50000;
+            let deltas = [];
+            let positive_shifts = 0;
+
+            for (let s = 0; s < num_sims; s++) {
+                // jStat.beta.sample( alpha, beta )
+                // *** FIX: Changed jstat to jStat (case sensitive) ***
+                let a1_s = jStat.beta.sample(295, 308);
+                let a2_s = jStat.beta.sample(289, 333);
+                let delta_s = a2_s - a1_s;
+                
+                deltas.push(delta_s);
+                if (delta_s > 0) {
+                    positive_shifts++;
+                }
+            }
+
+            // --- (b) Report the Probability ---
+            let prob_shift = positive_shifts / num_sims;
+            let prob_element = document.getElementById('probabilityResult');
+            if (prob_shift < 0.001) {
+                prob_element.innerHTML = "The posterior probability of a shift toward Bush ($\\alpha_2 > \\alpha_1$) is <b>&lt; 0.1%</b>.";
+            } else {
+                prob_element.innerHTML = `The posterior probability of a shift toward Bush ($\\alpha_2 > \\alpha_1$) is <b>${(prob_shift * 100).toFixed(1)}%</b>.`;
+            }
+
+            // Add this line to tell MathJax to re-render the element
+            if (typeof MathJax !== 'undefined' && MathJax.typesetPromise) {
+                MathJax.typesetPromise([prob_element]);
+            }
+
+            // --- (a) Create the Histogram ---
+            
+            // 1. Bin the data
+            const min_delta = Math.min(...deltas);
+            const max_delta = Math.max(...deltas);
+            const num_bins = 40;
+            const bin_width = (max_delta - min_delta) / num_bins;
+            
+            let bins = new Array(num_bins).fill(0);
+            let labels = new Array(num_bins);
+
+            for (let i = 0; i < num_bins; i++) {
+                labels[i] = (min_delta + i * bin_width).toFixed(3);
+            }
+
+            deltas.forEach(d => {
+                let bin_index = Math.floor((d - min_delta) / bin_width);
+                if (bin_index === num_bins) bin_index--; // Handle max value
+                bins[bin_index]++;
+            });
+
+            // 2. Draw the chart
+            const ctx = document.getElementById('shiftHistogram').getContext('2d');
+            const shiftHistogram = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Posterior Density of Shift (α2 - α1)',
+                        data: bins.map(count => count / (num_sims * bin_width)), // Normalize to density
+                        backgroundColor: 'rgba(30, 64, 175, 0.6)', // blue-800 with opacity
+                        borderColor: 'rgba(30, 58, 138, 1)', // blue-900
+                        borderWidth: 1,
+                        barPercentage: 1.0,
+                        categoryPercentage: 1.0
+                    }]
+                },
+                options: {
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Shift in Bush Support (α2 - α1)',
+                                font: { size: 14 }
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Posterior Density',
+                                font: { size: 14 }
+                            },
+                            beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                title: function(context) {
+                                    const bin_start = parseFloat(context[0].label);
+                                    const bin_end = bin_start + bin_width;
+                                    return `Bin: [${bin_start.toFixed(3)}, ${bin_end.toFixed(3)})`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        };
+    </script>
+
+</body>
+</html>
