@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Case of the Collapsing Categories</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Font: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- MathJax Configuration -->
+    <script>
+        MathJax = {
+          tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            displayMath: [['$$', '$$'], ['\\[', '\\]']]
+          }
+        };
+    </script>
+    <!-- UPDATED: MathJax CDN from cdnjs -->
+    <script id="MathJax-script" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-chtml.js"></script>
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .home-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        .home-button:hover {
+            background: #34495e;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        /* Custom style for code/math blocks */
+        .math-block {
+            background-color: #f8fafc; /* slate-50 */
+            padding: 1rem;
+            border-radius: 0.5rem; /* rounded-lg */
+            border: 1px solid #e2e8f0; /* slate-200 */
+            overflow-x: auto;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        }
+        h2 {
+            font-size: 1.5rem; /* text-2xl */
+            font-weight: 700; /* font-bold */
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #e2e8f0; /* border-slate-200 */
+            padding-bottom: 0.5rem;
+            color: #1e3a8a; /* blue-900 */
+        }
+        h3 {
+            font-size: 1.25rem; /* text-xl */
+            font-weight: 600; /* font-semibold */
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: #1e40af; /* blue-800 */
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800">
+
+    <a href="index.html" class="home-button">
+        ← Home
+    </a>
+
+    <!-- The notification block has been removed -->
+
+    <div class="max-w-3xl mx-auto p-4 sm:p-8"> <!-- Restored top padding -->
+        <article class="bg-white shadow-xl rounded-lg overflow-hidden">
+            
+            <!-- Header -->
+            <div class="bg-blue-800 text-white p-6 sm:p-8">
+                <div class="flex items-center space-x-4">
+                    <!-- Detective Icon (Magnifying Glass) -->
+                    <svg class="h-12 w-12 text-blue-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                    </svg>
+                    <div>
+                        <h1 class="text-3xl font-bold">The Case of the Collapsing Categories</h1>
+                        <p class="text-lg text-blue-200 mt-1">An Investigative Report (BDA Exercise 3.10.1)</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-6 sm:p-8 prose prose-lg max-w-none">
+                
+                <!-- Section 1: The Case File -->
+                <h2>The Case File</h2>
+                <p>We've been called in on a complex case involving a multinomial distribution. The client has a set of data, $y = (y_1, \dots, y_J)$, from $J$ categories. This data is our "evidence." The client believes this evidence follows a Multinomial distribution with parameters $\theta = (\theta_1, \dots, \theta_J)$.</p>
+                <p>We also have a "prior report" on $\theta$, which follows a Dirichlet distribution. Our primary person of interest is not $\theta$ itself, but a related variable: $\alpha$.</p>
+
+                <blockquote class="border-l-4 border-slate-300 pl-4 text-slate-600 italic">
+                    <p>
+                        <b>Problem 1: Binomial and multinomial models</b>
+                        <br>
+                        Suppose data $(y_1, \dots, y_J)$ follow a multinomial distribution with parameters $(\theta_1, \dots, \theta_J)$. Also suppose that $\theta = (\theta_1, \dots, \theta_J)$ has a Dirichlet prior distribution. Let $\alpha$ be defined as:
+                    </p>
+                    <!-- Display math for the definition of alpha -->
+                    $$ \alpha = \frac{\theta_1}{\theta_1 + \theta_2} $$
+                    <p>(a) Write the marginal posterior distribution for $\alpha$.</p>
+                    <p>(b) Show that this distribution is identical to the posterior distribution for $\alpha$ obtained by treating $y_1$ as an observation from the binomial distribution with probability $\alpha$ and sample size $y_1 + y_2$, ignoring the data $y_3, \dots, y_J$.</p>
+                </blockquote>
+
+            </div>
+
+            <!-- Solution Part (a) -->
+            <div class="p-6 sm:p-8 prose prose-lg max-w-none">
+                <h2>Part (a): The Investigation</h2>
+                <p>Our first task is to find the posterior distribution for the main parameter vector, $\theta = (\theta_1, \dots, \theta_J)$. This will be our stepping stone to finding the marginal posterior for $\alpha$.</p>
+
+                <h3>Clue 1: The Prior (The Backstory)</h3>
+                <p>We are told that $\theta$ has a Dirichlet prior distribution. Let's use $(a_1, \dots, a_J)$ for its parameters (known as "hyperparameters").</p>
+                <div class="math-block">$$ p(\theta) \sim \text{Dirichlet}(a_1, \dots, a_J) $$</div>
+                <p>The "kernel" of this distribution (the part that depends on $\theta$) is what matters for Bayes' rule:</p>
+                <div class="math-block">$$ p(\theta) \propto \prod_{j=1}^{J} \theta_j^{a_j - 1} $$</div>
+
+                <h3>Clue 2: The Likelihood (The Evidence)</h3>
+                <p>The evidence $y = (y_1, \dots, y_J)$ is from a Multinomial distribution. This tells us the probability of observing our specific data $y$ *given* a particular $\theta$.</p>
+                <div class="math-block">$$ p(y | \theta) \sim \text{Multinomial}(n, \theta) $$</div>
+                <p>Where $n = y_1 + \dots + y_J$. The kernel of the likelihood is:</p>
+                <div class="math-block">$$ p(y | \theta) \propto \prod_{j=1}^{J} \theta_j^{y_j} $$</div>
+
+                <h3>The First Breakthrough: The Joint Posterior</h3>
+                <p>Bayes' rule states that the posterior is proportional to the likelihood times the prior:</p>
+                <div class="math-block">$$ p(\theta | y) \propto p(y | \theta) \times p(\theta) $$</div>
+                <p>Because the Dirichlet and Multinomial are a "conjugate pair," their kernels have the same form. This makes the multiplication simple. We just combine the two kernels:</p>
+                <div class="math-block">$$ p(\theta | y) \propto \left( \prod_{j=1}^{J} \theta_j^{y_j} \right) \times \left( \prod_{j=1}^{J} \theta_j^{a_j - 1} \right) = \prod_{j=1}^{J} \theta_j^{a_j + y_j - 1} $$</div>
+                <p>We instantly recognize this as the kernel of a new Dirichlet distribution! This is our first major finding:</p>
+                <p class="font-bold text-center text-lg bg-blue-100 text-blue-800 p-4 rounded-lg">
+                    <strong>Initial Finding:</strong> The joint posterior distribution for $\theta$ is:
+                    $$ p(\theta | y) \sim \text{Dirichlet}(a_1 + y_1, \dots, a_J + y_J) $$
+                </p>
+
+                <h3>Focusing the Investigation: Aggregation</h3>
+                <p>We have our $J$-dimensional posterior, but our suspect $\alpha$ only involves $\theta_1$ and $\theta_2$. The other variables $\theta_3, \dots, \theta_J$ are clouding the picture. Your instinct is to "integrate them out."</p>
+                <p>Fortunately, the Dirichlet distribution has a property called <b>aggregation</b> (or "lumping") that does this for us. We can combine all the "irrelevant" variables into a single new variable, $\theta_{\text{rest}}$, and the distribution remains Dirichlet.</p>
+                <p>Let's define:</p>
+                <ul>
+                    <li class="my-1">$\theta_{\text{rest}} = \theta_3 + \dots + \theta_J$</li>
+                    <li class="my-1">$y_{\text{rest}} = y_3 + \dots + y_J$</li>
+                    <li class="my-1">$a_{\text{rest}} = a_3 + \dots + a_J$</li>
+                </ul>
+                <p>The aggregation property tells us that the marginal posterior distribution for the "lumped" variables is:</p>
+                <div class="math-block">$$ p(\theta_1, \theta_2, \theta_{\text{rest}} | y) \sim \text{Dirichlet}(a_1 + y_1, a_2 + y_2, a_{\text{rest}} + y_{\text{rest}}) $$</div>
+                <p>Note that this is a 3-component Dirichlet distribution, and $\theta_1 + \theta_2 + \theta_{\text{rest}} = 1$. We have now successfully "integrated out" all the individual components we don't care about, simplifying the case dramatically.</p>
+
+                <h3>The Final Breakthrough: Isolating $\alpha$ (via Jacobian)</h3>
+                <p>We'll now use a more formal forensic tool: the <b>Change of Variables</b> method. We start with the 3-component kernel, which (since $\theta_{\text{rest}} = 1 - \theta_1 - \theta_2$) is a distribution over $\theta_1$ and $\theta_2$:</p>
+                <div class="math-block">$$ p(\theta_1, \theta_2 | y) \propto \theta_1^{c_1 - 1} \theta_2^{c_2 - 1} (1 - \theta_1 - \theta_2)^{c_3 - 1} $$</div>
+                <p>Where $c_1 = a_1 + y_1$, $c_2 = a_2 + y_2$, and $c_3 = a_{\text{rest}} + y_{\text{rest}}$.</p>
+                <p>We need to change from the variables $(\theta_1, \theta_2)$ to a new set. We'll define two new variables for our transformation:</p>
+                <ul>
+                    <li>Our suspect: $\alpha = \frac{\theta_1}{\theta_1 + \theta_2}$</li>
+                    <li>A "nuisance" variable: $\beta = \theta_1 + \theta_2$ (the total probability of being in category 1 or 2)</li>
+                </ul>
+                <p>First, we must find the inverse transformation (express $\theta_1, \theta_2$ in terms of $\alpha, \beta$):</p>
+                <ul>
+                    <li>$\theta_1 = \alpha \beta$</li>
+                    <li>$\theta_2 = \beta - \theta_1 = \beta - \alpha \beta = \beta(1 - \alpha)$</li>
+                </ul>
+                <p>Next, we need the <b>Jacobian determinant</b> ($|J|$) of this transformation. The determinant of the matrix of partial derivatives is:</p>
+                <div class="math-block">$$ |J| = \left| \det \begin{pmatrix} \frac{\partial \theta_1}{\partial \alpha} & \frac{\partial \theta_1}{\partial \beta} \\ \frac{\partial \theta_2}{\partial \alpha} & \frac{\partial \theta_2}{\partial \beta} \end{pmatrix} \right| = \left| \det \begin{pmatrix} \beta & \alpha \\ -\beta & 1-\alpha \end{pmatrix} \right| $$</div>
+                <div class="math-block">$$ |J| = |\beta(1-\alpha) - (\alpha)(-\beta)| = |\beta - \alpha\beta + \alpha\beta| = |\beta| = \beta $$</div>
+                <p>(Since $\beta$ is a sum of probabilities, it is non-negative).</p>
+                <p>The transformation rule is $p(\alpha, \beta | y) = p(\theta_1(\alpha,\beta), \theta_2(\alpha,\beta) | y) \times |J|$. Let's substitute everything in:</p>
+                <div class="math-block">$$ p(\alpha, \beta | y) \propto (\alpha \beta)^{c_1 - 1} (\beta(1-\alpha))^{c_2 - 1} (1 - \beta)^{c_3 - 1} \times \beta $$</div>
+                <p>Now, we "interrogate" this expression by gathering all the $\alpha$ terms and $\beta$ terms:</p>
+                <div class="math-block">$$ p(\alpha, \beta | y) \propto [\alpha^{c_1 - 1} (1-\alpha)^{c_2 - 1}] \times [\beta^{c_1 - 1} \beta^{c_2 - 1} (1 - \beta)^{c_3 - 1} \beta^1] $$</div>
+                <p>Simplifying the exponents for $\beta$ gives:</p>
+                <div class="math-block">$$ p(\alpha, \beta | y) \propto \left[ \alpha^{c_1 - 1} (1-\alpha)^{c_2 - 1} \right] \times \left[ \beta^{c_1 + c_2 - 1} (1 - \beta)^{c_3 - 1} \right] $$</div>
+                <p>This is a major finding! The joint posterior $p(\alpha, \beta | y)$ factors into two independent parts. The first part is the distribution for $\alpha$, and the second is the distribution for $\beta$.</p>
+                <p>To get the marginal posterior $p(\alpha | y)$, we integrate out the nuisance variable $\beta$:</p>
+                <div class="math-block">$$ p(\alpha | y) = \int_0^1 p(\alpha, \beta | y) d\beta $$</div>
+                <div class="math-block">$$ p(\alpha | y) \propto \left[ \alpha^{c_1 - 1} (1-\alpha)^{c_2 - 1} \right] \times \int_0^1 \left[ \beta^{c_1 + c_2 - 1} (1 - \beta)^{c_3 - 1} \right] d\beta $$</div>
+                <p>That whole integral is just the normalizing constant for a $\text{Beta}(c_1+c_2, c_3)$ distribution. With respect to $\alpha$, it's just a constant, so we can drop it:</p>
+                <div class="math-block">$$ p(\alpha | y) \propto \alpha^{c_1 - 1} (1-\alpha)^{c_2 - 1} $$</div>
+                <p>This is the kernel of a Beta distribution. Substituting back $c_1 = a_1 + y_1$ and $c_2 = a_2 + y_2$ cracks the case.</p>
+                
+                <h3>The Big Reveal (Conclusion for Part A)</h3>
+                <p>By substituting the shape parameters for $X_1$ and $X_2$, we've cracked the case.</p>
+                <p class="font-bold text-center text-lg bg-green-100 text-green-800 p-4 rounded-lg">
+                    <b>Case File (a) Solved:</b> The marginal posterior distribution for $\alpha$ is:
+                    $$ \alpha | y \sim \text{Beta}(a_1 + y_1, a_2 + y_2) $$
+                </p>
+            </div>
+
+            <!-- Solution Part (b) -->
+            <div class="p-6 sm:p-8 prose prose-lg max-w-none">
+                <h2>Part (b): Testing the Alibi</h2>
+                <p>The second part of the case file asks us to "corroborate this story" using a different method. We're told to build a *simpler* case: ignore $y_3, \dots, y_J$ and treat $y_1$ as a <b>Binomial</b> success in $n' = y_1 + y_2$ trials. Does this simpler case lead to the same conclusion?</p>
+                
+                <h3>A Simpler Story: Binomial-Beta</h3>
+                <p>Let's build this new, simpler model. We're interested in $\alpha$, the probability of "success" (being in category 1) versus "failure" (being in category 2).</p>
+                
+                <h3>Clue 1: The New Likelihood</h3>
+                <p>Our evidence is now just $y_1$ "successes" out of $y_1 + y_2$ total trials. This is a Binomial likelihood:</p>
+                <div class="math-block">$$ p(y_1 | \alpha) \sim \text{Binomial}(y_1 + y_2, \alpha) $$</div>
+                <p>The kernel for this likelihood is:</p>
+                <div class="math-block">$$ p(y_1 | \alpha) \propto \alpha^{y_1} (1-\alpha)^{(y_1+y_2) - y_1} = \alpha^{y_1} (1-\alpha)^{y_2} $$</div>
+
+                <h3>Clue 2: The Prior (Re-interrogated)</h3>
+                <p>We still need a prior for $\alpha$. Where does it come from? It must come from our *original* prior, $p(\theta) \sim \text{Dirichlet}(a_1, \dots, a_J)$. Using the *exact same* Gamma-Dirichlet logic as above (but on the *prior* parameters $a_1, a_2$), the prior for $\alpha = \frac{\theta_1}{\theta_1 + \theta_2}$ is:</p>
+                <div class="math-block">$$ p(\alpha) \sim \text{Beta}(a_1, a_2) $$</div>
+                <p>The kernel for this prior is:</p>
+                <div class="math-block">$$ p(\alpha) \propto \alpha^{a_1 - 1} (1-\alpha)^{a_2 - 1} $$</div>
+
+                <h3>The Final Verdict (Conclusion for Part B)</h3>
+                <p>Now we combine our new likelihood and new prior to find the posterior, $p(\alpha | y_1, y_2)$: </p>
+                <div class="math-block">$$ p(\alpha | y_1, y_2) \propto p(y_1 | \alpha) \times p(\alpha) $$</div>
+                <div class="math-block">$$ p(\alpha | y_1, y_2) \propto \left[ \alpha^{y_1} (1-\alpha)^{y_2} \right] \times \left[ \alpha^{a_1 - 1} (1-\alpha)^{a_2 - 1} \right] $$</div>
+                <p>We just add the exponents:</p>
+                <div class="math-block">$$ p(\alpha | y_1, y_2) \propto \alpha^{y_1 + a_1 - 1} (1-\alpha)^{y_2 + a_2 - 1} $$</div>
+                <p>This is, by definition, the kernel of a $\text{Beta}(a_1 + y_1, a_2 + y_2)$ distribution. The alibi holds up perfectly!</p>
+                <p class="font-bold text-center text-lg bg-green-100 text-green-800 p-4 rounded-lg">
+                    <b>Case Closed:</b> Both investigations lead to the exact same posterior:
+                    $$ \text{Beta}(a_1 + y_1, a_2 + y_2) $$
+                </p>
+            </div>
+
+            <!-- Section 4: The Detective's Notes -->
+            <div class="p-6 sm:p-8 prose prose-lg max-w-none">
+                <h2>Detective's Notes: The Motive Behind the Math</h2>
+                <p>Why did this work? What's the "motive" for the math being this convenient?</p>
+                <p>This case reveals a critical property of the Dirichlet-Multinomial model: <b>aggregation</b>, or "lumping."</p>
+                <p>It tells us that if we are only interested in the *relative* proportions of a *subset* of categories (like $\theta_1$ vs. $\theta_2$), all the other categories $(y_3, \dots, y_J)$ are irrelevant. We can "collapse" or "lump" all other categories into a single "Other" bucket, or in this case, simply ignore them entirely.</p>
+                <p>The analysis of $\frac{\theta_1}{\theta_1 + \theta_2}$ only depends on the evidence $y_1$ and $y_2$ and their priors $a_1$ and $a_2$. This simplifies our investigation immensely, allowing us to "zoom in" on the suspects we care about without getting distracted by the rest of the noise.</p>
+            </div>
+
+        </article>
+    </div>
+
+    <!-- Script to update the JS Test -->
+    <!-- This <script> block is now removed. -->
+
+</body>
+</html>
