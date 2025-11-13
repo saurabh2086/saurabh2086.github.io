@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Behrens-Fisher Problem Simulator</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load D3.js (for simulation and plotting) -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <!-- Load MathJax for rendering LaTeX -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        /* Use the Inter font family */
+        body { 
+            font-family: 'Inter', sans-serif; 
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .home-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        .home-button:hover {
+            background: #34495e;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+    <a href="index.html" class="home-button">
+        ← Home
+    </a>
+
+    <div class="container mx-auto p-4 md:p-8 max-w-5xl">
+        <div class="bg-white rounded-lg shadow-xl p-6 md:p-10">
+            
+            <h1 class="text-2xl md:text-3xl font-bold text-blue-700 mb-6">
+                Behrens-Fisher Problem Simulator
+            </h1>
+
+            <!-- Section for the Original Question -->
+            <h2 class="text-xl font-semibold mb-3 text-gray-900">The Question</h2>
+            <blockquote class="border-l-4 border-gray-300 pl-4 py-2 mb-8 bg-gray-50 rounded-r-lg">
+                <p class="italic text-gray-700">
+                    3. Estimation from two independent experiments: an experiment was performed on the effects of magnetic fields on the flow of calcium out of chicken brains. Two groups of chickens were involved: a control group of 32 chickens and an exposed group of 36 chickens. One measurement was taken on each chicken, and the purpose of the experiment was to measure the average flow \(\mu_c\) in untreated (control) chickens and the average flow \(\mu_t\) in treated chickens. The 32 measurements on the control group had a sample mean of 1.013 and a sample standard deviation of 0.24. The 36 measurements on the treatment group had a sample mean of 1.173 and a sample standard deviation of 0.20.
+                </p>
+                <br>
+                <p class="italic text-gray-700">
+                    (a) Assuming the control measurements were taken at random from a normal distribution with mean \(\mu_c\) and variance \(\sigma_c^2\), what is the posterior distribution of \(\mu_c\)? Similarly, use the treatment group measurements to determine the marginal posterior distribution of \(\mu_t\). Assume a uniform prior distribution on (\(\mu_c, \mu_t, \log \sigma_c, \log \sigma_t\)).
+                </p>
+                <br>
+                <p class="italic text-gray-700">
+                    (b) What is the posterior distribution for the difference, \(\mu_t - \mu_c\)? To get this, you may sample from the independent t distributions you obtained in part (a) above. Plot a histogram of your samples and give an approximate 95% posterior interval for \(\mu_t - \mu_c\).
+                </p>
+            </blockquote>
+
+            <!-- Section for Part (a) Solution -->
+            <h2 class="text-xl font-semibold mb-3 text-gray-900">Part (a): Posterior Distributions</h2>
+            <p class="mb-4 text-gray-700">
+                As we determined, the marginal posterior distributions for the means are Student's t-distributions. This arises from using a non-informative prior (\(p(\mu, \sigma^2) \propto 1/\sigma^2\)) where the true variances are unknown.
+            </p>
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-8">
+                <ul class="list-disc list-inside space-y-2 text-blue-900">
+                    <li><strong>Control Group (\(\mu_c\)):</strong> \(t_{df}(loc, scale^2) = t_{31}(1.013, 0.0424^2)\)</li>
+                    <li><strong>Treatment Group (\(\mu_t\)):</strong> \(t_{df}(loc, scale^2) = t_{35}(1.173, 0.0333^2)\)</li>
+                </ul>
+            </div>
+
+            <!-- Section for Part (b) Simulation -->
+            <h2 class="text-xl font-semibold mb-3 text-gray-900">Part (b): Simulation of the Difference \(\mu_t - \mu_c\)</h2>
+            <p class="mb-4 text-gray-700">
+                To find the distribution of the difference, we will run a Monte Carlo simulation. We will draw thousands of samples from each of the two t-distributions and calculate their difference.
+            </p>
+            <div class="flex flex-col sm:flex-row sm:items-center sm:space-x-4 mb-4">
+                <button id="runButton" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-5 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:-translate-y-0.5 mb-3 sm:mb-0">
+                    Run Simulation
+                </button>
+                <div id="interval" class="text-lg font-medium text-gray-900 h-8 flex items-center">
+                    Click "Run Simulation" to start
+                </div>
+            </div>
+            <p id="loading" class="text-gray-600 hidden mb-4">Simulating 100,000 samples... This may take a moment.</p>
+            
+            <!-- Canvas for Histogram -->
+            <canvas id="histogram" width="600" height="400" class="w-full h-auto border border-gray-300 rounded-lg bg-gray-50"></canvas>
+            <p class="text-center text-gray-600 text-sm mt-2">Histogram of Simulated Differences for \(\mu_t - \mu_c\)</p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('runButton').addEventListener('click', runSimulation);
+
+        /**
+         * Creates a function to sample from a Student's t-distribution.
+         * Since d3.randomT() seems unreliable in this environment, we'll
+         * construct it manually using its definition:
+         * T = Z / sqrt(V/df)
+         * where Z ~ N(0, 1)
+         * and V ~ ChiSquared(df)
+         * We can sample from ChiSquared(df) using a Gamma(df/2, 2) distribution.
+         * @param {number} df - Degrees of freedom.
+         * @returns {function} - A function that returns a single t-sample.
+         */
+        function createStudentT(df) {
+            const normalSampler = d3.randomNormal(0, 1);
+            // d3.randomGamma(k, theta) where k is shape, theta is scale.
+            // ChiSquared(df) = Gamma(shape=df/2, rate=1/2) = Gamma(shape=df/2, scale=2)
+            const gammaSampler = d3.randomGamma(df / 2, 2);
+            
+            return function() {
+                const z = normalSampler();
+                const v = gammaSampler();
+                if (v === 0) return 0; // Avoid division by zero, though highly unlikely
+                return z / Math.sqrt(v / df);
+            };
+        }
+
+        function runSimulation() {
+            const button = document.getElementById('runButton');
+            const loading = document.getElementById('loading');
+            const intervalEl = document.getElementById('interval');
+            
+            // Disable button and show loading message
+            button.disabled = true;
+            button.classList.add('opacity-50', 'cursor-not-allowed');
+            loading.classList.remove('hidden');
+            intervalEl.textContent = 'Calculating...';
+
+            // Run simulation in a timeout to allow UI to update
+            setTimeout(() => {
+                
+                // --- 1. Define Parameters (from Part a) ---
+                const control_df = 31;
+                const control_loc = 1.013;
+                const control_scale = 0.24 / Math.sqrt(32); // ~0.0424
+                
+                const treatment_df = 35;
+                const treatment_loc = 1.173;
+                const treatment_scale = 0.20 / Math.sqrt(36); // ~0.0333
+
+                const N_SAMPLES = 100000;
+                const differences = [];
+
+                // --- 2. Generate Samples ---
+                // d3.randomT(df) is the correct function in D3 v7 (d3.randomStudentT is from older versions)
+                // --- UPDATE: d3.randomT seems unavailable, so we use a custom generator ---
+                const t_sampler_c = createStudentT(control_df);
+                const t_sampler_t = createStudentT(treatment_df);
+
+                for (let i = 0; i < N_SAMPLES; i++) {
+                    // Sample from standard t, then scale and shift to get our posterior sample
+                    const sample_c = t_sampler_c() * control_scale + control_loc;
+                    const sample_t = t_sampler_t() * treatment_scale + treatment_loc;
+                    
+                    const diff = sample_t - sample_c;
+                    differences.push(diff);
+                }
+
+                // --- 3. Calculate 95% Posterior Interval ---
+                // We sort the array to find the 2.5th and 97.5th percentiles
+                differences.sort((a, b) => a - b); 
+                const lower = d3.quantile(differences, 0.025);
+                const upper = d3.quantile(differences, 0.975);
+
+                intervalEl.textContent = `95% Interval: [${lower.toFixed(4)}, ${upper.toFixed(4)}]`;
+
+                // --- 4. Plot Histogram ---
+                plotHistogram(differences, lower, upper);
+
+                // --- 5. Reset UI ---
+                button.disabled = false;
+                button.classList.remove('opacity-50', 'cursor-not-allowed');
+                loading.classList.add('hidden');
+
+            }, 10); // End setTimeout
+        }
+
+        function plotHistogram(data, lower, upper) {
+            const canvas = document.getElementById('histogram');
+            const ctx = canvas.getContext('2d');
+            
+            // Handle HiDPI/Retina displays
+            const dpr = window.devicePixelRatio || 1;
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            ctx.scale(dpr, dpr);
+
+            const width = rect.width;
+            const height = rect.height;
+            
+            const margin = { top: 20, right: 20, bottom: 50, left: 60 };
+            const chartWidth = width - margin.left - margin.right;
+            const chartHeight = height - margin.top - margin.bottom;
+
+            ctx.clearRect(0, 0, width, height);
+            ctx.font = "12px Inter, sans-serif";
+
+            // --- Create Scales and Bins ---
+            const x = d3.scaleLinear()
+                .domain(d3.extent(data))
+                .range([margin.left, width - margin.right]);
+
+            const bins = d3.histogram()
+                .domain(x.domain())
+                .thresholds(x.ticks(50)) // ~50 bins
+                (data);
+
+            const y = d3.scaleLinear()
+                .domain([0, d3.max(bins, d => d.length)])
+                .range([height - margin.bottom, margin.top]);
+
+            // --- Draw Bars ---
+            bins.forEach(bin => {
+                const x1 = x(bin.x0);
+                const y1 = y(bin.length);
+                const w = Math.max(1, x(bin.x1) - x1 - 1); // bar width
+                const h = (height - margin.bottom) - y1;
+                
+                // Color bars based on 95% interval
+                const midBin = (bin.x0 + bin.x1) / 2;
+                if (midBin >= lower && midBin <= upper) {
+                    ctx.fillStyle = "steelblue";
+                } else {
+                    ctx.fillStyle = "rgba(156, 163, 175, 0.5)"; // gray-400 with 50% opacity
+                }
+                
+                ctx.fillRect(x1, y1, w, h);
+            });
+
+            // --- Draw 95% Interval Lines ---
+            ctx.beginPath();
+            ctx.strokeStyle = "#db2777"; // pink-600
+            ctx.lineWidth = 2;
+            ctx.setLineDash([4, 2]);
+            // Lower line
+            ctx.moveTo(x(lower), margin.top);
+            ctx.lineTo(x(lower), height - margin.bottom);
+            // Upper line
+            ctx.moveTo(x(upper), margin.top);
+            ctx.lineTo(x(upper), height - margin.bottom);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+
+            // --- Draw Axes ---
+            ctx.beginPath();
+            ctx.strokeStyle = "#333";
+            ctx.lineWidth = 1;
+            // X-Axis
+            ctx.moveTo(margin.left, height - margin.bottom);
+            ctx.lineTo(width - margin.right, height - margin.bottom);
+            // Y-Axis
+            ctx.moveTo(margin.left, height - margin.bottom);
+            ctx.lineTo(margin.left, margin.top);
+            ctx.stroke();
+
+            // --- Draw Ticks and Labels ---
+            ctx.fillStyle = "#333";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "top";
+            
+            // X-Ticks
+            x.ticks(10).forEach(tick => {
+                ctx.beginPath();
+                ctx.moveTo(x(tick), height - margin.bottom);
+                ctx.lineTo(x(tick), height - margin.bottom + 5);
+                ctx.stroke();
+                ctx.fillText(tick.toFixed(2), x(tick), height - margin.bottom + 8);
+            });
+
+            // Y-Ticks
+            ctx.textAlign = "right";
+            ctx.textBaseline = "middle";
+            y.ticks(5).forEach(tick => {
+                ctx.beginPath();
+                ctx.moveTo(margin.left, y(tick));
+                ctx.lineTo(margin.left - 5, y(tick));
+                ctx.stroke();
+                ctx.fillText(tick, margin.left - 8, y(tick));
+            });
+
+            // Axis Labels
+            ctx.save();
+            ctx.textAlign = "center";
+            ctx.textBaseline = "bottom";
+            ctx.font = "14px Inter, sans-serif";
+            ctx.fillText("Difference (μt - μc)", width / 2, height - 10);
+
+            ctx.translate(20, height / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.textAlign = "center";
+            ctx.textBaseline = "top";
+            ctx.fillText("Frequency (Count)", 0, 0);
+            ctx.restore();
+        }
+    </script>
+</body>
+</html>
