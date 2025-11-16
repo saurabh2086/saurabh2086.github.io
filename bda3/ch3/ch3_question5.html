@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 3, Question 5: Bayesian Analysis with Rounded Data</title>
+    <!-- KaTeX for LaTeX rendering - Load first -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Prism.js for syntax highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        /* Add a little extra spacing for list items */
+        .content-area ol li, .content-area ul li {
+            margin-bottom: 0.75rem;
+        }
+         body {
+            font-family: 'Inter', sans-serif;
+         }
+        /* Style for code blocks */
+        pre {
+            background-color: #f4f4f5; /* Tailwind gray-100 */
+            border: 1px solid #e4e4e7; /* Tailwind gray-200 */
+            border-radius: 0.5rem; /* rounded-lg */
+            padding: 1rem; /* p-4 */
+            overflow-x: auto; /* Allow horizontal scroll */
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.875rem; /* text-sm */
+            line-height: 1.25rem;
+        }
+        code {
+            font-family: 'Courier New', Courier, monospace;
+        }
+        /* Prism.js code block styling */
+        pre[class*="language-"] {
+            background-color: #f4f4f5;
+            border: 1px solid #e4e4e7;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            overflow-x: auto;
+        }
+        code[class*="language-"] {
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
+        .home-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        .home-button:hover {
+            background: #34495e;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans antialiased">
+    <a href="../../index.html" class="home-button">
+        ← Home
+    </a>
+
+    <div class="container mx-auto max-w-4xl p-6 md:p-12 mt-12 mb-12">
+        <div class="bg-white rounded-lg shadow-xl p-8 md:p-12">
+            
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-8">
+                Chapter 3, Question 5: Bayesian Analysis with Rounded Data
+            </h1>
+
+            <!-- Problem Statement Section -->
+            <section id="problem-statement" class="content-area mb-12">
+                <div class="bg-gray-100 border-l-4 border-gray-400 rounded-lg p-6 md:p-8 shadow-sm">
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-4">
+                        Problem Statement
+                    </h2>
+                    
+                    <p class="text-lg text-gray-700 leading-relaxed mb-6">
+                        It is a common problem for measurements to be observed in rounded form (for a review, see Heitjan, 1989). For a simple example, suppose we weigh an object five times and measure weights, rounded to the nearest pound, of 10, 10, 12, 11, 9. Assume the unrounded measurements are normally distributed with a noninformative prior distribution on the mean $\mu$ and variance $\sigma^2$.
+                    </p>
+
+                    <ol class="list-decimal list-outside ml-8 text-lg text-gray-700 leading-relaxed space-y-3">
+                        <li>
+                            Give the posterior distribution for $(\mu, \sigma^2)$ obtained by pretending that the observations are exact unrounded measurements.
+                        </li>
+                        <li>
+                            Give the correct posterior distribution for $(\mu, \sigma^2)$ treating the measurements as rounded.
+                        </li>
+                        <li>
+                            How do the incorrect and correct posterior distributions differ? Compare means, variances, and contour plots.
+                        </li>
+                        <li>
+                            Let $z = (z_1, \dots, z_5)$ be the original, unrounded measurements corresponding to the five observations above. Draw simulations from the posterior distribution of $z$. Compute the posterior mean of $(z_1 - z_2)^2$.
+                        </li>
+                    </ol>
+                </div>
+            </section>
+
+            <!-- Solutions Section -->
+            <section id="solutions" class="mt-12 content-area">
+                <h2 class="text-2xl font-semibold text-gray-800 border-b pb-2 mb-4">
+                    Solutions
+                </h2>
+
+                <!-- Part (a) Solution -->
+                <div id="part-a" class="mb-12">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-3">(a) The 'Incorrect' Posterior (Pretending Data is Exact)</h3>
+                    <p class="text-lg text-gray-700 leading-relaxed mb-4">
+                        We are asked to pretend the observations $y = (10, 10, 12, 11, 9)$ are exact. This is a standard Bayesian problem with a Normal likelihood and unknown mean $\mu$ and variance $\sigma^2$.
+                    </p>
+                    <ul class="list-disc list-outside ml-8 text-lg text-gray-700 leading-relaxed">
+                        <li><strong>Likelihood:</strong> $p(y | \mu, \sigma^2) = \prod_{i=1}^n N(y_i | \mu, \sigma^2)$</li>
+                        <li><strong>Prior:</strong> The noninformative prior is $p(\mu, \sigma^2) \propto \frac{1}{\sigma^2}$</li>
+                    </ul>
+
+                    <p class="text-lg text-gray-700 leading-relaxed my-4">
+                        First, we calculate the summary statistics from the data:
+                    </p>
+                    <ul class="list-disc list-outside ml-8 text-lg text-gray-700 leading-relaxed">
+                        <li>Sample size: $n = 5$</li>
+                        <li>Sample mean: $\bar{y} = \frac{10+10+12+11+9}{5} = \frac{52}{5} = 10.4$</li>
+                        <li>Sample variance: $s^2 = \frac{1}{n-1} \sum_{i=1}^n (y_i - \bar{y})^2$
+                            <br>
+                            $s^2 = \frac{1}{4} [ (10-10.4)^2 + (10-10.4)^2 + (12-10.4)^2 + (11-10.4)^2 + (9-10.4)^2 ]$
+                            <br>
+                            $s^2 = \frac{1}{4} [ 0.16 + 0.16 + 2.56 + 0.36 + 1.96 ] = \frac{5.2}{4} = 1.3$
+                        </li>
+                    </ul>
+
+                    <p class="text-lg text-gray-700 leading-relaxed my-4">
+                        For this model, the joint posterior distribution $p(\mu, \sigma^2 | y)$ is a <strong>Normal-Inverse-Gamma</strong> distribution. The marginal posterior distributions for $\mu$ and $\sigma^2$ are:
+                    </p>
+                    
+                    <ol class="list-decimal list-outside ml-8 text-lg text-gray-700 leading-relaxed">
+                        <li>
+                            <strong>Marginal Posterior for $\sigma^2$:</strong> The posterior for $\sigma^2$ is a scaled Inverse-$\chi^2$ distribution (which is a special case of the Inverse-Gamma distribution):
+                            $$ p(\sigma^2 | y) \sim \text{Inv-Gamma}\left(\frac{n-1}{2}, \frac{(n-1)s^2}{2}\right) $$
+                            Plugging in our values:
+                            $$ p(\sigma^2 | y) \sim \text{Inv-Gamma}\left(\frac{4}{2}, \frac{4 \times 1.3}{2}\right) \equiv \text{Inv-Gamma}(2, 2.6) $$
+                        </li>
+                        <li>
+                            <strong>Marginal Posterior for $\mu$:</strong> The posterior for $\mu$ follows a Student's t-distribution, centered at the sample mean:
+                            $$ p(\mu | y) \sim t_{n-1}\left(\bar{y}, \frac{s^2}{n}\right) $$
+                            Plugging in our values:
+                            $$ p(\mu | y) \sim t_4\left(10.4, \frac{1.3}{5}\right) \equiv t_4(10.4, 0.26) $$
+                            This means the quantity $\frac{\mu - 10.4}{\sqrt{0.26}}$ follows a standard t-distribution with 4 degrees of freedom.
+                        </li>
+                    </ol>
+                </div>
+
+                <!-- Part (b) Solution -->
+                <div id="part-b" class="mb-12">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-3">(b) The 'Correct' Posterior (Treating Data as Rounded)</h3>
+                    <p class="text-lg text-gray-700 leading-relaxed mb-4">
+                        In this part, we acknowledge that the data is rounded. The observation $y_i$ is not the true value $z_i$. Instead, an observation like $y_i = 10$ means the true, unrounded value $z_i$ lies in the interval $[9.5, 10.5)$.
+                    </p>
+                    <p class="text-lg text-gray-700 leading-relaxed mb-4">
+                        In general, an observation $y_i$ implies $z_i \in [y_i - 0.5, y_i + 0.5)$.
+                    </p>
+                    
+                    <p class="text-lg text-gray-700 leading-relaxed mb-4">
+                        The likelihood contribution from a single observation $y_i$ is no longer a density, but the <strong>probability</strong> that the true value $z_i$ falls into the corresponding interval:
+                        $$ L(y_i | \mu, \sigma^2) = P(y_i - 0.5 \le z_i < y_i + 0.5) \quad \text{where } z_i \sim N(\mu, \sigma^2) $$
+                    </p>
+                    
+                    <p class="text-lg text-gray-700 leading-relaxed mb-4">
+                        We express this probability using the Cumulative Distribution Function (CDF) of the Normal distribution. Let $\Phi(x)$ be the CDF of the <strong>standard</strong> Normal $N(0, 1)$ distribution.
+                    </p>
+                    <p class="text-lg text-gray-700 leading-relaxed mb-4">
+                        The likelihood for one point $y_i$ is:
+                        $$ L(y_i | \mu, \sigma^2) = \Phi\left(\frac{(y_i + 0.5) - \mu}{\sigma}\right) - \Phi\left(\frac{(y_i - 0.5) - \mu}{\sigma}\right) $$
+                    </p>
+                    
+                    <p class="text-lg text-gray-700 leading-relaxed mb-4">
+                        The full likelihood $L(y | \mu, \sigma^2)$ is the product of these terms for all $n=5$ observations. Our data is $y = (10, 10, 12, 11, 9)$.
+                    </p>
+                    $$ L(y | \mu, \sigma^2) = \prod_{i=1}^n \left[ \Phi\left(\frac{y_i + 0.5 - \mu}{\sigma}\right) - \Phi\left(\frac{y_i - 0.5 - \mu}{\sigma}\right) \right] $$
+                    <p class="text-lg text-gray-700 leading-relaxed mt-4">
+                        Substituting our specific data points:
+                    </p>
+                    $$ L(y | \mu, \sigma^2) = \left[ \Phi\left(\frac{10.5 - \mu}{\sigma}\right) - \Phi\left(\frac{9.5 - \mu}{\sigma}\right) \right]^2 \times $$
+                    $$ \left[ \Phi\left(\frac{12.5 - \mu}{\sigma}\right) - \Phi\left(\frac{11.5 - \mu}{\sigma}\right) \right] \times $$
+                    $$ \left[ \Phi\left(\frac{11.5 - \mu}{\sigma}\right) - \Phi\left(\frac{10.5 - \mu}{\sigma}\right) \right] \times $$
+                    $$ \left[ \Phi\left(\frac{9.5 - \mu}{\sigma}\right) - \Phi\left(\frac{8.5 - \mu}{\sigma}\right) \right] $$
+                    
+                    <p class="text-lg text-gray-700 leading-relaxed my-4">
+                        Finally, the posterior distribution is proportional to the likelihood times the prior. Using the same noninformative prior $p(\mu, \sigma^2) \propto \frac{1}{\sigma^2}$:
+                    </p>
+                    $$ p(\mu, \sigma^2 | y) \propto p(y | \mu, \sigma^2) \times p(\mu, \sigma^2) $$
+                    $$ p(\mu, \sigma^2 | y) \propto \frac{1}{\sigma^2} \prod_{i=1}^n \left[ \Phi\left(\frac{y_i + 0.5 - \mu}{\sigma}\right) - \Phi\left(\frac{y_i - 0.5 - \mu}{\sigma}\right) \right] $$
+                    
+                    <p class="text-lg text-gray-700 leading-relaxed mt-4">
+                        This is the final expression for the correct posterior distribution. Unlike in part (a), this is not a standard, named distribution. Its properties (like mean and variance) cannot be found with a simple formula and must be computed numerically, for example, by using MCMC or grid sampling.
+                    </p>
+                </div>
+
+                <!-- Part (c) Solution -->
+                <div id="part-c" class="mb-12">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-3">(c) Comparison of the Distributions</h3>
+                    
+                    <p class="text-lg text-gray-700 leading-relaxed mb-6">
+                        Here we compare the two posterior distributions: the 'incorrect' one (Part a) which treated the data as exact, and the 'correct' one (Part b) which properly accounted for rounding.
+                    </p>
+
+                    <!-- Visual Comparison -->
+                    <h4 class="text-lg font-semibold text-gray-800 mb-4">Visual Comparison: Contour Plots</h4>
+                    <p class="text-lg text-gray-700 leading-relaxed mb-4">
+                        The contour plots show the joint posterior density $p(\mu, \log(\sigma) | y)$. Visually, the two distributions are nearly identical, suggesting that for this specific dataset, the effect of rounding is minimal.
+                    </p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <div>
+                            <h5 class="text-md font-semibold text-center text-gray-700 mb-2">Part (a): 'Incorrect' Model (Exact Data)</h5>
+                            <!-- Make sure 'download.png' is in the same folder as your HTML file -->
+                            <img src="download.png" alt="Contour plot for Part A, ignoring rounding" class="rounded-lg shadow-md border border-gray-200 w-full h-auto">
+                        </div>
+                        <div>
+                            <h5 class="text-md font-semibold text-center text-gray-700 mb-2">Part (b): 'Correct' Model (Rounded Data)</h5>
+                            <!-- Make sure 'download (1).png' is in the same folder as your HTML file -->
+                            <img src="download (1).png" alt="Contour plot for Part B, accounting for rounding" class="rounded-lg shadow-md border border-gray-200 w-full h-auto">
+                        </div>
+                    </div>
+
+                    <!-- Numerical Comparison -->
+                    <h4 class="text-lg font-semibold text-gray-800 mb-4">Numerical Comparison: Posterior Summaries</h4>
+                    <p class="text-lg text-gray-700 leading-relaxed mb-4">
+                        The numerical summaries from the analysis confirm the visual finding. The posterior means, standard deviations, and 95% credible intervals are all extremely close for both models.
+                    </p>
+
+                    <div class="overflow-x-auto rounded-lg shadow-md border border-gray-200 mb-6">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Model</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Parameter</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mean</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Std. Dev.</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">95% Credible Interval</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <!-- Part (a) Data -->
+                                <tr class="bg-orange-50">
+                                    <td rowspan="2" class="px-6 py-4 whitespace-nowrap font-medium align-top">
+                                        <strong>Part (a): 'Incorrect'</strong><br>(Analytical)
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">$\mu$ (mu)</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-gray-700">10.4127</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-gray-700">0.7290</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-gray-700">[8.9086, 11.8609]</td>
+                                </tr>
+                                <tr class="bg-orange-50">
+                                    <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">$\sigma$ (sd)</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-gray-700">1.4422</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-gray-700">0.7286</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-gray-700">[0.6740, 3.3588]</td>
+                                </tr>
+                                <!-- Part (b) Data -->
+                                <tr class="bg-blue-50">
+                                    <td rowspan="2" class="px-6 py-4 whitespace-nowrap font-medium align-top">
+                                        <strong>Part (b): 'Correct'</strong><br>(Grid Sampling)
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">$\mu$ (mu)</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-gray-700">10.3834</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-gray-700">0.7126</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-gray-700">[8.9548, 11.7437]</td>
+                                </tr>
+                                <tr class="bg-blue-50">
+                                    <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">$\sigma$ (sd)</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-gray-700">1.3671</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-gray-700">0.6826</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-gray-700">[0.6111, 3.2086]</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Analysis -->
+                    <h4 class="text-lg font-semibold text-gray-800 mb-4">Analysis of Differences</h4>
+                    <p class="text-lg text-gray-700 leading-relaxed">
+                        <strong>Conclusion:</strong> For this specific problem, the 'incorrect' posterior (Part a) serves as an excellent approximation of the 'correct' posterior (Part b). The effect of treating the rounded data as exact is negligible.
+                    </p>
+                    <ul class="list-disc list-outside ml-8 text-lg text-gray-700 leading-relaxed mt-4">
+                        <li>The posterior means for both $\mu$ (10.41 vs. 10.38) and $\sigma$ (1.44 vs. 1.37) are extremely close.</li>
+                        <li>The 95% credible intervals are also nearly overlapping.</li>
+                        <li>This indicates that the information lost or distorted by the rounding process was not significant enough to change our final conclusions about the parameters.</li>
+                    </ul>
+
+                    <h4 class="text-lg font-semibold text-gray-800 mb-4 mt-6">Python Code for Part (c)</h4>
+                    <p class="text-lg text-gray-700 leading-relaxed">
+                        The numerical results in the table above were generated using the Python script shown in the final section. That script implements the analytical solution for Part (a) and the grid-sampling approximation for Part (b).
+                    </p>
+                </div>
+                
+                <!-- Part (d) Solution -->
+                <div id="part-d">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-3">(d) Simulating $z$ and finding $E[(z_1 - z_2)^2 | y]$</h3>
+                    <p class="text-lg text-gray-700 leading-relaxed mb-4">
+                        We need to compute the posterior mean of $(z_1 - z_2)^2$, where $z_1$ and $z_2$ are the *unrounded* measurements corresponding to the first two observations, $y_1 = 10$ and $y_2 = 10$.
+                    </p>
+                    <p class="text-lg text-gray-700 leading-relaxed mb-4">
+                        The 'incorrect' model from Part (a) would assume $z_1 = 10$ and $z_2 = 10$, so it would conclude that $E[(z_1 - z_2)^2 | y] = 0$.
+                    </p>
+                    <p class="text-lg text-gray-700 leading-relaxed mb-4">
+                        The 'correct' model (Part b) acknowledges that $z_1$ and $z_2$ are two independent draws from the (unknown) distribution $N(\mu, \sigma^2)$, both of which happened to fall in the rounding interval $[9.5, 10.5)$. To find the posterior mean, we:
+                    </p>
+                    <ol class="list-decimal list-outside ml-8 text-lg text-gray-700 leading-relaxed">
+                        <li>Draw a sample $(\mu_j, \sigma_j)$ from the 'correct' posterior $p(\mu, \sigma | y)$ (which we did in Part b).</li>
+                        <li>Draw $z_1^{(j)}$ from $N(\mu_j, \sigma_j^2)$ truncated to the interval $[9.5, 10.5)$.</li>
+                        <li>Draw $z_2^{(j)}$ from $N(\mu_j, \sigma_j^2)$ truncated to the interval $[9.5, 10.5)$.</li>
+                        <li>Compute the squared difference: $(z_1^{(j)} - z_2^{(j)})^2$.</li>
+                        <li>Repeat this process many times (e.g., 2000) and find the average.</li>
+                    </ol>
+                    <p class="text-lg text-gray-700 leading-relaxed mb-4">
+                        This is accomplished using the <strong>inverse transform sampling</strong> method, as implemented in the Python script.
+                    </p>
+
+                    <h4 class="text-lg font-semibold text-gray-800 mb-2 mt-6">Posterior Mean of $(z_1 - z_2)^2$</h4>
+                    <p class="text-lg text-gray-700 leading-relaxed mb-4">
+                        Running this calculation with the Python script yields the posterior mean:
+                    </p>
+                    
+                    <div class="bg-blue-50 p-6 rounded-lg shadow-inner">
+                        <p class="text-3xl font-bold text-center text-blue-800 tracking-wide">
+                            0.1577
+                        </p>
+                    </div>
+
+                    <h4 class="text-lg font-semibold text-gray-800 mb-4 mt-6">Python Code for Part (d)</h4>
+                    <p class="text-lg text-gray-700 leading-relaxed">
+                        This result was generated by the final section of the Python script below, which implements the inverse transform sampling method described in the list above.
+                    </p>
+                </div>
+
+                <!-- Complete Python Code -->
+                <div id="python-code" class="mt-12">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-3">Complete Python Code (Parts c & d)</h3>
+                    <p class="text-lg text-gray-700 leading-relaxed mb-4">
+                        This single Python script (using <code>numpy</code> and <code>scipy</code>) generates all the numerical results for the tables in Part (c) and the final value for Part (d).
+                    </p>
+                    <pre><code class="language-python">import numpy as np
+from scipy.stats import norm, chi2
+
+# ===================================================================
+# 1. HELPER FUNCTIONS
+# ===================================================================
+
+def post_b(mu, sd, y):
+    """Log-likelihood for Part (b), treating data as rounded."""
+    p_upper = norm.cdf(y + 0.5, loc=mu, scale=sd)
+    p_lower = norm.cdf(y - 0.5, loc=mu, scale=sd)
+    likelihood = p_upper - p_lower + 1e-10
+    if np.any(likelihood <= 0):
+        return -np.inf
+    return np.sum(np.log(likelihood))
+    
+def summ(x, name):
+    """Helper function to print summaries."""
+    quantiles = np.quantile(x, [0.025, 0.5, 0.975])
+    print(f"\n--- Summary for: {name} ---")
+    print(f"    Mean: {np.mean(x):.4f}, StdDev: {np.std(x, ddof=1):.4f}")
+    print(f"    Quantiles: [2.5%: {quantiles[0]:.4f}, 50%: {quantiles[1]:.4f}, 97.5%: {quantiles[2]:.4f}]")
+
+# ===================================================================
+# 2. SETUP (Same as R script)
+# ===================================================================
+nsim = 2000
+y = np.array([10, 10, 12, 11, 9])
+n = len(y)
+ybar = np.mean(y)
+s2 = np.var(y, ddof=1)
+
+# Create the grids
+mugrid = np.linspace(3, 18, 200)
+logsdgrid = np.linspace(-2, 4, 200)
+sdgrid = np.exp(logsdgrid)
+
+# ===================================================================
+# 3. PART (a) - 'INCORRECT' MODEL (for table in part c)
+# ===================================================================
+print("--- Part (a): Analytical Solution ('Incorrect' Model) ---")
+sd_a = np.sqrt((n - 1) * s2 / chi2.rvs(df=n - 1, size=nsim))
+mu_a = norm.rvs(loc=ybar, scale=sd_a / np.sqrt(n), size=nsim)
+summ(mu_a, "mu (Part a)")
+summ(sd_a, "sd (Part a)")
+
+# ===================================================================
+# 4. PART (b) - 'CORRECT' MODEL (for table in part c)
+# ===================================================================
+print("\n--- Part (b): Grid Sampling Solution ('Correct' Model) ---")
+
+logdens_b = np.zeros((len(mugrid), len(sdgrid)))
+for i, mu in enumerate(mugrid):
+    for j, sd in enumerate(sdgrid):
+        logdens_b[i, j] = post_b(mu, sd, y)
+
+dens_b = np.exp(logdens_b - np.max(logdens_b))
+dens_mu = np.sum(dens_b, axis=1)
+prob_mu = dens_mu / np.sum(dens_mu)
+
+mu_indices = np.random.choice(
+    a=len(mugrid), size=nsim, replace=True, p=prob_mu
+)
+mu_b = mugrid[mu_indices] # Posterior samples for mu
+
+sd_b = np.zeros(nsim) # Posterior samples for sd
+for i in range(nsim):
+    mu_idx = mu_indices[i]
+    cond_prob_slice = dens_b[mu_idx, :]
+    sum_slice = np.sum(cond_prob_slice)
+    if sum_slice == 0:
+        logsd_idx = np.random.randint(0, len(logsdgrid))
+    else:
+        cond_prob = cond_prob_slice / sum_slice
+        logsd_idx = np.random.choice(
+            a=len(logsdgrid), size=1, p=cond_prob
+        )[0]
+    sd_b[i] = np.exp(logsdgrid[logsd_idx])
+
+summ(mu_b, "mu (Part b)")
+summ(sd_b, "sd (Part b)")
+
+# ===================================================================
+# 5. PART (d) - SIMULATING z
+# ===================================================================
+print("\n--- Part (d): Final Result ---")
+
+z_samples = np.zeros((nsim, len(y)))
+for i in range(len(y)):
+    lower_prob = norm.cdf(y[i] - 0.5, loc=mu_b, scale=sd_b)
+    upper_prob = norm.cdf(y[i] + 0.5, loc=mu_b, scale=sd_b)
+    u_sample = np.random.rand(nsim)
+    prob_sample = lower_prob + u_sample * (upper_prob - lower_prob)
+    z_samples[:, i] = norm.ppf(prob_sample, loc=mu_b, scale=sd_b)
+
+diff_sq = (z_samples[:, 0] - z_samples[:, 1])**2
+posterior_mean_diff_sq = np.mean(diff_sq)
+
+print(f"The posterior mean of (z1 - z2)^2 is: {posterior_mean_diff_sq}")
+</code></pre>
+                </div>
+
+            </section>
+
+        </div>
+    </div>
+    
+    <!-- KaTeX rendering script -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            console.log('DOMContentLoaded fired');
+            console.log('renderMathInElement available:', typeof renderMathInElement !== 'undefined');
+            console.log('katex available:', typeof katex !== 'undefined');
+            
+            // Render all math on the page
+            if (typeof renderMathInElement !== 'undefined') {
+                try {
+                    renderMathInElement(document.body, {
+                        delimiters: [
+                            {left: '$$', right: '$$', display: true},
+                            {left: '$', right: '$', display: false},
+                            {left: '\\[', right: '\\]', display: true},
+                            {left: '\\(', right: '\\)', display: false}
+                        ],
+                        throwOnError: false
+                    });
+                    console.log('KaTeX rendering completed');
+                } catch (e) {
+                    console.error('KaTeX rendering error:', e);
+                }
+            } else {
+                console.error('renderMathInElement is not defined. KaTeX auto-render script may not have loaded.');
+                // Fallback: try again after a delay
+                setTimeout(function() {
+                    if (typeof renderMathInElement !== 'undefined') {
+                        renderMathInElement(document.body, {
+                            delimiters: [
+                                {left: '$$', right: '$$', display: true},
+                                {left: '$', right: '$', display: false},
+                                {left: '\\[', right: '\\]', display: true},
+                                {left: '\\(', right: '\\)', display: false}
+                            ],
+                            throwOnError: false
+                        });
+                        console.log('KaTeX rendering completed (delayed)');
+                    }
+                }, 500);
+            }
+        });
+    </script>
+</body>
+</html>
