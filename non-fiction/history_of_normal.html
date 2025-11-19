@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Normal Distribution: A Mathematical Convergence</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- MathJax Configuration -->
+    <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    };
+    </script>
+    <!-- MathJax for LaTeX rendering -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <!-- Custom Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .math-font {
+            font-family: 'Fira Code', monospace;
+        }
+        /* Custom scrollbar for code blocks */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555; 
+        }
+        /* Smooth anchor scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+        /* Home button */
+        .home-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #2c3e50;
+            color: #fff;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        .home-button:hover {
+            background: #34495e;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 antialiased">
+    <a href="../../index.html" class="home-button">← Home</a>
+    <!-- Navigation / Header -->
+    <nav class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex-shrink-0 flex items-center">
+                    <span class="font-bold text-xl tracking-tight text-slate-900">Math<span class="text-indigo-600">History</span></span>
+                </div>
+                <div class="text-sm text-gray-500 hidden sm:block">The Origins of the Bell Curve</div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Wrapper -->
+    <main class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+        <!-- Title Section -->
+        <header class="mb-12 text-center">
+            <div class="inline-block px-3 py-1 mb-4 text-xs font-semibold tracking-wider text-indigo-600 uppercase bg-indigo-50 rounded-full">
+                Mathematical History
+            </div>
+            <h1 class="text-4xl sm:text-5xl font-extrabold text-gray-900 mb-6 leading-tight">
+                The Normal Distribution: <br/>
+                <span class="text-indigo-600">A Convergence of Three Minds</span>
+            </h1>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
+                It wasn't just invented. It was derived three separate times, by three mathematical giants, for three completely different reasons.
+            </p>
+        </header>
+
+        <!-- SECTION 1: INTRODUCTION -->
+        <article class="prose prose-lg prose-indigo max-w-none">
+            
+            <!-- The Hook: The Equation with SVG Visualization -->
+            <div class="bg-slate-900 text-white rounded-xl shadow-2xl p-8 mb-12 transform transition hover:scale-[1.01] duration-300 border border-slate-700">
+                
+                <div class="flex flex-col items-center justify-center mb-8">
+                    <!-- Normal Curve SVG -->
+                     <svg viewBox="0 0 600 200" class="w-full max-w-lg h-auto" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="curveGradient" x1="0" x2="0" y1="0" y2="1">
+                                <stop offset="0%" stop-color="#818cf8" stop-opacity="0.5"/>
+                                <stop offset="100%" stop-color="#818cf8" stop-opacity="0.0"/>
+                            </linearGradient>
+                        </defs>
+                        <!-- Baseline -->
+                        <line x1="20" y1="180" x2="580" y2="180" stroke="#94a3b8" stroke-width="2" stroke-opacity="0.5" />
+                        
+                        <!-- The Curve: Cubic Bezier for smoothness -->
+                         <path fill="url(#curveGradient)" stroke="#818cf8" stroke-width="3" 
+                              d="M 20 180 
+                                 C 140 180, 180 170, 230 85
+                                 C 260 30, 340 30, 370 85
+                                 C 420 170, 460 180, 580 180 Z" 
+                               stroke-linejoin="round" />
+
+                        
+                        <!-- Mean Line -->
+                        <line x1="300" y1="180" x2="300" y2="40" stroke="#e2e8f0" stroke-width="2" stroke-dasharray="6,6" stroke-opacity="0.5" />
+                        <text x="300" y="195" text-anchor="middle" fill="#94a3b8" font-family="monospace" font-size="12">μ</text>
+                    </svg>
+                </div>
+
+                <div class="text-xs font-mono text-slate-400 mb-4 text-center uppercase tracking-widest">The Gaussian PDF</div>
+                <div class="overflow-x-auto text-center text-xl">
+                    $$ f(x) = \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{x-\mu}{\sigma}\right)^2} $$
+                </div>
+            </div>
+
+            <!-- TIMELINE SECTION -->
+            <div class="relative my-16 pl-4 sm:pl-0">
+                <!-- Vertical line -->
+                <div class="absolute left-8 sm:left-1/2 top-0 bottom-0 w-0.5 bg-gray-200 transform -translate-x-1/2"></div>
+
+                <!-- 1. De Moivre -->
+                <div class="relative z-10 flex flex-col sm:flex-row items-center mb-16 group">
+                    <div class="w-full sm:w-1/2 flex justify-end pr-8 mb-4 sm:mb-0 order-2 sm:order-1">
+                        <div class="bg-white p-6 rounded-lg shadow-md border border-gray-100 w-full max-w-sm relative hover:shadow-lg transition-shadow cursor-pointer" onclick="document.getElementById('demoivre').scrollIntoView()">
+                             <div class="absolute top-4 right-4 text-4xl opacity-20">🎲</div>
+                            <h3 class="text-lg font-bold text-gray-900">The Gambler</h3>
+                             <div class="text-indigo-600 font-mono text-sm font-bold mb-2">Abraham de Moivre (1733)</div>
+                            <p class="text-sm text-gray-600">
+                                Needed a shortcut to calculate coin-flip odds. He found the curve as the <em>limit of the binomial distribution</em>.
+                            </p>
+                            <div class="hidden sm:block absolute top-1/2 -right-2 w-4 h-4 bg-white border-t border-r border-gray-100 transform rotate-45 -translate-y-1/2"></div>
+                        </div>
+                    </div>
+                    <div class="w-16 h-16 flex-shrink-0 rounded-full border-4 border-white shadow-md bg-gray-100 overflow-hidden relative z-20 order-1 sm:order-2 mb-4 sm:mb-0 ml-4 sm:ml-0">
+                        <!-- De Moivre Portrait -->
+                         <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Abraham_de_Moivre_by_Joseph_Highmore.jpg/500px-Abraham_de_Moivre_by_Joseph_Highmore.jpg" alt="Abraham de Moivre" class="w-full h-full object-cover">
+                    </div>
+                    <div class="w-full sm:w-1/2 pl-8 order-3 hidden sm:block"></div>
+                </div>
+
+                <!-- 2. Gauss -->
+                <div class="relative z-10 flex flex-col sm:flex-row items-center mb-16 group">
+                    <div class="w-full sm:w-1/2 pr-8 order-2 sm:order-1 hidden sm:block"></div>
+                    <div class="w-16 h-16 flex-shrink-0 rounded-full border-4 border-white shadow-md bg-gray-100 overflow-hidden relative z-20 order-1 sm:order-2 mb-4 sm:mb-0 ml-4 sm:ml-0">
+                        <!-- Gauss Portrait -->
+                         <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Carl_Friedrich_Gauss_1840_by_Jensen.jpg/240px-Carl_Friedrich_Gauss_1840_by_Jensen.jpg" alt="Carl Friedrich Gauss" class="w-full h-full object-cover">
+                    </div>
+                    <div class="w-full sm:w-1/2 flex justify-start pl-8 order-2 sm:order-3">
+                         <div class="bg-white p-6 rounded-lg shadow-md border border-gray-100 w-full max-w-sm relative hover:shadow-lg transition-shadow">
+                            <div class="absolute top-4 right-4 text-4xl opacity-20">🔭</div>
+                            <h3 class="text-lg font-bold text-gray-900">The Astronomer</h3>
+                            <div class="text-indigo-600 font-mono text-sm font-bold mb-2">Carl Friedrich Gauss (1809)</div>
+                            <p class="text-sm text-gray-600">
+                                Needed to minimize error in tracking planets. He derived the curve from the <em>axiom of the arithmetic mean</em>.
+                            </p>
+                            <div class="hidden sm:block absolute top-1/2 -left-2 w-4 h-4 bg-white border-l border-b border-gray-100 transform rotate-45 -translate-y-1/2"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Laplace -->
+                <div class="relative z-10 flex flex-col sm:flex-row items-center group">
+                     <div class="w-full sm:w-1/2 flex justify-end pr-8 mb-4 sm:mb-0 order-2 sm:order-1">
+                        <div class="bg-white p-6 rounded-lg shadow-md border border-gray-100 w-full max-w-sm relative hover:shadow-lg transition-shadow">
+                            <div class="absolute top-4 right-4 text-4xl opacity-20">🌌</div>
+                            <h3 class="text-lg font-bold text-gray-900">The Theorist</h3>
+                            <div class="text-indigo-600 font-mono text-sm font-bold mb-2">Pierre-Simon Laplace (1812)</div>
+                            <p class="text-sm text-gray-600">
+                                Asked the biggest question of all. He proved the curve is the <em>universal attractor</em> for sums of random variables.
+                            </p>
+                            <div class="hidden sm:block absolute top-1/2 -right-2 w-4 h-4 bg-white border-t border-r border-gray-100 transform rotate-45 -translate-y-1/2"></div>
+                        </div>
+                    </div>
+                    <div class="w-16 h-16 flex-shrink-0 rounded-full border-4 border-white shadow-md bg-gray-100 overflow-hidden relative z-20 order-1 sm:order-2 mb-4 sm:mb-0 ml-4 sm:ml-0">
+                        <!-- Laplace Portrait -->
+                         <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Laplace%2C_Pierre-Simon%2C_marquis_de.jpg/240px-Laplace%2C_Pierre-Simon%2C_marquis_de.jpg" alt="Pierre-Simon Laplace" class="w-full h-full object-cover">
+                    </div>
+                     <div class="w-full sm:w-1/2 pl-8 order-3 hidden sm:block"></div>
+                </div>
+            </div>
+        </article>
+
+        <!-- ========================================= -->
+        <!-- SECTION 2: DE MOIVRE -->
+        <!-- ========================================= -->
+        <section id="demoivre" class="mt-24">
+            <div class="flex items-center mb-8">
+                <div class="bg-indigo-100 text-indigo-600 rounded-full p-3 mr-4">
+                    <span class="text-2xl">🎲</span>
+                </div>
+                <h2 class="text-3xl font-bold text-gray-900">Part 1: The Gambler's Limit</h2>
+            </div>
+
+            <article class="prose prose-lg prose-indigo max-w-none text-gray-700">
+                <p>
+                    In 1733, the French mathematician <strong>Abraham de Moivre</strong> was working as a consultant for gamblers in London. He was analyzing the <strong>Binomial Distribution</strong>—the probabilities of getting $k$ heads in $n$ coin flips.
+                </p>
+                <p>
+                    The formula for this is exact, but computationally brutal:
+                </p>
+                <div class="my-6 bg-gray-50 p-4 rounded-lg border border-gray-200 text-center font-mono text-sm sm:text-base">
+                    $$ P(k) = \binom{n}{k} p^k (1-p)^{n-k} = \frac{n!}{k!(n-k)!} \left(\frac{1}{2}\right)^n $$
+                </div>
+                <p>
+                    Imagine calculating this for 1,000 coin flips ($n=1000$). You would need to compute $1000!$, a number with over 2,500 digits. It was impossible. De Moivre needed a shortcut.
+                </p>
+
+                <!-- The Mathematical Hack -->
+                <h3 class="text-xl font-bold text-gray-900 mt-8 mb-4">The Tool: Stirling's Approximation</h3>
+                <p>
+                    The bottleneck was the factorial ($n!$). To solve this, De Moivre used a brand new result (now attributed to his friend James Stirling): <strong>a factorial can be approximated by a smooth curve</strong>.
+                </p>
+
+                <!-- Derivation Block -->
+                <div class="bg-slate-800 text-slate-100 rounded-lg p-6 my-8 shadow-inner">
+                    <h4 class="text-indigo-300 font-bold uppercase text-sm tracking-wider mb-4 border-b border-slate-600 pb-2">
+                        Derivation: From Product to Integral
+                    </h4>
+                    <p class="text-sm text-slate-300 mb-4">
+                        How do you turn a discrete product ($1 \times 2 \times \dots$) into a continuous function? You use Logarithms and Calculus.
+                    </p>
+                    
+                    <div class="space-y-4 text-sm font-light">
+                        <div class="flex flex-col sm:flex-row gap-4">
+                            <div class="sm:w-1/3 text-slate-400">1. Turn Product to Sum</div>
+                            <div class="sm:w-2/3">
+                                $$ \ln(n!) = \ln(1 \times 2 \times \dots \times n) = \sum_{i=1}^{n} \ln(i) $$
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col sm:flex-row gap-4">
+                            <div class="sm:w-1/3 text-slate-400">2. Approximate with Integral</div>
+                            <div class="sm:w-2/3">
+                                Since $\ln(x)$ changes slowly, we approximate the discrete sum with an area:
+                                $$ \sum_{i=1}^{n} \ln(i) \approx \int_{1}^{n} \ln(x) \, dx $$
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col sm:flex-row gap-4">
+                            <div class="sm:w-1/3 text-slate-400">3. Integration by Parts</div>
+                            <div class="sm:w-2/3">
+                                Use $\int u \, dv = uv - \int v \, du$ with $u=\ln x$ and $dv=dx$.
+                                $$ \int \ln x \, dx = x\ln x - x $$
+                            </div>
+                        </div>
+
+                         <div class="flex flex-col sm:flex-row gap-4">
+                            <div class="sm:w-1/3 text-slate-400">4. The Result</div>
+                            <div class="sm:w-2/3">
+                                Evaluating from 1 to $n$:
+                                $$ \ln(n!) \approx n\ln n - n $$
+                                Exponentiating both sides gives the core of the formula:
+                                <span class="text-yellow-300 font-mono bg-slate-700 px-1 rounded">$ n! \approx (n/e)^n $</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Deeper Analysis Section -->
+                        <div class="mt-6 pt-4 border-t border-slate-600 text-xs text-slate-400 bg-slate-800/50">
+                            <p class="mb-2"><strong class="text-indigo-300">Deep Dive: Where does $\sqrt{2\pi n}$ come from?</strong></p>
+                            <p class="mb-2 leading-relaxed">
+                                The simple integral $\int \ln x dx$ approximates the sum of rectangles using a smooth curve, but it ignores the "triangular" errors at the tops of the rectangles. 
+                                A more rigorous tool, the <strong>Euler-Maclaurin formula</strong>, accounts for these errors. The leading error term is exactly $\frac{1}{2}\ln n$.
+                            </p>
+                            <p class="mb-2">
+                                $$ \text{Correction: } e^{\frac{1}{2}\ln n} = \sqrt{n} $$
+                            </p>
+                            <p class="mb-2 leading-relaxed">
+                                Finally, to find the specific constant multiplier, James Stirling used <strong>Wallis's Product formula for $\pi$</strong> to identify that the missing constant was exactly $\sqrt{2\pi}$.
+                            </p>
+                            <p class="mt-3 flex flex-col gap-1">
+                                <span>
+                                    <span class="text-slate-500">Original Reference:</span> 
+                                    <a href="https://archive.org/details/methodusdifferen00stir" target="_blank" class="text-indigo-400 hover:text-indigo-300 underline transition-colors">
+                                        James Stirling, "Methodus Differentialis..." (1730) - Internet Archive
+                                    </a>
+                                </span>
+                                <span>
+                                    <span class="text-slate-500">Modern Summary:</span> 
+                                    <a href="https://en.wikipedia.org/wiki/Stirling%27s_approximation" target="_blank" class="text-indigo-400 hover:text-indigo-300 underline transition-colors">
+                                        Stirling's Approximation - Wikipedia
+                                    </a>
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- The Application -->
+                <h3 class="text-xl font-bold text-gray-900 mt-8 mb-4">The Result: The Great Substitution</h3>
+                <p>
+                    De Moivre took his new tool and plugged it back into the Binomial probability formula. This is the precise moment where discrete probability turns into calculus. Let's substitute Stirling's approximation into the equation for a fair coin ($p=0.5$).
+                </p>
+
+                <div class="bg-white border-l-4 border-indigo-500 p-6 my-8 shadow-md">
+                    <h4 class="font-bold text-indigo-900 mb-4 text-lg">Derivation: From Factorials to Exponentials</h4>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <p class="font-semibold text-gray-800 mb-2">1. The Starting Point</p>
+                            <p class="text-gray-600 text-sm mb-2">The probability of getting exactly $k$ heads (where $k$ is near the center $n/2$):</p>
+                            <div class="overflow-x-auto bg-gray-50 p-2 rounded border border-gray-200">
+                                $$ P(k) = \frac{n!}{k!(n-k)!} \left(\frac{1}{2}\right)^n $$
+                            </div>
+                        </div>
+
+                        <div>
+                            <p class="font-semibold text-gray-800 mb-2">2. The Substitution</p>
+                            <p class="text-gray-600 text-sm mb-2">Replace every factorial with Stirling's formula ($n! \approx \sqrt{2\pi n}(n/e)^n$):</p>
+                            <div class="overflow-x-auto bg-gray-50 p-2 rounded border border-gray-200 text-sm">
+                                $$ P(k) \approx \frac{\sqrt{2\pi n}\left(\frac{n}{e}\right)^n}{\sqrt{2\pi k}\left(\frac{k}{e}\right)^k \cdot \sqrt{2\pi (n-k)}\left(\frac{n-k}{e}\right)^{n-k}} \cdot \frac{1}{2^n} $$
+                            </div>
+                        </div>
+
+                        <div>
+                            <p class="font-semibold text-gray-800 mb-2">3. The Simplification</p>
+                            <p class="text-gray-600 text-sm mb-2">
+                                This looks messy, but magic happens. The $e$ terms ($e^n$ vs $e^k e^{n-k}$) cancel out completely. By defining $x$ as the distance from the center ($x = k - n/2$) and assuming $n$ is large, the powers simplify into an exponential.
+                            </p>
+                            <div class="overflow-x-auto bg-gray-50 p-2 rounded border border-gray-200">
+                                $$ P(x) \approx \frac{2}{\sqrt{2\pi n}} e^{-\frac{2x^2}{n}} $$
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <p>
+                    Look at that final equation. The factorials are gone. The product is gone. What remains is the constant $e$ raised to the power of $-x^2$. 
+                </p>
+                <p>
+                    This was the first glimpse of the Bell Curve. It wasn't a "law of nature" yet; it was just a clever mathematical trick to help gamblers calculate odds without spending days doing arithmetic.
+                </p>
+
+                <!-- Quote Section -->
+                <div class="mt-8 p-6 bg-indigo-50 border-l-4 border-indigo-400 rounded-r-lg">
+                    <p class="italic text-gray-700 text-lg mb-3 font-serif">
+                        "Although Chance produces Irregularities, still the Odds will be infinitely great, that in process of Time, those Irregularities will bear no proportion to the recurrency of that Order which tends to preserve the original Design of things."
+                    </p>
+                    <p class="text-sm font-bold text-indigo-800 text-right">
+                        — Abraham de Moivre, <span class="font-normal text-indigo-600 italic">The Doctrine of Chances</span> (1756)
+                    </p>
+                </div>
+            </article>
+            
+             <hr class="border-gray-200 my-12">
+            
+            <!-- Placeholder for next section -->
+            <div class="text-center text-gray-400 py-8 border-2 border-dashed border-gray-200 rounded-lg hidden">
+                Next Section: Laplace & The Universal Law
+            </div>
+        </section>
+
+        <!-- ========================================= -->
+        <!-- SECTION 4: LAPLACE -->
+        <!-- ========================================= -->
+        <section id="laplace" class="mt-24">
+            <div class="flex items-center mb-8">
+                <div class="bg-indigo-100 text-indigo-600 rounded-full p-3 mr-4">
+                    <span class="text-2xl">🌌</span>
+                </div>
+                <h2 class="text-3xl font-bold text-gray-900">Part 3: The Universal Law</h2>
+            </div>
+
+            <article class="prose prose-lg prose-indigo max-w-none text-gray-700">
+                <p>
+                    By 1810, the bell curve had appeared in two places: gambling (De Moivre) and astronomy (Gauss). But <strong>Pierre-Simon Laplace</strong> asked a much bigger question.
+                </p>
+                <p>
+                    De Moivre's derivation relied on the symmetry of a fair coin ($p=0.5$). Gauss's relied on a philosophical axiom about the mean. Laplace wanted to know: <strong>What happens if we add up <em>any</em> random things?</strong> Skewed dice, different distributions, chaos?
+                </p>
+                <p>
+                    In 1810 (and fully in his 1812 masterpiece <em>Théorie Analytique des Probabilités</em>), he proved the <strong>Central Limit Theorem (CLT)</strong>. He showed that the Normal Distribution is the inevitable destination for <em>all</em> sums, no matter where they start.
+                </p>
+
+                <!-- Derivation Block: The CLT -->
+                <div class="bg-slate-800 text-slate-100 rounded-lg p-6 my-8 shadow-inner">
+                    <h4 class="text-indigo-300 font-bold uppercase text-sm tracking-wider mb-4 border-b border-slate-600 pb-2">
+                        Derivation: The Central Limit Theorem (Step-by-Step)
+                    </h4>
+                    <p class="text-sm text-slate-300 mb-4">
+                        Laplace's genius was to move the problem from the "Probability Domain" (where adding variables is hard) to the "Frequency Domain" (where it is easy).
+                    </p>
+                    
+                    <div class="space-y-8 text-sm font-light">
+                        <!-- Step 1 -->
+                        <div>
+                            <p class="text-indigo-200 font-semibold mb-1">1. The Tool: Characteristic Functions</p>
+                            
+                            <!-- Added Explanation for t -->
+                            <div class="bg-indigo-900/30 border-l-2 border-indigo-400 pl-3 py-2 mb-3">
+                                <p class="text-xs text-slate-300 italic mb-1"> What is $t$?</p>
+                                <p class="text-xs text-slate-200 leading-relaxed">
+                                    Think of $t$ as a <strong>Frequency</strong>.
+                                    <br><br>
+                                    The Characteristic Function is effectively a <strong>Fourier Transform</strong>. Just as a prism breaks white light into different color frequencies, this function breaks a probability distribution into different mathematical "frequencies" ($t$).
+                                    <ul class="list-disc list-inside mt-1 ml-1 opacity-80">
+                                        <li>When $t$ is small, we are looking at the broad shape (the mean and variance).</li>
+                                        <li>When $t$ is large, we are looking at the fine, jagged details.</li>
+                                    </ul>
+                                    By converting our random variable into frequencies, mathematical operations become much simpler.
+                                </p>
+                            </div>
+
+                            <p class="mb-2">
+                                The Characteristic Function (CF) is defined as $\varphi_X(t) = E[e^{itX}]$. Here is why it turns addition into multiplication:
+                            </p>
+                            
+                            <div class="bg-slate-900 p-3 rounded font-mono text-xs sm:text-sm space-y-2">
+                                <div>
+                                    <span class="text-slate-500">1. Start with the sum:</span><br>
+                                    $$ S_n = X_1 + X_2 + \dots + X_n $$
+                                </div>
+                                <div>
+                                    <span class="text-slate-500">2. Apply the definition:</span><br>
+                                    $$ \varphi_{S_n}(t) = E[e^{it(X_1 + X_2 + \dots + X_n)}] $$
+                                </div>
+                                <div>
+                                    <span class="text-slate-500">3. Use exponent rules ($e^{a+b}=e^a e^b$):</span><br>
+                                    $$ \varphi_{S_n}(t) = E[e^{itX_1} \cdot e^{itX_2} \cdots e^{itX_n}] $$
+                                </div>
+                                <div>
+                                    <span class="text-slate-500">4. Use Independence ($E[XY] = E[X]E[Y]$):</span><br>
+                                    $$ \varphi_{S_n}(t) = E[e^{itX_1}] \cdot E[e^{itX_2}] \cdots E[e^{itX_n}] $$
+                                </div>
+                                <div>
+                                    <span class="text-slate-500">5. Since distributions are identical:</span><br>
+                                    $$ \varphi_{S_n}(t) = \varphi_X(t) \cdot \varphi_X(t) \cdots \varphi_X(t) = [\varphi_X(t)]^n $$
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 2 -->
+                        <div>
+                            <p class="text-indigo-200 font-semibold mb-1">2. The Standardization (Why $\sqrt{n}$?)</p>
+                            <p class="mb-2 text-xs text-slate-300">
+                                If we sum $n$ variables, the variance grows to $n$. The distribution spreads out infinitely.
+                                To stop this, we must scale it down. But by how much?
+                            </p>
+                            <ul class="list-disc list-inside mb-2 text-xs text-slate-300 space-y-1 pl-2">
+                                <li>If we divide by $n$ (the average), the variance shrinks to $1/n \to 0$. The curve collapses to a single line.</li>
+                                <li>We must divide by $\sqrt{n}$ because variance scales quadratically:</li>
+                            </ul>
+                            <div class="bg-slate-900 p-2 rounded text-center font-mono text-xs sm:text-sm mb-2">
+                                $$ \text{Var}\left(\frac{S_n}{\sqrt{n}}\right) = \frac{1}{(\sqrt{n})^2} \text{Var}(S_n) = \frac{1}{n} \cdot n = 1 $$
+                            </div>
+                            <p class="mb-2 text-xs text-slate-300">
+                                This keeps the width stable. In the CF world, scaling the variable by $1/\sqrt{n}$ scales the parameter $t$:
+                            </p>
+                            <div class="bg-slate-900 p-2 rounded text-center font-mono text-xs sm:text-sm">
+                                $$ \varphi_{Z_n}(t) = \left[ \varphi_X\left(\frac{t}{\sqrt{n}}\right) \right]^n $$
+                            </div>
+                        </div>
+
+                        <!-- Step 3 -->
+                        <div>
+                            <p class="text-indigo-200 font-semibold mb-1">3. The Approximation (Taylor Series)</p>
+                            <p class="mb-2">
+                                We don't know the exact distribution of $X$. But we assume it has a mean of 0 and variance of 1.
+                                We can approximate <em>any</em> smooth function near zero using a Taylor Series ($e^x \approx 1 + x + x^2/2$):
+                            </p>
+                            <div class="bg-slate-900 p-2 rounded text-center font-mono text-xs sm:text-sm text-left pl-4">
+                                $$ \varphi_X(u) \approx 1 + i u \underbrace{E[X]}_{\text{Mean}=0} - \frac{u^2}{2} \underbrace{E[X^2]}_{\text{Variance}=1} + \dots $$
+                                $$ \varphi_X(u) \approx 1 - \frac{u^2}{2} $$
+                            </div>
+                        </div>
+
+                        <!-- Step 4 -->
+                         <div>
+                            <p class="text-indigo-200 font-semibold mb-1">4. The Substitution</p>
+                            <p class="mb-2">
+                                Now, we combine Step 2 and Step 3. We substitute our small scaling factor $u = t/\sqrt{n}$ into our approximation:
+                            </p>
+                            <div class="bg-slate-900 p-2 rounded text-center font-mono text-xs sm:text-sm">
+                                $$ \varphi_{Z_n}(t) \approx \left[ 1 - \frac{(t/\sqrt{n})^2}{2} \right]^n = \left[ 1 - \frac{t^2}{2n} \right]^n $$
+                            </div>
+                        </div>
+
+                        <!-- Step 5 -->
+                        <div>
+                            <p class="text-indigo-200 font-semibold mb-1">5. The Limit (Compound Interest Logic)</p>
+                            <div class="bg-indigo-900/30 border-l-2 border-indigo-400 pl-3 py-2 mb-3">
+                                <p class="text-xs text-slate-300 italic mb-1"> Intuition Check:</p>
+                                <p class="text-xs text-slate-200">
+                                    Think of the formula for compound interest: if you grow by rate $x/n$ repeated $n$ times, you get $ (1 + \frac{x}{n})^n $.
+                                    As $n$ gets huge (compounding every instant), this becomes the definition of $e^x$.
+                                </p>
+                            </div>
+                            <p class="mb-2">
+                                In our equation, the "interest rate" is $x = -t^2/2$.
+                                As $n \to \infty$, the product converges to:
+                            </p>
+                            <div class="block bg-indigo-900/50 border border-indigo-500/30 p-3 rounded mt-2 text-center text-yellow-300 font-mono text-sm">
+                                $$ \lim_{n \to \infty} \left( 1 - \frac{t^2}{2n} \right)^n = e^{-t^2/2} $$
+                            </div>
+                            <p class="mt-4">
+                                <strong>The Conclusion:</strong> 
+                                <ul class="list-disc list-inside mt-2 space-y-1 text-slate-300">
+                                    <li>We started with <em>any</em> random distribution (coin flips, dice, errors).</li>
+                                    <li>We standardized it and added it up $n$ times.</li>
+                                    <li>The "fingerprint" of that sum became $e^{-t^2/2}$.</li>
+                                    <li><strong>Only one distribution</strong> has this specific fingerprint: The Standard Normal Distribution.</li>
+                                </ul>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <p>
+                    This was the mic drop of probability theory. It proved that you don't need a "Normal" process to get a Normal Distribution. You just need to <strong>add up</strong> enough tiny, independent random effects, and the bell curve <em>must</em> emerge.
+                </p>
+
+                <!-- Quote Section -->
+                <div class="mt-8 p-6 bg-indigo-50 border-l-4 border-indigo-400 rounded-r-lg">
+                    <p class="italic text-gray-700 text-lg mb-3 font-serif">
+                        "It is remarkable that a science which began with the consideration of games of chance should have become the most important object of human knowledge."
+                    </p>
+                    <p class="text-sm font-bold text-indigo-800 text-right">
+                        — Pierre-Simon Laplace, <span class="font-normal text-indigo-600 italic">Théorie Analytique des Probabilités</span> (1812)
+                    </p>
+                </div>
+
+            </article>
+        </section>
+
+        <!-- ========================================= -->
+        <!-- CONCLUSION: GALTON -->
+        <!-- ========================================= -->
+        <section id="galton" class="mt-24 mb-24">
+            <div class="bg-indigo-50 border border-indigo-100 rounded-2xl p-8 sm:p-12 text-center">
+                <div class="text-4xl mb-4">🌱</div>
+                <h2 class="text-3xl font-bold text-gray-900 mb-6">Why is it called "Normal"?</h2>
+                
+                <article class="prose prose-lg prose-indigo mx-auto text-gray-700">
+                    <p>
+                        For decades, it was called the "Gaussian" or the "Law of Error." But in the late 19th century, <strong>Sir Francis Galton</strong> (cousin of Charles Darwin) began measuring everything: height, arm span, reaction times.
+                    </p>
+                    <p>
+                        He found the bell curve everywhere. He realized that biological traits are the sum of thousands of tiny genetic and environmental factors—the <strong>Central Limit Theorem</strong> in action inside our DNA.
+                    </p>
+                    <p>
+                        Because this shape was the standard, expected behavior for almost all natural data, it eventually earned the name <strong>The Normal Distribution</strong>.
+                    </p>
+
+                    <!-- Galton Board Illustration (CSS only) -->
+                    <div class="my-8 flex flex-col items-center">
+                        <div class="w-64 h-48 border-2 border-gray-300 bg-white rounded-lg relative overflow-hidden flex flex-col-reverse items-center justify-end shadow-sm">
+                             <!-- The "Beads" forming a curve -->
+                             <div class="flex items-end h-full space-x-1 px-4 pb-0">
+                                 <div class="w-2 bg-indigo-200 h-[5%] rounded-t"></div>
+                                 <div class="w-2 bg-indigo-300 h-[10%] rounded-t"></div>
+                                 <div class="w-2 bg-indigo-400 h-[25%] rounded-t"></div>
+                                 <div class="w-2 bg-indigo-500 h-[50%] rounded-t"></div>
+                                 <div class="w-2 bg-indigo-600 h-[75%] rounded-t"></div>
+                                 <div class="w-2 bg-indigo-600 h-[85%] rounded-t"></div>
+                                 <div class="w-2 bg-indigo-600 h-[75%] rounded-t"></div>
+                                 <div class="w-2 bg-indigo-500 h-[50%] rounded-t"></div>
+                                 <div class="w-2 bg-indigo-400 h-[25%] rounded-t"></div>
+                                 <div class="w-2 bg-indigo-300 h-[10%] rounded-t"></div>
+                                 <div class="w-2 bg-indigo-200 h-[5%] rounded-t"></div>
+                             </div>
+                             <!-- Pegs -->
+                             <div class="absolute top-4 inset-x-0 flex flex-col items-center space-y-2 opacity-20">
+                                 <div class="flex space-x-2"><div class="w-1 h-1 bg-black rounded-full"></div></div>
+                                 <div class="flex space-x-2"><div class="w-1 h-1 bg-black rounded-full"></div><div class="w-1 h-1 bg-black rounded-full"></div></div>
+                                 <div class="flex space-x-2"><div class="w-1 h-1 bg-black rounded-full"></div><div class="w-1 h-1 bg-black rounded-full"></div><div class="w-1 h-1 bg-black rounded-full"></div></div>
+                             </div>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-2 font-mono">Galton's Bean Machine: Chaos becomes Order</p>
+                    </div>
+
+                    <p class="italic font-serif text-gray-600">
+                        "I know of scarcely anything so apt to impress the imagination as the wonderful form of cosmic order expressed by the Law of Frequency of Error." — Francis Galton (1889)
+                    </p>
+                </article>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-white border-t border-gray-200 mt-12">
+        <div class="max-w-4xl mx-auto px-4 py-8 sm:px-6 lg:px-8 text-center text-gray-400 text-sm">
+            &copy; 2025 MathHistory Blog. Built with Tailwind CSS & MathJax.
+        </div>
+    </footer>
+
+</body>
+</html>
