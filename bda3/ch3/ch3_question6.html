@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Waterbuck Investigation: Full Derivations</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- MathJax for LaTeX rendering -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <!-- Chart.js for the Scatterplot -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Prism.js for Syntax Highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
+        .math-block { overflow-x: auto; padding: 1rem 0; }
+        h1, h2, h3 { letter-spacing: -0.025em; }
+        
+        /* Custom Slider Styling */
+        input[type=range] {
+            -webkit-appearance: none; 
+            background: transparent; 
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: #0f766e; /* teal-700 */
+            cursor: pointer;
+            margin-top: -8px; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 6px;
+            cursor: pointer;
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+        .home-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        .home-button:hover {
+            background: #34495e;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body class="text-slate-800">
+    <a href="../../index.html" class="home-button">
+        ← Home
+    </a>
+    <div class="max-w-5xl mx-auto p-6 md:p-12 bg-white shadow-xl min-h-screen border-t-8 border-teal-700">
+        
+        <!-- Header -->
+        <header class="mb-12 border-b border-slate-200 pb-8">
+            <h1 class="text-4xl md:text-5xl font-bold text-slate-900 mb-3">The Waterbuck Investigation</h1>
+            <p class="text-slate-500 text-xl">A Socratic Derivation of Bayesian Hierarchical Models</p>
+        </header>
+
+        <!-- Original Problem Statement -->
+        <section class="mb-16">
+            <div class="flex items-center mb-4">
+                <span class="bg-slate-200 text-slate-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide mr-3">Exhibit A</span>
+                <h2 class="text-2xl font-bold text-slate-900">The Original Problem</h2>
+            </div>
+            <div class="bg-white p-8 rounded-xl border border-slate-200 text-slate-600 text-sm leading-relaxed shadow-sm font-serif italic">
+                <p class="mb-4"><strong>6. Binomial with unknown probability and sample size:</strong> Some of the difficulties with setting prior distributions in multiparameter models can be illustrated with the simple binomial distribution. Consider data \(y_1, ..., y_n\) modeled as independent \(Bin(N, \theta)\), with both \(N\) and \(\theta\) unknown.</p>
+                <p class="mb-4">Raftery (1988) considers a hierarchical approach based on assigning the parameter \(N\) a Poisson distribution with <em>unknown</em> mean \(\mu\). To define a prior distribution on \((\theta, N)\), Raftery defines \(\lambda = \mu\theta\) and specifies a prior distribution on \((\lambda, \theta)\).</p>
+                <div class="ml-4 pl-4 border-l-2 border-slate-200 space-y-2">
+                    <p><strong>(a)</strong> A suggested noninformative prior distribution is \(p(\lambda, \theta) \propto \lambda^{-1}\). What is a motivation for this noninformative distribution? Is the distribution improper? Transform to determine \(p(N, \theta)\).</p>
+                    <p><strong>(b)</strong> The Bayesian method is illustrated on counts of waterbuck obtained by remote photography on five separate days in Kruger Park in South Africa. The counts were 53, 57, 66, 67, and 72. Perform the Bayesian analysis on these data and display a scatterplot of posterior simulations of \((N, \theta)\). What is the posterior probability that \(N > 100\)?</p>
+                    <p><strong>(c)</strong> Why not simply use a Poisson with fixed \(\mu\) as a prior distribution for \(N\)?</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Investigation Phase 1 -->
+        <section class="mb-16">
+            <div class="flex items-center mb-4">
+                <span class="bg-indigo-100 text-indigo-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide mr-3">Phase 1</span>
+                <h2 class="text-2xl font-bold text-slate-900">Deriving the Prior on N</h2>
+            </div>
+
+            <div class="prose max-w-none text-slate-700 border-l-4 border-indigo-500 pl-6 ml-2">
+                <p class="mb-4">We start with the suggested prior \(p(\lambda, \theta) \propto \lambda^{-1}\). Why this specific form? We must prove it represents "ignorance" about the scale.</p>
+
+                <div class="bg-slate-50 p-5 rounded-lg border border-slate-200 my-6">
+                    <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Derivation 1: Scale Invariance</h3>
+                    <p>Let's transform to the log scale: \(\phi = \log(\lambda)\). This means \(\lambda = e^\phi\) and \(\frac{d\lambda}{d\phi} = e^\phi = \lambda\).</p>
+                    <p>Using the change of variables formula:</p>
+                    <p class="math-block">
+                        \[ p(\phi) = p(\lambda) \left| \frac{d\lambda}{d\phi} \right| \propto \frac{1}{\lambda} \cdot \lambda = 1 \]
+                    </p>
+                    <p class="text-sm italic text-slate-600"><strong>Conclusion:</strong> Since \(p(\phi) \propto 1\), the prior is uniform on the log scale. This confirms it is "non-informative" regarding the order of magnitude.</p>
+                </div>
+
+                <div class="bg-slate-50 p-5 rounded-lg border border-slate-200 my-6">
+                    <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Derivation 2: Improperness</h3>
+                    <p>Is this a valid probability density? We integrate over the positive domain:</p>
+                    <p class="math-block">
+                        \[ \int_{0}^{\infty} \lambda^{-1} d\lambda = [\ln \lambda]_0^\infty = \infty - (-\infty) \to \infty \]
+                    </p>
+                    <p class="text-sm italic text-slate-600"><strong>Conclusion:</strong> The integral diverges. It is an <strong>improper prior</strong>.</p>
+                </div>
+
+                <div class="bg-slate-50 p-5 rounded-lg border border-slate-200 my-6">
+                    <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Derivation 3: Transforming to \(p(N)\)</h3>
+                    <p>We need to get from \(\lambda\) to \(N\). We do this in two steps: \(\lambda \to \mu\) and then \(\mu \to N\).</p>
+                    
+                    <p><strong>Step A:</strong> Prior on \(\mu\). Since \(\lambda = \mu\theta\), then \(d\lambda/d\mu = \theta\).</p>
+                    <p class="math-block">
+                        \[ p(\mu, \theta) = p(\lambda, \theta) \left| \frac{d\lambda}{d\mu} \right| \propto \frac{1}{\mu\theta} \cdot \theta = \frac{1}{\mu} \]
+                    </p>
+
+                    <p class="mt-4"><strong>Step B:</strong> Marginal Prior on \(N\). We assume \(N|\mu \sim \text{Poisson}(\mu)\) and integrate out \(\mu\).</p>
+                    <p class="math-block">
+                        \[ p(N) = \int_{0}^{\infty} p(N|\mu)p(\mu) d\mu \propto \int_{0}^{\infty} \frac{\mu^N e^{-\mu}}{N!} \cdot \frac{1}{\mu} d\mu \]
+                    </p>
+                    <p>Simplifying the integrand:</p>
+                    <p class="math-block">
+                        \[ p(N) \propto \frac{1}{N!} \int_{0}^{\infty} \mu^{N-1} e^{-\mu} d\mu \]
+                    </p>
+                    <p>Recognizing the Gamma integral \(\int x^{k-1}e^{-x}dx = \Gamma(k) = (k-1)!\):</p>
+                    <p class="math-block">
+                        \[ p(N) \propto \frac{(N-1)!}{N!} = \frac{1}{N} \]
+                    </p>
+                    <p class="text-sm italic text-teal-600 font-bold"><strong>Final Result:</strong> The hierarchical prior induces \(p(N) \propto 1/N\).</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Investigation Phase 2 -->
+        <section class="mb-16">
+            <div class="flex items-center mb-4">
+                <span class="bg-teal-100 text-teal-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide mr-3">Phase 2</span>
+                <h2 class="text-2xl font-bold text-slate-900">Deriving the Posterior</h2>
+            </div>
+
+            <div class="prose max-w-none text-slate-700 border-l-4 border-teal-500 pl-6 ml-2">
+                <p class="mb-4">We now combine our prior \(1/N\) with the data \(y = [y_1, ..., y_n]\).</p>
+
+                <div class="bg-slate-50 p-5 rounded-lg border border-slate-200 my-6">
+                    <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Derivation 4: The Joint Posterior</h3>
+                    <p>The Likelihood for independent Binomials is:</p>
+                    <p class="math-block">
+                        \[ L(N, \theta | y) = \prod_{i=1}^{n} \binom{N}{y_i} \theta^{y_i} (1-\theta)^{N-y_i} \]
+                    </p>
+                    <p>Multiply by the Prior \(p(N, \theta) \propto 1/N\):</p>
+                    <p class="math-block">
+                        \[ p(N, \theta | y) \propto \frac{1}{N} \left[ \prod_{i=1}^{n} \binom{N}{y_i} \right] \theta^{\sum y_i} (1-\theta)^{\sum (N-y_i)} \]
+                    </p>
+                    <p>Let \(S = \sum y_i\). Then \(\sum (N-y_i) = nN - S\). </p>
+                    <p class="math-block">
+                        \[ p(N, \theta | y) \propto \frac{1}{N} \left[ \prod_{i=1}^{n} \binom{N}{y_i} \right] \underbrace{\theta^{S} (1-\theta)^{nN - S}}_{\text{Kernel of Beta Distribution}} \]
+                    </p>
+                </div>
+
+                <div class="bg-slate-50 p-5 rounded-lg border border-slate-200 my-6">
+                    <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Derivation 5: The Marginal Posterior of N</h3>
+                    <p>To find \(p(N|y)\), we must integrate out \(\theta\) from 0 to 1.</p>
+                    <p class="math-block">
+                        \[ p(N|y) \propto \frac{1}{N} \left[ \prod \binom{N}{y_i} \right] \int_{0}^{1} \theta^{S} (1-\theta)^{nN - S} d\theta \]
+                    </p>
+                    <p>Using the Beta function identity \(\int x^{a-1}(1-x)^{b-1}dx = \frac{\Gamma(a)\Gamma(b)}{\Gamma(a+b)}\):</p>
+                    <p>Here \(a = S+1\) and \(b = nN - S + 1\).</p>
+                    <p class="math-block">
+                        \[ p(N|y) \propto \frac{1}{N} \left[ \prod_{i=1}^{n} \binom{N}{y_i} \right] \frac{\Gamma(S+1)\Gamma(nN - S + 1)}{\Gamma(nN + 2)} \]
+                    </p>
+                    <p class="text-sm italic text-slate-600">Note: Since \(\Gamma(S+1)\) is constant with respect to \(N\), we can drop it during calculation.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Simulation Section -->
+        <section class="mb-16">
+            <div class="flex items-center mb-4">
+                <span class="bg-slate-800 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide mr-3">Phase 3</span>
+                <h2 class="text-2xl font-bold text-slate-900">The Simulation</h2>
+            </div>
+
+            <div class="bg-slate-900 text-white rounded-xl p-8 md:p-10 shadow-2xl">
+                <div class="flex justify-between items-center mb-8 border-b border-slate-700 pb-4">
+                    <div>
+                        <h3 class="text-xl font-bold text-teal-400">Interactive Lab</h3>
+                        <p class="text-slate-400 text-sm">Adjust priors to see how "beliefs" shift the math.</p>
+                    </div>
+                    <button onclick="runSimulation()" class="bg-teal-600 hover:bg-teal-500 text-white px-6 py-2 rounded-lg font-semibold transition text-sm uppercase tracking-wider shadow-lg">Re-Calculate</button>
+                </div>
+
+                <!-- Prior Control Panel -->
+                <div class="bg-slate-800 rounded-lg p-6 mb-8 border border-slate-700">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <div class="col-span-1 lg:col-span-2 space-y-6">
+                            <div>
+                                <label class="flex justify-between text-sm font-medium text-slate-300 mb-2">
+                                    <span>Hypothesis: Sighting Probability (&theta;)</span>
+                                    <span class="font-mono text-teal-400" id="meanValDisplay">50%</span>
+                                </label>
+                                <input type="range" id="priorMean" min="0.01" max="0.99" step="0.01" value="0.5" class="w-full h-2 bg-slate-600 rounded-lg appearance-none cursor-pointer">
+                            </div>
+                            <div>
+                                <label class="flex justify-between text-sm font-medium text-slate-300 mb-2">
+                                    <span>Confidence in Hypothesis</span>
+                                    <span class="font-mono text-teal-400" id="strengthValDisplay">2 (Weak)</span>
+                                </label>
+                                <input type="range" id="priorStrength" min="2" max="50" step="1" value="2" class="w-full h-2 bg-slate-600 rounded-lg appearance-none cursor-pointer">
+                            </div>
+                        </div>
+
+                        <div class="col-span-1 bg-slate-700/50 rounded-lg p-3 flex flex-col items-center justify-center">
+                            <p class="text-xs text-slate-400 mb-2 font-semibold tracking-wider uppercase">Your Prior Belief</p>
+                            <div class="relative w-full h-28">
+                                <canvas id="priorChart"></canvas>
+                            </div>
+                            <div class="mt-2 text-xs text-slate-500 font-mono">
+                                Beta(&alpha;=<span id="alphaDisplay">1.0</span>, &beta;=<span id="betaDisplay">1.0</span>)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-8">
+                    <div class="bg-slate-800 p-6 rounded-lg border border-slate-700 flex flex-col md:flex-row justify-around items-center gap-6">
+                        <div class="text-center">
+                            <p class="text-slate-400 text-xs uppercase tracking-widest mb-1">Prob(N > 100)</p>
+                            <div class="text-4xl font-mono font-bold text-white" id="probResult">Loading...</div>
+                        </div>
+                        <div class="text-center md:border-l md:border-slate-600 md:pl-12">
+                            <p class="text-slate-400 text-xs uppercase tracking-widest mb-1">Most Likely Count (Mode)</p>
+                            <div class="text-4xl font-mono font-bold text-teal-400" id="modeResult">...</div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg p-4 h-[300px] w-full">
+                         <canvas id="marginalChart"></canvas>
+                    </div>
+
+                    <div class="bg-white rounded-lg p-4 h-[500px] w-full">
+                        <canvas id="posteriorChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Critique Phase -->
+        <section class="mb-16">
+            <div class="flex items-center mb-4">
+                <span class="bg-rose-100 text-rose-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide mr-3">Critique</span>
+                <h2 class="text-2xl font-bold text-slate-900">Why Simple Poisson Failed</h2>
+            </div>
+            <div class="prose max-w-none text-slate-700 border-l-4 border-rose-500 pl-6 ml-2">
+                <p>In a standard Poisson distribution, <strong>Mean = Variance</strong>. This is a rigid constraint.</p>
+                <p>However, our data shows signs of "overdispersion" (Variance > Mean), common in animal herding behavior. By using the hierarchical model (\(N \sim \text{Poisson}(\mu)\) with \(\mu\) unknown), we allow the marginal distribution of \(N\) to have a variance greater than its mean:</p>
+                <p class="math-block">
+                    \[ \text{Var}(N) = E[\mu] + \text{Var}(\mu) > E[N] \]
+                </p>
+                <p>This added flexibility prevents the model from being overly confident in a wrong answer.</p>
+            </div>
+        </section>
+
+        <!-- Python Code Block -->
+        <section class="mb-12 bg-slate-100 p-6 rounded-xl border border-slate-200">
+            <h3 class="text-lg font-bold text-slate-900 mb-4">Reproduce the Investigation</h3>
+            <p class="text-sm text-slate-600 mb-4">For those who want to run the numbers themselves, here is the Python implementation using log-space calculations to prevent arithmetic overflow.</p>
+            <pre><code class="language-python">import numpy as np
+from scipy.special import gammaln
+
+# The Log-Trick: Calculating in log-space to avoid overflow
+def log_n_choose_k(n, k):
+    return gammaln(n + 1) - gammaln(k + 1) - gammaln(n - k + 1)
+
+# 1. The Evidence
+y = np.array([53, 57, 66, 67, 72])
+n_obs = len(y)
+S = np.sum(y)
+max_y = np.max(y)
+
+# 2. The Suspect Range
+# We sweep N from the minimum possible (72) up to 1000
+N_values = np.arange(max_y, 1000)
+
+# 3. Calculating Posterior Probabilities
+log_probs = []
+
+for N in N_values:
+    # The Prior: 1/N -> log prior is -log(N)
+    log_prior = -np.log(N)
+    
+    # The Likelihood: Binomial
+    log_binom_sum = np.sum(log_n_choose_k(N, y))
+    
+    # Integrating out Theta (Beta Function)
+    log_beta_part = gammaln(n_obs * N - S + 1) - gammaln(n_obs * N + 2)
+    
+    log_probs.append(log_prior + log_binom_sum + log_beta_part)
+
+# 4. Normalization (Log-Sum-Exp trick)
+log_probs = np.array(log_probs)
+max_log = np.max(log_probs)
+probs = np.exp(log_probs - max_log)
+probs = probs / np.sum(probs)
+
+# 5. The Verdict
+mask_gt_100 = N_values > 100
+prob_gt_100 = np.sum(probs[mask_gt_100])
+
+print(f"Probability N > 100: {prob_gt_100:.4f}")
+print(f"Most Likely N: {N_values[np.argmax(probs)]}")
+</code></pre>
+        </section>
+
+    </div>
+
+    <script>
+        // We enclose the script in an Immediately Invoked Function Expression (IIFE)
+        (() => {
+            // --- MATH FUNCTIONS ---
+
+            // Log Gamma function (Lanczos approximation)
+            function logGamma(z) {
+                const p = [
+                    676.5203681218851, -1259.1392167224028, 771.32342877765313,
+                    -176.61502916214059, 12.507343278686905, -0.13857109526572012,
+                    9.9843695780195716e-6, 1.5056327351493116e-7
+                ];
+                if (z < 0.5) return Math.log(Math.PI / Math.sin(Math.PI * z)) - logGamma(1 - z);
+                z -= 1;
+                let x = 0.99999999999980993;
+                for (let i = 0; i < p.length; i++) x += p[i] / (z + i + 1);
+                let t = z + p.length - 0.5;
+                return Math.log(Math.sqrt(2 * Math.PI)) + Math.log(x) - t + (z + 0.5) * Math.log(t);
+            }
+
+            function logFact(n) { return logGamma(n + 1); }
+
+            function logBinom(n, k) {
+                if (k < 0 || k > n) return -Infinity;
+                return logFact(n) - logFact(k) - logFact(n - k);
+            }
+
+            function betaPdf(x, alpha, beta) {
+                if (x <= 0 || x >= 1) return 0;
+                const logVal = (alpha - 1) * Math.log(x) + 
+                               (beta - 1) * Math.log(1 - x) - 
+                               logGamma(alpha) - logGamma(beta) + logGamma(alpha + beta);
+                return Math.exp(logVal);
+            }
+
+            // Data
+            const y = [53, 57, 66, 67, 72];
+            const n = y.length;
+            const S = y.reduce((a, b) => a + b, 0);
+            const max_y = Math.max(...y);
+            
+            let chartInstance = null;
+            let marginalChartInstance = null;
+            let priorChartInstance = null;
+
+            // UI Elements
+            const priorMeanInput = document.getElementById('priorMean');
+            const priorStrengthInput = document.getElementById('priorStrength');
+            const meanValDisplay = document.getElementById('meanValDisplay');
+            const strengthValDisplay = document.getElementById('strengthValDisplay');
+            const alphaDisplay = document.getElementById('alphaDisplay');
+            const betaDisplay = document.getElementById('betaDisplay');
+
+            function updateSliderUI() {
+                const mean = parseFloat(priorMeanInput.value);
+                const strength = parseFloat(priorStrengthInput.value);
+                
+                meanValDisplay.innerText = Math.round(mean * 100) + "%";
+                strengthValDisplay.innerText = strength + (strength <= 2 ? " (Weak)" : (strength >= 40 ? " (Strong)" : ""));
+
+                // Calculate Beta Params
+                const alpha = mean * strength;
+                const beta = (1 - mean) * strength;
+
+                alphaDisplay.innerText = alpha.toFixed(1);
+                betaDisplay.innerText = beta.toFixed(1);
+
+                renderPriorChart(alpha, beta);
+                runSimulation();
+            }
+
+            function renderPriorChart(alpha, beta) {
+                const ctxPrior = document.getElementById('priorChart').getContext('2d');
+                if (priorChartInstance) priorChartInstance.destroy();
+
+                const dataPoints = [];
+                for (let i = 0.005; i < 1.0; i += 0.01) {
+                    let val = betaPdf(i, alpha, beta);
+                    if (val > 100) val = 100; 
+                    dataPoints.push({x: i, y: val});
+                }
+
+                priorChartInstance = new Chart(ctxPrior, {
+                    type: 'line',
+                    data: {
+                        datasets: [{
+                            label: 'Prior',
+                            data: dataPoints,
+                            borderColor: 'rgba(20, 184, 166, 1)',
+                            backgroundColor: 'rgba(20, 184, 166, 0.2)',
+                            fill: true,
+                            pointRadius: 0,
+                            borderWidth: 2,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false }, tooltip: {enabled: false} },
+                        scales: {
+                            x: { type: 'linear', min: 0, max: 1, display: false },
+                            y: { display: false, beginAtZero: true }
+                        },
+                        animation: { duration: 0 },
+                        elements: { point: { radius: 0 } }
+                    }
+                });
+            }
+
+            // Listeners
+            priorMeanInput.addEventListener('input', updateSliderUI);
+            priorStrengthInput.addEventListener('input', updateSliderUI);
+
+            function calculatePosterior() {
+                const N_min = max_y;
+                const N_max = 1000; 
+                
+                let log_probs = [];
+                let N_values = [];
+
+                const mean = parseFloat(priorMeanInput.value);
+                const strength = parseFloat(priorStrengthInput.value);
+                const prior_alpha = mean * strength;
+                const prior_beta = (1 - mean) * strength;
+
+                for (let N = N_min; N <= N_max; N++) {
+                    let log_p = -Math.log(N);
+                    
+                    let sum_log_binom = 0;
+                    for (let val of y) {
+                        sum_log_binom += logBinom(N, val);
+                    }
+                    log_p += sum_log_binom;
+
+                    let A = S + prior_alpha;
+                    let B = n * N - S + prior_beta;
+                    let log_beta_part = logGamma(B) - logGamma(A + B);
+                    
+                    log_p += log_beta_part;
+                    
+                    log_probs.push(log_p);
+                    N_values.push(N);
+                }
+
+                let max_log_p = Math.max(...log_probs);
+                let probs = log_probs.map(lp => Math.exp(lp - max_log_p));
+                let sum_probs = probs.reduce((a, b) => a + b, 0);
+                let norm_probs = probs.map(p => p / sum_probs);
+
+                return { N_values, norm_probs };
+            }
+
+            function generateGamma(k) {
+                let d, c, x, v, u;
+                if (k < 1) return generateGamma(1 + k) * Math.pow(Math.random(), 1 / k);
+                d = k - 1 / 3;
+                c = 1 / Math.sqrt(9 * d);
+                while (true) {
+                    do {
+                        x = randn();
+                        v = 1 + c * x;
+                    } while (v <= 0);
+                    v = v * v * v;
+                    u = Math.random();
+                    if (u < 1 - 0.0331 * x * x * x * x) return d * v;
+                    if (Math.log(u) < 0.5 * x * x + d * (1 - v + Math.log(v))) return d * v;
+                }
+            }
+
+            function randn() {
+                let u = 0, v = 0;
+                while(u === 0) u = Math.random();
+                while(v === 0) v = Math.random();
+                return Math.sqrt( -2.0 * Math.log( u ) ) * Math.cos( 2.0 * Math.PI * v );
+            }
+
+            function sampleBeta(alpha, beta) {
+                return generateGamma(alpha) / (generateGamma(alpha) + generateGamma(beta));
+            }
+
+            function runSimulation() {
+                const { N_values, norm_probs } = calculatePosterior();
+
+                let prob_gt_100 = 0;
+                let mode_prob = 0;
+                let mode_N = 0;
+
+                for (let i = 0; i < N_values.length; i++) {
+                    if (N_values[i] > 100) prob_gt_100 += norm_probs[i];
+                    if (norm_probs[i] > mode_prob) {
+                        mode_prob = norm_probs[i];
+                        mode_N = N_values[i];
+                    }
+                }
+
+                document.getElementById('probResult').innerText = (prob_gt_100 * 100).toFixed(2) + "%";
+                document.getElementById('modeResult').innerText = mode_N;
+
+                // Marginal Chart
+                const ctxMarginal = document.getElementById('marginalChart').getContext('2d');
+                if (marginalChartInstance) marginalChartInstance.destroy();
+
+                marginalChartInstance = new Chart(ctxMarginal, {
+                    type: 'bar',
+                    data: {
+                        labels: N_values,
+                        datasets: [{
+                            label: 'Posterior Probability p(N|y)',
+                            data: norm_probs,
+                            backgroundColor: 'rgba(20, 184, 166, 0.7)',
+                            borderColor: 'rgba(20, 184, 166, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: { title: { display: true, text: 'Population Size (N)' }, ticks: { maxTicksLimit: 20 } },
+                            y: { title: { display: true, text: 'Probability' }, beginAtZero: true }
+                        }
+                    }
+                });
+
+                // Scatter Chart
+                const num_samples = 2000;
+                const scatterData = [];
+                let min_theta = 1.0;
+                let max_theta = 0.0;
+                
+                const mean = parseFloat(priorMeanInput.value);
+                const strength = parseFloat(priorStrengthInput.value);
+                const prior_alpha = mean * strength;
+                const prior_beta = (1 - mean) * strength;
+
+                for (let i = 0; i < num_samples; i++) {
+                    let r = Math.random();
+                    let cum = 0;
+                    let selected_N = N_values[N_values.length - 1];
+                    for (let j = 0; j < N_values.length; j++) {
+                        cum += norm_probs[j];
+                        if (r <= cum) {
+                            selected_N = N_values[j];
+                            break;
+                        }
+                    }
+                    let alpha = S + prior_alpha;
+                    let beta = n * selected_N - S + prior_beta;
+                    let theta = sampleBeta(alpha, beta);
+
+                    if (theta < min_theta) min_theta = theta;
+                    if (theta > max_theta) max_theta = theta;
+                    scatterData.push({x: selected_N, y: theta});
+                }
+                
+                const yMin = Math.max(0, min_theta - 0.05);
+                const yMax = Math.min(1, max_theta + 0.05);
+
+                const ctxPosterior = document.getElementById('posteriorChart').getContext('2d');
+                if (chartInstance) chartInstance.destroy();
+
+                chartInstance = new Chart(ctxPosterior, {
+                    type: 'scatter',
+                    data: {
+                        datasets: [{
+                            label: 'Joint Posterior (N, θ)',
+                            data: scatterData,
+                            backgroundColor: 'rgba(99, 102, 241, 0.5)',
+                            borderColor: 'rgba(99, 102, 241, 1)',
+                            pointRadius: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: { title: { display: true, text: 'Population Size (N)' }, min: 70, max: 1000 },
+                            y: { title: { display: true, text: 'Sighting Probability (θ)' }, min: yMin, max: yMax }
+                        }
+                    }
+                });
+            }
+
+            window.runSimulation = runSimulation;
+            setTimeout(updateSliderUI, 100);
+        })();
+    </script>
+</body>
+</html>
