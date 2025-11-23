@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistical Investigation: Poisson vs Binomial</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;1,400&family=Roboto+Mono:wght@400;500&display=swap');
+        
+        body {
+            font-family: 'Merriweather', serif;
+            background-color: #fdfbf7;
+            color: #2d3748;
+        }
+        
+        h1, h2, h3, h4 {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-weight: 700;
+        }
+
+        .math-display {
+            overflow-x: auto;
+            padding: 1rem 0;
+        }
+        
+        .paper-shadow {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .notebook-line {
+            background-image: linear-gradient(#e5e7eb 1px, transparent 1px);
+            background-size: 100% 2rem;
+        }
+        .home-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        .home-button:hover {
+            background: #34495e;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body class="antialiased leading-relaxed">
+    <a href="../../index.html" class="home-button">
+        ← Home
+    </a>
+    <!-- Header -->
+    <header class="bg-slate-900 text-white py-12 px-4 border-b-4 border-amber-500">
+        <div class="max-w-4xl mx-auto">
+            <div class="uppercase tracking-widest text-amber-500 text-sm font-bold mb-2">Case File #007</div>
+            <h1 class="text-4xl md:text-5xl mb-4">The Poisson-Binomial Equivalence</h1>
+            <p class="text-xl text-slate-300 font-light italic">Investigating the hidden link between count models and proportion models.</p>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 py-8 space-y-12">
+
+        <!-- Original Question Source -->
+        <section>
+            <div class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Question 7</div>
+            <div class="bg-amber-50 border border-amber-200 p-6 rounded font-serif text-slate-800 italic relative">
+                <span class="absolute top-2 left-2 text-4xl text-amber-200 font-serif leading-none">“</span>
+                <p class="mb-2 relative z-10">
+                    <strong>7. Poisson and binomial distributions:</strong> a student sits on a street corner for an hour and records the number of bicycles \( b \) and the number of other vehicles \( v \) that go by. Two models are considered:
+                </p>
+                <ul class="list-disc pl-6 mb-4 relative z-10 space-y-1">
+                    <li>The outcomes \( b \) and \( v \) have independent Poisson distributions, with unknown means \( \theta_b \) and \( \theta_v \).</li>
+                    <li>The outcome \( b \) has a binomial distribution, with unknown probability \( p \) and sample size \( b + v \).</li>
+                </ul>
+                <p class="relative z-10">
+                    Show that the two models have the same likelihood if we define \( p = \frac{\theta_b}{\theta_b+\theta_v} \).
+                </p>
+                <span class="absolute bottom-[-10px] right-4 text-4xl text-amber-200 font-serif leading-none">”</span>
+            </div>
+        </section>
+
+        <!-- Section 1: The Problem Statement (Exhibit A) -->
+        <section class="bg-white p-8 rounded-lg paper-shadow border-l-4 border-blue-600">
+            <h2 class="text-2xl text-slate-800 mb-6 flex items-center">
+                <span class="bg-blue-100 text-blue-800 text-sm font-bold mr-3 px-2.5 py-0.5 rounded">EXHIBIT A</span>
+                The Case Breakdown
+            </h2>
+            <div class="prose max-w-none text-slate-700">
+                <p class="mb-4">
+                    To solve this, we must align two seemingly different statistical perspectives.
+                </p>
+                <ul class="list-disc pl-6 space-y-2 mb-6">
+                    <li>
+                        <strong>Model 1 (Count Perspective):</strong> \( b \) and \( v \) are independent counts. The randomness comes from the rate of arrival for each vehicle type separately.
+                    </li>
+                    <li>
+                        <strong>Model 2 (Proportion Perspective):</strong> We fix the total traffic \( n = b + v \). The randomness comes from whether a specific vehicle is a bicycle or not (Bernoulli trial).
+                    </li>
+                </ul>
+                <div class="bg-slate-50 p-4 rounded border border-slate-200 font-medium">
+                    <p class="mb-0 text-slate-900">
+                        <strong>Mission:</strong> Show that the likelihood functions match when:
+                        \[ p = \frac{\theta_b}{\theta_b + \theta_v} \]
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: The Investigation -->
+        <section>
+            <h2 class="text-3xl mb-8 text-center text-slate-800">The Investigation</h2>
+            
+            <div class="space-y-8">
+                <!-- Step 1 -->
+                <div class="relative pl-8 md:pl-0">
+                    <div class="md:grid md:grid-cols-12 md:gap-8">
+                        <div class="hidden md:block md:col-span-3 text-right pt-2">
+                            <span class="text-slate-400 font-mono text-sm">STEP 01</span>
+                            <h3 class="font-bold text-slate-700">Analyzing Model 1</h3>
+                        </div>
+                        <div class="md:col-span-9 bg-white p-6 rounded-lg paper-shadow relative">
+                            <!-- Mobile label -->
+                            <div class="md:hidden text-slate-400 font-mono text-xs mb-1">STEP 01: ANALYZING MODEL 1</div>
+                            
+                            <p class="mb-4">
+                                We begin by examining the first model. We are told \( b \) and \( v \) are independent Poisson variables. The likelihood is the joint probability of observing specific counts for \( b \) and \( v \).
+                            </p>
+                            <p class="mb-4">
+                                Since they are independent, the joint probability is the product of their individual probabilities:
+                                \[ L_1(\theta_b, \theta_v) = P(b|\theta_b) \times P(v|\theta_v) \]
+                            </p>
+                            <p class="mb-2">Substituting the Poisson mass function \( P(k|\lambda) = \frac{\lambda^k e^{-\lambda}}{k!} \):</p>
+                            <div class="math-display bg-slate-50 p-4 rounded border border-slate-100 mb-2">
+                                \[ L_1 = \left( \frac{\theta_b^b e^{-\theta_b}}{b!} \right) \left( \frac{\theta_v^v e^{-\theta_v}}{v!} \right) \]
+                            </div>
+                            <p class="text-sm text-slate-500 italic">This is our baseline. We need to make this look like Model 2.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="relative pl-8 md:pl-0">
+                    <div class="md:grid md:grid-cols-12 md:gap-8">
+                        <div class="hidden md:block md:col-span-3 text-right pt-2">
+                            <span class="text-slate-400 font-mono text-sm">STEP 02</span>
+                            <h3 class="font-bold text-slate-700">The Transformation</h3>
+                        </div>
+                        <div class="md:col-span-9 bg-white p-6 rounded-lg paper-shadow">
+                            <!-- Mobile label -->
+                            <div class="md:hidden text-slate-400 font-mono text-xs mb-1">STEP 02: THE TRANSFORMATION</div>
+
+                            <p class="mb-4">
+                                The problem gives us a clue: the definition of \( p \). Let's introduce a new variable for the <em>total rate</em>, \( \lambda \).
+                            </p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                <div class="bg-blue-50 p-3 rounded text-center">
+                                    <div class="text-xs uppercase text-blue-500 font-bold mb-1">New Variable 1</div>
+                                    \[ \lambda = \theta_b + \theta_v \]
+                                </div>
+                                <div class="bg-blue-50 p-3 rounded text-center">
+                                    <div class="text-xs uppercase text-blue-500 font-bold mb-1">New Variable 2</div>
+                                    \[ p = \frac{\theta_b}{\lambda} \]
+                                </div>
+                            </div>
+                            <p class="mb-4">
+                                Using algebra, we can express our original parameters \( \theta_b \) and \( \theta_v \) in terms of these new variables:
+                            </p>
+                            <ul class="list-none space-y-2 mb-4 bg-slate-50 p-4 rounded font-mono text-sm">
+                                <li>1. \(\theta_b = \lambda p\)</li>
+                                <li>2. \(\theta_v = \lambda - \lambda p = \lambda(1-p)\)</li>
+                            </ul>
+                            <p>Now, we substitute these back into our likelihood equation from Step 1.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="relative pl-8 md:pl-0">
+                    <div class="md:grid md:grid-cols-12 md:gap-8">
+                        <div class="hidden md:block md:col-span-3 text-right pt-2">
+                            <span class="text-slate-400 font-mono text-sm">STEP 03</span>
+                            <h3 class="font-bold text-slate-700">Algebraic Surgery</h3>
+                        </div>
+                        <div class="md:col-span-9 bg-white p-6 rounded-lg paper-shadow">
+                             <!-- Mobile label -->
+                             <div class="md:hidden text-slate-400 font-mono text-xs mb-1">STEP 03: ALGEBRAIC SURGERY</div>
+
+                            <p class="mb-4">Substituting the new terms leads to a complex expression. Let's break it down:</p>
+                            <div class="math-display text-sm md:text-base">
+                                \[ 
+                                \begin{align*} 
+                                L_1 &= \frac{(\lambda p)^b e^{-\lambda p}}{b!} \cdot \frac{(\lambda(1-p))^v e^{-\lambda(1-p)}}{v!} \\
+                                &= \frac{\lambda^b p^b \lambda^v (1-p)^v e^{-\lambda p - \lambda(1-p)}}{b! v!} \\
+                                &= \frac{\lambda^{b+v} p^b (1-p)^v e^{-\lambda}}{b! v!}
+                                \end{align*}
+                                \]
+                            </div>
+                            <p class="mb-4 mt-4">
+                                Notice that \( e^{-\lambda p - \lambda(1-p)} \) simplifies to \( e^{-\lambda(p + 1 - p)} = e^{-\lambda} \).
+                                <br>
+                                Also, recall that the total count is \( n = b + v \).
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="relative pl-8 md:pl-0">
+                    <div class="md:grid md:grid-cols-12 md:gap-8">
+                        <div class="hidden md:block md:col-span-3 text-right pt-2">
+                            <span class="text-slate-400 font-mono text-sm">STEP 04</span>
+                            <h3 class="font-bold text-slate-700">The Factorization</h3>
+                        </div>
+                        <div class="md:col-span-9 bg-white p-6 rounded-lg paper-shadow border-l-4 border-amber-400">
+                             <!-- Mobile label -->
+                             <div class="md:hidden text-slate-400 font-mono text-xs mb-1">STEP 04: THE FACTORIZATION</div>
+
+                            <p class="mb-4">
+                                This is the critical moment. We multiply and divide by \( (b+v)! \) (which is \( n! \)) to force the Binomial coefficient to appear.
+                            </p>
+                            <div class="math-display">
+                                \[ L_1 = \underbrace{\frac{\lambda^n e^{-\lambda}}{n!}}_{\text{Poisson}(n|\lambda)} \times \underbrace{\frac{n!}{b!v!} p^b (1-p)^v}_{\text{Binomial}(b|n,p)} \]
+                            </div>
+                            <p class="text-slate-700">
+                                We have successfully factored the joint distribution into two independent parts:
+                                <ol class="list-decimal pl-6 mt-2 space-y-1">
+                                    <li>A Poisson distribution for the <strong>total count</strong> \( n \).</li>
+                                    <li>A Binomial distribution for the <strong>split</strong> of bicycles \( b \) given \( n \).</li>
+                                </ol>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: The Verdict -->
+        <section class="mt-12 bg-slate-900 text-slate-300 p-8 rounded-lg relative overflow-hidden">
+            <div class="absolute top-0 right-0 -mt-4 -mr-4 text-slate-800 opacity-50">
+                <svg width="200" height="200" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+            </div>
+            
+            <h2 class="text-2xl text-white mb-4 relative z-10">The Verdict</h2>
+            <div class="prose prose-invert max-w-none relative z-10">
+                <p>
+                    We were asked to show the likelihoods are the same regarding \( p \).
+                </p>
+                <p>
+                    In our factored equation from Step 4, the first term \( \frac{\lambda^n e^{-\lambda}}{n!} \) depends only on \( \lambda \) and \( n \). It does <strong>not</strong> contain \( p \). Therefore, when we look at the likelihood function solely as a function of \( p \), this term acts as a constant scaling factor.
+                </p>
+                <p>
+                    The part that <em>does</em> depend on \( p \) is exactly:
+                    \[ \binom{n}{b} p^b (1-p)^{n-b} \]
+                </p>
+                <p>
+                    This is precisely the likelihood function for <strong>Model 2</strong>.
+                </p>
+                <div class="bg-green-900/50 border border-green-500/30 p-4 rounded mt-6">
+                    <p class="font-bold text-green-400 mb-0">
+                        Conclusion: Since the kernel of the likelihood function (the part depending on \( p \)) is identical in both derivations, inferences about \( p \) (such as MLE) will be identical regardless of which model is chosen. Q.E.D.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <footer class="text-center text-slate-400 text-sm mt-12 pb-8">
+            <p>&copy; 2025 Study Assistant. Generated for educational purposes.</p>
+        </footer>
+
+    </main>
+</body>
+</html>
