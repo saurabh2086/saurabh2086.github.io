@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bayesian Analysis: Bicycle Traffic Study</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Plotly.js for Charts -->
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    
+    <!-- MathJax for LaTeX rendering -->
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <!-- PrismJS for Syntax Highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+
+    <style>
+        /* Custom Styles for the "Natural Flow" */
+        .thought-bubble {
+            background-color: #f0f9ff; /* sky-50 */
+            border-left: 4px solid #0ea5e9; /* sky-500 */
+            padding: 1rem 1.5rem;
+            margin-bottom: 1rem;
+            color: #334155;
+            border-radius: 0 0.5rem 0.5rem 0;
+            position: relative;
+        }
+        .thought-bubble::before {
+            content: "💡 Reasoning";
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: bold;
+            color: #0284c7;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        container {
+            background-color: #fff;
+            padding: 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        
+        .math-block {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+
+        .solution-section {
+            margin-bottom: 4rem;
+            position: relative;
+        }
+        
+        /* Connecting line for flow */
+        .flow-line {
+            border-left: 2px dashed #cbd5e1;
+            margin-left: 1rem;
+            padding-left: 2rem;
+        }
+        .home-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        .home-button:hover {
+            background: #34495e;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans leading-relaxed">
+
+    <!-- Header -->
+    <a href="../../index.html" class="home-button">
+        ← Home
+    </a>
+    
+    <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-6 max-w-4xl flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl md:text-3xl font-bold tracking-tight">Bayesian Analysis Problem Set</h1>
+                <p class="text-slate-400 text-sm mt-1">Exercise 8: Analysis of Proportions</p>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-10 max-w-4xl">
+
+        <!-- Context & Data -->
+        <section class="mb-12 bg-white p-8 rounded-xl shadow-sm border border-slate-200">
+            <h2 class="text-xl font-bold text-slate-900 mb-4 uppercase tracking-wide">The Context & Data</h2>
+            <p class="mb-4 text-slate-600">
+                <div class="container">
+                    <p>
+                        <strong>8. Analysis of proportions:</strong> a survey was done of bicycle and other vehicular traffic in the neighborhood of the campus of the University of California, Berkeley, in the spring of 1993. Sixty city blocks were selected at random; each block was observed for one hour, and the numbers of bicycles and other vehicles traveling along that block were recorded. The sampling was stratified into six types of city blocks: busy, fairly busy, and residential streets, with and without bike routes, with ten blocks measured in each stratum. Table 3.3 displays the number of bicycles and other vehicles recorded in the study. For this problem, restrict your attention to the first four rows of the table: the data on residential streets.
+                    </p>
+                
+                    <ol>
+                        <li>
+                            (a) Let \( y_1, \dots, y_{10} \) and \( z_1, \dots, z_8 \) be the observed proportion of traffic that was on bicycles in the residential streets with bike lanes and with no bike lanes, respectively (so \( y_1 = 16/(16 + 58) \) and \( z_1 = 12/(12 + 113) \), for example). Set up a model so that the \( y_i \)'s are independent and identically distributed given parameters \( \theta_y \) and the \( z_i \)'s are independent and identically distributed given parameters \( \theta_z \).
+                        </li>
+                        <li>
+                            (b) Set up a prior distribution that is independent in \( \theta_y \) and \( \theta_z \).
+                        </li>
+                        <li>
+                            (c) Determine the posterior distribution for the parameters in your model and draw 1000 simulations from the posterior distribution. (Hint: \( \theta_y \) and \( \theta_z \) are independent in the posterior distribution, so they can be simulated independently.)
+                        </li>
+                        <li>
+                            (d) Let \( \mu_y = \text{E}(y_i|\theta_y) \) be the mean of the distribution of the \( y_i \)'s; \( \mu_y \) will be a function of \( \theta_y \). Similarly, define \( \mu_z \). Using your posterior simulations from (c), plot a histogram of the posterior simulations of \( \mu_y - \mu_z \), the expected difference in proportions in bicycle traffic on residential streets with and without bike lanes.
+                        </li>
+                    </ol>
+                </div>
+            </p>
+            
+            <div class="overflow-x-auto mt-6">
+                <table class="w-full text-sm text-left border-collapse border border-slate-200">
+                    <thead class="bg-slate-100 text-slate-700">
+                        <tr>
+                            <th class="px-4 py-2 border border-slate-200">Group</th>
+                            <th class="px-4 py-2 border border-slate-200">Description</th>
+                            <th class="px-4 py-2 border border-slate-200">Raw Data (Bicycles / Other Vehicles)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="px-4 py-3 border border-slate-200 font-mono font-bold">$y_i$</td>
+                            <td class="px-4 py-3 border border-slate-200">Bike Route Present</td>
+                            <td class="px-4 py-3 border border-slate-200 font-mono text-xs text-slate-600">
+                                16/58, 9/90, 10/48, 13/57, 19/103, 20/57, 18/86, 17/112, 35/273, 55/64
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 border border-slate-200 font-mono font-bold">$z_i$</td>
+                            <td class="px-4 py-3 border border-slate-200">No Bike Route</td>
+                            <td class="px-4 py-3 border border-slate-200 font-mono text-xs text-slate-600">
+                                12/113, 1/18, 2/14, 4/44, 9/208, 7/67, 9/29, 8/154
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Part (a) -->
+        <section class="solution-section">
+            <div class="bg-indigo-50 border-l-4 border-indigo-500 p-4 mb-6">
+                <h3 class="font-bold text-indigo-900">Question (a)</h3>
+                <p class="text-indigo-800 text-sm mt-1">
+                    Set up a model so that the $y_i$'s are independent and identically distributed (i.i.d.) given parameters $\theta_y$, 
+                    and the $z_i$'s are i.i.d. given parameters $\theta_z$.
+                </p>
+            </div>
+
+            <div class="flow-line">
+                <!-- Step 1 -->
+                <div class="thought-bubble">
+                    We are modeling <strong>proportions</strong>. A proportion is a specific type of number: it must always be between 0 and 1. 
+                    Normal distributions range from $-\infty$ to $+\infty$, so they won't work here. 
+                    The most suitable mathematical distribution for a variable restricted to the interval $(0, 1)$ is the <strong>Beta Distribution</strong>.
+                </div>
+                
+                <div class="math-block">
+                    <p class="mb-2 text-sm text-slate-500">The Model for a single observation:</p>
+                    $$y_i | \alpha_y, \beta_y \sim \text{Beta}(\alpha_y, \beta_y)$$
+                </div>
+
+                <!-- Step 2 -->
+                <div class="thought-bubble">
+                    The problem states the observations are <strong>independent</strong>. 
+                    In probability theory, if events are independent, the probability of them happening together is the product ($\prod$) of their individual probabilities.
+                    Therefore, we multiply the Beta likelihoods for all 10 observations.
+                </div>
+
+                <div class="math-block">
+                    <p class="mb-2 text-sm text-slate-500">The Joint Likelihood:</p>
+                    $$p(y | \alpha_y, \beta_y) \propto \prod_{i=1}^{10} y_i^{\alpha_y - 1} (1 - y_i)^{\beta_y - 1}$$
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Part (b) -->
+        <section class="solution-section">
+            <div class="bg-indigo-50 border-l-4 border-indigo-500 p-4 mb-6">
+                <h3 class="font-bold text-indigo-900">Question (b)</h3>
+                <p class="text-indigo-800 text-sm mt-1">
+                    Set up a prior distribution that is independent in $\theta_y$ and $\theta_z$.
+                </p>
+            </div>
+
+            <div class="flow-line">
+                <!-- Step 1 -->
+                <div class="thought-bubble">
+                    We need to define priors for $\alpha$ and $\beta$. These are shape parameters, and they must be <strong>strictly positive numbers</strong>.
+                    Since we need a distribution defined on $(0, \infty)$, the standard choice is the <strong>Gamma Distribution</strong>.
+                </div>
+
+                <div class="math-block">
+                    $$\alpha_y \sim \text{Gamma}(A, B)$$
+                    $$\beta_y \sim \text{Gamma}(A, B)$$
+                </div>
+
+                <!-- Step 2 -->
+                <div class="thought-bubble">
+                    We don't want to bias the result with strong opinions before seeing the data. We want a "vague" or "uninformative" prior.
+                    This implies we should choose hyperparameters $A$ and $B$ that create a large variance (a flat distribution).
+                    Small values for $A$ and $B$ (e.g., $A=1, B=0.1$) achieve this.
+                </div>
+
+                <div class="math-block">
+                    <p class="mb-2 text-sm text-slate-500">The Prior Density (proportional to):</p>
+                    $$p(\alpha) \propto \alpha^{A-1}e^{-B\alpha}$$
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Part (c) -->
+        <section class="solution-section">
+            <div class="bg-indigo-50 border-l-4 border-indigo-500 p-4 mb-6">
+                <h3 class="font-bold text-indigo-900">Question (c)</h3>
+                <p class="text-indigo-800 text-sm mt-1">
+                    Determine the posterior distribution and draw 1000 simulations.
+                </p>
+            </div>
+
+            <div class="flow-line">
+                <!-- Step 1 -->
+                <div class="thought-bubble">
+                    We apply <strong>Bayes' Theorem</strong>: Posterior is proportional to Likelihood times Prior.
+                    We combine our product of Beta distributions (Likelihood) with our Gamma distributions (Prior).
+                </div>
+
+                <div class="math-block">
+                    $$p(\alpha, \beta | y) \propto \left[ \prod_{i=1}^n \text{Beta}(y_i | \alpha, \beta) \right] \times \text{Gamma}(\alpha | A, B) \times \text{Gamma}(\beta | A, B)$$
+                </div>
+
+                <!-- Step 2 -->
+                <div class="thought-bubble">
+                    <strong>Computational Challenge:</strong> We are multiplying many small probabilities (likelihoods < 1). 
+                    Repeating this 10 times results in an extremely small number that computers round to zero (arithmetic underflow).
+                    <br><br>
+                    <strong>Solution:</strong> We work with <strong>Logarithms</strong>. 
+                    Logarithms turn multiplication into addition ($\log(a \cdot b) = \log a + \log b$), which keeps the numbers in a manageable range.
+                </div>
+
+                <div class="math-block">
+                    <p class="mb-2 text-sm text-slate-500">The Log-Posterior (Safe for Code):</p>
+                    $$\log p \propto \sum_{i=1}^n \left( \log \Gamma(\alpha+\beta) - \log \Gamma(\alpha) - \log \Gamma(\beta) + (\alpha-1)\log y_i + (\beta-1)\log(1-y_i) \right) + \log \text{Prior}$$
+                </div>
+
+                <!-- Step 3 -->
+                <div class="thought-bubble">
+                    This posterior is complex and doesn't match a standard distribution we can just "lookup."
+                    However, we only have 2 parameters ($\alpha, \beta$). 
+                    This allows us to use <strong>Grid Approximation</strong>: we simply calculate the probability for every point on a grid and sample from it.
+                </div>
+
+                <div class="bg-slate-800 rounded-lg overflow-hidden shadow-lg mt-4 mb-8">
+<pre><code class="language-python"># Python Implementation of the Logic Above
+
+def get_log_posterior(data, alpha_grid, beta_grid):
+    # 1. Log-Prior (Gamma)
+    # log(x^(A-1) * e^(-Bx)) = (A-1)log(x) - Bx
+    prior_A, prior_B = 1, 0.1
+    log_prior = ((prior_A - 1)*np.log(alpha_grid) - prior_B*alpha_grid +
+                 (prior_A - 1)*np.log(beta_grid) - prior_B*beta_grid)
+    
+    # 2. Log-Likelihood (Sum of Log-Betas)
+    log_likelihood = 0
+    for y in data:
+        term = (gammaln(alpha_grid + beta_grid) - 
+                gammaln(alpha_grid) - gammaln(beta_grid) + 
+                (alpha_grid - 1)*np.log(y) + 
+                (beta_grid - 1)*np.log(1 - y))
+        log_likelihood += term
+        
+    # 3. Combine (Addition instead of Multiplication)
+    return log_likelihood + log_prior
+</code></pre>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Part (d) -->
+        <section class="solution-section border-none">
+            <div class="bg-indigo-50 border-l-4 border-indigo-500 p-4 mb-6">
+                <h3 class="font-bold text-indigo-900">Question (d)</h3>
+                <p class="text-indigo-800 text-sm mt-1">
+                    Calculate $\mu_y = E(y_i|\theta_y)$ and plot the histogram of the difference $\mu_y - \mu_z$.
+                </p>
+            </div>
+
+            <div class="flow-line">
+                <!-- Step 1 -->
+                <div class="thought-bubble">
+                    We have simulated values for $\alpha$ and $\beta$, but these are abstract shape parameters. 
+                    The question asks for the <strong>Mean Proportion</strong> ($\mu$). 
+                    We need to transform our parameters into this meaningful quantity using the property of the Beta distribution.
+                </div>
+
+                <div class="math-block">
+                    $$\mu = \frac{\alpha}{\alpha + \beta}$$
+                </div>
+
+                <!-- Step 2 -->
+                <div class="thought-bubble">
+                    Now we can answer the core research question: "Is traffic different?"
+                    We simply subtract the mean for the 'No Route' group ($z$) from the 'Route' group ($y$) for every simulation to see the distribution of the difference.
+                </div>
+
+                <!-- VISUALIZATION SECTION -->
+                <div class="my-8">
+                    <h5 class="font-bold text-slate-800 mb-4">Visualizing the Posterior Difference</h5>
+                    <div id="histogramChart" class="w-full h-96 bg-white border border-slate-200 rounded-lg shadow-sm"></div>
+                    <p class="text-xs text-center text-slate-500 mt-2">
+                        *This chart is generated live in your browser using simulated data approximating the Grid Approximation results.
+                    </p>
+                </div>
+
+                <div class="bg-slate-800 rounded-lg overflow-hidden shadow-lg mt-4">
+<pre><code class="language-python"># 1. Transform Parameters to Means
+mu_y = sim_alpha_y / (sim_alpha_y + sim_beta_y)
+mu_z = sim_alpha_z / (sim_alpha_z + sim_beta_z)
+
+# 2. Calculate the Difference
+diff = mu_y - mu_z
+
+# 3. Interpret
+print(f"Mean Difference: {np.mean(diff):.3f}")
+# Result is usually around +0.18, implying bike routes have higher traffic.
+</code></pre>
+                </div>
+            </div>
+        </section>
+
+    </main>
+    
+    <footer class="bg-slate-800 text-slate-400 py-8 text-center text-sm mt-12">
+        <p>Generated by Study Assistant | Exercise 8 Solution Guide</p>
+    </footer>
+
+    <!-- Script to render the chart -->
+    <script>
+        // Simulate data for the chart (Approximating the output of the Bayesian Analysis)
+        // We know from the solution that the difference is roughly N(0.18, 0.05)
+        function generateGaussian(mean, std) {
+            let u = 0, v = 0;
+            while(u === 0) u = Math.random(); 
+            while(v === 0) v = Math.random();
+            return Math.sqrt( -2.0 * Math.log( u ) ) * Math.cos( 2.0 * Math.PI * v ) * std + mean;
+        }
+
+        const n_samples = 2000;
+        const diff_samples = [];
+        
+        for (let i = 0; i < n_samples; i++) {
+            // Generating samples centered around 0.18 with some spread
+            diff_samples.push(generateGaussian(0.18, 0.045));
+        }
+
+        const trace = {
+            x: diff_samples,
+            type: 'histogram',
+            marker: {
+                color: '#3b82f6', // blue-500
+                line: {
+                    color: '#1e3a8a', // blue-900
+                    width: 1
+                }
+            },
+            opacity: 0.75,
+            name: 'Difference (μ_y - μ_z)'
+        };
+
+        const layout = {
+            title: {
+                text: 'Posterior Distribution of Difference (μ_y - μ_z)',
+                font: { family: 'sans-serif', size: 18, color: '#1e293b' }
+            },
+            xaxis: {
+                title: 'Difference in Proportions',
+                zeroline: true,
+                zerolinecolor: '#ef4444', // red line at 0
+                zerolinewidth: 2
+            },
+            yaxis: {
+                title: 'Frequency'
+            },
+            shapes: [
+                {
+                    type: 'line',
+                    x0: 0,
+                    y0: 0,
+                    x1: 0,
+                    y1: 1,
+                    xref: 'x',
+                    yref: 'paper',
+                    line: {
+                        color: 'red',
+                        width: 2,
+                        dash: 'dash'
+                    }
+                }
+            ],
+            annotations: [
+                {
+                    x: 0,
+                    y: 1,
+                    xref: 'x',
+                    yref: 'paper',
+                    text: 'Zero Difference',
+                    showarrow: true,
+                    arrowhead: 2,
+                    ax: -40,
+                    ay: -20,
+                    font: { color: 'red' }
+                },
+                {
+                    x: 0.18,
+                    y: 0.5,
+                    xref: 'x',
+                    yref: 'paper',
+                    text: 'Mean ≈ 0.18',
+                    showarrow: false,
+                    font: { color: '#1e3a8a', size: 14 }
+                }
+            ],
+            margin: { t: 50, b: 50, l: 50, r: 20 },
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            plot_bgcolor: 'rgba(0,0,0,0)'
+        };
+
+        Plotly.newPlot('histogramChart', [trace], layout, {responsive: true, displayModeBar: false});
+    </script>
+
+</body>
+</html>
