@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bayesian Derivation: Comparison of Normal Variances</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;1,400&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Merriweather', serif; /* Academic paper feel */
+            background-color: #f3f4f6;
+            color: #1f2937;
+        }
+        .sans {
+            font-family: 'Inter', sans-serif;
+        }
+        .math-display {
+            overflow-x: auto;
+            padding: 1rem 0;
+        }
+        .home-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        .home-button:hover {
+            background: #34495e;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8 lg:p-12">
+    <!-- Home Buttn -->
+    <a href="../../index.html" class="home-button">
+        ← Home
+    </a>
+
+    <div class="max-w-4xl mx-auto bg-white shadow-xl rounded-lg overflow-hidden border border-gray-200">
+        
+        <!-- Header -->
+        <header class="bg-slate-900 text-white p-6 border-b-4 border-slate-700">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-bold sans">Bayesian Inference Exam Solution</h1>
+                    <p class="text-slate-400 mt-2 text-sm sans">Topic: Comparison of Normal Variances & Posterior F-Distribution</p>
+                </div>
+                <button onclick="window.print()" class="hidden md:block bg-slate-700 hover:bg-slate-600 text-white font-sans font-bold py-2 px-4 rounded transition duration-200">
+                    Print / Save PDF
+                </button>
+            </div>
+        </header>
+
+        <main class="p-8 md:p-12">
+
+            <!-- The Question Block -->
+            <section class="mb-10">
+                <h2 class="text-lg font-bold text-slate-700 mb-2 sans uppercase tracking-wider">Problem Statement</h2>
+                <div class="bg-gray-100 border-l-4 border-gray-500 p-6 rounded-r-lg text-gray-800 italic">
+                    <p class="mb-4">
+                        10. <strong>Comparison of normal variances:</strong> for \( j = 1, 2 \), suppose that
+                        \[ y_{j1}, \dots, y_{jn_j} | \mu_j, \sigma_j^2 \sim \text{iid } N(\mu_j, \sigma_j^2), \]
+                        \[ p(\mu_j, \sigma_j^2) \propto \sigma_j^{-2}, \]
+                        and \((\mu_1, \sigma_1^2)\) are independent of \((\mu_2, \sigma_2^2)\) in the prior distribution.
+                    </p>
+                    <p>
+                        Show that the posterior distribution of \((s_1^2/s_2^2)/(\sigma_1^2/\sigma_2^2)\) is \( F \) with \((n_1-1)\) and \((n_2-1)\) degrees of freedom.
+                    </p>
+                </div>
+            </section>
+
+            <!-- The Solution -->
+            <section class="space-y-8">
+                <h2 class="text-2xl font-bold text-slate-800 border-b pb-2 sans">Detailed Derivation</h2>
+
+                <!-- Step 1 -->
+                <article>
+                    <h3 class="text-xl font-semibold text-indigo-700 mb-2 sans">Step 1: Construct the Likelihood Function</h3>
+                    <p class="leading-relaxed mb-4">
+                        We begin by defining the likelihood for a single group \( j \). Since the observations \( y_{j1}, \dots, y_{jn_j} \) are independent and identically distributed (i.i.d.) normal, the likelihood is the product of the individual densities:
+                    </p>
+                    <div class="math-display text-center text-lg">
+                        \[
+                        \begin{aligned}
+                        p(y | \mu_j, \sigma_j^2) &= \prod_{i=1}^{n_j} \frac{1}{\sqrt{2\pi\sigma_j^2}} \exp\left( -\frac{(y_{ji} - \mu_j)^2}{2\sigma_j^2} \right) \\
+                        &\propto (\sigma_j^2)^{-n_j/2} \exp\left( -\frac{\sum_{i=1}^{n_j} (y_{ji} - \mu_j)^2}{2\sigma_j^2} \right)
+                        \end{aligned}
+                        \]
+                    </div>
+                </article>
+
+                <!-- Step 2 -->
+                <article>
+                    <h3 class="text-xl font-semibold text-indigo-700 mb-2 sans">Step 2: Joint Posterior Distribution</h3>
+                    <p class="leading-relaxed mb-4">
+                        Using Bayes' Theorem, the posterior is proportional to the Likelihood \( \times \) Prior. We use the given non-informative prior \( p(\mu_j, \sigma_j^2) \propto \sigma_j^{-2} \).
+                    </p>
+                    <div class="math-display text-center text-lg">
+                        \[
+                        \begin{aligned}
+                        p(\mu_j, \sigma_j^2 | y) &\propto \text{Likelihood} \times \text{Prior} \\
+                        &\propto \left[ (\sigma_j^2)^{-n_j/2} \exp\left( -\frac{\sum (y_{ji} - \mu_j)^2}{2\sigma_j^2} \right) \right] \cdot (\sigma_j^2)^{-1} \\
+                        &\propto (\sigma_j^2)^{-(n_j/2 + 1)} \exp\left( -\frac{\sum (y_{ji} - \mu_j)^2}{2\sigma_j^2} \right)
+                        \end{aligned}
+                        \]
+                    </div>
+                </article>
+
+                <!-- Step 3 -->
+                <article>
+                    <h3 class="text-xl font-semibold text-indigo-700 mb-2 sans">Step 3: Marginal Posterior of \( \sigma_j^2 \)</h3>
+                    <p class="leading-relaxed mb-4">
+                        We are interested in the variance, so we treat \( \mu_j \) as a nuisance parameter and integrate it out. First, we decompose the sum of squares in the exponent:
+                    </p>
+                    <div class="math-display text-center">
+                        \[ \sum_{i=1}^{n_j} (y_{ji} - \mu_j)^2 = \sum_{i=1}^{n_j} (y_{ji} - \bar{y}_j + \bar{y}_j - \mu_j)^2 = (n_j-1)s_j^2 + n_j(\bar{y}_j - \mu_j)^2 \]
+                    </div>
+                    <p class="leading-relaxed mb-4">
+                        Substitute this back into the joint posterior and integrate with respect to \( \mu_j \):
+                    </p>
+                    <div class="math-display text-center text-lg">
+                        \[
+                        \begin{aligned}
+                        p(\sigma_j^2 | y) &\propto \int_{-\infty}^{\infty} (\sigma_j^2)^{-(n_j/2 + 1)} \exp\left( -\frac{(n_j-1)s_j^2 + n_j(\bar{y}_j - \mu_j)^2}{2\sigma_j^2} \right) d\mu_j \\
+                        &\propto (\sigma_j^2)^{-(n_j/2 + 1)} e^{-\frac{(n_j-1)s_j^2}{2\sigma_j^2}} \underbrace{\int_{-\infty}^{\infty} \exp\left( -\frac{n_j(\bar{y}_j - \mu_j)^2}{2\sigma_j^2} \right) d\mu_j}_{\text{Gaussian Kernel in } \mu_j}
+                        \end{aligned}
+                        \]
+                    </div>
+                    <p class="leading-relaxed mb-4">
+                        The integral is proportional to the square root of the variance of the Gaussian, \( \sqrt{\sigma_j^2/n_j} \propto (\sigma_j^2)^{1/2} \).
+                    </p>
+                    <div class="text-center bg-indigo-50 p-4 rounded border border-indigo-100">
+                        \[
+                        p(\sigma_j^2 | y) \propto (\sigma_j^2)^{-(n_j/2 + 1)} \cdot (\sigma_j^2)^{1/2} \cdot e^{-\frac{(n_j-1)s_j^2}{2\sigma_j^2}} = (\sigma_j^2)^{-\frac{n_j+1}{2}} e^{-\frac{(n_j-1)s_j^2}{2\sigma_j^2}}
+                        \]
+                    </div>
+                    <p class="mt-4 text-sm text-gray-600">
+                        *Note: This is the kernel of a Scaled Inverse-Chi-Square distribution: \( \text{Inv-}\chi^2(n_j-1, s_j^2) \).
+                    </p>
+                </article>
+
+                <!-- Step 4 -->
+                <article>
+                    <h3 class="text-xl font-semibold text-indigo-700 mb-2 sans">Step 4: Transformation to Chi-Square</h3>
+                    <p class="leading-relaxed mb-4">
+                        We identify the standard distribution. If \( \sigma_j^2 \sim \text{Inv-}\chi^2(\nu, s^2) \), then the transformed variable:
+                    </p>
+                    <div class="math-display text-center text-lg">
+                        \[ X_j = \frac{(n_j-1)s_j^2}{\sigma_j^2} \]
+                    </div>
+                    <p class="leading-relaxed mb-4">
+                        follows a standard Chi-Square distribution with \( n_j-1 \) degrees of freedom:
+                        \[ X_j \sim \chi^2_{n_j-1} \]
+                    </p>
+                </article>
+
+                <!-- Step 5 -->
+                <article>
+                    <h3 class="text-xl font-semibold text-indigo-700 mb-2 sans">Step 5: The Ratio and F-Distribution</h3>
+                    <p class="leading-relaxed mb-4">
+                        Since the groups are independent, \( X_1 \) and \( X_2 \) are independent. We recall the definition of the F-distribution:
+                    </p>
+                    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4">
+                        <strong>Definition:</strong> If \( U \sim \chi^2_{\nu_1} \) and \( V \sim \chi^2_{\nu_2} \), then \( \frac{U/\nu_1}{V/\nu_2} \sim F(\nu_1, \nu_2) \).
+                    </div>
+                    <p class="leading-relaxed mb-4">
+                        Let us construct this ratio using our variables \( X_1 \) and \( X_2 \):
+                    </p>
+                    <div class="math-display text-center text-lg">
+                        \[
+                        \begin{aligned}
+                        F &= \frac{X_1 / (n_1 - 1)}{X_2 / (n_2 - 1)} \\
+                        &= \frac{\left[ \frac{(n_1-1)s_1^2}{\sigma_1^2} \right] \frac{1}{n_1-1}}{\left[ \frac{(n_2-1)s_2^2}{\sigma_2^2} \right] \frac{1}{n_2-1}} \\
+                        &= \frac{s_1^2 / \sigma_1^2}{s_2^2 / \sigma_2^2} \\
+                        &= \frac{s_1^2 / s_2^2}{\sigma_1^2 / \sigma_2^2}
+                        \end{aligned}
+                        \]
+                    </div>
+                </article>
+
+                <!-- Conclusion -->
+                <article class="bg-green-50 border border-green-200 rounded-lg p-6 mt-8">
+                    <h3 class="text-xl font-bold text-green-800 mb-2 sans">Conclusion</h3>
+                    <p class="leading-relaxed text-green-900">
+                        We have shown that the quantity \( \frac{s_1^2 / s_2^2}{\sigma_1^2 / \sigma_2^2} \) is exactly the ratio of two independent Chi-square variables divided by their degrees of freedom. Therefore:
+                    </p>
+                    <div class="math-display text-center text-xl font-bold text-green-900 mt-4">
+                        \[ \frac{s_1^2/s_2^2}{\sigma_1^2/\sigma_2^2} \sim F(n_1-1, n_2-1) \]
+                    </div>
+                    <p class="text-right font-bold text-green-800 mt-4">Q.E.D.</p>
+                </article>
+
+            </section>
+        </main>
+    </div>
+
+</body>
+</html>
