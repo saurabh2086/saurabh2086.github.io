@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bayesian Bioassay: Exam Solution</title>
+    
+    <!-- Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <!-- Highlight.js for Syntax Highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .math-block { overflow-x: auto; padding: 1rem; background-color: #f8fafc; border-radius: 0.5rem; }
+        /* Ensure highlight.js background blends with our container */
+        .hljs { background: transparent !important; }
+        .home-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        .home-button:hover {
+            background: #34495e;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(190, 155, 155, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+    <!-- Home Button -->
+    <a href="../../index.html" class="home-button" title="Back to Home">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+        </svg>
+        Home
+    </a>
+
+    <div class="max-w-5xl mx-auto p-6 bg-white shadow-xl my-8 rounded-lg">
+        
+        <!-- Header -->
+        <header class="border-b-2 border-blue-600 pb-4 mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">Exam Solution: Bayesian Bioassay with Informative Prior</h1>
+            <p class="text-gray-500 mt-2">Topic: Bayesian Inference, Grid Approximation, Logistic Regression</p>
+        </header>
+
+        <!-- The Question -->
+        <section class="mb-10">
+            <h2 class="text-xl font-bold text-blue-800 mb-4 uppercase tracking-wide">Problem Statement</h2>
+            <div class="bg-blue-50 p-6 rounded-lg border-l-4 border-blue-600">
+                <p class="mb-2"><strong>11. Computation:</strong> In the bioassay example, replace the uniform prior density by a joint normal prior distribution on \((\alpha, \beta)\), with:</p>
+                <ul class="list-disc ml-6 mb-2">
+                    <li>\(\alpha \sim N(0, 2^2)\)</li>
+                    <li>\(\beta \sim N(10, 10^2)\)</li>
+                    <li>\(\text{corr}(\alpha, \beta) = 0.5\)</li>
+                </ul>
+                <p class="mb-2"><strong>(a)</strong> Repeat all computations and plots of Section 3.7 with this new prior distribution.</p>
+                <p class="mb-2"><strong>(b)</strong> Check that your contour plot and scatterplot look like a compromise between the prior distribution and the likelihood.</p>
+                <p><strong>(c)</strong> Discuss the effect of this hypothetical prior information on the conclusions.</p>
+            </div>
+        </section>
+
+        <!-- Data Section -->
+        <section class="mb-10">
+            <h3 class="text-lg font-bold text-gray-900 border-b pb-2 mb-3">Table 3.1: Bioassay Data</h3>
+            <p class="mb-4 text-gray-600">The following experimental data was observed (Racine et al., 1986):</p>
+            <div class="overflow-x-auto">
+                <table class="min-w-full bg-white border border-gray-300 rounded-lg shadow-sm">
+                    <thead>
+                        <tr class="bg-gray-100 text-gray-700 uppercase text-sm leading-normal">
+                            <th class="py-3 px-6 text-left">Dose, \(x_i\) (log g/ml)</th>
+                            <th class="py-3 px-6 text-center">Number of animals, \(n_i\)</th>
+                            <th class="py-3 px-6 text-center">Number of deaths, \(y_i\)</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-gray-600 text-sm font-light">
+                        <tr class="border-b border-gray-200 hover:bg-gray-50">
+                            <td class="py-3 px-6 text-left font-medium">-0.86</td>
+                            <td class="py-3 px-6 text-center">5</td>
+                            <td class="py-3 px-6 text-center">0</td>
+                        </tr>
+                        <tr class="border-b border-gray-200 hover:bg-gray-50">
+                            <td class="py-3 px-6 text-left font-medium">-0.30</td>
+                            <td class="py-3 px-6 text-center">5</td>
+                            <td class="py-3 px-6 text-center">1</td>
+                        </tr>
+                        <tr class="border-b border-gray-200 hover:bg-gray-50">
+                            <td class="py-3 px-6 text-left font-medium">-0.05</td>
+                            <td class="py-3 px-6 text-center">5</td>
+                            <td class="py-3 px-6 text-center">3</td>
+                        </tr>
+                        <tr class="border-b border-gray-200 hover:bg-gray-50">
+                            <td class="py-3 px-6 text-left font-medium">0.73</td>
+                            <td class="py-3 px-6 text-center">5</td>
+                            <td class="py-3 px-6 text-center">5</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Solution Section -->
+        <section>
+            <h2 class="text-xl font-bold text-blue-800 mb-6 uppercase tracking-wide">Detailed Solution & Analysis</h2>
+
+            <!-- Step 1: Prior -->
+            <div class="mb-8">
+                <h3 class="text-lg font-bold text-gray-900 border-b pb-2 mb-3">Step 1: Formalizing the Informative Prior</h3>
+                <p class="mb-4">
+                    First, we must mathematically define the prior \(p(\alpha, \beta)\). The problem states it is a Bivariate Normal distribution. 
+                    We are given the standard deviations \(\sigma_\alpha = 2, \sigma_\beta = 10\) and the correlation \(\rho = 0.5\). 
+                    To compute the density, we need the covariance matrix \(\Sigma\).
+                </p>
+                <div class="math-block mb-4">
+                    $$
+                    \text{Cov}(\alpha, \beta) = \rho \cdot \sigma_\alpha \cdot \sigma_\beta = 0.5 \cdot 2 \cdot 10 = 10
+                    $$
+                    $$
+                    \mu = \begin{bmatrix} 0 \\ 10 \end{bmatrix}, \quad 
+                    \Sigma = \begin{bmatrix} \sigma_\alpha^2 & \text{Cov} \\ \text{Cov} & \sigma_\beta^2 \end{bmatrix} = \begin{bmatrix} 4 & 10 \\ 10 & 100 \end{bmatrix}
+                    $$
+                </div>
+                <p class="text-sm text-gray-600 italic">
+                    <strong>Logic Check:</strong> The positive covariance (10) implies that in our prior belief, higher intercepts (\(\alpha\)) are associated with higher slopes (\(\beta\)).
+                </p>
+            </div>
+
+            <!-- Step 2: Likelihood -->
+            <div class="mb-8">
+                <h3 class="text-lg font-bold text-gray-900 border-b pb-2 mb-3">Step 2: The Likelihood Function</h3>
+                <p class="mb-4">
+                    The data consists of 4 groups. For each group \(i\), the number of deaths \(y_i\) follows a Binomial distribution governed by probability \(\theta_i\), which is linked to dose \(x_i\) via the logit function.
+                </p>
+                <div class="math-block mb-4">
+                    $$ \text{logit}(\theta_i) = \alpha + \beta x_i \implies \theta_i = \frac{1}{1 + e^{-(\alpha + \beta x_i)}} $$
+                    $$ p(y|\alpha, \beta) = \prod_{i=1}^{4} \binom{n_i}{y_i} \theta_i^{y_i} (1-\theta_i)^{n_i - y_i} $$
+                </div>
+            </div>
+
+            <!-- Step 3: Computation Visualization -->
+            <div class="mb-8">
+                <h3 class="text-lg font-bold text-gray-900 border-b pb-2 mb-3">Step 3: Grid Approximation & Visualization</h3>
+                <p class="mb-4">
+                    Since the posterior \(p(\alpha, \beta | y) \propto \text{Prior} \times \text{Likelihood}\) is not a standard closed-form distribution (due to the non-conjugate logistic likelihood), we use <strong>grid approximation</strong>.
+                </p>
+                <p class="mb-4">
+                    We compute the unnormalized density on a grid, normalize it to sum to 1, and then sample using the inverse-CDF method (first marginalizing \(\alpha\), then conditionally sampling \(\beta\)).
+                </p>
+
+                <!-- PLOT CONTAINER -->
+                <div id="plotDiv" class="w-full h-[600px] border rounded shadow-sm bg-white"></div>
+                <p class="text-center text-sm text-gray-500 mt-2">Interactive Plot: Hover to see values. Zoom is enabled.</p>
+                
+                <div class="mt-6 bg-yellow-50 p-4 rounded border border-yellow-200">
+                    <h4 class="font-bold text-yellow-800">Part (b) Verification: The "Compromise"</h4>
+                    <p class="mt-2 text-gray-700">
+                        Observe the plot above.
+                        <br>1. The <span class="text-blue-600 font-bold">Blue Dot</span> represents our <strong>Prior Mean</strong> (0, 10).
+                        <br>2. The <span class="text-red-600 font-bold">Red X</span> represents the <strong>MLE</strong> (0.8, 7.7), which is the center of the Likelihood (Data).
+                        <br>3. The <strong>Black Contours</strong> (Posterior) are located strictly <em>between</em> these two points.
+                    </p>
+                    <p class="mt-2 text-gray-700">
+                        This visually confirms that Bayesian inference acts as a weighted compromise. The posterior is pulled away from the prior towards the data, but the strong prior information (variance 4 and 100) prevents it from moving all the way to the MLE.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Step 4: Discussion -->
+            <div class="mb-8">
+                <h3 class="text-lg font-bold text-gray-900 border-b pb-2 mb-3">Step 4: Discussion of Conclusions (Part c)</h3>
+                <p class="mb-4">
+                    How does the informative prior change our conclusions compared to the uniform prior used in Section 3.7?
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white p-4 rounded shadow-sm border">
+                        <h4 class="font-bold text-gray-800 mb-2">1. Estimation Precision</h4>
+                        <p class="text-sm text-gray-600">
+                            The posterior variance is smaller than in the uniform case. By injecting extra information (the prior), we have reduced our uncertainty about the parameters. The contours are "tighter" than they would be with likelihood alone.
+                        </p>
+                    </div>
+                    <div class="bg-white p-4 rounded shadow-sm border">
+                        <h4 class="font-bold text-gray-800 mb-2">2. Parameter Shift</h4>
+                        <p class="text-sm text-gray-600">
+                            The posterior mean for \(\beta\) (slope) is likely higher than the MLE of 7.7. Because our prior belief centered \(\beta\) at 10, and the data suggested 7.7, the posterior settles somewhere in the middle (around 8.5 - 9.0). We are more confident that the drug is effective (steep slope) than the data alone would suggest.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- Python Implementation Reference -->
+        <section class="mb-10">
+            <h2 class="text-xl font-bold text-blue-800 mb-6 uppercase tracking-wide">Python Reference Code</h2>
+            <p class="mb-4 text-gray-600">
+                While the visualization above runs in JavaScript, the following Python code implements the exact same logic using the standard scientific stack (`numpy`, `scipy`, `plotly`). You can copy this to run the analysis locally.
+            </p>
+            
+            <div class="bg-[#282c34] text-gray-100 rounded-lg p-4 overflow-x-auto shadow-inner">
+<pre><code class="language-python">import numpy as np
+import scipy.stats as stats
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+
+def run_bioassay_analysis():
+    # ---------------------------------------------------------
+    # 1. Data Setup (Table 3.1)
+    # ---------------------------------------------------------
+    x_dose = np.array([-0.86, -0.30, -0.05, 0.73])
+    n_animals = np.array([5, 5, 5, 5])
+    y_deaths = np.array([0, 1, 3, 5])
+
+    # ---------------------------------------------------------
+    # 2. Grid Definition
+    # ---------------------------------------------------------
+    alpha_range = np.linspace(-4, 4, 100) 
+    beta_range = np.linspace(-10, 30, 100)
+    Alpha_grid, Beta_grid = np.meshgrid(alpha_range, beta_range)
+    
+    # Pack into (N, M, 2) shape for multivariate_normal
+    pos = np.dstack((Alpha_grid, Beta_grid))
+
+    # ---------------------------------------------------------
+    # 3. Prior Computation (Bivariate Normal)
+    # ---------------------------------------------------------
+    # Given: alpha ~ N(0, 2^2), beta ~ N(10, 10^2), corr = 0.5
+    mu = np.array([0, 10])
+    # Cov = rho * sigma_alpha * sigma_beta = 0.5 * 2 * 10 = 10
+    cov_matrix = np.array([[4, 10], [10, 100]])
+
+    prior_density = stats.multivariate_normal(mean=mu, cov=cov_matrix).pdf(pos)
+
+    # ---------------------------------------------------------
+    # 4. Likelihood Computation
+    # ---------------------------------------------------------
+    likelihood = np.ones_like(Alpha_grid)
+
+    for i in range(len(x_dose)):
+        linear_pred = Alpha_grid + Beta_grid * x_dose[i]
+        theta = 1 / (1 + np.exp(-linear_pred))
+        prob_data = stats.binom.pmf(y_deaths[i], n_animals[i], theta)
+        likelihood *= prob_data
+
+    # ---------------------------------------------------------
+    # 5. Posterior Computation
+    # ---------------------------------------------------------
+    posterior_unnormalized = prior_density * likelihood
+    posterior = posterior_unnormalized / np.sum(posterior_unnormalized)
+
+    # ---------------------------------------------------------
+    # 6. Sampling from the Grid
+    # ---------------------------------------------------------
+    n_samples = 1000
+    
+    # A: Marginal p(alpha | y)
+    p_alpha_marginal = np.sum(posterior, axis=0)
+    p_alpha_marginal /= np.sum(p_alpha_marginal)
+
+    alpha_indices = np.random.choice(len(alpha_range), size=n_samples, p=p_alpha_marginal)
+    
+    alpha_samples = []
+    beta_samples = []
+
+    # B: Conditional p(beta | alpha, y)
+    for i_a in alpha_indices:
+        p_beta_conditional = posterior[:, i_a].copy() 
+        
+        if np.sum(p_beta_conditional) > 0:
+            p_beta_conditional /= np.sum(p_beta_conditional)
+        else:
+            p_beta_conditional = np.ones_like(p_beta_conditional) / len(p_beta_conditional)
+        
+        i_b = np.random.choice(len(beta_range), p=p_beta_conditional)
+        
+        # Add Jitter
+        d_alpha = alpha_range[1] - alpha_range[0]
+        d_beta = beta_range[1] - beta_range[0]
+        alpha_samples.append(alpha_range[i_a] + np.random.uniform(-d_alpha/2, d_alpha/2))
+        beta_samples.append(beta_range[i_b] + np.random.uniform(-d_beta/2, d_beta/2))
+
+    # ---------------------------------------------------------
+    # 7. Visualization
+    # ---------------------------------------------------------
+    fig = make_subplots(rows=1, cols=2, 
+        subplot_titles=("Contour plot", "Scatterplot"))
+
+    # Plot A: Contour
+    fig.add_trace(go.Contour(
+        z=posterior, x=alpha_range, y=beta_range, 
+        colorscale='Viridis', name='Posterior'
+    ), row=1, col=1)
+
+    # Markers for Prior Mean and MLE
+    fig.add_trace(go.Scatter(x=[0], y=[10], mode='markers', 
+        marker=dict(color='blue', size=12), name='Prior Mean'), row=1, col=1)
+    fig.add_trace(go.Scatter(x=[0.8], y=[7.7], mode='markers', 
+        marker=dict(color='red', symbol='x', size=12), name='MLE'), row=1, col=1)
+
+    # Plot B: Scatter
+    fig.add_trace(go.Scatter(
+        x=alpha_samples, y=beta_samples, mode='markers',
+        marker=dict(size=4, color='black', opacity=0.5), name='Samples'
+    ), row=1, col=2)
+
+    fig.update_layout(height=600, width=1200, title_text="Bioassay Analysis")
+    fig.show()
+
+if __name__ == "__main__":
+    run_bioassay_analysis()</code></pre>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="text-center text-gray-400 text-sm mt-12 border-t pt-6">
+            Generated by Study Assistant for Bioassay Analysis Module
+        </footer>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // --- 1. CONFIGURATION & DATA ---
+        // Data from Table 3.1
+        const x_dose = [-0.86, -0.30, -0.05, 0.73];
+        const n_animals = [5, 5, 5, 5];
+        const y_deaths = [0, 1, 3, 5];
+
+        // Grid Configuration
+        const n_grid = 100; // 100x100 grid
+        const alpha_range = linspace(-4, 4, n_grid);
+        const beta_range = linspace(-10, 30, n_grid);
+
+        // Prior Parameters
+        const mu_alpha = 0;
+        const mu_beta = 10;
+        const sigma_alpha = 2;
+        const sigma_beta = 10;
+        const rho = 0.5;
+        
+        // --- 2. MATH HELPERS ---
+        function linspace(start, end, num) {
+            const arr = [];
+            const step = (end - start) / (num - 1);
+            for (let i = 0; i < num; i++) arr.push(start + (step * i));
+            return arr;
+        }
+
+        function factorial(n) {
+            if (n === 0 || n === 1) return 1;
+            let result = 1;
+            for (let i = 2; i <= n; i++) result *= i;
+            return result;
+        }
+
+        function binomPMF(k, n, p) {
+            const comb = factorial(n) / (factorial(k) * factorial(n - k));
+            return comb * Math.pow(p, k) * Math.pow(1 - p, n - k);
+        }
+
+        // Bivariate Normal PDF
+        function bivariateNormalPDF(x, y, muX, muY, sigX, sigY, rho) {
+            const z = (Math.pow(x - muX, 2) / Math.pow(sigX, 2)) +
+                      (Math.pow(y - muY, 2) / Math.pow(sigY, 2)) -
+                      (2 * rho * (x - muX) * (y - muY)) / (sigX * sigY);
+            const expTerm = Math.exp(-z / (2 * (1 - Math.pow(rho, 2))));
+            const normConst = 1 / (2 * Math.PI * sigX * sigY * Math.sqrt(1 - Math.pow(rho, 2)));
+            return normConst * expTerm;
+        }
+
+        // --- 3. COMPUTATION ---
+        
+        // Initialize grids
+        let posterior = []; // 2D array [beta_row][alpha_col] for Plotly (Plotly uses z[y][x])
+        let alpha_marginals = new Array(n_grid).fill(0);
+        
+        // We will store the full unnormalized grid for sampling later
+        let posterior_flat = []; 
+
+        // Main Loop
+        for (let j = 0; j < n_grid; j++) { // Loop over Beta (Rows)
+            let row = [];
+            const beta = beta_range[j];
+            
+            for (let i = 0; i < n_grid; i++) { // Loop over Alpha (Cols)
+                const alpha = alpha_range[i];
+
+                // A. Prior
+                const prior_val = bivariateNormalPDF(alpha, beta, mu_alpha, mu_beta, sigma_alpha, sigma_beta, rho);
+
+                // B. Likelihood
+                let likelihood_val = 1.0;
+                for (let k = 0; k < x_dose.length; k++) {
+                    const theta = 1 / (1 + Math.exp(-(alpha + beta * x_dose[k])));
+                    likelihood_val *= binomPMF(y_deaths[k], n_animals[k], theta);
+                }
+
+                // C. Unnormalized Posterior
+                const val = prior_val * likelihood_val;
+                row.push(val);
+                
+                // Accumulate marginal for Alpha (summing down columns effectively, but we do it later)
+            }
+            posterior.push(row);
+        }
+
+        // Normalize Posterior for Plotting and Marginal Calc
+        let total_sum = 0;
+        for(let r=0; r<n_grid; r++) {
+            for(let c=0; c<n_grid; c++) {
+                total_sum += posterior[r][c];
+            }
+        }
+        
+        // Apply Normalization
+        for(let r=0; r<n_grid; r++) {
+            for(let c=0; c<n_grid; c++) {
+                posterior[r][c] /= total_sum;
+            }
+        }
+
+        // --- 4. SAMPLING (Inverse CDF) ---
+        const n_samples = 1000;
+        let samples_alpha = [];
+        let samples_beta = [];
+
+        // Step A: Marginal p(alpha | y) -> Sum over Beta (rows)
+        // posterior is [row(beta)][col(alpha)]
+        let p_alpha = new Array(n_grid).fill(0);
+        for(let c=0; c<n_grid; c++) {
+            let sum_col = 0;
+            for(let r=0; r<n_grid; r++) {
+                sum_col += posterior[r][c];
+            }
+            p_alpha[c] = sum_col;
+        }
+        // Normalize Marginal
+        const sum_p_alpha = p_alpha.reduce((a,b)=>a+b, 0);
+        p_alpha = p_alpha.map(x => x / sum_p_alpha);
+
+        // Helper: Random Choice based on weights
+        function randomChoiceIndex(weights) {
+            const r = Math.random();
+            let cumsum = 0;
+            for (let i = 0; i < weights.length; i++) {
+                cumsum += weights[i];
+                if (r <= cumsum) return i;
+            }
+            return weights.length - 1;
+        }
+
+        // Grid spacing for jitter
+        const d_alpha = alpha_range[1] - alpha_range[0];
+        const d_beta = beta_range[1] - beta_range[0];
+
+        for(let s=0; s<n_samples; s++) {
+            // 1. Sample Alpha index
+            const i_a = randomChoiceIndex(p_alpha);
+            
+            // 2. Conditional p(beta | alpha) -> Extract column i_a
+            let p_beta_cond = [];
+            for(let r=0; r<n_grid; r++) {
+                p_beta_cond.push(posterior[r][i_a]);
+            }
+            
+            // Normalize Conditional
+            const sum_cond = p_beta_cond.reduce((a,b)=>a+b, 0);
+            if(sum_cond > 0) {
+                p_beta_cond = p_beta_cond.map(x => x / sum_cond);
+            } else {
+                p_beta_cond = p_beta_cond.map(x => 1/n_grid); // Fallback
+            }
+
+            // 3. Sample Beta index
+            const i_b = randomChoiceIndex(p_beta_cond);
+
+            // 4. Jitter
+            const jitter_a = (Math.random() - 0.5) * d_alpha;
+            const jitter_b = (Math.random() - 0.5) * d_beta;
+
+            samples_alpha.push(alpha_range[i_a] + jitter_a);
+            samples_beta.push(beta_range[i_b] + jitter_b);
+        }
+
+        // --- 5. PLOTTING ---
+        
+        // Trace 1: Contour
+        const traceContour = {
+            z: posterior,
+            x: alpha_range,
+            y: beta_range,
+            type: 'contour',
+            colorscale: 'Viridis',
+            contours: {
+                coloring: 'lines'
+            },
+            name: 'Posterior Density',
+            showscale: false
+        };
+
+        // Trace 2: Samples Scatter
+        const traceScatter = {
+            x: samples_alpha,
+            y: samples_beta,
+            mode: 'markers',
+            type: 'scatter',
+            marker: { size: 3, color: 'black', opacity: 0.4 },
+            name: 'Posterior Draws'
+        };
+
+        // Trace 3: Prior Mean
+        const tracePrior = {
+            x: [0],
+            y: [10],
+            mode: 'markers',
+            type: 'scatter',
+            marker: { size: 12, color: 'blue', symbol: 'circle' },
+            name: 'Prior Mean (0, 10)'
+        };
+
+        // Trace 4: MLE
+        const traceMLE = {
+            x: [0.8],
+            y: [7.7],
+            mode: 'markers',
+            type: 'scatter',
+            marker: { size: 12, color: 'red', symbol: 'x' },
+            name: 'MLE (0.8, 7.7)'
+        };
+
+        const layout = {
+            title: 'Joint Posterior Density & Samples',
+            xaxis: { title: 'Alpha (Intercept)' },
+            yaxis: { title: 'Beta (Slope)' },
+            showlegend: true,
+            hovermode: 'closest'
+        };
+
+        Plotly.newPlot('plotDiv', [traceContour, traceScatter, tracePrior, traceMLE], layout);
+
+    </script>
+</body>
+</html>
