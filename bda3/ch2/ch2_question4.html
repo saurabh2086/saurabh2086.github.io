@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predictive Distributions Problem</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js for visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- MathJax for LaTeX rendering -->
+    <script>
+        // MathJax configuration
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body { font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+        .math-block { overflow-x: auto; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 line-height-1.6">
+
+    <div class="max-w-4xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+        
+        <!-- Header -->
+        <header class="mb-10 border-b pb-6">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">Predictive Distributions</h1>
+            <p class="text-gray-600">Bayesian Statistics & Normal Approximation</p>
+        </header>
+
+        <!-- Problem Statement -->
+        <section class="bg-white shadow rounded-lg p-6 mb-8 border-l-4 border-blue-500">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">Problem Statement</h2>
+            <p class="mb-4">
+                Let $y$ be the number of 6’s in <strong>1000 independent rolls</strong> of a particular real die, which may be unfair. 
+                Let $\theta$ be the probability that the die lands on ‘6.’ 
+            </p>
+            <p class="mb-4">
+                Suppose your prior distribution for $\theta$ is as follows:
+            </p>
+            <ul class="list-disc pl-6 mb-4 space-y-1">
+                <li>$Pr(\theta = 1/12) = 0.25$</li>
+                <li>$Pr(\theta = 1/6) = 0.5$</li>
+                <li>$Pr(\theta = 1/4) = 0.25$</li>
+            </ul>
+            <p class="mb-2 font-semibold">Questions:</p>
+            <ol class="list-decimal pl-6 space-y-2">
+                <li>Using the normal approximation for the conditional distributions $p(y|\theta)$, sketch your approximate prior predictive distribution for $y$.</li>
+                <li>Give approximate 5%, 25%, 50%, 75%, and 95% points for the distribution of $y$.</li>
+            </ol>
+        </section>
+
+        <!-- Solution Part A -->
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Part (a): Prior Predictive Distribution</h2>
+            
+            <div class="prose max-w-none text-gray-700">
+                <p class="mb-4">
+                    The prior predictive distribution $p(y)$ is the marginal distribution of the data, averaging over the prior uncertainties. Since our prior is discrete, this is a weighted sum (a mixture model) of the conditional distributions:
+                </p>
+                <div class="math-block bg-gray-100 p-4 rounded mb-6">
+                    $$ p(y) = \sum_{i=1}^{3} p(y|\theta_i) Pr(\theta_i) $$
+                </div>
+
+                <h3 class="text-lg font-semibold mb-2">1. The Components (Normal Approximation)</h3>
+                <p class="mb-4">
+                    For a fixed $\theta$ and large $n$, the distribution of $y$ (Binomial) is approximated by a Normal distribution $N(\mu, \sigma^2)$ where:
+                    $$ \mu = n\theta \quad \text{and} \quad \sigma = \sqrt{n\theta(1-\theta)} $$
+                </p>
+                <p class="mb-4">With $n=1000$, we calculate the parameters for each case:</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <!-- Case 1 -->
+                    <div class="bg-blue-50 p-4 rounded border border-blue-100">
+                        <h4 class="font-bold text-blue-800 mb-2">Case 1: $\theta = 1/12$</h4>
+                        <p class="text-sm">Weight: $0.25$</p>
+                        <hr class="border-blue-200 my-2">
+                        <p class="text-sm">$\mu_1 = 1000(\frac{1}{12}) \approx \mathbf{83.3}$</p>
+                        <p class="text-sm">$\sigma_1 = \sqrt{1000(\frac{1}{12})(\frac{11}{12})} \approx \mathbf{8.7}$</p>
+                    </div>
+
+                    <!-- Case 2 -->
+                    <div class="bg-green-50 p-4 rounded border border-green-100">
+                        <h4 class="font-bold text-green-800 mb-2">Case 2: $\theta = 1/6$</h4>
+                        <p class="text-sm">Weight: $0.50$</p>
+                        <hr class="border-green-200 my-2">
+                        <p class="text-sm">$\mu_2 = 1000(\frac{1}{6}) \approx \mathbf{166.7}$</p>
+                        <p class="text-sm">$\sigma_2 = \sqrt{1000(\frac{1}{6})(\frac{5}{6})} \approx \mathbf{11.8}$</p>
+                    </div>
+
+                    <!-- Case 3 -->
+                    <div class="bg-purple-50 p-4 rounded border border-purple-100">
+                        <h4 class="font-bold text-purple-800 mb-2">Case 3: $\theta = 1/4$</h4>
+                        <p class="text-sm">Weight: $0.25$</p>
+                        <hr class="border-purple-200 my-2">
+                        <p class="text-sm">$\mu_3 = 1000(\frac{1}{4}) = \mathbf{250.0}$</p>
+                        <p class="text-sm">$\sigma_3 = \sqrt{1000(\frac{1}{4})(\frac{3}{4})} \approx \mathbf{13.7}$</p>
+                    </div>
+                </div>
+
+                <h3 class="text-lg font-semibold mb-2">2. Visualization</h3>
+                <p class="mb-4">The resulting distribution is a <strong>Mixture of three Normals</strong> with three distinct peaks ("trimodal").</p>
+                
+                <div class="bg-white p-4 rounded shadow border mb-6">
+                    <canvas id="predictiveChart" height="150"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Solution Part B -->
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Part (b): Approximate Quantiles</h2>
+            
+            <div class="prose max-w-none text-gray-700">
+                <p class="mb-4">
+                    Because the means ($83.3, 166.7, 250$) are very far apart relative to their standard deviations ($\approx 9, 12, 14$), the three component distributions essentially do not overlap.
+                    We can determine the quantiles by accumulating the weights (probabilities) of the components from left to right.
+                </p>
+
+                <div class="overflow-hidden bg-white shadow sm:rounded-lg">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantile</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Logic</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Calculation</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Result ($y$)</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <!-- 5% -->
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap font-bold text-blue-600">5%</td>
+                                <td class="px-6 py-4 text-sm text-gray-600">
+                                    Falls inside the 1st component (which holds 0% to 25% of mass).<br>
+                                    We need the point where we accumulate $0.05$ total mass.<br>
+                                    Relative to Component 1 (mass 0.25): $0.05 / 0.25 = 20\%$.
+                                </td>
+                                <td class="px-6 py-4 text-sm font-mono">
+                                    $Z_{0.20} \approx -0.84$ <br>
+                                    $\mu_1 + Z\sigma_1$ <br>
+                                    $83.3 - 0.84(8.7)$
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap font-bold">~76</td>
+                            </tr>
+                            <!-- 25% -->
+                            <tr class="bg-gray-50">
+                                <td class="px-6 py-4 whitespace-nowrap font-bold text-blue-600">25%</td>
+                                <td class="px-6 py-4 text-sm text-gray-600">
+                                    This is the total mass of the 1st component.<br>
+                                    The value lies in the gap between Component 1 and 2.<br>
+                                    (The CDF is flat at 0.25 in this region).
+                                </td>
+                                <td class="px-6 py-4 text-sm font-mono">
+                                    Range: $(\mu_1 + 3\sigma_1)$ to $(\mu_2 - 3\sigma_2)$<br>
+                                    $83.3 + 26 \to 109$<br>
+                                    $166.7 - 35 \to 131$
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap font-bold">Any value in [110, 130]</td>
+                            </tr>
+                            <!-- 50% -->
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap font-bold text-blue-600">50%</td>
+                                <td class="px-6 py-4 text-sm text-gray-600">
+                                    The median. Since the middle component is symmetric and holds 50% of the mass (from 25% to 75% cumulative), the global median is the mean of the middle component.
+                                </td>
+                                <td class="px-6 py-4 text-sm font-mono">
+                                    $\mu_2$
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap font-bold">167</td>
+                            </tr>
+                            <!-- 75% -->
+                            <tr class="bg-gray-50">
+                                <td class="px-6 py-4 whitespace-nowrap font-bold text-blue-600">75%</td>
+                                <td class="px-6 py-4 text-sm text-gray-600">
+                                    This is the end of the 2nd component (Cumulative 0.25 + 0.50).<br>
+                                    Lies in the gap between Component 2 and 3.
+                                </td>
+                                <td class="px-6 py-4 text-sm font-mono">
+                                    Range: $(\mu_2 + 3\sigma_2)$ to $(\mu_3 - 3\sigma_3)$<br>
+                                    $166.7 + 35 \to 202$<br>
+                                    $250 - 41 \to 209$
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap font-bold">Any value in [202, 209]</td>
+                            </tr>
+                            <!-- 95% -->
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap font-bold text-blue-600">95%</td>
+                                <td class="px-6 py-4 text-sm text-gray-600">
+                                    Falls inside the 3rd component (which starts at 75%).<br>
+                                    We need $0.20$ more mass into this component.<br>
+                                    Relative to Component 3 (mass 0.25): $0.20 / 0.25 = 80\%$.
+                                </td>
+                                <td class="px-6 py-4 text-sm font-mono">
+                                    $Z_{0.80} \approx 0.84$ <br>
+                                    $\mu_3 + Z\sigma_3$ <br>
+                                    $250 + 0.84(13.7)$
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap font-bold">~262</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Script for Logic and Chart -->
+    <script>
+        (function() {
+            // Parameters
+            const n = 1000;
+            const dists = [
+                { theta: 1/12, weight: 0.25, color: 'rgba(59, 130, 246, 0.6)', label: 'θ = 1/12' },
+                { theta: 1/6,  weight: 0.50, color: 'rgba(34, 197, 94, 0.6)',  label: 'θ = 1/6' },
+                { theta: 1/4,  weight: 0.25, color: 'rgba(168, 85, 247, 0.6)', label: 'θ = 1/4' }
+            ];
+
+            // Calculate Means and SDs
+            dists.forEach(d => {
+                d.mu = n * d.theta;
+                d.sigma = Math.sqrt(n * d.theta * (1 - d.theta));
+            });
+
+            // Normal PDF function
+            function normalPDF(x, mu, sigma) {
+                return (1 / (sigma * Math.sqrt(2 * Math.PI))) * Math.exp(-0.5 * Math.pow((x - mu) / sigma, 2));
+            }
+
+            // Generate Data Points for Chart
+            const xValues = [];
+            const yTotal = [];
+            // Generate a range covering all distributions (roughly 50 to 300)
+            for (let x = 40; x <= 300; x += 1) {
+                xValues.push(x);
+                
+                let prob = 0;
+                dists.forEach(d => {
+                    prob += d.weight * normalPDF(x, d.mu, d.sigma);
+                });
+                yTotal.push(prob);
+            }
+
+            // Render Chart
+            const canvas = document.getElementById('predictiveChart');
+            // Check if there is already a chart instance on the canvas and destroy it
+            if (window.myChart) {
+                window.myChart.destroy();
+            }
+
+            const ctx = canvas.getContext('2d');
+            window.myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: xValues,
+                    datasets: [{
+                        label: 'Predictive Density p(y)',
+                        data: yTotal,
+                        borderColor: 'rgb(75, 85, 99)',
+                        backgroundColor: 'rgba(75, 85, 99, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Number of 6s (y)'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Density'
+                            },
+                            display: false // Hide y axis numbers for cleaner look
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Prior Predictive Distribution: p(y) = 0.25·N1 + 0.50·N2 + 0.25·N3'
+                        },
+                        annotation: {
+                            annotations: {
+                                // Can add vertical lines for quantiles if needed, but omitted for simplicity
+                            }
+                        }
+                    }
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
