@@ -3,346 +3,302 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Normal Model Analysis</title>
+    <title>Predictive Distributions Solution</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
+        .code-block {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
         }
-        .latex {
-            font-family: 'Times New Roman', Times, serif;
-            font-style: italic;
-        }
-        .home-button {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            background: #2c3e50;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 25px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-            transition: all 0.3s ease;
-            z-index: 1000;
-        }
-        .home-button:hover {
-            background: #34495e;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        }
+        .keyword { color: #569cd6; }
+        .string { color: #ce9178; }
+        .comment { color: #6a9955; }
+        .function { color: #dcdcaa; }
+        .number { color: #b5cea8; }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-800 flex flex-col items-center justify-center min-h-screen p-4">
+<body class="bg-gray-50 text-gray-800 font-sans leading-relaxed">
 
-    <a href="../../index.html" class="home-button">
-        ← Home
-    </a>
-
-    <div class="w-full max-w-5xl bg-white rounded-xl shadow-lg p-6 md:p-8 space-y-6">
+    <div class="max-w-4xl mx-auto p-6">
         
         <!-- Header -->
-        <div class="text-center">
-            <h1 class="text-2xl md:text-3xl font-bold text-gray-900">Normal Model Analysis</h1>
-            <p class="text-gray-600 mt-2">Bayesian inference for normal data with known variance and normal conjugate prior.</p>
-        </div>
+        <header class="mb-10 text-center border-b pb-6">
+            <h1 class="text-3xl font-bold text-blue-900 mb-2">Predictive Distributions Solution</h1>
+            <p class="text-gray-600">Normal Approximation of a Binomial Distribution</p>
+        </header>
 
-        <!-- Problem Statement -->
-        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
-            <h3 class="text-lg font-semibold text-gray-800 mb-2">Problem Statement</h3>
-            <div class="text-gray-700 space-y-2">
-                <p>Consider a normal model where <span class="latex">y ~ N(μ, σ²)</span> with unknown mean <span class="latex">μ</span> and known variance <span class="latex">σ²</span>. We use a normal conjugate prior: <span class="latex">μ ~ N(μ₀, τ²)</span>.</p>
-                <ol class="list-decimal list-inside space-y-1 pl-2">
-                    <li>Derive the posterior distribution <span class="latex">p(μ|y)</span>.</li>
-                    <li>Find the posterior mean and variance.</li>
-                    <li>Analyze the precision-weighted combination of prior and likelihood.</li>
-                    <li>Calculate credible intervals for <span class="latex">μ</span>.</li>
-                </ol>
+        <!-- Section 1: The Problem -->
+        <section class="mb-12 bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                <span class="bg-blue-100 text-blue-800 text-sm font-semibold mr-3 px-2.5 py-0.5 rounded">1</span>
+                The Question
+            </h2>
+            <div class="italic text-lg text-gray-700 bg-gray-50 p-4 rounded border-l-4 border-blue-500">
+                <p class="mb-2"><strong>3. Predictive distributions:</strong> Let \( y \) be the number of 6's in 1000 rolls of a fair die.</p>
+                <ul class="list-decimal list-inside ml-4 space-y-1">
+                    <li>Sketch the approximate distribution of \( y \), based on the normal approximation.</li>
+                    <li>Using the normal distribution table, give approximate 5%, 25%, 50%, 75%, and 95% points for the distribution of \( y \).</li>
+                </ul>
             </div>
-        </div>
+        </section>
 
-        <!-- Detailed Explanations -->
-        <div class="space-y-4 pt-4 border-t">
-            <h2 class="text-2xl font-bold text-gray-900 text-center">Detailed Solutions</h2>
+        <!-- Section 2: Mathematical Solution -->
+        <section class="mb-12">
+            <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                <span class="bg-blue-100 text-blue-800 text-sm font-semibold mr-3 px-2.5 py-0.5 rounded">2</span>
+                Mathematical Solution
+            </h2>
             
-            <!-- Part (a) -->
-            <div class="bg-gray-50 p-4 rounded-lg">
-                <h3 class="text-lg font-semibold text-gray-800 mb-2">(a) Posterior Distribution</h3>
-                <div class="text-gray-700 space-y-2">
-                    <p>The likelihood for normal data is:</p>
-                    <p class="text-center bg-white p-2 rounded-md overflow-x-auto"><span class="latex">p(y|μ) = (1/√(2πσ²)) exp(-(y-μ)²/(2σ²))</span></p>
-                    <p>The normal prior is:</p>
-                    <p class="text-center bg-white p-2 rounded-md overflow-x-auto"><span class="latex">p(μ) = (1/√(2πτ²)) exp(-(μ-μ₀)²/(2τ²))</span></p>
-                    <p>Using Bayes' theorem, the posterior is proportional to:</p>
-                    <p class="text-center bg-white p-2 rounded-md overflow-x-auto"><span class="latex">p(μ|y) ∝ exp(-(μ-μ₁)²/(2τ₁²))</span></p>
-                    <p>This is a normal distribution: <span class="latex">μ|y ~ N(μ₁, τ₁²)</span></p>
-                </div>
-            </div>
-
-            <!-- Part (b) -->
-            <div class="bg-gray-50 p-4 rounded-lg">
-                <h3 class="text-lg font-semibold text-gray-800 mb-2">(b) Posterior Mean and Variance</h3>
-                <div class="text-gray-700 space-y-2">
-                    <p>For <span class="latex">μ|y ~ N(μ₁, τ₁²)</span>:</p>
-                    <ul class="list-disc list-inside space-y-1 pl-2">
-                        <li><strong>Posterior Mean:</strong> <span class="latex">μ₁ = (τ²μ₀ + σ²y)/(τ² + σ²)</span></li>
-                        <li><strong>Posterior Variance:</strong> <span class="latex">τ₁² = τ²σ²/(τ² + σ²)</span></li>
+            <div class="space-y-6">
+                <!-- Step 1 -->
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <h3 class="font-semibold text-lg text-blue-800 mb-2">Step 1: Identify Parameters</h3>
+                    <p>The number of 6's, \( y \), follows a Binomial distribution \( B(n, p) \) where:</p>
+                    <ul class="list-disc list-inside ml-4 mt-2">
+                        <li>\( n = 1000 \) (number of rolls)</li>
+                        <li>\( p = 1/6 \) (probability of rolling a 6)</li>
                     </ul>
-                    <p>The posterior mean is a precision-weighted average of the prior mean and observed data.</p>
                 </div>
-            </div>
 
-            <!-- Part (c) -->
-            <div class="bg-gray-50 p-4 rounded-lg">
-                <h3 class="text-lg font-semibold text-gray-800 mb-2">(c) Precision-Weighted Combination</h3>
-                <div class="text-gray-700 space-y-2">
-                    <p>Let <span class="latex">w₁ = 1/τ²</span> (prior precision) and <span class="latex">w₂ = 1/σ²</span> (likelihood precision):</p>
-                    <ul class="list-disc list-inside space-y-1 pl-2">
-                        <li><strong>Posterior Mean:</strong> <span class="latex">μ₁ = (w₁μ₀ + w₂y)/(w₁ + w₂)</span></li>
-                        <li><strong>Posterior Precision:</strong> <span class="latex">w₁ + w₂</span></li>
-                    </ul>
-                    <p>Higher precision (lower variance) leads to greater influence on the posterior.</p>
-                </div>
-            </div>
-
-            <!-- Part (d) -->
-            <div class="bg-gray-50 p-4 rounded-lg">
-                <h3 class="text-lg font-semibold text-gray-800 mb-2">(d) Credible Intervals</h3>
-                <div class="text-gray-700 space-y-2">
-                    <p>For a normal distribution, credible intervals are symmetric around the mean. The 95% credible interval is:</p>
-                    <p class="text-center bg-white p-2 rounded-md overflow-x-auto"><span class="latex">[μ₁ - 1.96τ₁, μ₁ + 1.96τ₁]</span></p>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Interactive App Section -->
-        <div class="space-y-4 pt-4 border-t">
-            <h2 class="text-2xl font-bold text-gray-900 text-center">Interactive Normal Model Explorer</h2>
-            <p class="text-center text-gray-600">Explore how different priors and data affect the posterior distribution.</p>
-            
-            <!-- Controls -->
-            <div class="grid md:grid-cols-2 gap-4">
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-2">Data Parameters</h3>
-                    <div class="space-y-3">
-                        <div>
-                            <label for="observed-value" class="block text-sm font-medium text-gray-700">Observed value (y)</label>
-                            <input id="observed-value" type="range" min="-10" max="10" step="0.1" value="2" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
-                            <span id="y-value" class="text-sm text-indigo-600 font-semibold">2.0</span>
+                <!-- Step 2 -->
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <h3 class="font-semibold text-lg text-blue-800 mb-2">Step 2: Normal Approximation</h3>
+                    <p>For large \( n \), we approximate \( B(n, p) \) with a Normal distribution \( N(\mu, \sigma^2) \).</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                        <div class="bg-gray-50 p-4 rounded">
+                            <p class="font-bold">Mean (\( \mu \)):</p>
+                            $$ \mu = np = 1000 \times \frac{1}{6} \approx 166.7 $$
                         </div>
-                        <div>
-                            <label for="data-variance" class="block text-sm font-medium text-gray-700">Data variance (σ²)</label>
-                            <input id="data-variance" type="range" min="0.1" max="5" step="0.1" value="1" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
-                            <span id="sigma2-value" class="text-sm text-indigo-600 font-semibold">1.0</span>
+                        <div class="bg-gray-50 p-4 rounded">
+                            <p class="font-bold">Standard Deviation (\( \sigma \)):</p>
+                            $$ \sigma = \sqrt{np(1-p)} = \sqrt{1000 \cdot \frac{1}{6} \cdot \frac{5}{6}} \approx 11.8 $$
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-2">Prior Parameters</h3>
-                    <div class="space-y-3">
-                        <div>
-                            <label for="prior-mean" class="block text-sm font-medium text-gray-700">Prior mean (μ₀)</label>
-                            <input id="prior-mean" type="range" min="-5" max="5" step="0.1" value="0" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
-                            <span id="mu0-value" class="text-sm text-indigo-600 font-semibold">0.0</span>
-                        </div>
-                        <div>
-                            <label for="prior-variance" class="block text-sm font-medium text-gray-700">Prior variance (τ²)</label>
-                            <input id="prior-variance" type="range" min="0.1" max="5" step="0.1" value="1" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
-                            <span id="tau2-value" class="text-sm text-indigo-600 font-semibold">1.0</span>
-                        </div>
+                <!-- Step 3 -->
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <h3 class="font-semibold text-lg text-blue-800 mb-2">Step 3: Calculating Percentiles (Part b)</h3>
+                    <p class="mb-4">We use the standard normal \( Z \)-scores associated with the requested percentiles and the formula \( y = \mu + Z\sigma \).</p>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full text-sm text-left text-gray-600">
+                            <thead class="text-xs text-gray-700 uppercase bg-gray-100">
+                                <tr>
+                                    <th class="px-6 py-3">Percentile</th>
+                                    <th class="px-6 py-3">Z-Score</th>
+                                    <th class="px-6 py-3">Calculation (\( \mu + Z\sigma \))</th>
+                                    <th class="px-6 py-3">Result (\( y \))</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="bg-white border-b">
+                                    <td class="px-6 py-4 font-medium text-gray-900">5%</td>
+                                    <td class="px-6 py-4">-1.645</td>
+                                    <td class="px-6 py-4">\( 166.7 + (-1.645)(11.8) \)</td>
+                                    <td class="px-6 py-4 font-bold text-blue-600">147.3</td>
+                                </tr>
+                                <tr class="bg-white border-b">
+                                    <td class="px-6 py-4 font-medium text-gray-900">25%</td>
+                                    <td class="px-6 py-4">-0.674</td>
+                                    <td class="px-6 py-4">\( 166.7 + (-0.674)(11.8) \)</td>
+                                    <td class="px-6 py-4 font-bold text-blue-600">158.7</td>
+                                </tr>
+                                <tr class="bg-white border-b">
+                                    <td class="px-6 py-4 font-medium text-gray-900">50%</td>
+                                    <td class="px-6 py-4">0.000</td>
+                                    <td class="px-6 py-4">\( 166.7 + (0)(11.8) \)</td>
+                                    <td class="px-6 py-4 font-bold text-blue-600">166.7</td>
+                                </tr>
+                                <tr class="bg-white border-b">
+                                    <td class="px-6 py-4 font-medium text-gray-900">75%</td>
+                                    <td class="px-6 py-4">+0.674</td>
+                                    <td class="px-6 py-4">\( 166.7 + (0.674)(11.8) \)</td>
+                                    <td class="px-6 py-4 font-bold text-blue-600">174.7</td>
+                                </tr>
+                                <tr class="bg-white">
+                                    <td class="px-6 py-4 font-medium text-gray-900">95%</td>
+                                    <td class="px-6 py-4">+1.645</td>
+                                    <td class="px-6 py-4">\( 166.7 + (1.645)(11.8) \)</td>
+                                    <td class="px-6 py-4 font-bold text-blue-600">186.1</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
+        </section>
 
-            <!-- Visualization -->
-            <div class="bg-gray-50 p-4 rounded-lg">
-                <h3 class="text-center font-semibold text-gray-700 mb-2">Prior, Likelihood, and Posterior Distributions</h3>
-                <canvas id="distribution-chart" class="w-full h-80 rounded-lg border border-gray-200"></canvas>
-                <div class="flex justify-center items-center space-x-4 mt-3 text-sm">
-                    <div class="flex items-center"><span class="w-4 h-4 bg-blue-500 rounded-sm mr-2"></span><span>Prior N(μ₀,τ²)</span></div>
-                    <div class="flex items-center"><span class="w-4 h-4 bg-green-500 rounded-sm mr-2"></span><span>Likelihood N(y,σ²)</span></div>
-                    <div class="flex items-center"><span class="w-4 h-4 bg-red-500 rounded-sm mr-2"></span><span>Posterior N(μ₁,τ₁²)</span></div>
-                </div>
+        <!-- Section 3: Visualization -->
+        <section class="mb-12">
+            <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                <span class="bg-blue-100 text-blue-800 text-sm font-semibold mr-3 px-2.5 py-0.5 rounded">3</span>
+                Sketch of Distribution (Part a)
+            </h2>
+            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex flex-col items-center">
+                <canvas id="distributionCanvas" width="800" height="400" class="w-full h-auto max-w-3xl"></canvas>
+                <p class="text-sm text-gray-500 mt-2">Visual representation of N(166.7, 11.8²) with key percentiles marked.</p>
             </div>
+        </section>
 
-            <!-- Results -->
-            <div class="grid md:grid-cols-3 gap-4">
-                <div class="bg-indigo-50 p-4 rounded-lg text-center">
-                    <h3 class="text-lg font-semibold text-indigo-800">Posterior Mean</h3>
-                    <p class="text-2xl font-bold text-indigo-600" id="posterior-mean">1.000</p>
-                </div>
-                <div class="bg-green-50 p-4 rounded-lg text-center">
-                    <h3 class="text-lg font-semibold text-green-800">Posterior Variance</h3>
-                    <p class="text-2xl font-bold text-green-600" id="posterior-variance">0.500</p>
-                </div>
-                <div class="bg-purple-50 p-4 rounded-lg text-center">
-                    <h3 class="text-lg font-semibold text-purple-800">95% Credible Interval</h3>
-                    <p class="text-lg font-bold text-purple-600" id="credible-interval">[-0.4, 2.4]</p>
-                </div>
+        <!-- Section 4: Python Code -->
+        <section class="mb-12">
+            <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                <span class="bg-blue-100 text-blue-800 text-sm font-semibold mr-3 px-2.5 py-0.5 rounded">4</span>
+                Python Code
+            </h2>
+            <div class="code-block text-sm">
+<pre><code><span class="keyword">import</span> numpy <span class="keyword">as</span> np
+<span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt
+<span class="keyword">from</span> scipy.stats <span class="keyword">import</span> norm
+
+<span class="comment"># 1. Define Parameters</span>
+n = <span class="number">1000</span>
+p = <span class="number">1</span>/<span class="number">6</span>
+mean = n * p
+std_dev = np.sqrt(n * p * (<span class="number">1</span> - p))
+
+<span class="keyword">print</span>(<span class="string">f"Mean: {mean:.2f}"</span>)
+<span class="keyword">print</span>(<span class="string">f"Standard Deviation: {std_dev:.2f}"</span>)
+
+<span class="comment"># 2. Calculate Percentiles (PPF - Percent Point Function)</span>
+percentiles = [<span class="number">0.05</span>, <span class="number">0.25</span>, <span class="number">0.50</span>, <span class="number">0.75</span>, <span class="number">0.95</span>]
+results = {}
+
+<span class="keyword">for</span> pct <span class="keyword">in</span> percentiles:
+    val = norm.ppf(pct, loc=mean, scale=std_dev)
+    results[pct] = val
+    <span class="keyword">print</span>(<span class="string">f"{int(pct*100)}% Percentile: {val:.2f}"</span>)
+
+<span class="comment"># 3. Sketch the Distribution</span>
+x = np.linspace(mean - <span class="number">4</span>*std_dev, mean + <span class="number">4</span>*std_dev, <span class="number">100</span>)
+y = norm.pdf(x, mean, std_dev)
+
+plt.figure(figsize=(<span class="number">10</span>, <span class="number">6</span>))
+plt.plot(x, y, label=<span class="string">'Normal Approximation'</span>, color=<span class="string">'blue'</span>)
+
+<span class="comment"># Plot vertical lines for percentiles</span>
+<span class="keyword">for</span> pct, val <span class="keyword">in</span> results.items():
+    plt.axvline(val, color=<span class="string">'red'</span>, linestyle=<span class="string">'--'</span>, alpha=<span class="number">0.6</span>)
+    plt.text(val, max(y)*<span class="number">0.05</span>, <span class="string">f'{int(pct*100)}%'</span>, rotation=<span class="number">90</span>, verticalalignment=<span class="string">'bottom'</span>)
+
+plt.title(<span class="string">'Approximate Distribution of y (Number of 6s)'</span>)
+plt.xlabel(<span class="string">'y (count)'</span>)
+plt.ylabel(<span class="string">'Probability Density'</span>)
+plt.grid(<span class="keyword">True</span>, alpha=<span class="number">0.3</span>)
+plt.legend()
+plt.show()</span></code></pre>
             </div>
-        </div>
+        </section>
+
     </div>
 
+    <!-- Script to draw the Canvas Chart -->
     <script>
-        // DOM Elements
-        const observedValueSlider = document.getElementById('observed-value');
-        const dataVarianceSlider = document.getElementById('data-variance');
-        const priorMeanSlider = document.getElementById('prior-mean');
-        const priorVarianceSlider = document.getElementById('prior-variance');
+        const canvas = document.getElementById('distributionCanvas');
+        const ctx = canvas.getContext('2d');
         
-        const yValueSpan = document.getElementById('y-value');
-        const sigma2ValueSpan = document.getElementById('sigma2-value');
-        const mu0ValueSpan = document.getElementById('mu0-value');
-        const tau2ValueSpan = document.getElementById('tau2-value');
+        // Parameters
+        const mean = 166.67;
+        const sigma = 11.79;
+        const percentiles = [
+            { pct: 0.05, label: "5%", z: -1.645 },
+            { pct: 0.25, label: "25%", z: -0.674 },
+            { pct: 0.50, label: "50%", z: 0 },
+            { pct: 0.75, label: "75%", z: 0.674 },
+            { pct: 0.95, label: "95%", z: 1.645 }
+        ];
+
+        function gaussian(x, mu, sigma) {
+            return (1 / (sigma * Math.sqrt(2 * Math.PI))) * Math.exp(-0.5 * Math.pow((x - mu) / sigma, 2));
+        }
+
+        // Drawing Settings
+        const width = canvas.width;
+        const height = canvas.height;
+        const padding = 50;
+        const rangeStdDevs = 4; // Draw 4 sigmas on each side
+        const minX = mean - (rangeStdDevs * sigma);
+        const maxX = mean + (rangeStdDevs * sigma);
+        const plotHeight = height - (2 * padding);
+        const plotWidth = width - (2 * padding);
         
-        const posteriorMeanSpan = document.getElementById('posterior-mean');
-        const posteriorVarianceSpan = document.getElementById('posterior-variance');
-        const credibleIntervalSpan = document.getElementById('credible-interval');
+        // Scale functions
+        function scaleX(x) {
+            return padding + ((x - minX) / (maxX - minX)) * plotWidth;
+        }
         
-        const chartCanvas = document.getElementById('distribution-chart');
-        const chartCtx = chartCanvas.getContext('2d');
-
-        // Set canvas resolution
-        function setupCanvas(canvas) {
-            const dpr = window.devicePixelRatio || 1;
-            const rect = canvas.getBoundingClientRect();
-            canvas.width = rect.width * dpr;
-            canvas.height = rect.height * dpr;
-            const ctx = canvas.getContext('2d');
-            ctx.scale(dpr, dpr);
-            canvas.style.width = `${rect.width}px`;
-            canvas.style.height = `${rect.height}px`;
+        // Find max Y for scaling
+        const maxY = gaussian(mean, mean, sigma);
+        
+        function scaleY(y) {
+            return height - padding - (y / maxY) * plotHeight;
         }
 
-        // Normal PDF function
-        function normalPDF(x, mean, variance) {
-            const stdDev = Math.sqrt(variance);
-            const coefficient = 1 / (stdDev * Math.sqrt(2 * Math.PI));
-            const exponent = -((x - mean) ** 2) / (2 * variance);
-            return coefficient * Math.exp(exponent);
+        // Draw Axes
+        ctx.beginPath();
+        ctx.strokeStyle = '#aaa';
+        ctx.lineWidth = 1;
+        // X-axis
+        ctx.moveTo(padding, height - padding);
+        ctx.lineTo(width - padding, height - padding);
+        // Y-axis
+        ctx.moveTo(padding, height - padding);
+        ctx.lineTo(padding, padding);
+        ctx.stroke();
+
+        // Draw Curve
+        ctx.beginPath();
+        ctx.strokeStyle = '#2563eb'; // Tailwind blue-600
+        ctx.lineWidth = 3;
+        
+        for (let i = 0; i <= plotWidth; i++) {
+            const pixelX = padding + i;
+            const dataX = minX + (i / plotWidth) * (maxX - minX);
+            const dataY = gaussian(dataX, mean, sigma);
+            const pixelY = scaleY(dataY);
+            
+            if (i === 0) ctx.moveTo(pixelX, pixelY);
+            else ctx.lineTo(pixelX, pixelY);
         }
+        ctx.stroke();
 
-        function drawChart() {
-            const y = parseFloat(observedValueSlider.value);
-            const sigma2 = parseFloat(dataVarianceSlider.value);
-            const mu0 = parseFloat(priorMeanSlider.value);
-            const tau2 = parseFloat(priorVarianceSlider.value);
+        // Draw Percentile Lines
+        percentiles.forEach(p => {
+            const val = mean + (p.z * sigma);
+            const xPos = scaleX(val);
+            const yPos = scaleY(gaussian(val, mean, sigma));
             
-            const canvasWidth = chartCanvas.clientWidth;
-            const canvasHeight = chartCanvas.clientHeight;
-            
-            chartCtx.clearRect(0, 0, chartCanvas.width, chartCanvas.height);
-            
-            // Calculate posterior parameters
-            const posteriorMean = (tau2 * mu0 + sigma2 * y) / (tau2 + sigma2);
-            const posteriorVariance = (tau2 * sigma2) / (tau2 + sigma2);
-            
-            // Determine x range
-            const xMin = Math.min(mu0 - 3 * Math.sqrt(tau2), y - 3 * Math.sqrt(sigma2), posteriorMean - 3 * Math.sqrt(posteriorVariance));
-            const xMax = Math.max(mu0 + 3 * Math.sqrt(tau2), y + 3 * Math.sqrt(sigma2), posteriorMean + 3 * Math.sqrt(posteriorVariance));
-            
-            // Find maximum density for scaling
-            let maxDensity = 0;
-            for (let x = xMin; x < xMax; x += 0.01) {
-                maxDensity = Math.max(maxDensity, normalPDF(x, posteriorMean, posteriorVariance));
-            }
-            
-            const toCanvasX = (x) => ((x - xMin) / (xMax - xMin)) * canvasWidth;
-            const toCanvasY = (density) => canvasHeight - (density / maxDensity) * canvasHeight * 0.9;
-            
-            // Draw axes
-            chartCtx.beginPath();
-            chartCtx.strokeStyle = '#d1d5db';
-            chartCtx.lineWidth = 1;
-            chartCtx.moveTo(0, canvasHeight);
-            chartCtx.lineTo(canvasWidth, canvasHeight);
-            chartCtx.moveTo(0, 0);
-            chartCtx.lineTo(0, canvasHeight);
-            chartCtx.stroke();
-            
-            // Draw prior
-            chartCtx.beginPath();
-            chartCtx.strokeStyle = '#3b82f6';
-            chartCtx.lineWidth = 2;
-            chartCtx.setLineDash([5, 5]);
-            for (let x = xMin; x < xMax; x += 0.01) {
-                const density = normalPDF(x, mu0, tau2);
-                chartCtx.lineTo(toCanvasX(x), toCanvasY(density));
-            }
-            chartCtx.stroke();
-            chartCtx.setLineDash([]);
-            
-            // Draw likelihood
-            chartCtx.beginPath();
-            chartCtx.strokeStyle = '#22c55e';
-            chartCtx.lineWidth = 2;
-            chartCtx.setLineDash([3, 3]);
-            for (let x = xMin; x < xMax; x += 0.01) {
-                const density = normalPDF(x, y, sigma2);
-                chartCtx.lineTo(toCanvasX(x), toCanvasY(density));
-            }
-            chartCtx.stroke();
-            chartCtx.setLineDash([]);
-            
-            // Draw posterior
-            chartCtx.beginPath();
-            chartCtx.strokeStyle = '#ef4444';
-            chartCtx.lineWidth = 3;
-            for (let x = xMin; x < xMax; x += 0.01) {
-                const density = normalPDF(x, posteriorMean, posteriorVariance);
-                chartCtx.lineTo(toCanvasX(x), toCanvasY(density));
-            }
-            chartCtx.stroke();
-            
-            // Add labels
-            chartCtx.fillStyle = '#6b7280';
-            chartCtx.font = '12px Inter';
-            chartCtx.textAlign = 'center';
-            chartCtx.fillText('μ', canvasWidth / 2, canvasHeight - 5);
-            
-            // Update results
-            posteriorMeanSpan.textContent = posteriorMean.toFixed(3);
-            posteriorVarianceSpan.textContent = posteriorVariance.toFixed(3);
-            
-            // Calculate credible interval
-            const stdDev = Math.sqrt(posteriorVariance);
-            const lower = posteriorMean - 1.96 * stdDev;
-            const upper = posteriorMean + 1.96 * stdDev;
-            credibleIntervalSpan.textContent = `[${lower.toFixed(1)}, ${upper.toFixed(1)}]`;
-        }
+            // Dashed Line
+            ctx.beginPath();
+            ctx.setLineDash([5, 5]);
+            ctx.strokeStyle = '#dc2626'; // Tailwind red-600
+            ctx.lineWidth = 1;
+            ctx.moveTo(xPos, height - padding);
+            ctx.lineTo(xPos, yPos);
+            ctx.stroke();
+            ctx.setLineDash([]);
 
-        function updateAll() {
-            yValueSpan.textContent = parseFloat(observedValueSlider.value).toFixed(1);
-            sigma2ValueSpan.textContent = parseFloat(dataVarianceSlider.value).toFixed(1);
-            mu0ValueSpan.textContent = parseFloat(priorMeanSlider.value).toFixed(1);
-            tau2ValueSpan.textContent = parseFloat(priorVarianceSlider.value).toFixed(1);
-            
-            drawChart();
-        }
-
-        // Event listeners
-        observedValueSlider.addEventListener('input', updateAll);
-        dataVarianceSlider.addEventListener('input', updateAll);
-        priorMeanSlider.addEventListener('input', updateAll);
-        priorVarianceSlider.addEventListener('input', updateAll);
-
-        window.addEventListener('resize', () => {
-            setupCanvas(chartCanvas);
-            updateAll();
+            // Label
+            ctx.fillStyle = '#1e3a8a';
+            ctx.font = '12px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(p.label, xPos, yPos - 10);
+            ctx.fillText(val.toFixed(1), xPos, height - padding + 20);
         });
 
-        // Initial setup
-        setupCanvas(chartCanvas);
-        updateAll();
+        // Label Axes
+        ctx.fillStyle = '#000';
+        ctx.font = 'bold 14px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('Number of 6s (y)', width / 2, height - 10);
     </script>
 </body>
 </html>

@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Normal Model Analysis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .latex {
+            font-family: 'Times New Roman', Times, serif;
+            font-style: italic;
+        }
+        .home-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        .home-button:hover {
+            background: #34495e;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 flex flex-col items-center justify-center min-h-screen p-4">
+
+    <a href="../../index.html" class="home-button">
+        ← Home
+    </a>
+
+    <div class="w-full max-w-5xl bg-white rounded-xl shadow-lg p-6 md:p-8 space-y-6">
+        
+        <!-- Header -->
+        <div class="text-center">
+            <h1 class="text-2xl md:text-3xl font-bold text-gray-900">Normal Model Analysis</h1>
+            <p class="text-gray-600 mt-2">Bayesian inference for normal data with known variance and normal conjugate prior.</p>
+        </div>
+
+        <!-- Problem Statement -->
+        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <h3 class="text-lg font-semibold text-gray-800 mb-2">Problem Statement</h3>
+            <div class="text-gray-700 space-y-2">
+                <p>Consider a normal model where <span class="latex">y ~ N(μ, σ²)</span> with unknown mean <span class="latex">μ</span> and known variance <span class="latex">σ²</span>. We use a normal conjugate prior: <span class="latex">μ ~ N(μ₀, τ²)</span>.</p>
+                <ol class="list-decimal list-inside space-y-1 pl-2">
+                    <li>Derive the posterior distribution <span class="latex">p(μ|y)</span>.</li>
+                    <li>Find the posterior mean and variance.</li>
+                    <li>Analyze the precision-weighted combination of prior and likelihood.</li>
+                    <li>Calculate credible intervals for <span class="latex">μ</span>.</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- Detailed Explanations -->
+        <div class="space-y-4 pt-4 border-t">
+            <h2 class="text-2xl font-bold text-gray-900 text-center">Detailed Solutions</h2>
+            
+            <!-- Part (a) -->
+            <div class="bg-gray-50 p-4 rounded-lg">
+                <h3 class="text-lg font-semibold text-gray-800 mb-2">(a) Posterior Distribution</h3>
+                <div class="text-gray-700 space-y-2">
+                    <p>The likelihood for normal data is:</p>
+                    <p class="text-center bg-white p-2 rounded-md overflow-x-auto"><span class="latex">p(y|μ) = (1/√(2πσ²)) exp(-(y-μ)²/(2σ²))</span></p>
+                    <p>The normal prior is:</p>
+                    <p class="text-center bg-white p-2 rounded-md overflow-x-auto"><span class="latex">p(μ) = (1/√(2πτ²)) exp(-(μ-μ₀)²/(2τ²))</span></p>
+                    <p>Using Bayes' theorem, the posterior is proportional to:</p>
+                    <p class="text-center bg-white p-2 rounded-md overflow-x-auto"><span class="latex">p(μ|y) ∝ exp(-(μ-μ₁)²/(2τ₁²))</span></p>
+                    <p>This is a normal distribution: <span class="latex">μ|y ~ N(μ₁, τ₁²)</span></p>
+                </div>
+            </div>
+
+            <!-- Part (b) -->
+            <div class="bg-gray-50 p-4 rounded-lg">
+                <h3 class="text-lg font-semibold text-gray-800 mb-2">(b) Posterior Mean and Variance</h3>
+                <div class="text-gray-700 space-y-2">
+                    <p>For <span class="latex">μ|y ~ N(μ₁, τ₁²)</span>:</p>
+                    <ul class="list-disc list-inside space-y-1 pl-2">
+                        <li><strong>Posterior Mean:</strong> <span class="latex">μ₁ = (τ²μ₀ + σ²y)/(τ² + σ²)</span></li>
+                        <li><strong>Posterior Variance:</strong> <span class="latex">τ₁² = τ²σ²/(τ² + σ²)</span></li>
+                    </ul>
+                    <p>The posterior mean is a precision-weighted average of the prior mean and observed data.</p>
+                </div>
+            </div>
+
+            <!-- Part (c) -->
+            <div class="bg-gray-50 p-4 rounded-lg">
+                <h3 class="text-lg font-semibold text-gray-800 mb-2">(c) Precision-Weighted Combination</h3>
+                <div class="text-gray-700 space-y-2">
+                    <p>Let <span class="latex">w₁ = 1/τ²</span> (prior precision) and <span class="latex">w₂ = 1/σ²</span> (likelihood precision):</p>
+                    <ul class="list-disc list-inside space-y-1 pl-2">
+                        <li><strong>Posterior Mean:</strong> <span class="latex">μ₁ = (w₁μ₀ + w₂y)/(w₁ + w₂)</span></li>
+                        <li><strong>Posterior Precision:</strong> <span class="latex">w₁ + w₂</span></li>
+                    </ul>
+                    <p>Higher precision (lower variance) leads to greater influence on the posterior.</p>
+                </div>
+            </div>
+
+            <!-- Part (d) -->
+            <div class="bg-gray-50 p-4 rounded-lg">
+                <h3 class="text-lg font-semibold text-gray-800 mb-2">(d) Credible Intervals</h3>
+                <div class="text-gray-700 space-y-2">
+                    <p>For a normal distribution, credible intervals are symmetric around the mean. The 95% credible interval is:</p>
+                    <p class="text-center bg-white p-2 rounded-md overflow-x-auto"><span class="latex">[μ₁ - 1.96τ₁, μ₁ + 1.96τ₁]</span></p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Interactive App Section -->
+        <div class="space-y-4 pt-4 border-t">
+            <h2 class="text-2xl font-bold text-gray-900 text-center">Interactive Normal Model Explorer</h2>
+            <p class="text-center text-gray-600">Explore how different priors and data affect the posterior distribution.</p>
+            
+            <!-- Controls -->
+            <div class="grid md:grid-cols-2 gap-4">
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">Data Parameters</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <label for="observed-value" class="block text-sm font-medium text-gray-700">Observed value (y)</label>
+                            <input id="observed-value" type="range" min="-10" max="10" step="0.1" value="2" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                            <span id="y-value" class="text-sm text-indigo-600 font-semibold">2.0</span>
+                        </div>
+                        <div>
+                            <label for="data-variance" class="block text-sm font-medium text-gray-700">Data variance (σ²)</label>
+                            <input id="data-variance" type="range" min="0.1" max="5" step="0.1" value="1" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                            <span id="sigma2-value" class="text-sm text-indigo-600 font-semibold">1.0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">Prior Parameters</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <label for="prior-mean" class="block text-sm font-medium text-gray-700">Prior mean (μ₀)</label>
+                            <input id="prior-mean" type="range" min="-5" max="5" step="0.1" value="0" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                            <span id="mu0-value" class="text-sm text-indigo-600 font-semibold">0.0</span>
+                        </div>
+                        <div>
+                            <label for="prior-variance" class="block text-sm font-medium text-gray-700">Prior variance (τ²)</label>
+                            <input id="prior-variance" type="range" min="0.1" max="5" step="0.1" value="1" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                            <span id="tau2-value" class="text-sm text-indigo-600 font-semibold">1.0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Visualization -->
+            <div class="bg-gray-50 p-4 rounded-lg">
+                <h3 class="text-center font-semibold text-gray-700 mb-2">Prior, Likelihood, and Posterior Distributions</h3>
+                <canvas id="distribution-chart" class="w-full h-80 rounded-lg border border-gray-200"></canvas>
+                <div class="flex justify-center items-center space-x-4 mt-3 text-sm">
+                    <div class="flex items-center"><span class="w-4 h-4 bg-blue-500 rounded-sm mr-2"></span><span>Prior N(μ₀,τ²)</span></div>
+                    <div class="flex items-center"><span class="w-4 h-4 bg-green-500 rounded-sm mr-2"></span><span>Likelihood N(y,σ²)</span></div>
+                    <div class="flex items-center"><span class="w-4 h-4 bg-red-500 rounded-sm mr-2"></span><span>Posterior N(μ₁,τ₁²)</span></div>
+                </div>
+            </div>
+
+            <!-- Results -->
+            <div class="grid md:grid-cols-3 gap-4">
+                <div class="bg-indigo-50 p-4 rounded-lg text-center">
+                    <h3 class="text-lg font-semibold text-indigo-800">Posterior Mean</h3>
+                    <p class="text-2xl font-bold text-indigo-600" id="posterior-mean">1.000</p>
+                </div>
+                <div class="bg-green-50 p-4 rounded-lg text-center">
+                    <h3 class="text-lg font-semibold text-green-800">Posterior Variance</h3>
+                    <p class="text-2xl font-bold text-green-600" id="posterior-variance">0.500</p>
+                </div>
+                <div class="bg-purple-50 p-4 rounded-lg text-center">
+                    <h3 class="text-lg font-semibold text-purple-800">95% Credible Interval</h3>
+                    <p class="text-lg font-bold text-purple-600" id="credible-interval">[-0.4, 2.4]</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const observedValueSlider = document.getElementById('observed-value');
+        const dataVarianceSlider = document.getElementById('data-variance');
+        const priorMeanSlider = document.getElementById('prior-mean');
+        const priorVarianceSlider = document.getElementById('prior-variance');
+        
+        const yValueSpan = document.getElementById('y-value');
+        const sigma2ValueSpan = document.getElementById('sigma2-value');
+        const mu0ValueSpan = document.getElementById('mu0-value');
+        const tau2ValueSpan = document.getElementById('tau2-value');
+        
+        const posteriorMeanSpan = document.getElementById('posterior-mean');
+        const posteriorVarianceSpan = document.getElementById('posterior-variance');
+        const credibleIntervalSpan = document.getElementById('credible-interval');
+        
+        const chartCanvas = document.getElementById('distribution-chart');
+        const chartCtx = chartCanvas.getContext('2d');
+
+        // Set canvas resolution
+        function setupCanvas(canvas) {
+            const dpr = window.devicePixelRatio || 1;
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            const ctx = canvas.getContext('2d');
+            ctx.scale(dpr, dpr);
+            canvas.style.width = `${rect.width}px`;
+            canvas.style.height = `${rect.height}px`;
+        }
+
+        // Normal PDF function
+        function normalPDF(x, mean, variance) {
+            const stdDev = Math.sqrt(variance);
+            const coefficient = 1 / (stdDev * Math.sqrt(2 * Math.PI));
+            const exponent = -((x - mean) ** 2) / (2 * variance);
+            return coefficient * Math.exp(exponent);
+        }
+
+        function drawChart() {
+            const y = parseFloat(observedValueSlider.value);
+            const sigma2 = parseFloat(dataVarianceSlider.value);
+            const mu0 = parseFloat(priorMeanSlider.value);
+            const tau2 = parseFloat(priorVarianceSlider.value);
+            
+            const canvasWidth = chartCanvas.clientWidth;
+            const canvasHeight = chartCanvas.clientHeight;
+            
+            chartCtx.clearRect(0, 0, chartCanvas.width, chartCanvas.height);
+            
+            // Calculate posterior parameters
+            const posteriorMean = (tau2 * mu0 + sigma2 * y) / (tau2 + sigma2);
+            const posteriorVariance = (tau2 * sigma2) / (tau2 + sigma2);
+            
+            // Determine x range
+            const xMin = Math.min(mu0 - 3 * Math.sqrt(tau2), y - 3 * Math.sqrt(sigma2), posteriorMean - 3 * Math.sqrt(posteriorVariance));
+            const xMax = Math.max(mu0 + 3 * Math.sqrt(tau2), y + 3 * Math.sqrt(sigma2), posteriorMean + 3 * Math.sqrt(posteriorVariance));
+            
+            // Find maximum density for scaling
+            let maxDensity = 0;
+            for (let x = xMin; x < xMax; x += 0.01) {
+                maxDensity = Math.max(maxDensity, normalPDF(x, posteriorMean, posteriorVariance));
+            }
+            
+            const toCanvasX = (x) => ((x - xMin) / (xMax - xMin)) * canvasWidth;
+            const toCanvasY = (density) => canvasHeight - (density / maxDensity) * canvasHeight * 0.9;
+            
+            // Draw axes
+            chartCtx.beginPath();
+            chartCtx.strokeStyle = '#d1d5db';
+            chartCtx.lineWidth = 1;
+            chartCtx.moveTo(0, canvasHeight);
+            chartCtx.lineTo(canvasWidth, canvasHeight);
+            chartCtx.moveTo(0, 0);
+            chartCtx.lineTo(0, canvasHeight);
+            chartCtx.stroke();
+            
+            // Draw prior
+            chartCtx.beginPath();
+            chartCtx.strokeStyle = '#3b82f6';
+            chartCtx.lineWidth = 2;
+            chartCtx.setLineDash([5, 5]);
+            for (let x = xMin; x < xMax; x += 0.01) {
+                const density = normalPDF(x, mu0, tau2);
+                chartCtx.lineTo(toCanvasX(x), toCanvasY(density));
+            }
+            chartCtx.stroke();
+            chartCtx.setLineDash([]);
+            
+            // Draw likelihood
+            chartCtx.beginPath();
+            chartCtx.strokeStyle = '#22c55e';
+            chartCtx.lineWidth = 2;
+            chartCtx.setLineDash([3, 3]);
+            for (let x = xMin; x < xMax; x += 0.01) {
+                const density = normalPDF(x, y, sigma2);
+                chartCtx.lineTo(toCanvasX(x), toCanvasY(density));
+            }
+            chartCtx.stroke();
+            chartCtx.setLineDash([]);
+            
+            // Draw posterior
+            chartCtx.beginPath();
+            chartCtx.strokeStyle = '#ef4444';
+            chartCtx.lineWidth = 3;
+            for (let x = xMin; x < xMax; x += 0.01) {
+                const density = normalPDF(x, posteriorMean, posteriorVariance);
+                chartCtx.lineTo(toCanvasX(x), toCanvasY(density));
+            }
+            chartCtx.stroke();
+            
+            // Add labels
+            chartCtx.fillStyle = '#6b7280';
+            chartCtx.font = '12px Inter';
+            chartCtx.textAlign = 'center';
+            chartCtx.fillText('μ', canvasWidth / 2, canvasHeight - 5);
+            
+            // Update results
+            posteriorMeanSpan.textContent = posteriorMean.toFixed(3);
+            posteriorVarianceSpan.textContent = posteriorVariance.toFixed(3);
+            
+            // Calculate credible interval
+            const stdDev = Math.sqrt(posteriorVariance);
+            const lower = posteriorMean - 1.96 * stdDev;
+            const upper = posteriorMean + 1.96 * stdDev;
+            credibleIntervalSpan.textContent = `[${lower.toFixed(1)}, ${upper.toFixed(1)}]`;
+        }
+
+        function updateAll() {
+            yValueSpan.textContent = parseFloat(observedValueSlider.value).toFixed(1);
+            sigma2ValueSpan.textContent = parseFloat(dataVarianceSlider.value).toFixed(1);
+            mu0ValueSpan.textContent = parseFloat(priorMeanSlider.value).toFixed(1);
+            tau2ValueSpan.textContent = parseFloat(priorVarianceSlider.value).toFixed(1);
+            
+            drawChart();
+        }
+
+        // Event listeners
+        observedValueSlider.addEventListener('input', updateAll);
+        dataVarianceSlider.addEventListener('input', updateAll);
+        priorMeanSlider.addEventListener('input', updateAll);
+        priorVarianceSlider.addEventListener('input', updateAll);
+
+        window.addEventListener('resize', () => {
+            setupCanvas(chartCanvas);
+            updateAll();
+        });
+
+        // Initial setup
+        setupCanvas(chartCanvas);
+        updateAll();
+    </script>
+</body>
+</html>
