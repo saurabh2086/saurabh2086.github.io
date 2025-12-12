@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Problem 5 Solution: Posterior Distribution Analysis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #1e293b; }
+        h1, h2, h3 { font-family: 'Playfair Display', serif; }
+        .math-block { overflow-x: auto; padding: 1.5rem; background: #ffffff; border-radius: 0.5rem; border: 1px solid #e2e8f0; margin: 1rem 0; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); }
+        .solution-section { scroll-margin-top: 6rem; }
+        .nav-link.active { color: #4f46e5; border-bottom: 2px solid #4f46e5; }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Navigation -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between">
+            <div class="font-bold text-lg text-slate-800 tracking-tight">Problem 5 Solutions</div>
+            <nav class="flex gap-6 text-sm font-medium text-slate-500">
+                <a href="#part-a" class="hover:text-indigo-600 transition h-full flex items-center">Part (a)</a>
+                <a href="#part-b" class="hover:text-indigo-600 transition h-full flex items-center">Part (b)</a>
+                <a href="#part-c" class="hover:text-indigo-600 transition h-full flex items-center">Part (c)</a>
+                <a href="#part-d" class="hover:text-indigo-600 transition h-full flex items-center text-indigo-600 font-bold">Part (d)</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto p-6 space-y-16">
+
+        <!-- Problem Statement -->
+        <section class="bg-slate-800 text-slate-200 p-8 rounded-xl shadow-lg">
+            <h2 class="text-xl font-bold text-white mb-4 border-b border-slate-600 pb-2">Original Question</h2>
+            <div class="font-serif text-lg leading-relaxed">
+                <span class="font-bold text-white">5. Posterior distribution as a compromise between prior information and data:</span> 
+                let \(y\) be the number of heads in \(n\) spins of a coin, whose probability of heads is \(\theta\).
+            </div>
+        </section>
+
+        <!-- PART (a) -->
+        <section id="part-a" class="solution-section border-l-4 border-slate-300 pl-6 py-2">
+            <div class="mb-4">
+                <span class="text-xs font-bold bg-slate-100 text-slate-600 px-2 py-1 rounded border border-slate-200 uppercase tracking-wide">Part (a)</span>
+            </div>
+            <h2 class="text-2xl font-bold text-slate-900 mb-4">Derive the Prior Predictive Distribution</h2>
+            <p class="text-slate-600 italic mb-6">"If your prior distribution for \(\theta\) is uniform on [0, 1], derive your prior predictive distribution for \(y\)."</p>
+            
+            <div class="bg-white p-6 rounded-lg border border-slate-200 shadow-sm">
+                <h3 class="font-bold text-slate-800 mb-2">Solution</h3>
+                <p class="text-slate-700 mb-4">
+                    The prior is Uniform(0,1), which is equivalent to a Beta distribution with \(\alpha=1, \beta=1\).
+                    The likelihood is Binomial \(\binom{n}{k} \theta^k (1-\theta)^{n-k}\).
+                    <br><br>
+                    We need to solve the integral:
+                </p>
+                <div class="math-block text-center text-lg">
+                    $$ \text{Pr}(y=k) = \int_{0}^{1} \binom{n}{k} \theta^k (1-\theta)^{n-k} \cdot \underbrace{1}_{\text{Prior}} \, d\theta $$
+                </div>
+                <p class="text-slate-700 mb-4">
+                    Using the properties of the Beta function \( B(x,y) = \int_0^1 t^{x-1}(1-t)^{y-1} dt \), we can identify the integral part as \( B(k+1, n-k+1) \).
+                </p>
+                <div class="math-block text-center">
+                    $$ \text{Pr}(y=k) = \binom{n}{k} B(k+1, n-k+1) $$
+                    $$ = \frac{n!}{k!(n-k)!} \cdot \frac{k!(n-k)!}{(n+1)!} $$
+                    $$ = \frac{n!}{(n+1)!} = \frac{1}{n+1} $$
+                </div>
+                <div class="bg-slate-50 p-4 rounded border-l-4 border-green-500">
+                    <p class="font-bold text-green-900">Result:</p>
+                    <p class="text-green-800">The prior predictive distribution is <span class="italic">discrete uniform</span> over all possible outcomes \( 0, 1, \dots, n \). Each outcome has probability \( \frac{1}{n+1} \).</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- PART (b) -->
+        <section id="part-b" class="solution-section border-l-4 border-slate-300 pl-6 py-2">
+            <div class="mb-4">
+                <span class="text-xs font-bold bg-slate-100 text-slate-600 px-2 py-1 rounded border border-slate-200 uppercase tracking-wide">Part (b)</span>
+            </div>
+            <h2 class="text-2xl font-bold text-slate-900 mb-4">Posterior Mean as a Compromise</h2>
+            <p class="text-slate-600 italic mb-6">"Show algebraically that your posterior mean of \(\theta\) always lies between your prior mean and the observed relative frequency."</p>
+
+            <div class="bg-white p-6 rounded-lg border border-slate-200 shadow-sm">
+                <h3 class="font-bold text-slate-800 mb-2">Solution</h3>
+                <p class="text-slate-700 mb-4">
+                    Prior Mean: \( \mu_{prior} = \frac{\alpha}{\alpha+\beta} \) <br>
+                    Observed Mean (MLE): \( \hat{\theta} = \frac{y}{n} \) <br>
+                    Posterior Mean (Beta Update): \( \mu_{post} = \frac{\alpha+y}{\alpha+\beta+n} \)
+                </p>
+                
+                <p class="text-slate-700 mb-4">We can rewrite the posterior mean as a weighted sum:</p>
+                <div class="math-block text-center text-lg">
+                    $$ \frac{\alpha+y}{\alpha+\beta+n} = \frac{\alpha+\beta}{\alpha+\beta+n} \left( \frac{\alpha}{\alpha+\beta} \right) + \frac{n}{\alpha+\beta+n} \left( \frac{y}{n} \right) $$
+                </div>
+                
+                <p class="text-slate-700 mb-4">Let weight \( w = \frac{\alpha+\beta}{\alpha+\beta+n} \). Note that \( 0 < w < 1 \).</p>
+                
+                <div class="math-block text-center">
+                    $$ \mu_{post} = w \cdot \mu_{prior} + (1-w) \cdot \hat{\theta} $$
+                </div>
+
+                <div class="bg-slate-50 p-4 rounded border-l-4 border-green-500">
+                    <p class="font-bold text-green-900">Result:</p>
+                    <p class="text-green-800">Since \( \mu_{post} \) is a convex combination (weighted average) of the Prior Mean and the Data Mean, it must geometrically lie between them.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- PART (c) -->
+        <section id="part-c" class="solution-section border-l-4 border-slate-300 pl-6 py-2">
+            <div class="mb-4">
+                <span class="text-xs font-bold bg-slate-100 text-slate-600 px-2 py-1 rounded border border-slate-200 uppercase tracking-wide">Part (c)</span>
+            </div>
+            <h2 class="text-2xl font-bold text-slate-900 mb-4">Variance Reduction (Uniform Prior)</h2>
+            <p class="text-slate-600 italic mb-6">"Show that if the prior is uniform, the posterior variance is always less than the prior variance."</p>
+
+            <div class="bg-white p-6 rounded-lg border border-slate-200 shadow-sm">
+                <h3 class="font-bold text-slate-800 mb-2">Solution</h3>
+                
+                <div class="grid md:grid-cols-2 gap-8 mb-4">
+                    <div>
+                        <p class="font-semibold text-sm uppercase text-slate-500 mb-1">1. Prior Variance (Uniform)</p>
+                        <p class="text-sm text-slate-700">Beta(1, 1). Variance of Uniform[0,1] is:</p>
+                        <div class="py-2">$$ \text{Var}_{prior} = \frac{1}{12} \approx 0.0833 $$</div>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-sm uppercase text-slate-500 mb-1">2. Posterior Variance</p>
+                        <p class="text-sm text-slate-700">New parameters: \( \alpha' = 1+y, \beta' = 1+n-y \).</p>
+                        <div class="py-2">$$ \text{Var}_{post} = \frac{(1+y)(1+n-y)}{(2+n)^2 (3+n)} $$</div>
+                    </div>
+                </div>
+
+                <!-- Calculus Derivation Block -->
+                <div class="mb-6 bg-slate-50 p-4 rounded border border-slate-200">
+                    <p class="font-bold text-slate-700 text-sm uppercase tracking-wide mb-2">Proof: Maximizing y (Calculus)</p>
+                    <p class="text-slate-600 text-sm mb-2">
+                        We want to maximize the variance with respect to \(y\). The numerator is \( g(y) = (1+y)(1+n-y) \).
+                    </p>
+                    <div class="math-block bg-white text-center text-sm py-2 mb-2 shadow-none border-slate-100">
+                        $$ g(y) = 1 + n + ny - y^2 $$
+                        $$ \frac{dg}{dy} = n - 2y $$
+                    </div>
+                    <p class="text-slate-600 text-sm">
+                        Setting the derivative \( \frac{dg}{dy} = 0 \) yields \( n = 2y \), or \( y = n/2 \).
+                        Since the second derivative \( \frac{d^2g}{dy^2} = -2 \) is negative, this point is a maximum.
+                    </p>
+                </div>
+
+                <p class="text-slate-700 mb-2">
+                    Using this maximum at \( y = n/2 \):
+                </p>
+                <div class="math-block text-center">
+                    $$ \text{Max Var}_{post} \approx \frac{1}{4(n+3)} $$
+                </div>
+                <p class="text-slate-700">
+                    Since \( n \ge 1 \), the denominator \( 4(n+3) \ge 16 \). <br>
+                    Therefore, \( \text{Max Var}_{post} \le \frac{1}{16} = 0.0625 \), which is strictly less than \( \frac{1}{12} \approx 0.0833 \).
+                </p>
+                
+                <div class="bg-slate-50 p-4 rounded border-l-4 border-green-500 mt-4">
+                    <p class="font-bold text-green-900">Result:</p>
+                    <p class="text-green-800">Adding data to a state of total ignorance (Uniform) always reduces uncertainty.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- PART (d) -->
+        <section id="part-d" class="solution-section border-l-4 border-indigo-500 pl-6 py-2">
+            <div class="mb-4">
+                <span class="text-xs font-bold bg-indigo-100 text-indigo-700 px-2 py-1 rounded border border-indigo-200 uppercase tracking-wide">Part (d)</span>
+            </div>
+            <h2 class="text-2xl font-bold text-slate-900 mb-4">The Counter-Example (Variance Increase)</h2>
+            <p class="text-slate-600 italic mb-6">"Give an example... in which the posterior variance of \(\theta\) is higher than the prior variance."</p>
+
+            <div class="bg-white p-6 rounded-lg border border-slate-200 shadow-sm mb-8">
+                <h3 class="font-bold text-slate-800 mb-4">The Mechanism: Why does this happen?</h3>
+                <p class="text-slate-700 mb-6">
+                    Normally, adding data reduces uncertainty. However, variance in a Beta distribution is controlled by two competing forces:
+                </p>
+
+                <div class="grid md:grid-cols-2 gap-6 mb-6">
+                    <div class="bg-indigo-50 p-4 rounded border border-indigo-100">
+                        <h4 class="font-bold text-indigo-900 mb-2">Force 1: Sample Size</h4>
+                        <p class="text-sm text-indigo-800">
+                            Increasing \( \alpha + \beta \) always tries to <strong>shrink</strong> the variance. The denominator of the variance formula grows with \(N^3\).
+                        </p>
+                    </div>
+                    <div class="bg-rose-50 p-4 rounded border border-rose-100">
+                        <h4 class="font-bold text-rose-900 mb-2">Force 2: Position (Mean)</h4>
+                        <p class="text-sm text-rose-800">
+                            Variance is maximized when the mean is near <strong>0.5</strong> (total uncertainty) and minimized near the edges (0 or 1). Moving from edge to center <strong>increases</strong> variance.
+                        </p>
+                    </div>
+                </div>
+
+                <p class="text-slate-700 mb-4">
+                    <strong>The "Confused Model" Scenario:</strong> <br>
+                    If we have a strong prior near the edge (e.g., "I am certain it is Heads") and we observe data that contradicts it (e.g., "All Tails"), the distribution is dragged from the low-variance edge toward the high-variance center.
+                </p>
+                <p class="text-slate-700 font-medium">
+                    If the "Position Force" (moving to center) is stronger than the "Sample Size Force," variance will temporarily spike.
+                </p>
+            </div>
+
+            <!-- Simulation from previous context -->
+            <div class="bg-slate-50 border border-slate-200 rounded-lg p-6">
+                <h3 class="font-bold text-slate-800 mb-4">Numerical Example</h3>
+                <p class="text-sm text-slate-600 mb-4">
+                    Consider a prior of <strong>Beta(20, 1)</strong>. We are 95% sure the coin is biased toward Heads.
+                    Now we observe <strong>5 Tails</strong> (contradictory data).
+                </p>
+                
+                <div class="grid grid-cols-1 gap-8 mb-6">
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm font-semibold text-slate-600">Prior: Beta(20, 1)</span>
+                            <span id="priorVarDisplay" class="text-xs font-mono bg-white border px-2 py-1 rounded">Var: ...</span>
+                        </div>
+                        <!-- Wrapped in h-48 to constrain height -->
+                        <div class="relative h-48 w-full">
+                            <canvas id="priorChart"></canvas>
+                        </div>
+                        <p class="text-xs text-center text-slate-400 mt-2">Distribution huddled at 1.0 (Low Variance)</p>
+                    </div>
+                    <div>
+                        <button id="updateBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded mb-2 text-sm transition-colors shadow-sm">
+                            Add 5 Tails (+Contradiction)
+                        </button>
+                        <div class="flex justify-between items-center mb-2">
+                            <span id="postLabel" class="text-sm font-semibold text-slate-600">Posterior: Beta(20, 1)</span>
+                            <span id="postVarDisplay" class="text-xs font-mono bg-white border px-2 py-1 rounded">Var: ...</span>
+                        </div>
+                        <!-- Wrapped in h-48 to constrain height -->
+                        <div class="relative h-48 w-full">
+                            <canvas id="postChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NEW: Variance Trend Tracking -->
+                <div class="border-t border-slate-200 pt-6">
+                    <h4 class="font-bold text-slate-800 text-sm mb-4">Variance Trajectory (Tracking the Confusion)</h4>
+                    <div class="relative h-48 w-full">
+                        <canvas id="varianceTrendChart"></canvas>
+                    </div>
+                    <div id="conclusionText" class="text-sm text-red-600 font-bold mt-4 hidden text-center bg-red-50 py-2 rounded border border-red-100">
+                        Variance INCREASED! (Model is "Confused")
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-900 text-slate-400 py-12 mt-12">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <p class="text-sm">Problem Solution Set • Bayesian Inference</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- Math Logic ---
+        function getVariance(a, b) {
+            return (a * b) / (Math.pow(a + b, 2) * (a + b + 1));
+        }
+
+        function logGamma(z) {
+            const c = [76.18009172947146, -86.50532032941677, 24.01409824083091, -1.231739572450155, 0.001208650973866179, -0.000005395239384953];
+            let x = z, y = z, tmp = x + 5.5;
+            tmp -= (x + 0.5) * Math.log(tmp);
+            let ser = 1.000000000190015;
+            for (let j = 0; j < 6; j++) ser += c[j] / ++y;
+            return -tmp + Math.log(2.5066282746310005 * ser / x);
+        }
+
+        function getBetaPDF(alpha, beta) {
+            const dataPoints = [];
+            const logB = logGamma(alpha) + logGamma(beta) - logGamma(alpha + beta);
+            for (let x = 0.005; x < 1.0; x += 0.01) {
+                let logVal = (alpha - 1) * Math.log(x) + (beta - 1) * Math.log(1 - x) - logB;
+                dataPoints.push({x: x, y: Math.exp(logVal)});
+            }
+            return dataPoints;
+        }
+
+        // --- Chart Logic ---
+        Chart.defaults.font.family = "'Inter', sans-serif";
+        
+        function createChart(ctx, label, color) {
+            return new Chart(ctx, {
+                type: 'line',
+                data: {
+                    datasets: [{
+                        label: label,
+                        data: [],
+                        borderColor: color,
+                        backgroundColor: color + '33', // Add transparency
+                        borderWidth: 2,
+                        fill: true,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false, // Allows chart to fill the relative container
+                    scales: {
+                        x: { type: 'linear', min: 0, max: 1, grid: {display: false}, ticks: {display: false} },
+                        y: { display: false, beginAtZero: true, max: undefined }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
+        const priorCtx = document.getElementById('priorChart').getContext('2d');
+        const postCtx = document.getElementById('postChart').getContext('2d');
+        const trendCtx = document.getElementById('varianceTrendChart').getContext('2d');
+        
+        const priorChart = createChart(priorCtx, 'Prior', '#64748b'); // Slate
+        const postChart = createChart(postCtx, 'Posterior', '#4f46e5'); // Indigo
+
+        // NEW: Variance Trend Chart Configuration
+        const trendChart = new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: ['Prior (0 Tails)', '1 Tail', '2 Tails', '3 Tails', '4 Tails', '5 Tails'],
+                datasets: [{
+                    label: 'Variance',
+                    data: [getVariance(20, 1), null, null, null, null, null], // Initialize with just prior
+                    borderColor: '#ef4444',
+                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.3,
+                    fill: true,
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: '#ef4444',
+                    pointRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { beginAtZero: true, title: {display: true, text: 'Variance'} }
+                },
+                plugins: { legend: { display: false } }
+            }
+        });
+
+        // --- Init State ---
+        const baseA = 20;
+        const baseB = 1;
+        let tailsAdded = 0; // increments in batches of 5
+
+        function getMaxY(dataPoints) {
+            return dataPoints.reduce((m, p) => Math.max(m, p.y), 0);
+        }
+
+        function updateAllCharts() {
+            const priorVariance = getVariance(baseA, baseB);
+            const currentB = baseB + tailsAdded;
+            const posteriorVariance = getVariance(baseA, currentB);
+
+            const priorPDF = getBetaPDF(baseA, baseB);
+            const postPDF = getBetaPDF(baseA, currentB);
+
+            const sharedMaxY = Math.max(getMaxY(priorPDF), getMaxY(postPDF)) * 1.05;
+
+            // Prior chart stays the same
+            priorChart.data.datasets[0].data = priorPDF;
+            priorChart.options.scales.y.max = sharedMaxY;
+            priorChart.update();
+            document.getElementById('priorVarDisplay').innerText = `Var: ${priorVariance.toFixed(5)}`;
+
+            // Posterior chart updates with currentB
+            postChart.data.datasets[0].data = postPDF;
+            postChart.options.scales.y.max = sharedMaxY;
+            postChart.update();
+            document.getElementById('postVarDisplay').innerText = `Var: ${posteriorVariance.toFixed(5)}`;
+            document.getElementById('postLabel').innerText = `Posterior: Beta(${baseA}, ${currentB})`;
+
+            // Variance trajectory from 0 tails up to current tailsAdded
+            const steps = tailsAdded / 5; // number of batches added
+            const labels = ['Prior (0 Tails)'];
+            const trajectoryData = [priorVariance];
+            for (let i = 1; i <= steps; i++) {
+                labels.push(`${i * 5} Tails`);
+                trajectoryData.push(getVariance(baseA, baseB + i * 5));
+            }
+            trendChart.data.labels = labels;
+            trendChart.data.datasets[0].data = trajectoryData;
+            trendChart.update();
+
+        }
+
+        // Initial render
+        updateAllCharts();
+
+        // Button Logic (allows repeated clicks)
+        document.getElementById('updateBtn').addEventListener('click', () => {
+            tailsAdded += 5;
+            updateAllCharts();
+        });
+
+    </script>
+</body>
+</html>
