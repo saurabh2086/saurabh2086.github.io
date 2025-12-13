@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poisson-Gamma Compound Distribution Derivation</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load MathJax for LaTeX rendering -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        /* Base styles using Inter font (Tailwind default) */
+        .page-container {
+            max-width: 4xl;
+        }
+
+        /* Redesign: Styled containers for professionalism */
+        .content-card {
+            background-color: white;
+            border-radius: 0.75rem; /* More rounded corners */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05); /* Subtle shadow */
+            padding: 1.5rem;
+        }
+        
+        /* Redesign: Refined Math Block Styling */
+        .math-block {
+            padding: 1rem;
+            background-color: #f0f7ff; /* Very light blue background */
+            border-left: 5px solid #3b82f6; /* Consistent blue border */
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+            overflow-x: auto;
+            color: #1f2937; /* Darker text for equations */
+            font-weight: 500;
+        }
+
+        /* Customizing Headings */
+        h2 {
+            font-size: 1.75rem; /* Larger primary section title */
+            font-weight: 800; /* Extra bold */
+            color: #1e40af; /* Darker blue */
+            padding-bottom: 0.5rem;
+            margin-top: 2rem;
+            margin-bottom: 1.5rem;
+        }
+        h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #374151; /* Sub-section title */
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+            border-bottom: 1px dashed #e5e7eb; /* Subtle separator */
+            padding-bottom: 0.25rem;
+        }
+
+        /* Final Result Block Styling (Simplified) */
+        .final-result-block {
+            border: 2px solid #10b981; /* Green border */
+            background-color: #f0fff4; /* Very light green background */
+            font-weight: 700;
+        }
+
+        /* New Styling for Derivation Step Headers (Badge style) */
+        .step-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 1.75rem; /* Slightly larger badge */
+            height: 1.75rem;
+            border-radius: 9999px; /* full circle */
+            background-color: #3b82f6; /* Blue */
+            color: white;
+            font-weight: 700;
+            font-size: 0.875rem; /* text-sm */
+            flex-shrink: 0;
+            margin-right: 0.5rem;
+        }
+        
+        /* Styling for key insights section */
+        .insights-section {
+            background-color: #fefce8; /* Light yellow background for attention */
+            border: 2px solid #fcd34d;
+        }
+        .home-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        .home-button:hover {
+            background: #34495e;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<!-- Home Button -->
+<a href="../../index.html" class="home-button">
+    ← Home
+</a>
+<body class="bg-gray-100 min-h-screen font-sans">
+    <div class="container mx-auto p-4 sm:p-8 page-container">
+
+        <!-- Header -->
+        <header class="text-center py-8 bg-white rounded-xl shadow-lg border-b-4 border-blue-600 mb-8">
+            <h1 class="text-4xl font-extrabold text-gray-900 mb-1">Compound Distribution Proof</h1>
+            <p class="text-xl text-gray-500">Derivation of Moments for Poisson-Gamma Hierarchical Model</p>
+        </header>
+
+        <!-- Original Problem Section -->
+        <section class="content-card mb-8">
+            <h2 class="text-blue-600">Original Problem Statement</h2>
+            <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-md shadow-inner">
+
+                <p class="text-gray-700 font-semibold mb-3">
+                    Derive the mean and variance (2.17) of the negative binomial predictive distribution for the cancer rate example, using the mean and variance formulas (1.8)and(1.9).
+                    <br>
+                    <br>
+                    <br>
+                    Given the distributions and laws below, prove the expressions for \(\mathbb{E}(y_j)\) and \(\text{var}(y_j)\):
+                    <br>
+                    <br>
+                    <br>
+                </p>
+                
+                <div class="math-block bg-white text-gray-800 border-none shadow-sm">
+                    <p class="text-sm font-semibold mb-2 text-blue-700">Distributions:</p>
+                    $$p(y_j|\theta_j)\sim \text{Poisson}(10n_j\theta_j)$$
+                    $$p(\theta_j) \sim \text{Gamma}(\alpha, \beta)$$
+
+                    <p class="text-sm font-semibold mt-4 mb-2 text-blue-700">Laws to Use:</p>
+                    $$\mathbb{E}(u) = \mathbb{E}[\mathbb{E}(u|v)] \quad (\text{Law of Total Expectation})$$
+                    $$\text{var}(u) = \mathbb{E}(\text{var}(u|v)) + \text{var}(\mathbb{E}(u|v)) \quad (\text{Law of Total Variance})$$
+
+                    <p class="text-sm font-semibold mt-4 mb-2 text-blue-700">Target Proofs:</p>
+                    $$\mathbb{E}(y_j) = 10n_j\frac{\alpha}{\beta}$$
+                    $$\text{var}(y_j) = 10n_j\frac{\alpha}{\beta} + (10n_j)^2\frac{\alpha}{\beta^2}$$
+                </div>
+            </div>
+        </section>
+
+        <!-- Solution Section -->
+        <section class="content-card mb-8">
+            <h2 class="text-blue-600">Detailed Derivation</h2>
+
+            <!-- Step 1: Expectation -->
+            <div class="mb-8">
+                <h3 class="text-gray-800">Step 1: Deriving \(\mathbb{E}(y_j)\)</h3>
+                <p class="text-gray-600 italic mb-4">Starting with the Law of Total Expectation: \(\mathbb{E}(y_j) = \mathbb{E}[\mathbb{E}(y_j|\theta_j)]\)</p>
+
+                <!-- Step 1.1 -->
+                <div class="flex items-center space-x-2 mt-4 mb-1">
+                    <span class="step-badge">1.</span>
+                    <span class="font-bold text-gray-700">Conditional Expectation (\(\mathbb{E}(y_j|\theta_j)\))</span>
+                </div>
+                <p class="text-sm text-gray-500 ml-7">The expectation of a Poisson variable equals its parameter:</p>
+                <div class="math-block">
+                    $$\mathbb{E}(y_j|\theta_j) = 10n_j\theta_j$$
+                </div>
+
+                <!-- Step 1.2 -->
+                <div class="flex items-center space-x-2 mt-4 mb-1">
+                    <span class="step-badge">2.</span>
+                    <span class="font-bold text-gray-700">Expectation of the Prior (\(\mathbb{E}[\theta_j]\))</span>
+                </div>
+                <p class="text-sm text-gray-500 ml-7">The expectation of a Gamma variable \(\text{Gamma}(\alpha, \beta)\) is \(\frac{\alpha}{\beta}\):</p>
+                <div class="math-block">
+                    $$\mathbb{E}[\theta_j] = \frac{\alpha}{\beta}$$
+                </div>
+
+                <!-- Step 1.3 -->
+                <div class="flex items-center space-x-2 mt-4 mb-1">
+                    <span class="step-badge">3.</span>
+                    <span class="font-bold text-gray-700">Final Result for \(\mathbb{E}(y_j)\)</span>
+                </div>
+                <p class="text-sm text-gray-500 ml-7">Applying \(\mathbb{E}[\mathbb{E}(y_j|\theta_j)] = 10n_j\mathbb{E}[\theta_j]\):</p>
+                <div class="math-block final-result-block text-lg sm:text-xl">
+                    $$\mathbb{E}(y_j) = 10n_j\frac{\alpha}{\beta}$$
+                </div>
+            </div>
+
+            <!-- Step 2: Variance -->
+            <div class="mb-4">
+                <h3 class="text-gray-800">Step 2: Deriving \(\text{Var}(y_j)\)</h3>
+                <p class="text-gray-600 italic mb-4">Starting with the Law of Total Variance: \(\text{Var}(y_j) = \mathbb{E}(\text{Var}(y_j|\theta_j)) + \text{Var}(\mathbb{E}(y_j|\theta_j))\)</p>
+
+                <!-- Step 2.A -->
+                <div class="flex items-center space-x-2 mt-4 mb-1">
+                    <span class="step-badge bg-yellow-500">A.</span>
+                    <span class="font-bold text-gray-700">Term A: Expected Conditional Variance (\(\mathbb{E}(\text{Var}(y_j|\theta_j))\))</span>
+                </div>
+                <p class="text-sm text-gray-500 ml-7">For Poisson, \(\text{Var}(y_j|\theta_j) = \mathbb{E}(y_j|\theta_j)\). This term equals the full expected mean:</p>
+                <div class="math-block">
+                    $$\mathbb{E}(\text{Var}(y_j|\theta_j)) = \mathbb{E}[10n_j\theta_j] = 10n_j\frac{\alpha}{\beta}$$
+                </div>
+                
+                <!-- Step 2.B -->
+                <div class="flex items-center space-x-2 mt-4 mb-1">
+                    <span class="step-badge bg-yellow-500">B.</span>
+                    <span class="font-bold text-gray-700">Term B: Variance of Conditional Expectation (\(\text{Var}(\mathbb{E}(y_j|\theta_j))\))</span>
+                </div>
+                <p class="text-sm text-gray-500 ml-7">We find the variance of the expected mean: \(\text{Var}(10n_j\theta_j) = (10n_j)^2 \text{Var}(\theta_j)\)</p>
+                
+                <!-- Step 2.B.i -->
+                <p class="text-sm text-gray-600 font-semibold mt-4 ml-7">Variance of the Prior (\(\text{Var}(\theta_j)\))</p>
+                <p class="text-sm text-gray-500 ml-7">The variance of a Gamma variable \(\text{Gamma}(\alpha, \beta)\) is \(\frac{\alpha}{\beta^2}\):</p>
+                <div class="math-block">
+                    $$\text{Var}(\theta_j) = \frac{\alpha}{\beta^2}$$
+                </div>
+
+                <p class="text-sm text-gray-600 font-semibold mt-4 ml-7">Result for Term B</p>
+                <div class="math-block">
+                    $$\text{Var}(\mathbb{E}(y_j|\theta_j)) = (10n_j)^2 \frac{\alpha}{\beta^2}$$
+                </div>
+
+                <!-- Step 2.Final -->
+                <div class="flex items-center space-x-2 mt-4 mb-1">
+                    <span class="step-badge">F.</span>
+                    <span class="font-bold text-gray-700">Final Result for \(\text{Var}(y_j)\)</span>
+                </div>
+                <p class="text-sm text-gray-500 ml-7">Combining Term A and Term B:</p>
+                <div class="math-block final-result-block text-lg sm:text-xl">
+                    $$\text{Var}(y_j) = 10n_j\frac{\alpha}{\beta} + (10n_j)^2\frac{\alpha}{\beta^2}$$
+                </div>
+            </div>
+            
+            <div class="mt-8 pt-4 border-t border-gray-200">
+                <p class="text-center text-lg font-bold text-green-700">Proof Complete</p>
+            </div>
+
+        </section>
+
+        <!-- Key Insights and Context Section -->
+        <section class="content-card insights-section mb-8">
+            <h2 class="text-blue-700">Key Insights and Context</h2>
+            <div class="space-y-4 text-gray-700">
+                <p class="font-bold text-lg text-gray-800">1. Connection to the Negative Binomial Distribution</p>
+                <p>This specific hierarchical structure—a Poisson likelihood with a Gamma prior—results in a **Negative Binomial (NB) distribution** when the marginal distribution \(p(y_j)\) is fully derived. This demonstrates how compounding distributions generates new, commonly used probability models.</p>
+                
+                <p class="font-bold text-lg text-gray-800">2. The Concept of Overdispersion</p>
+                <p>A standard Poisson distribution has the property that its variance equals its mean (\(\text{Var}(X) = \mathbb{E}(X)\)). By contrast, this compound distribution clearly shows **overdispersion**:</p>
+                
+                <div class="math-block bg-white text-gray-800 border-none shadow-sm">
+                    $$\text{Var}(y_j) = \mathbb{E}(y_j) + \text{Var}(\mathbb{E}(y_j|\theta_j))$$
+                    $$\text{Var}(y_j) = \mathbb{E}(y_j) + (10n_j)^2\frac{\alpha}{\beta^2}$$
+                </div>
+                
+                <p>Since the added term \((10n_j)^2\frac{\alpha}{\beta^2}\) is strictly positive (as \(\alpha, \beta, n_j > 0\)), it means:</p>
+                <div class="math-block bg-white text-gray-800 text-center text-xl font-extrabold border-l-4 border-red-500 shadow-lg">
+                    $$\text{Var}(y_j) > \mathbb{E}(y_j)$$
+                </div>
+                
+                <p>This added variance comes from the uncertainty in the parameter \(\theta_j\) (the \(\text{Var}(\mathbb{E}(y_j|\theta_j))\) term), making the NB model essential for fitting real-world count data that often exhibits variance larger than the mean.</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="mt-8 py-6 text-center text-sm text-gray-600 border-t border-gray-300">
+            &copy; 2023 Study Assistant | Compound Distribution Model | Designed for Clarity and Pedagogy
+        </footer>
+
+    </div>
+</body>
+</html>
