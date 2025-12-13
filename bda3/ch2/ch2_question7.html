@@ -364,24 +364,46 @@
         </section>
 
         <!-- Intuition Section -->
-        <section class="grid md:grid-cols-2 gap-8">
+        <section class="space-y-8">
             <!-- Part 1: The Crash -->
             <div class="bg-amber-50 border border-amber-100 rounded-xl p-6 md:p-8">
                 <div class="flex items-center gap-3 mb-6 text-amber-900 border-b border-amber-200/60 pb-4">
                     <i data-lucide="alert-triangle" class="w-6 h-6"></i>
                     <h3 class="font-serif font-bold text-lg">The Problem (Part B)</h3>
                 </div>
-                <p class="text-amber-900 text-sm mb-4 leading-relaxed">
+                <p class="text-amber-900 text-sm mb-6 leading-relaxed">
                     We derived the Haldane Prior <span class="math-tex inline" data-tex="\text{Beta}(0,0)"></span>. 
-                    But if we observe <span class="math-tex inline" data-tex="y=0"></span> (no successes), the posterior integral diverges:
+                    But extreme data breaks the model. Here is the calculus behind the crash:
                 </p>
-                <div class="bg-white/80 p-5 rounded-lg border border-amber-200/50 mb-4 shadow-sm">
-                    <div class="text-center">
-                        <span class="math-tex block" data-tex="\int_0^1 \theta^{-1}(1-\theta)^{n-1} d\theta \to -\infty"></span>
+                
+                <div class="space-y-6">
+                    <!-- Case y=0 -->
+                    <div>
+                        <p class="text-amber-900 text-xs font-bold uppercase tracking-wider mb-2">Case 1: No Successes (<span class="math-tex inline" data-tex="y=0"></span>)</p>
+                        <div class="bg-white/80 p-4 rounded-lg border border-amber-200/50 shadow-sm space-y-3">
+                            <p class="text-sm text-stone-600">The posterior kernel is <span class="math-tex inline" data-tex="\theta^{-1}(1-\theta)^{n-1}"></span>. Near <span class="math-tex inline" data-tex="\theta \approx 0"></span>, the term <span class="math-tex inline" data-tex="(1-\theta)^{n-1} \approx 1"></span>, so the integral simplifies to <span class="math-tex inline" data-tex="\int \frac{1}{\theta} d\theta"></span>.</p>
+                            <div class="text-center bg-amber-50/50 rounded p-2 border border-amber-100/50">
+                                <span class="math-tex block" data-tex="\int_{\epsilon}^{1} \frac{1}{\theta} d\theta = \Big[\ln(\theta)\Big]_{\epsilon}^{1} = 0 - \ln(\epsilon)"></span>
+                            </div>
+                            <p class="text-sm text-stone-600">As <span class="math-tex inline" data-tex="\epsilon \to 0"></span>, <span class="math-tex inline" data-tex="-\ln(\epsilon) \to \infty"></span>. The area under the curve is infinite.</p>
+                        </div>
+                    </div>
+
+                    <!-- Case y=n -->
+                    <div>
+                        <p class="text-amber-900 text-xs font-bold uppercase tracking-wider mb-2">Case 2: All Successes (<span class="math-tex inline" data-tex="y=n"></span>)</p>
+                        <div class="bg-white/80 p-4 rounded-lg border border-amber-200/50 shadow-sm space-y-3">
+                            <p class="text-sm text-stone-600">The posterior kernel is <span class="math-tex inline" data-tex="\theta^{n-1}(1-\theta)^{-1}"></span>. Near <span class="math-tex inline" data-tex="\theta \approx 1"></span>, the term <span class="math-tex inline" data-tex="\theta^{n-1} \approx 1"></span>, so the integral behaves like <span class="math-tex inline" data-tex="\int \frac{1}{1-\theta} d\theta"></span>.</p>
+                            <div class="text-center bg-amber-50/50 rounded p-2 border border-amber-100/50">
+                                <span class="math-tex block" data-tex="\int_{0}^{1-\epsilon} \frac{1}{1-\theta} d\theta = \Big[-\ln(1-\theta)\Big]_{0}^{1-\epsilon} \approx -\ln(\epsilon)"></span>
+                            </div>
+                            <p class="text-sm text-stone-600">As <span class="math-tex inline" data-tex="\epsilon \to 0"></span>, this also tends to infinity.</p>
+                        </div>
                     </div>
                 </div>
-                <p class="text-amber-900/80 text-sm italic">
-                    Result: The distribution is "Improper." The model is dogmatically certain that successes are impossible, causing the math to break.
+
+                <p class="text-amber-900/80 text-sm italic mt-6 border-t border-amber-200/60 pt-4">
+                    Result: Because the total area is infinite, we cannot normalize it to sum to 1. The probability distribution does not exist.
                 </p>
             </div>
 
