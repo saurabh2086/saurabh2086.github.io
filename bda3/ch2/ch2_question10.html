@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bayesian Inference: The Cable Car Problem (Detailed Solution)</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 50px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            border-radius: 8px;
+        }
+
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #eaeaea;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            color: #34495e;
+            margin-top: 50px;
+            border-left: 5px solid #3498db;
+            padding-left: 15px;
+            font-size: 1.6em;
+        }
+
+        h3 {
+            color: #7f8c8d;
+            margin-top: 30px;
+            font-size: 1.3em;
+            border-bottom: 1px dashed #ccc;
+            padding-bottom: 5px;
+            display: inline-block;
+        }
+
+        .box {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .question-box {
+            background-color: #e8f4f8;
+            border-left: 5px solid #2980b9;
+        }
+
+        .logic-box {
+            background-color: #fff8e1;
+            border-left: 5px solid #f1c40f;
+        }
+
+        .math-step {
+            margin-left: 20px;
+            margin-bottom: 10px;
+        }
+
+        ul {
+            margin-bottom: 20px;
+        }
+
+        code {
+            background-color: #f4f4f4;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: Consolas, monospace;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            font-size: 0.85em;
+            color: #999;
+            border-top: 1px solid #eaeaea;
+            padding-top: 20px;
+        }
+
+        .home-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .home-button:hover {
+            background: #34495e;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+
+
+<body>
+    <a href="../../index.html" class="home-button">
+        <i class="fas fa-home"></i> ← Home
+    </a>
+
+    <div class="container">
+        <h1>Bayesian Inference: The Cable Car Problem</h1>
+
+        <div class="box question-box">
+            <h3>Original Problem Statement</h3>
+            <p><strong>10. Discrete sample spaces:</strong> suppose there are \(N\) cable cars in San Francisco,
+                numbered sequentially from 1 to \(N\). You see a cable car at random; it is numbered 203. You wish to
+                estimate \(N\).</p>
+            <p><strong>(a)</strong> Assume your prior distribution on \(N\) is geometric with mean 100; that is,</p>
+            $$p(N) = (1/100)(99/100)^{N-1}, \quad \text{for } N = 1, 2, \dots$$
+            <p>What is your posterior distribution for \(N\)?</p>
+            <p><strong>(b)</strong> What are the posterior mean and standard deviation of \(N\)? (Sum the infinite
+                series analytically or approximate them on the computer.)</p>
+            <p><strong>(c)</strong> Choose a reasonable ‘noninformative’ prior distribution for \(N\) and give the
+                resulting posterior distribution, mean, and standard deviation for \(N\).</p>
+        </div>
+
+        <h2>1. The Likelihood Function</h2>
+        <div class="box logic-box">
+            <p><strong>Question:</strong> Why is the likelihood \(P(\text{data}|N) = \frac{1}{N}\)?</p>
+            <p><strong>Logic:</strong></p>
+            <ul>
+                <li>The problem states: "You see a cable car <strong>at random</strong>."</li>
+                <li>This implies a <strong>Uniform Distribution</strong>. If there are \(N\) total cars, the probability
+                    of seeing any specific car (like car #203) is exactly \(1\) divided by the total number of cars.
+                </li>
+                <li>Therefore, \(P(\text{seeing \#203} | \text{Total is } N) = \frac{1}{N}\).</li>
+                <li><strong>Constraint:</strong> This is only possible if \(N \ge 203\). If there were only 100 cars
+                    (\(N=100\)), it would be impossible to see car #203 (Probability = 0).</li>
+            </ul>
+            $$P(\text{data} | N) = \begin{cases} \frac{1}{N} & \text{if } N \ge 203 \\ 0 & \text{if } N < 203
+                \end{cases}$$ </div>
+
+                <h2>2. Part (a): Deriving the Posterior</h2>
+                <p>Using Bayes' Theorem: \( \text{Posterior} \propto \text{Likelihood} \times \text{Prior} \).</p>
+
+                $$ P(N|\text{data}) \propto \frac{1}{N} \times \frac{1}{100}\left(\frac{99}{100}\right)^{N-1} $$
+
+                <p>Dropping the constant \(1/100\) (since it cancels out in normalization), we get the unnormalized
+                    shape:</p>
+                $$ P(N|\text{data}) = \frac{1}{S} \cdot \frac{1}{N} (0.99)^{N-1} \quad \text{for } N \ge 203 $$
+                <p>Where \(S\) is the Normalizing Constant (the sum of all probabilities).</p>
+
+                <h2>3. Detailed Sigma (\(\Sigma\)) Calculation</h2>
+                <p>We need to calculate the sum \(S\) to normalize the distribution. This is the "Sigma Calculation."
+                </p>
+
+                $$ S = \sum_{N=203}^{\infty} \frac{1}{N} \left(0.99\right)^{N-1} $$
+
+                <p><strong>Step 1: Convert to Standard Power Series Form</strong><br>
+                    Let \(x = 0.99\). The term inside is \(\frac{1}{N} x^{N-1}\). To match the known identity
+                    \(\frac{x^N}{N}\), we multiply and divide by \(x\):</p>
+                $$ \frac{1}{N} x^{N-1} = \frac{1}{x} \cdot \frac{x^N}{N} $$
+                <p>Now the sum becomes:</p>
+                $$ S = \frac{1}{x} \sum_{N=203}^{\infty} \frac{x^N}{N} $$
+
+                <p><strong>Step 2: Relate to Maclaurin Series</strong><br>
+                    We know the Taylor series expansion for the natural log:</p>
+                $$ -\ln(1-x) = \sum_{n=1}^{\infty} \frac{x^n}{n} = x + \frac{x^2}{2} + \frac{x^3}{3} + \dots $$
+
+                <p><strong>Step 3: Adjust for the Missing Terms</strong><br>
+                    Our sum starts at \(N=203\), but the log series starts at \(N=1\). We must subtract the first 202
+                    terms:</p>
+                $$ \sum_{N=203}^{\infty} \frac{x^N}{N} = \underbrace{\sum_{N=1}^{\infty} \frac{x^N}{N}}_{\text{Total Log
+                Series}} - \underbrace{\sum_{N=1}^{202} \frac{x^N}{N}}_{\text{Missing Head}} $$
+
+                <p><strong>Step 4: Final Expression for S</strong><br>
+                    Substituting this back into the expression for \(S\):</p>
+                <div class="box">
+                    $$ S = \frac{1}{0.99} \left[ -\ln(1 - 0.99) - \sum_{N=1}^{202} \frac{(0.99)^N}{N} \right] $$
+                </div>
+                <p><em>(This series can now be computed numerically).</em></p>
+
+                <h2>4. Part (b): Posterior Mean & Std Dev</h2>
+
+                <h3>Mean Calculation (Expanded)</h3>
+                <p>The Expected Value is \( E[N] = \sum N P(N) \).</p>
+                $$ E[N] = \sum_{N=203}^{\infty} N \cdot \left[ \frac{1}{S} \frac{1}{N} x^{N-1} \right] $$
+                <p>The \(N\) and \(\frac{1}{N}\) cancel out nicely:</p>
+                $$ E[N] = \frac{1}{S} \sum_{N=203}^{\infty} x^{N-1} $$
+                <p>This is a geometric series \(\sum ar^k\):</p>
+                <ul>
+                    <li>First term (at \(N=203\)): \( a = x^{202} \)</li>
+                    <li>Common ratio: \( r = x = 0.99 \)</li>
+                    <li>Sum Formula: \( \frac{a}{1-r} \)</li>
+                </ul>
+                $$ \text{Numerator Sum} = \frac{0.99^{202}}{1 - 0.99} = \frac{0.99^{202}}{0.01} = 100 \cdot (0.99)^{202}
+                $$
+                <p><strong>Final Mean:</strong> \( E[N] = \frac{100(0.99)^{202}}{S} \)</p>
+
+                <h3>Variance Logic</h3>
+                <p>To find Standard Deviation \(\sigma = \sqrt{E[N^2] - (E[N])^2}\), we calculate \(E[N^2]\).</p>
+                $$ E[N^2] = \frac{1}{S} \sum_{N=203}^{\infty} N^2 \cdot \frac{1}{N} x^{N-1} = \frac{1}{S}
+                \sum_{N=203}^{\infty} N x^{N-1} $$
+                <p>We solve \(\sum N x^{N-1}\) by taking the derivative of the geometric series sum \(\sum x^N\):</p>
+                $$ \sum_{N=203}^{\infty} N x^{N-1} = \frac{d}{dx} \left( \frac{x^{203}}{1-x} \right) $$
+                <p>Using the quotient rule, this evaluates to:</p>
+                $$ \text{Sum} = \frac{203 x^{202}(1-x) - x^{203}(-1)}{(1-x)^2} = \frac{203 x^{202}}{1-x} +
+                \frac{x^{203}}{(1-x)^2} $$
+
+                <h2>5. Part (c): The "Infinite" Mean</h2>
+                <p>If we use the noninformative prior \(P(N) \propto 1/N\):</p>
+                $$ \text{Posterior} \propto \frac{1}{N} \cdot \frac{1}{N} = \frac{1}{N^2} $$
+                <p>When we try to calculate the Mean \(E[N]\):</p>
+                $$ E[N] = \sum_{N=203}^{\infty} N \cdot \frac{1}{N^2} = \sum_{N=203}^{\infty} \frac{1}{N} $$
+                <p>This is the <strong>Harmonic Series</strong>. Even though the probability sum \(\sum \frac{1}{N^2}\)
+                    is finite, the mean sum \(\sum \frac{1}{N}\) grows without bound (diverges).</p>
+                <p><strong>Result:</strong> \(E[N] = \infty\) and \(\sigma_N = \infty\).</p>
+
+        </div>
+
+        <footer>
+            Bayesian Inference Module
+        </footer>
+
+</body>
+
+</html>
