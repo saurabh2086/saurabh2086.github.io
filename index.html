@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,8 +14,9 @@
             --text-color: #333;
             --sidebar-text-color: #ecf0f1;
             --sidebar-link-hover: #ffffff;
-            --shadow: 0 4px 12px rgba(0,0,0,0.08);
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
         }
+
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             line-height: 1.7;
@@ -22,16 +24,19 @@
             background-color: var(--background-color);
             margin: 0;
         }
+
         .page-container {
             display: flex;
             min-height: 100vh;
         }
+
         .side-panel {
             width: 400px;
-            flex-shrink: 0; /* Prevent sidebar from shrinking */
+            flex-shrink: 0;
+            /* Prevent sidebar from shrinking */
             background-color: var(--primary-color);
             padding: 40px 35px 40px 45px;
-            box-shadow: 2px 0 15px rgba(0,0,0,0.1);
+            box-shadow: 2px 0 15px rgba(0, 0, 0, 0.1);
             color: var(--sidebar-text-color);
             transition: margin-left 0.4s ease;
             overflow-y: auto;
@@ -41,23 +46,30 @@
             left: 0;
             top: 0;
         }
+
         /* Custom scrollbar styling */
         .side-panel::-webkit-scrollbar {
             width: 8px;
         }
+
         .side-panel::-webkit-scrollbar-track {
             background: rgba(0, 0, 0, 0.1);
         }
+
         .side-panel::-webkit-scrollbar-thumb {
             background: rgba(255, 255, 255, 0.3);
             border-radius: 4px;
         }
+
         .side-panel::-webkit-scrollbar-thumb:hover {
             background: rgba(255, 255, 255, 0.5);
         }
+
         .side-panel.collapsed {
-            margin-left: -400px; /* Hide by sliding off-screen */
+            margin-left: -400px;
+            /* Hide by sliding off-screen */
         }
+
         .side-panel h1 {
             color: var(--sidebar-text-color);
             text-align: left;
@@ -66,6 +78,7 @@
             margin-bottom: 30px;
             font-size: 1.8em;
         }
+
         .main-content {
             flex-grow: 1;
             padding: 40px;
@@ -73,15 +86,19 @@
             justify-content: center;
             align-items: center;
             position: relative;
-            overflow-x: auto; /* Handle content on small screens */
+            overflow-x: auto;
+            /* Handle content on small screens */
             margin-left: 400px;
             transition: margin-left 0.4s ease;
         }
+
         .main-content.sidebar-collapsed {
             margin-left: 0;
         }
+
         .toggle-btn {
-            position: fixed; /* Keep button in view */
+            position: fixed;
+            /* Keep button in view */
             top: 25px;
             left: 25px;
             background: var(--primary-color);
@@ -96,28 +113,34 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
             transition: background-color 0.3s ease, transform 0.4s ease;
         }
+
         .content-box {
             max-width: 800px;
             text-align: center;
         }
+
         .content-box h2 {
             font-size: 2.5em;
             color: var(--primary-color);
         }
+
         .content-box p {
             font-size: 1.2em;
             color: #666;
         }
+
         .toc {
             list-style-type: none;
             padding-left: 0;
         }
-        .toc > li {
+
+        .toc>li {
             margin-bottom: 20px;
         }
+
         .toc h2 {
             font-size: 1.3em;
             color: var(--sidebar-text-color);
@@ -128,14 +151,18 @@
             align-items: center;
             gap: 8px;
         }
-        .toc h2 a { /* Style for Home link */
+
+        .toc h2 a {
+            /* Style for Home link */
             text-decoration: none;
             color: inherit;
             cursor: pointer;
         }
+
         .toc h2 a:hover {
             text-decoration: underline;
         }
+
         .collapsible {
             cursor: pointer;
             user-select: none;
@@ -144,9 +171,11 @@
             gap: 8px;
             transition: opacity 0.2s ease;
         }
+
         .collapsible:hover {
             opacity: 0.9;
         }
+
         .collapse-icon {
             display: inline-block;
             width: 12px;
@@ -158,9 +187,11 @@
             margin-right: 4px;
             flex-shrink: 0;
         }
+
         .collapsed .collapse-icon {
             transform: rotate(-135deg);
         }
+
         .toc ul {
             list-style-type: none;
             padding-left: 20px;
@@ -170,6 +201,7 @@
             transition: max-height 0.4s ease-out, opacity 0.3s ease, padding 0.3s ease;
             opacity: 1;
         }
+
         .toc ul.collapsed {
             max-height: 0;
             opacity: 0;
@@ -177,10 +209,12 @@
             padding-bottom: 0;
             margin: 0;
         }
+
         .toc ul li {
             margin: 12px 0;
             font-size: 1em;
         }
+
         .toc a {
             text-decoration: none;
             color: var(--sidebar-text-color);
@@ -190,12 +224,17 @@
             opacity: 0.8;
             line-height: 1.6;
         }
+
         .toc a:hover {
             color: var(--sidebar-link-hover);
             padding-left: 8px;
             opacity: 1;
         }
-        .toc h3, .toc h4, .toc h5, .toc h6 {
+
+        .toc h3,
+        .toc h4,
+        .toc h5,
+        .toc h6 {
             font-size: 1.2em;
             color: var(--sidebar-text-color);
             margin-bottom: 8px;
@@ -207,15 +246,19 @@
             align-items: center;
             gap: 8px;
         }
+
         .toc h4 {
             font-size: 1.15em;
         }
+
         .toc h5 {
             font-size: 1.1em;
         }
+
         .toc h6 {
             font-size: 1.05em;
         }
+
         .toc-heading-deep {
             font-size: 1.05em;
             color: var(--sidebar-text-color);
@@ -230,13 +273,14 @@
         }
     </style>
 </head>
+
 <body>
     <button id="toggle-btn" title="Toggle Sidebar">☰</button>
     <div class="page-container">
         <nav class="side-panel">
             <h1>Bayesian Analysis</h1>
             <ul class="toc">
-                 <li>
+                <li>
                     <h2><a href="index.html">Home</a></h2>
                 </li>
                 <li>
@@ -270,16 +314,20 @@
                                                     </div>
                                                     <ul>
                                                         <li>
-                                                            <a href="bda3/ch1/ch1_question1.html">Question 1: Conditional Probability</a>
+                                                            <a href="bda3/ch1/ch1_question1.html">Question 1:
+                                                                Conditional Probability</a>
                                                         </li>
                                                         <li>
-                                                            <a href="bda3/ch1/ch1_question3.html">Question 3: Genetics</a>
+                                                            <a href="bda3/ch1/ch1_question3.html">Question 3:
+                                                                Genetics</a>
                                                         </li>
                                                         <li>
-                                                            <a href="bda3/ch1/ch1_question6.html">Question 6: Elvis Presley Twin Problem</a>
+                                                            <a href="bda3/ch1/ch1_question6.html">Question 6: Elvis
+                                                                Presley Twin Problem</a>
                                                         </li>
                                                         <li>
-                                                            <a href="bda3/ch1/ch1_question9.html">Question 9: Clinic Queuing Problem</a>
+                                                            <a href="bda3/ch1/ch1_question9.html">Question 9: Clinic
+                                                                Queuing Problem</a>
                                                         </li>
                                                         <!-- You can add more links to other projects here -->
                                                     </ul>
@@ -291,31 +339,48 @@
                                                     </div>
                                                     <ul>
                                                         <li>
-                                                            <a href="bda3/ch2/ch2_poission_distribution.html">Interactive Poission Distribution</a>
+                                                            <a href="bda3/ch2/ch2_poission_distribution.html">Interactive
+                                                                Poission Distribution</a>
                                                         </li>
                                                         <li>
-                                                            <a href="bda3/ch2/ch2_question1.html">Question 1: Binomial Model</a>
+                                                            <a href="bda3/ch2/ch2_question1.html">Question 1: Binomial
+                                                                Model</a>
                                                         </li>
                                                         <li>
-                                                            <a href="bda3/ch2/ch2_question2.html">Question 2: Expected Number of Spins</a>
+                                                            <a href="bda3/ch2/ch2_question2.html">Question 2: Expected
+                                                                Number of Spins</a>
                                                         </li>
                                                         <li>
-                                                            <a href="bda3/ch2/ch2_question3.html">Question 3: Predictive distributions</a>
+                                                            <a href="bda3/ch2/ch2_question3.html">Question 3: Predictive
+                                                                distributions</a>
                                                         </li>
                                                         <li>
-                                                            <a href="bda3/ch2/ch2_question4.html">Question 4: Predictive distributions</a>
+                                                            <a href="bda3/ch2/ch2_question4.html">Question 4: Predictive
+                                                                distributions</a>
                                                         </li>
                                                         <li>
-                                                            <a href="bda3/ch2/ch2_question5.html">Question 5: Posterior distribution as a compromise</a>
+                                                            <a href="bda3/ch2/ch2_question5.html">Question 5: Posterior
+                                                                distribution as a compromise</a>
                                                         </li>
                                                         <li>
-                                                            <a href="bda3/ch2/ch2_question6.html">Question 6: Predictive distributions</a>
+                                                            <a href="bda3/ch2/ch2_question6.html">Question 6: Predictive
+                                                                distributions</a>
                                                         </li>
                                                         <li>
-                                                            <a href="bda3/ch2/ch2_question7.html">Question 7: The Purist's Prior</a>
+                                                            <a href="bda3/ch2/ch2_question7.html">Question 7: The
+                                                                Purist's Prior</a>
                                                         </li>
                                                         <li>
-                                                            <a href="bda3/ch2/ch2_question8.html">Question 8: Normal distribution with unknown mean</a>
+                                                            <a href="bda3/ch2/ch2_question8.html">Question 8: Normal
+                                                                distribution with unknown mean</a>
+                                                        </li>
+                                                        <li>
+                                                            <a href="bda3/ch2/ch2_question9.html">Question 9:
+                                                                Beta-Binomial Updating</a>
+                                                        </li>
+                                                        <li>
+                                                            <a href="bda3/ch2/ch2_question10.html">Question 10: The
+                                                                Cable Car Problem </a>
                                                         </li>
                                                     </ul>
                                                 </li>
@@ -326,46 +391,60 @@
                                                     </div>
                                                     <ul>
                                                         <li>
-                                                            <a href="bda3/ch3/ch3_section1.html">3.1 Averaging over 'nuisance parameters'</a>
+                                                            <a href="bda3/ch3/ch3_section1.html">3.1 Averaging over
+                                                                'nuisance parameters'</a>
                                                         </li>
                                                         <li>
-                                                            <a href="bda3/ch3/ch3_section2.html">3.2 Normal data with a noninformative prior</a>
+                                                            <a href="bda3/ch3/ch3_section2.html">3.2 Normal data with a
+                                                                noninformative prior</a>
                                                         </li>
                                                         <li>
-                                                            <a href="bda3/ch3/ch3_section3.html">3.3 Normal data with a conjugate prior</a>
+                                                            <a href="bda3/ch3/ch3_section3.html">3.3 Normal data with a
+                                                                conjugate prior</a>
                                                         </li>
                                                         <li>
-                                                            <a href="bda3/ch3/ch3_question1.html">Question 1: Binomial and Multinomial Models</a>
+                                                            <a href="bda3/ch3/ch3_question1.html">Question 1: Binomial
+                                                                and Multinomial Models</a>
                                                         </li>
                                                         <li>
-                                                            <a href="bda3/ch3/ch3_question2.html">Question 2: Comparison of two multinomial observations</a>
+                                                            <a href="bda3/ch3/ch3_question2.html">Question 2: Comparison
+                                                                of two multinomial observations</a>
                                                         </li>
                                                         <li>
-                                                            <a href="bda3/ch3/ch3_question3.html">Question 3: Estimation from two independent experiments</a>
+                                                            <a href="bda3/ch3/ch3_question3.html">Question 3: Estimation
+                                                                from two independent experiments</a>
                                                         </li>
                                                         <li>
-                                                            <a href="bda3/ch3/ch3_question4.html">Question 4: Inference for a 2 X 2 table</a>
+                                                            <a href="bda3/ch3/ch3_question4.html">Question 4: Inference
+                                                                for a 2 X 2 table</a>
                                                         </li>
                                                         <li>
-                                                            <a href="bda3/ch3/ch3_question5.html">Question 5: Rounded Data</a>
+                                                            <a href="bda3/ch3/ch3_question5.html">Question 5: Rounded
+                                                                Data</a>
                                                         </li>
                                                         <li>
-                                                            <a href="bda3/ch3/ch3_question6.html">Question 6: The Waterbuck Investigation</a>
+                                                            <a href="bda3/ch3/ch3_question6.html">Question 6: The
+                                                                Waterbuck Investigation</a>
                                                         </li>
                                                         <li>
-                                                            <a href="bda3/ch3/ch3_question7.html">Question 7: Poisson and binomial distributions</a>
+                                                            <a href="bda3/ch3/ch3_question7.html">Question 7: Poisson
+                                                                and binomial distributions</a>
                                                         </li>
                                                         <li>
-                                                            <a href="bda3/ch3/ch3_question8.html">Question 8: Analysis of proportions</a>
+                                                            <a href="bda3/ch3/ch3_question8.html">Question 8: Analysis
+                                                                of proportions</a>
                                                         </li>
                                                         <li>
-                                                            <a href="bda3/ch3/ch3_question9.html">Question 9: Conjugate Normal Model</a>
+                                                            <a href="bda3/ch3/ch3_question9.html">Question 9: Conjugate
+                                                                Normal Model</a>
                                                         </li>
                                                         <li>
-                                                            <a href="bda3/ch3/ch3_question10.html">Question 10: Comparison of normal variances</a>
+                                                            <a href="bda3/ch3/ch3_question10.html">Question 10:
+                                                                Comparison of normal variances</a>
                                                         </li>
                                                         <li>
-                                                            <a href="bda3/ch3/ch3_question11.html">Question 11: Bio Assay Computation</a>
+                                                            <a href="bda3/ch3/ch3_question11.html">Question 11: Bio
+                                                                Assay Computation</a>
                                                         </li>
                                                     </ul>
                                                 </li>
@@ -385,7 +464,8 @@
                     </h2>
                     <ul>
                         <li>
-                            <a href="non-fiction/history_of_normal.html">The Normal Distribution: A Convergence of Three Minds</a>
+                            <a href="non-fiction/history_of_normal.html">The Normal Distribution: A Convergence of Three
+                                Minds</a>
                         </li>
                         <li>
                             <h3 class="collapsible">
@@ -477,7 +557,7 @@
 
             // Make all collapsible sections work
             const collapsibles = document.querySelectorAll('.collapsible');
-            
+
             // Save collapsed states to localStorage
             const saveCollapsedStates = () => {
                 const collapsed = document.querySelectorAll('.collapsible.collapsed');
@@ -518,10 +598,10 @@
                     if (e.target.tagName === 'A') {
                         return; // Let links work normally
                     }
-                    
+
                     const parent = collapsible.parentElement;
                     const nextUl = parent.querySelector(':scope > ul');
-                    
+
                     if (nextUl) {
                         collapsible.classList.toggle('collapsed');
                         nextUl.classList.toggle('collapsed');
@@ -535,4 +615,5 @@
         });
     </script>
 </body>
+
 </html>
