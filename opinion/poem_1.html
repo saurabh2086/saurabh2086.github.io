@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Milna, Sochna, Jeena - Gaurav Verma</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .serif-font {
+            font-family: 'Merriweather', serif;
+        }
+
+        @keyframes fadeInSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(1rem);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-entry {
+            opacity: 0;
+            animation: fadeInSlideUp 0.7s ease-out forwards;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen bg-slate-50 text-slate-800 relative overflow-x-hidden">
+    <!-- Background Ambience -->
+    <div class="fixed inset-0 pointer-events-none opacity-20 z-0">
+        <div class="absolute top-0 left-0 w-full h-96 bg-gradient-to-b from-blue-200 to-transparent"></div>
+        <div class="absolute bottom-0 left-0 w-full h-96 bg-gradient-to-t from-teal-100 to-transparent"></div>
+    </div>
+
+    <!-- Navigation / Header -->
+    <nav
+        class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200 shadow-sm transition-all duration-300">
+        <div class="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                        fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" class="text-rose-400">
+                        <path
+                            d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold text-slate-900 leading-tight">Milna, Sochna, Jeena</h1>
+                    <p class="text-xs text-slate-500 font-medium tracking-wide uppercase">by Gaurav Verma</p>
+                </div>
+            </div>
+            <a href="../index.html" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">←
+                Back to Portfolio</a>
+        </div>
+    </nav>
+
+    <main class="max-w-2xl mx-auto px-6 py-12 relative z-10 pb-32">
+        <div id="poem-container" class="space-y-12 text-center">
+            <!-- Stanza 1 -->
+            <div class="animate-entry" style="animation-delay: 0ms">
+                <p
+                    class="leading-relaxed transition-all duration-500 text-xl md:text-2xl serif-font text-slate-800 mb-2">
+                    मिलना, सोचना... और जीना।</p>
+                <p class="h-4"></p>
+                <p
+                    class="leading-relaxed transition-all duration-500 text-xl md:text-2xl serif-font text-slate-800 mb-2">
+                    तुमसे मिलकर जाने क्यों, मैं अपना सा हो जाता हूँ,</p>
+                <p
+                    class="leading-relaxed transition-all duration-500 text-xl md:text-2xl serif-font text-slate-800 mb-2">
+                    खुली आँख से देखूँ जो, वो सपना सा हो जाता हूँ।</p>
+                <p
+                    class="leading-relaxed transition-all duration-500 text-xl md:text-2xl serif-font text-slate-800 mb-2">
+                    तुमसे मिलकर जाने क्यों, मैं अपना सा हो जाता हूँ,</p>
+                <p
+                    class="leading-relaxed transition-all duration-500 text-xl md:text-2xl serif-font text-slate-800 mb-2">
+                    खुली आँख से देखूँ जो, वो सपना सा हो जाता हूँ।</p>
+            </div>
+            <!-- Stanza 2 -->
+            <div class="animate-entry" style="animation-delay: 100ms">
+                <p
+                    class="leading-relaxed transition-all duration-500 text-xl md:text-2xl serif-font text-slate-800 mb-2">
+                    तुमने भी तो मुझको एकदम, अपने जैसा प्यार दिया,</p>
+                <p
+                    class="leading-relaxed transition-all duration-500 text-xl md:text-2xl serif-font text-slate-800 mb-2">
+                    कभी करी बेटी सी ज़िद, कभी ममता का उपहार दिया।</p>
+                <p
+                    class="leading-relaxed transition-all duration-500 text-xl md:text-2xl serif-font text-slate-800 mb-2">
+                    कभी दोस्त बन समझाया, कभी हमराही सा ऐतबार किया,</p>
+                <p
+                    class="leading-relaxed transition-all duration-500 text-xl md:text-2xl serif-font text-slate-800 mb-2">
+                    मैं संग दुनिया के रहता था, तुमने मन भीतर त्योहार दिया।</p>
+            </div>
+            <!-- Stanza 3 -->
+            <div class="animate-entry" style="animation-delay: 200ms">
+                <p
+                    class="leading-relaxed transition-all duration-500 text-xl md:text-2xl serif-font text-slate-800 mb-2">
+                    तुम में उलझ कर जाने क्यों, कुछ और सुलझ मैं जाता हूँ।</p>
+                <p
+                    class="leading-relaxed transition-all duration-500 text-xl md:text-2xl serif-font text-slate-800 mb-2">
+                    तुमसे मिलकर जाने क्यों, मैं अपना सा हो जाता हूँ,</p>
+                <p
+                    class="leading-relaxed transition-all duration-500 text-xl md:text-2xl serif-font text-slate-800 mb-2">
+                    खुली आँख से देखूँ जो, वो सपना सा हो जाता हूँ।</p>
+            </div>
+            <!-- Stanza 4 -->
+            <div class="animate-entry" style="animation-delay: 300ms">
+                <p
+                    class="leading-relaxed transition-all duration-500 text-xl md:text-2xl serif-font text-slate-800 mb-2">
+                    तुम्हें सोचकर जाने क्यों, मैं तुम जैसा हो जाता हूँ।</p>
+                <p
+                    class="leading-relaxed transition-all duration-500 text-xl md:text-2xl serif-font text-slate-800 mb-2">
+                    फिर खुद को, तुम बनकर मैं, तुम जैसे समझाता हूँ।</p>
+                <p
+                    class="leading-relaxed transition-all duration-500 text-xl md:text-2xl serif-font text-slate-800 mb-2">
+                    तुम्हें सोचकर जाने क्यों, मैं तुम जैसा हो जाता हूँ,</p>
+                <p
+                    class="leading-relaxed transition-all duration-500 text-xl md:text-2xl serif-font text-slate-800 mb-2">
+                    फिर खुद को, तुम बनकर मैं, तुम जैसे समझाता हूँ।</p>
+            </div>
+            <!-- Stanza 5 -->
+            <div class="animate-entry" style="animation-delay: 400ms">
+                <p
+                    class="leading-relaxed transition-all duration-500 text-xl md:text-2xl serif-font text-slate-800 mb-2">
+                    खुद के खुदा को खो करके जब, तुम जैसा कोई पाया था।</p>
+                <p
+                    class="leading-relaxed transition-all duration-500 text-xl md:text-2xl serif-font text-slate-800 mb-2">
+                    तुम में कितना रम जाऊँगी... ये भी समझ न आया था।</p>
+                <p
+                    class="leading-relaxed transition-all duration-500 text-xl md:text-2xl serif-font text-slate-800 mb-2">
+                    खुद के खुदा को खो करके जब, तुम जैसा कोई पाया था,</p>
+                <p
+                    class="leading-relaxed transition-all duration-500 text-xl md:text-2xl serif-font text-slate-800 mb-2">
+                    तुम में कितना रम जाऊँगी, ये भी समझ न आया था।</p>
+            </div>
+            <!-- Stanza 6 -->
+            <div class="animate-entry" style="animation-delay: 500ms">
+                <p
+                    class="leading-relaxed transition-all duration-500 text-xl md:text-2xl serif-font text-slate-800 mb-2">
+                    तुम थे मेरी प्रतिध्वनि, तुमसे वैसी उम्मीदें भी थीं।</p>
+                <p
+                    class="leading-relaxed transition-all duration-500 text-xl md:text-2xl serif-font text-slate-800 mb-2">
+                    बातें बचकानी भी हों, मेरे लिए तो सबकुछ थीं।</p>
+            </div>
+            <!-- Stanza 7 -->
+            <div class="animate-entry" style="animation-delay: 600ms">
+                <p
+                    class="leading-relaxed transition-all duration-500 text-xl md:text-2xl serif-font text-slate-800 mb-2">
+                    तुम मुझमें खोकर जाने क्यों, मुझको ही पाना भूल गए।</p>
+                <p
+                    class="leading-relaxed transition-all duration-500 text-xl md:text-2xl serif-font text-slate-800 mb-2">
+                    जहाँ श्वास-श्वास का बंधन था, खुद को समझाना भूल गए।</p>
+                <p class="h-4"></p>
+                <p
+                    class="leading-relaxed transition-all duration-500 text-xl md:text-2xl serif-font text-slate-800 mb-2">
+                    तुम मुझमें खोकर जाने क्यों, मुझको ही पाना भूल गए।</p>
+                <p
+                    class="leading-relaxed transition-all duration-500 text-xl md:text-2xl serif-font text-slate-800 mb-2">
+                    जहाँ श्वास-श्वास का बंधन था, खुद को समझाना भूल गए।</p>
+                <p
+                    class="leading-relaxed transition-all duration-500 text-xl md:text-2xl serif-font text-slate-800 mb-2">
+                    खुद को समझाने में तुमको, कुछ और समझ मैं जाता हूँ।</p>
+                <p
+                    class="leading-relaxed transition-all duration-500 text-xl md:text-2xl serif-font text-slate-800 mb-2">
+                    फिर खुद को, तुम बनकर मैं, तुम जैसे समझाता हूँ।</p>
+            </div>
+            <!-- Stanza 8 -->
+            <div class="animate-entry" style="animation-delay: 700ms">
+                <p
+                    class="leading-relaxed transition-all duration-500 text-xl md:text-2xl serif-font text-slate-800 mb-2">
+                    तुम्हें सोचकर जाने क्यों, मैं तुम जैसा हो जाता हूँ।</p>
+            </div>
+            <!-- Stanza 9 -->
+            <div class="animate-entry" style="animation-delay: 800ms">
+                <p
+                    class="leading-relaxed transition-all duration-500 text-xl md:text-2xl serif-font text-slate-800 mb-2">
+                    तुमको जीकर जाने क्यों, मैं पूरा सा हो जाता हूँ।</p>
+                <p
+                    class="leading-relaxed transition-all duration-500 text-xl md:text-2xl serif-font text-slate-800 mb-2">
+                    तुमको जीकर जाने क्यों, मैं पूरा सा हो जाता हूँ।</p>
+                <p
+                    class="leading-relaxed transition-all duration-500 text-xl md:text-2xl serif-font text-slate-800 mb-2">
+                    युगों-युगों के बंधन से, इस युग में संबल पाता हूँ।</p>
+            </div>
+            <!-- Stanza 10 -->
+            <div class="animate-entry" style="animation-delay: 900ms">
+                <p
+                    class="leading-relaxed transition-all duration-500 text-xl md:text-2xl serif-font text-slate-800 mb-2">
+                    फिर भी कहता आसान नहीं, इक दूजे को जी लेना।</p>
+                <p
+                    class="leading-relaxed transition-all duration-500 text-xl md:text-2xl serif-font text-slate-800 mb-2">
+                    फिर भी कहता आसान नहीं, इक दूजे को जी लेना।</p>
+                <p
+                    class="leading-relaxed transition-all duration-500 text-xl md:text-2xl serif-font text-slate-800 mb-2">
+                    चिर-संचित अंतर्द्वंद्वों को, अमृत समझ के पी लेना।</p>
+            </div>
+            <!-- Stanza 11 -->
+            <div class="animate-entry" style="animation-delay: 1000ms">
+                <p
+                    class="leading-relaxed transition-all duration-500 text-xl md:text-2xl serif-font text-slate-800 mb-2">
+                    तुम अंबर हो, मैं सागर, हमें बादल बनके मिलना है।</p>
+                <p
+                    class="leading-relaxed transition-all duration-500 text-xl md:text-2xl serif-font text-slate-800 mb-2">
+                    तुम पानी हो, मैं गागर, इक दूजे को शीतल करना है।</p>
+                <p
+                    class="leading-relaxed transition-all duration-500 text-xl md:text-2xl serif-font text-slate-800 mb-2">
+                    फिर भी कहता आसान नहीं, इक दूजे को जी लेना,</p>
+                <p
+                    class="leading-relaxed transition-all duration-500 text-xl md:text-2xl serif-font text-slate-800 mb-2">
+                    चिर-संचित अंतर्द्वंद्वों को, अमृत समझ के पी लेना।</p>
+            </div>
+            <!-- Stanza 12 -->
+            <div class="animate-entry" style="animation-delay: 1100ms">
+                <p
+                    class="leading-relaxed transition-all duration-500 text-xl md:text-2xl serif-font text-slate-800 mb-2">
+                    तुम अंबर हो, मैं सागर, हमें बादल बनके मिलना है।</p>
+                <p
+                    class="leading-relaxed transition-all duration-500 text-xl md:text-2xl serif-font text-slate-800 mb-2">
+                    तुम पानी हो, मैं गागर, इक दूजे को शीतल करना है।</p>
+            </div>
+            <!-- Stanza 13 -->
+            <div class="animate-entry" style="animation-delay: 1200ms">
+                <p
+                    class="leading-relaxed transition-all duration-500 text-xl md:text-2xl serif-font text-slate-800 mb-2">
+                    अनपढ़ ही रहे ये जग पढ़के, अब इक दूजे को पढ़ना है।</p>
+                <p
+                    class="leading-relaxed transition-all duration-500 text-xl md:text-2xl serif-font text-slate-800 mb-2">
+                    नियति से हमको कह करके, एक नई नियति को गढ़ना है।</p>
+            </div>
+            <!-- Stanza 14 -->
+            <div class="animate-entry" style="animation-delay: 1300ms">
+                <p
+                    class="leading-relaxed transition-all duration-500 text-xl md:text-2xl serif-font text-slate-800 mb-2">
+                    हम साथ हैं सो ये करतब भी, मैं सच होते दिखलाता हूँ।</p>
+                <p
+                    class="leading-relaxed transition-all duration-500 text-xl md:text-2xl serif-font text-slate-800 mb-2">
+                    हम साथ हैं सो ये करतब भी, मैं सच होते दिखलाता हूँ।</p>
+                <p
+                    class="leading-relaxed transition-all duration-500 text-xl md:text-2xl serif-font text-slate-800 mb-2">
+                    युगों-युगों के बंधन से, इस युग में संबल पाता हूँ।</p>
+            </div>
+            <!-- Stanza 15 -->
+            <div class="animate-entry" style="animation-delay: 1400ms">
+                <p
+                    class="leading-relaxed transition-all duration-500 text-xl md:text-2xl serif-font text-slate-800 mb-2">
+                    तुमको जीकर जाने क्यों, मैं पूरा सा हो जाता हूँ।</p>
+                <p
+                    class="leading-relaxed transition-all duration-500 text-xl md:text-2xl serif-font text-slate-800 mb-2">
+                    फिर खुद को, तुम बनकर मैं, तुम जैसे समझाता हूँ।</p>
+                <p
+                    class="leading-relaxed transition-all duration-500 text-xl md:text-2xl serif-font text-slate-800 mb-2">
+                    तुम्हें सोचकर जाने क्यों, मैं तुम जैसा हो जाता हूँ।</p>
+                <p
+                    class="leading-relaxed transition-all duration-500 text-xl md:text-2xl serif-font text-slate-800 mb-2">
+                    खुली आँख से देखूँ जो, वो सपना सा हो जाता हूँ।</p>
+            </div>
+            <!-- Stanza 16 -->
+            <div class="animate-entry" style="animation-delay: 1500ms">
+                <p
+                    class="leading-relaxed transition-all duration-500 text-xl md:text-2xl serif-font text-slate-800 mb-2">
+                    तुमसे मिलकर जाने क्यों, मैं अपना सा हो जाता हूँ।</p>
+                <p
+                    class="leading-relaxed transition-all duration-500 text-xl md:text-2xl serif-font text-slate-800 mb-2">
+                    मैं अपना सा हो जाता हूँ।</p>
+            </div>
+        </div>
+
+        <div class="pt-12 pb-6 flex flex-col items-center gap-3">
+            <div class="flex justify-center items-center gap-2 text-slate-400">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path
+                        d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+                </svg>
+                <span class="text-sm uppercase tracking-widest font-semibold">End of Recitation</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path
+                        d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+                </svg>
+            </div>
+
+            <a href="https://www.instagram.com/gauravverma.hi/" target="_blank" rel="noopener noreferrer"
+                class="mt-4 flex items-center gap-2 text-slate-600 hover:text-rose-500 transition-colors px-5 py-2.5 bg-white rounded-full border border-slate-200 shadow-sm hover:shadow-md group">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="text-rose-400 group-hover:scale-110 transition-transform">
+                    <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                    <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+                </svg>
+                <span class="text-sm font-medium">@gauravverma.hi</span>
+            </a>
+        </div>
+    </main>
+
+    <!-- Decorative Footer Graphics -->
+    <div class="fixed bottom-0 left-0 w-full pointer-events-none opacity-30">
+        <svg viewBox="0 0 1440 320" class="w-full h-auto">
+            <path fill="#e2e8f0" fillOpacity="1"
+                d="M0,224L48,213.3C96,203,192,181,288,181.3C384,181,480,203,576,224C672,245,768,267,864,261.3C960,256,1056,224,1152,202.7C1248,181,1344,171,1392,165.3L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z">
+            </path>
+        </svg>
+    </div>
+</body>
+
+</html>
