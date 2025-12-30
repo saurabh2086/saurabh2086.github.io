@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Jeffreys' Prior: A Case Study with Poisson</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- MathJax for LaTeX rendering -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Merriweather:ital,wght@0,400;0,700;1,400&display=swap"
+        rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: #334155;
+        }
+
+        h1,
+        h2,
+        h3 {
+            font-family: 'Merriweather', serif;
+        }
+
+        .math-block {
+            overflow-x: auto;
+            padding: 1rem 0;
+        }
+
+        .concept-card {
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .concept-card:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Custom scrollbar for code/math blocks */
+        ::-webkit-scrollbar {
+            height: 8px;
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        .home-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .home-button:hover {
+            background: #34495e;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+
+<body class="antialiased">
+    <a href="../../index.html" class="home-button">
+        <i class="fas fa-home"></i> ← Home
+    </a>
+
+    <!-- Navigation / Header -->
+    <header class="bg-slate-900 text-white py-12 px-6 shadow-lg">
+        <div class="max-w-4xl mx-auto text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">The Logic of Jeffreys' Prior</h1>
+            <p class="text-xl text-slate-300 font-light">Deriving the Uninformative Prior for the Poisson Distribution
+            </p>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-6 py-10 space-y-16">
+
+        <!-- 1. The Original Question -->
+        <section id="question" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
+            <div class="flex items-center gap-4 mb-6">
+                <div
+                    class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-xl">
+                    1</div>
+                <h2 class="text-2xl font-bold text-slate-800">The Problem Statement</h2>
+            </div>
+            <div class="prose max-w-none text-slate-600">
+                <p class="mb-4">We are tasked with finding the objective prior for a Poisson model. Specifically:</p>
+                <div class="bg-slate-50 p-6 rounded-lg border-l-4 border-blue-500 italic">
+                    <p class="mb-2"><strong>Given:</strong> A single observation \( y \) from a Poisson distribution
+                        with parameter \( \theta \):</p>
+                    $$ y | \theta \sim \text{Poisson}(\theta) $$
+                    <p class="mt-4 mb-2"><strong>Find:</strong></p>
+                    <ol class="list-decimal list-inside space-y-2 ml-4">
+                        <li>The <strong>Jeffreys' Prior</strong>, \( p(\theta) \).</li>
+                        <li>The values of \( \alpha \) and \( \beta \) such that a Gamma distribution \(
+                            \text{Gamma}(\alpha, \beta) \) matches this prior.</li>
+                    </ol>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Fisher Information -->
+        <section id="fisher-info" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
+            <div class="flex items-center gap-4 mb-6">
+                <div
+                    class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold text-xl">
+                    2</div>
+                <h2 class="text-2xl font-bold text-slate-800">Understanding Fisher Information</h2>
+            </div>
+
+            <div class="space-y-8">
+                <!-- 2.1 The Concept -->
+                <div>
+                    <h3 class="text-xl font-bold text-slate-700 mb-3">2.1 What was Fisher measuring?</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        Sir R.A. Fisher wanted to quantify "how much" an observation \( y \) tells us about a parameter
+                        \( \theta \).
+                        Imagine the <strong>Log-Likelihood function</strong>, \( \ell(\theta) = \ln f(y|\theta) \), as a
+                        hill.
+                    </p>
+                    <div class="grid md:grid-cols-2 gap-4 my-6">
+                        <div class="bg-green-50 p-4 rounded-lg border border-green-100">
+                            <h4 class="font-bold text-green-800 mb-2"><i class="fas fa-mountain mr-2"></i>Sharp Peak
+                                (High Curvature)</h4>
+                            <p class="text-sm text-green-700">The data points strongly to a specific value of \( \theta
+                                \). We have <strong>High Information</strong>.</p>
+                        </div>
+                        <div class="bg-orange-50 p-4 rounded-lg border border-orange-100">
+                            <h4 class="font-bold text-orange-800 mb-2"><i class="fas fa-water mr-2"></i>Flat Peak (Low
+                                Curvature)</h4>
+                            <p class="text-sm text-orange-700">The data is vague; many values of \( \theta \) are
+                                plausible. We have <strong>Low Information</strong>.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2.2 Derivation -->
+                <div>
+                    <h3 class="text-xl font-bold text-slate-700 mb-3">2.2 Derivation: Variance of the Score</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        Fisher defined information as the variance of the <strong>Score</strong>, \( U(\theta) \). The
+                        Score is the first derivative of the log-likelihood:
+                        $$ U(\theta) = \frac{\partial}{\partial \theta} \ln f(y|\theta) $$
+                    </p>
+                    <div class="bg-slate-50 rounded-lg p-6 border border-slate-100">
+                        <h4 class="font-semibold text-slate-800 mb-2">Why is it just the expected square?</h4>
+                        <p class="text-slate-600 mb-4">
+                            The variance is defined as \(\text{Var}(U) = E[U^2] - (E[U])^2\).
+                            Crucially, under standard regularity conditions, the expected value of the Score is
+                            <strong>zero</strong>. This is because the likelihood derivative "balances out" around the
+                            true parameter.
+                        </p>
+                        <div class="math-block text-center text-slate-800 mb-4">
+                            $$ E[U] = \int \frac{\partial \ln f}{\partial \theta} f(y|\theta) dy = \int \frac{1}{f}
+                            \frac{\partial f}{\partial \theta} f dy = \frac{\partial}{\partial \theta} \int f(y|\theta)
+                            dy = \frac{\partial}{\partial \theta}(1) = 0 $$
+                        </div>
+                        <p class="text-slate-600">
+                            Since \(E[U] = 0\), the variance simplifies perfectly:
+                        </p>
+                        <div class="math-block text-center text-slate-800 font-bold mt-2">
+                            $$ I(\theta) = \text{Var}(U) = E[U^2] - 0^2 = E\left[ \left( \frac{\partial}{\partial
+                            \theta} \ln f(y|\theta) \right)^2 \right] $$
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2.3 Second Derivative -->
+                <div>
+                    <h3 class="text-xl font-bold text-slate-700 mb-3">2.3 The Curvature Shortcut</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        Calculating variances can be tedious. Fisher proved that under standard conditions, the variance
+                        of the slope is equal to the negative of the expected <strong>curvature</strong> (second
+                        derivative).
+                        This gives us a much easier way to calculate Information.
+                    </p>
+                    <div class="bg-slate-50 rounded-lg p-6 border border-slate-100">
+                        <h4 class="font-semibold text-slate-800 mb-2">Proof: Connecting Variance to Curvature</h4>
+                        <p class="text-slate-600 mb-4">
+                            We start with the identity for the second derivative of the log-likelihood:
+                            $$ \frac{\partial^2}{\partial \theta^2} \ln f = \frac{\partial}{\partial \theta} \left(
+                            \frac{1}{f} \frac{\partial f}{\partial \theta} \right) = \frac{1}{f}\frac{\partial^2
+                            f}{\partial \theta^2} - \left(\frac{1}{f}\frac{\partial f}{\partial \theta}\right)^2 $$
+                        </p>
+                        <p class="text-slate-600 mb-4">
+                            Recognize that the last term is exactly the squared Score, \(U^2\). Now, take the
+                            expectation of both sides:
+                            $$ E\left[ \frac{\partial^2}{\partial \theta^2} \ln f \right] = \underbrace{\int
+                            \frac{\partial^2 f}{\partial \theta^2} dy}_{\text{Zero}} - E[U^2] $$
+                        </p>
+                        <p class="text-slate-600 mb-4">
+                            The integral term is zero because it is the second derivative of the total probability
+                            (which is always 1).
+                            $$ \int \frac{\partial^2 f}{\partial \theta^2} dy = \frac{\partial^2}{\partial \theta^2}
+                            \int f(y|\theta) dy = \frac{\partial^2}{\partial \theta^2}(1) = 0 $$
+                        </p>
+                        <p class="text-slate-600">
+                            Rearranging the terms gives us Fisher's famous result:
+                        </p>
+                        <div class="math-block text-center text-slate-800 font-bold mt-2">
+                            $$ I(\theta) = E[U^2] = - E\left[ \frac{\partial^2}{\partial \theta^2} \ln f(y|\theta)
+                            \right] $$
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Jeffreys' Insight -->
+        <section id="jeffreys-insight" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
+            <div class="flex items-center gap-4 mb-6">
+                <div
+                    class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold text-xl">
+                    3</div>
+                <h2 class="text-2xl font-bold text-slate-800">Why Jeffreys Used Fisher Information</h2>
+            </div>
+
+            <div class="space-y-6">
+                <p class="text-slate-600 leading-relaxed">
+                    Before Jeffreys, people often used the "Principle of Insufficient Reason," setting \( p(\theta) = 1
+                    \) (a flat line) to represent ignorance.
+                    Jeffreys realized this was flawed because of the <strong>Transformation Problem</strong>.
+                </p>
+
+                <div class="bg-amber-50 border-l-4 border-amber-400 p-5 rounded-r-lg">
+                    <h4 class="font-bold text-amber-800 mb-2">The "Jacobian Trap"</h4>
+                    <p class="text-amber-700 text-sm mb-3">
+                        If you are ignorant about the length of a cube's side (\(L\)), you imply knowledge about its
+                        volume (\(V=L^3\)).
+                        A flat prior on \(L\) mathematically forces a curved, informative prior on \(V\).
+                    </p>
+                    <p class="text-amber-700 text-sm font-semibold"> Ignorance should not depend on the units we choose.
+                    </p>
+                </div>
+
+                <div>
+                    <h3 class="text-xl font-bold text-slate-700 mb-3">3.1 The Derivation of Jeffreys' Prior</h3>
+                    <p class="text-slate-600 leading-relaxed">
+                        Jeffreys proposed defining the prior as proportional to the square root of Fisher Information:
+                    </p>
+                    <div class="math-block text-center my-4 text-lg">
+                        $$ p(\theta) \propto \sqrt{I(\theta)} $$
+                    </div>
+                    <p class="text-slate-600 leading-relaxed">
+                        <strong>Why?</strong> Because Fisher Information transforms with a squared Jacobian term when we
+                        change variables from \(\theta\) to \(\phi\):
+                        $$ I_\phi(\phi) = I_\theta(\theta) \left( \frac{d\theta}{d\phi} \right)^2 $$
+                        Taking the square root perfectly cancels the Jacobian required by probability theory, making the
+                        prior <strong>Invariant</strong>.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. The Solution -->
+        <section id="solution" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
+            <div class="flex items-center gap-4 mb-6">
+                <div
+                    class="w-10 h-10 rounded-full bg-teal-100 flex items-center justify-center text-teal-600 font-bold text-xl">
+                    4</div>
+                <h2 class="text-2xl font-bold text-slate-800">Step-by-Step Solution</h2>
+            </div>
+
+            <div class="space-y-8">
+                <!-- 4.1 Computing Prior -->
+                <div class="relative pl-8 border-l-2 border-slate-200">
+                    <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-slate-300"></div>
+                    <h3 class="text-lg font-bold text-slate-800 mb-2">Step 1: The Log-Likelihood</h3>
+                    <p class="text-slate-600 mb-2">For a Poisson distribution \( f(y|\theta) = \frac{\theta^y
+                        e^{-\theta}}{y!} \):</p>
+                    <div class="math-block text-slate-700">
+                        $$ \ell(\theta) = y \ln(\theta) - \theta - \ln(y!) $$
+                    </div>
+                </div>
+
+                <div class="relative pl-8 border-l-2 border-slate-200">
+                    <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-slate-300"></div>
+                    <h3 class="text-lg font-bold text-slate-800 mb-2">Step 2: The Score (First Derivative)</h3>
+                    <div class="math-block text-slate-700">
+                        $$ \frac{d}{d\theta} \ell(\theta) = \frac{y}{\theta} - 1 $$
+                    </div>
+                </div>
+
+                <div class="relative pl-8 border-l-2 border-slate-200">
+                    <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-slate-300"></div>
+                    <h3 class="text-lg font-bold text-slate-800 mb-2">Step 3: The Curvature (Second Derivative)</h3>
+                    <div class="math-block text-slate-700">
+                        $$ \frac{d^2}{d\theta^2} \ell(\theta) = -\frac{y}{\theta^2} $$
+                    </div>
+                </div>
+
+                <div class="relative pl-8 border-l-2 border-slate-200">
+                    <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-slate-300"></div>
+                    <h3 class="text-lg font-bold text-slate-800 mb-2">Step 4: Fisher Information</h3>
+                    <p class="text-slate-600 mb-2">Take the negative expectation. Recall that \( E[y] = \theta \).</p>
+                    <div class="math-block text-slate-700">
+                        $$ I(\theta) = -E\left[ -\frac{y}{\theta^2} \right] = \frac{E[y]}{\theta^2} =
+                        \frac{\theta}{\theta^2} = \frac{1}{\theta} $$
+                    </div>
+                </div>
+
+                <div class="bg-teal-50 p-6 rounded-lg border border-teal-100">
+                    <h3 class="text-lg font-bold text-teal-800 mb-2">Result: Jeffreys' Prior</h3>
+                    <div class="math-block text-center text-xl text-teal-900">
+                        $$ p(\theta) \propto \sqrt{\frac{1}{\theta}} = \theta^{-1/2} $$
+                    </div>
+                </div>
+
+                <!-- 4.2 Gamma Matching -->
+                <div class="pt-6 border-t border-slate-200">
+                    <h3 class="text-xl font-bold text-slate-700 mb-4">4.2 Derivation of \(\alpha\) and \(\beta\)</h3>
+                    <p class="text-slate-600 mb-4">We compare our result to the Gamma density kernel:</p>
+
+                    <div class="grid md:grid-cols-2 gap-8 text-center">
+                        <div class="bg-white p-4 shadow rounded-lg border">
+                            <h4 class="font-bold text-slate-500 uppercase text-sm mb-2">Jeffreys' Result</h4>
+                            $$ \theta^{-1/2} \cdot 1 $$
+                        </div>
+                        <div class="bg-white p-4 shadow rounded-lg border">
+                            <h4 class="font-bold text-slate-500 uppercase text-sm mb-2">Gamma Kernel</h4>
+                            $$ \theta^{\alpha - 1} e^{-\theta/\beta} $$
+                        </div>
+                    </div>
+
+                    <div class="mt-6 space-y-4">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-check-circle text-green-500 mt-1"></i>
+                            <div>
+                                <strong class="text-slate-800">Matching the Power:</strong>
+                                <p class="text-slate-600">\(\alpha - 1 = -1/2 \implies \mathbf{\alpha = 1/2}\)</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-check-circle text-green-500 mt-1"></i>
+                            <div>
+                                <strong class="text-slate-800">Matching the Exponential:</strong>
+                                <p class="text-slate-600">The \(e^{-\theta/\beta}\) term must vanish (become 1). This
+                                    happens as \(\beta\) grows infinitely large.</p>
+                                <p class="text-slate-600">\(\implies \mathbf{\beta \to \infty}\)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Conclusion -->
+        <section id="conclusion" class="bg-slate-800 text-slate-300 rounded-2xl shadow-lg p-8">
+            <h2 class="text-2xl font-bold text-white mb-4">Conclusion</h2>
+            <p class="leading-relaxed mb-4">
+                We have successfully derived that the Jeffreys' prior for a Poisson rate parameter \(\theta\) is
+                proportional to \(\theta^{-1/2}\).
+                This corresponds to a Gamma distribution where the shape parameter \(\alpha = 0.5\) and the scale
+                parameter \(\beta \to \infty\).
+            </p>
+            <p class="leading-relaxed">
+                This is known as an <strong>improper prior</strong> because the area under the curve \(\theta^{-1/2}\)
+                from \(0\) to \(\infty\) is infinite.
+                However, it yields a valid posterior distribution as soon as we observe even a single data point (\(y >
+                0\)).
+                This derivation beautifully demonstrates how calculus (Fisher Information) can act as a bridge between a
+                statistical model and its corresponding objective prior.
+            </p>
+        </section>
+
+    </main>
+
+    <footer class="text-center py-10 text-slate-400 text-sm">
+        <p>&copy; 2025 Study Assistant. Generated via Socratic Collaboration.</p>
+    </footer>
+
+</body>
+
+</html>
