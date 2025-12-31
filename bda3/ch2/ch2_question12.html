@@ -266,20 +266,65 @@
                 </div>
 
                 <div>
-                    <h3 class="text-xl font-bold text-slate-700 mb-3">3.1 The Derivation of Jeffreys' Prior</h3>
-                    <p class="text-slate-600 leading-relaxed">
-                        Jeffreys proposed defining the prior as proportional to the square root of Fisher Information:
+                    <h3 class="text-xl font-bold text-slate-700 mb-3">3.1 The Transformation Rule (The Proof)</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        To understand why Jeffreys' prior works, we must first see how Fisher Information behaves when
+                        we change our "lens" (the parameterization). Suppose we change from \(\theta\) to a new
+                        parameter \(\phi = g(\theta)\).
                     </p>
-                    <div class="math-block text-center my-4 text-lg">
-                        $$ p(\theta) \propto \sqrt{I(\theta)} $$
+                    <div class="bg-slate-50 rounded-lg p-6 border border-slate-100 mb-6">
+                        <h4 class="font-semibold text-slate-800 mb-2">Proof: \( I_\phi(\phi) = I_\theta(\theta) \left(
+                            \frac{d\theta}{d\phi} \right)^2 \)</h4>
+                        <p class="text-slate-600 mb-4">
+                            By the chain rule, the Score with respect to \(\phi\) is:
+                            $$ \frac{\partial \ln f}{\partial \phi} = \frac{\partial \ln f}{\partial \theta} \cdot
+                            \frac{d\theta}{d\phi} $$
+                        </p>
+                        <p class="text-slate-600 mb-4">
+                            Squaring both sides and taking the expectation:
+                            $$ E\left[ \left( \frac{\partial \ln f}{\partial \phi} \right)^2 \right] = E\left[ \left(
+                            \frac{\partial \ln f}{\partial \theta} \right)^2 \left( \frac{d\theta}{d\phi} \right)^2
+                            \right] $$
+                        </p>
+                        <p class="text-slate-600 mb-4">
+                            Since \(\frac{d\theta}{d\phi}\) is a deterministic function of the parameters (not the
+                            data), it pulls out of the expectation:
+                            $$ I_\phi(\phi) = I_\theta(\theta) \cdot \left( \frac{d\theta}{d\phi} \right)^2 $$
+                        </p>
+                        <p class="text-slate-600 italic">
+                            This "Squared Jacobian" is the key. It tells us that Fisher Information is not a scalar, but
+                            a 2-form (in differential geometry terms).
+                        </p>
                     </div>
-                    <p class="text-slate-600 leading-relaxed">
-                        <strong>Why?</strong> Because Fisher Information transforms with a squared Jacobian term when we
-                        change variables from \(\theta\) to \(\phi\):
-                        $$ I_\phi(\phi) = I_\theta(\theta) \left( \frac{d\theta}{d\phi} \right)^2 $$
-                        Taking the square root perfectly cancels the Jacobian required by probability theory, making the
-                        prior <strong>Invariant</strong>.
+                </div>
+
+                <div>
+                    <h3 class="text-xl font-bold text-slate-700 mb-3">3.2 Proving Invariance: The Jeffreys Solution</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        A prior \(p(\theta)\) is <strong>invariant</strong> if, when we change to \(\phi\), the new
+                        prior \(p(\phi)\) satisfies the fundamental probability identity:
+                        $$ p(\phi) = p(\theta) \left| \frac{d\theta}{d\phi} \right| $$
                     </p>
+                    <div class="bg-purple-50 rounded-lg p-6 border border-purple-100">
+                        <h4 class="font-semibold text-purple-800 mb-2">Why the Square Root?</h4>
+                        <p class="text-slate-600 mb-4">
+                            Jeffreys proposed \(p(\theta) \propto \sqrt{I(\theta)}\). Let's see what happens to
+                            \(p(\phi)\) under this rule:
+                        </p>
+                        <div class="math-block text-center text-slate-800 mb-4">
+                            $$ p(\phi) \propto \sqrt{I_\phi(\phi)} = \sqrt{I_\theta(\theta) \left( \frac{d\theta}{d\phi}
+                            \right)^2} = \sqrt{I_\theta(\theta)} \cdot \left| \frac{d\theta}{d\phi} \right| $$
+                        </div>
+                        <p class="text-slate-600">
+                            Substitute \(p(\theta)\) back in:
+                            $$ p(\phi) \propto p(\theta) \cdot \left| \frac{d\theta}{d\phi} \right| $$
+                        </p>
+                        <p class="mt-4 text-slate-700 font-semibold">
+                            Victory! The square root perfectly transforms just like a probability density should. This
+                            means a Jeffreys' prior represents the same state of "ignorance" regardless of how the
+                            problem is parameterized.
+                        </p>
+                    </div>
                 </div>
             </div>
         </section>
