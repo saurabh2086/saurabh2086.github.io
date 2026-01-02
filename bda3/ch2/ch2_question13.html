@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bayesian Analysis: Airline Fatalities</title>
+
+    <!-- MathJax for LaTeX -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            }
+        };
+    </script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <!-- Plotly.js -->
+    <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
+
+    <!-- Prism.js for Syntax Highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --bg-color: #f8fafc;
+            --text-color: #334155;
+            --code-bg: #1e1e1e;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.7;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 50px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            border-radius: 12px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            margin-top: 2rem;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            color: var(--accent-color);
+            margin-top: 1.5rem;
+        }
+
+        .question-box {
+            background-color: #f1f5f9;
+            padding: 25px;
+            border-left: 6px solid var(--accent-color);
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin: 25px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px;
+            text-align: center;
+        }
+
+        td {
+            border: 1px solid #e2e8f0;
+            padding: 10px;
+            text-align: center;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+
+        .formula-block {
+            background: #ffffff;
+            padding: 15px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+
+        .plot-container {
+            width: 100%;
+            height: 450px;
+            margin: 30px 0;
+            border: 1px solid #f1f5f9;
+            border-radius: 8px;
+        }
+
+        .discussion {
+            background-color: #fff9db;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #ffe066;
+            margin-top: 30px;
+        }
+
+        code[class*="language-"],
+        pre[class*="language-"] {
+            font-size: 14px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>Airline Fatalities: Bayesian Analysis</h1>
+
+        <section id="original-question">
+            <h2>1. Original Question & Data</h2>
+            <p>The following data shows the number of fatal accidents and passenger deaths on worldwide commercial
+                airlines from 1976 to 1985.</p>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Year</th>
+                            <th>Fatal Accidents ($y_i$)</th>
+                            <th>Passenger Deaths</th>
+                            <th>Death Rate (per 10<sup>8</sup> miles)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1976</td>
+                            <td>24</td>
+                            <td>734</td>
+                            <td>0.19</td>
+                        </tr>
+                        <tr>
+                            <td>1977</td>
+                            <td>25</td>
+                            <td>516</td>
+                            <td>0.12</td>
+                        </tr>
+                        <tr>
+                            <td>1978</td>
+                            <td>31</td>
+                            <td>754</td>
+                            <td>0.15</td>
+                        </tr>
+                        <tr>
+                            <td>1979</td>
+                            <td>31</td>
+                            <td>877</td>
+                            <td>0.16</td>
+                        </tr>
+                        <tr>
+                            <td>1980</td>
+                            <td>22</td>
+                            <td>814</td>
+                            <td>0.14</td>
+                        </tr>
+                        <tr>
+                            <td>1981</td>
+                            <td>21</td>
+                            <td>362</td>
+                            <td>0.06</td>
+                        </tr>
+                        <tr>
+                            <td>1982</td>
+                            <td>26</td>
+                            <td>764</td>
+                            <td>0.13</td>
+                        </tr>
+                        <tr>
+                            <td>1983</td>
+                            <td>20</td>
+                            <td>809</td>
+                            <td>0.13</td>
+                        </tr>
+                        <tr>
+                            <td>1984</td>
+                            <td>16</td>
+                            <td>223</td>
+                            <td>0.03</td>
+                        </tr>
+                        <tr>
+                            <td>1985</td>
+                            <td>22</td>
+                            <td>1066</td>
+                            <td>0.15</td>
+                        </tr>
+                        <tr style="font-weight: bold; background: #e2e8f0;">
+                            <td>Total</td>
+                            <td>238</td>
+                            <td>6919</td>
+                            <td>-</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="question-box">
+                <p><strong>Tasks:</strong></p>
+                <ol>
+                    <li>Assume accidents follow $\text{Poisson}(\theta)$. Find the posterior and a 95% predictive
+                        interval for 1986.</li>
+                    <li>Assume accidents follow $\text{Poisson}(x_i\theta)$ where $x_i$ is passenger miles. Find the 95%
+                        predictive interval for 1986 given $8 \times 10^{11}$ miles.</li>
+                    <li>Compare models for accidents versus passenger deaths.</li>
+                </ol>
+            </div>
+        </section>
+
+        <section id="part-a">
+            <h2>2. Solution: Model (a) - Constant Rate</h2>
+            <h3>Analytical Formulas</h3>
+            <div class="formula-block">
+                <p>Likelihood: $p(y|\theta) = \prod_{i=1}^{n} \frac{\theta^{y_i} e^{-\theta}}{y_i!}$</p>
+                <p>With a non-informative prior $p(\theta) \propto \theta^{-1}$, the posterior is:</p>
+                $$\theta | y \sim \text{Gamma}(\sum y_i, n)$$
+                <p>For $n=10$ and $\sum y_i = 238$, the posterior is $\text{Gamma}(\alpha=238, \beta=10)$.</p>
+                <p>This implies $E[\theta|y] = 23.8$ and $\text{Var}(\theta|y) = 2.38$.</p>
+            </div>
+
+            <h3>Python Implementation</h3>
+            <pre><code class="language-python">
+import numpy as np
+from scipy.stats import gamma, poisson
+
+# Data
+y = np.array([24, 25, 31, 31, 22, 21, 26, 20, 16, 22])
+n = len(y)
+
+# Posterior parameters: Gamma(shape, rate)
+# Note: scipy uses scale = 1/rate
+alpha_post = np.sum(y)
+beta_post = n
+
+# Simulation for predictive interval
+# 1. Sample theta from posterior
+theta_samples = gamma.rvs(alpha_post, scale=1/beta_post, size=10000)
+# 2. Sample y_new from Poisson(theta)
+y_pred = poisson.rvs(theta_samples)
+
+print(f"95% Predictive Interval (a): {np.quantile(y_pred, [0.025, 0.975])}")
+        </code></pre>
+
+            <div id="plotA" class="plot-container"></div>
+        </section>
+
+        <section id="part-b">
+            <h2>3. Solution: Model (b) - Exposure Adjusted</h2>
+            <h3>Analytical Formulas</h3>
+            <div class="formula-block">
+                <p>Exposure $x_i = \text{Passenger Deaths} / \text{Death Rate}$. Let's define $\theta$ as the rate per
+                    $10^{11}$ miles.</p>
+                <p>Model: $y_i \sim \text{Poisson}(x_i \theta)$. Posterior becomes:</p>
+                $$\theta | y \sim \text{Gamma}(\sum y_i, \sum x_i)$$
+                <p>Predictive for 1986: $\tilde{y} \sim \text{Poisson}(x_{1986} \theta)$ where $x_{1986} = 8 \times
+                    10^{11}$ miles.</p>
+            </div>
+
+            <h3>Python Implementation</h3>
+            <pre><code class="language-python">
+# Calculate exposure (Miles in 10^8 units)
+deaths = np.array([734, 516, 754, 877, 814, 362, 764, 809, 223, 1066])
+rates = np.array([0.19, 0.12, 0.15, 0.16, 0.14, 0.06, 0.13, 0.13, 0.03, 0.15])
+x = deaths / rates
+
+# Total exposure (sum of passenger miles flown 1976-1985)
+sum_x = np.sum(x)
+
+# Posterior for rate per mile unit
+alpha_post_b = np.sum(y)
+beta_post_b = sum_x
+
+# Predictive for 1986 (8 * 10^11 miles = 8000 units of 10^8)
+x_86 = 8000
+theta_samples_b = gamma.rvs(alpha_post_b, scale=1/beta_post_b, size=10000)
+y_pred_b = poisson.rvs(theta_samples_b * x_86)
+
+print(f"95% Predictive Interval (b): {np.quantile(y_pred_b, [0.025, 0.975])}")
+        </code></pre>
+
+            <div id="plotB" class="plot-container"></div>
+        </section>
+
+        <section id="discussion">
+            <h2>4. Model Comparison & Discussion</h2>
+            <div class="discussion">
+                <p><strong>Is the Poisson model reasonable?</strong></p>
+                <ul>
+                    <li><strong>For Fatal Accidents:</strong> Yes. Accidents are generally rare, independent events. The
+                        variance of the data ($V \approx 22$) is very close to the mean ($M = 23.8$), which aligns
+                        perfectly with the Poisson assumption that $E[X] = \text{Var}(X)$.</li>
+                    <li><strong>For Passenger Deaths:</strong> No. Deaths are highly dependent (if the plane goes down,
+                        everyone is affected). This leads to <strong>overdispersion</strong>. For example, in 1985,
+                        there were 1066 deaths from 22 accidents (~48 per accident), while in 1984 there were 223 deaths
+                        from 16 accidents (~14 per accident). The high variance in cluster size makes a simple Poisson
+                        model for deaths invalid.</li>
+                </ul>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Logic Correction: Use Log-Gamma for large Alpha stability
+        function logGamma(z) {
+            const g = 7;
+            const p = [0.99999999999980993, 676.5203681218851, -1259.1392167224028, 771.32342877765313, -176.61502916214059, 12.507343278686905, -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7];
+            if (z < 0.5) return Math.log(Math.PI) - Math.log(Math.sin(Math.PI * z)) - logGamma(1 - z);
+            z -= 1;
+            let x = p[0];
+            for (let i = 1; i < g + 2; i++) x += p[i] / (z + i);
+            let t = z + g + 0.5;
+            return 0.5 * Math.log(2 * Math.PI) + (z + 0.5) * Math.log(t) - t + Math.log(x);
+        }
+
+        function gammaPDF(x, alpha, beta) {
+            if (x <= 0) return 0;
+            // Calculation in log space to avoid overflow/underflow
+            let logVal = alpha * Math.log(beta) + (alpha - 1) * Math.log(x) - (beta * x) - logGamma(alpha);
+            return Math.exp(logVal);
+        }
+
+        // Plot A: Posterior for Theta (Gamma(238, 10))
+        const alpha = 238;
+        const beta = 10;
+        const xPoints = [];
+        const yPoints = [];
+        const mean = alpha / beta;
+        const std = Math.sqrt(alpha) / beta;
+
+        for (let x = mean - 4 * std; x <= mean + 4 * std; x += 0.1) {
+            xPoints.push(x);
+            yPoints.push(gammaPDF(x, alpha, beta));
+        }
+
+        Plotly.newPlot('plotA', [{
+            x: xPoints, y: yPoints,
+            type: 'scatter', mode: 'lines',
+            fill: 'tozeroy',
+            name: 'Posterior p(θ|y)',
+            line: { color: '#3498db', width: 3 }
+        }], {
+            title: 'Corrected Posterior Distribution: θ ~ Gamma(238, 10)',
+            xaxis: { title: 'Accident Rate (θ: Accidents/Year)', range: [15, 33] },
+            yaxis: { title: 'Probability Density' }
+        });
+
+        // Plot B: Realistic Predictive Samples for (a)
+        // Generating 5000 samples for the predictive histogram
+        const predictiveSamples = [];
+        for (let i = 0; i < 5000; i++) {
+            // Simple Box-Muller for Gamma sampling + Poisson
+            // Gamma(238, 10) is approx Normal(23.8, 1.54^2)
+            const theta_sample = 23.8 + (Math.sqrt(23.8) / 10) * (Math.sqrt(-2 * Math.log(Math.random())) * Math.cos(2 * Math.PI * Math.random()));
+            // Poisson(theta) is approx Normal(theta, theta^0.5)
+            const y_sample = Math.round(theta_sample + Math.sqrt(theta_sample) * (Math.sqrt(-2 * Math.log(Math.random())) * Math.cos(2 * Math.PI * Math.random())));
+            predictiveSamples.push(y_sample);
+        }
+
+        Plotly.newPlot('plotB', [{
+            x: predictiveSamples,
+            type: 'histogram',
+            marker: { color: '#2ecc71', line: { color: 'white', width: 0.5 } },
+            xbins: { size: 1 },
+            opacity: 0.8
+        }], {
+            title: 'Posterior Predictive Distribution for 1986',
+            xaxis: { title: 'Predicted Number of Accidents', dtick: 2 },
+            yaxis: { title: 'Frequency' }
+        });
+    </script>
+
+</body>
+
+</html>
