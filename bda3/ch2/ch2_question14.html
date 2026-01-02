@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bayesian Normal Model: Detailed Solution</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- MathJax Configuration -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            options: {
+                renderActions: {
+                    addMenu: []
+                }
+            }
+        };
+    </script>
+    <!-- Load MathJax -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+            background-color: #f8fafc;
+        }
+
+        .math-block {
+            background-color: #ffffff;
+            border-left: 4px solid #3b82f6;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 0.5rem 0.5rem 0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+
+        .logic-step {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: white;
+            border-radius: 0.75rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        h2 {
+            color: #1e293b;
+            font-weight: 700;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 0.5rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .home-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .home-button:hover {
+            background: #34495e;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+
+<body class="text-slate-800 p-4 md:p-8">
+    <a href="../../index.html" class="home-button">
+        <i class="fas fa-home"></i> ← Home
+    </a>
+
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <header class="mb-12 text-center">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4">
+                Bayesian Inference: The Conjugate Normal Model
+            </h1>
+            <p class="text-lg text-slate-600">Educational Module: Deriving Posterior Mean and Variance</p>
+        </header>
+
+        <!-- Problem Statement Section -->
+        <section class="mb-12 bg-blue-50 border border-blue-200 rounded-xl p-6 md:p-8">
+            <h2 class="text-blue-900 border-blue-200 mt-0">Problem Statement</h2>
+            <div class="space-y-4 italic text-slate-700">
+                <p>
+                    <strong>(a)</strong> For the Normal likelihood with known variance $\sigma^2$ and a Normal prior
+                    $\mu \sim N(\mu_0, \tau_0^2)$, derive the posterior mean $\mu_n$ and posterior variance $\tau_n^2$
+                    as shown in Equations (2.11) and (2.12):
+                </p>
+                <div class="math-block text-center">
+                    $$\mu_n = \frac{\frac{1}{\tau_0^2}\mu_0 + \frac{n}{\sigma^2}\bar{y}}{\frac{1}{\tau_0^2} +
+                    \frac{n}{\sigma^2}} \quad \text{and} \quad \frac{1}{\tau_n^2} = \frac{1}{\tau_0^2} +
+                    \frac{n}{\sigma^2}$$
+                </div>
+                <p>
+                    <strong>(b)</strong> Demonstrate the <em>sequential updating</em> property: show that the posterior
+                    distribution obtained from all $n$ observations at once is the same as the distribution obtained by
+                    updating one observation at a time.
+                </p>
+            </div>
+        </section>
+
+        <!-- Solution Section -->
+        <section>
+            <h2 class="text-2xl mb-6">Detailed Solution</h2>
+
+            <!-- Part A -->
+            <div class="logic-step">
+                <h3 class="font-bold text-xl text-blue-700 mb-3">Part (a): Deriving the Posterior</h3>
+                <p class="mb-4">We begin with Bayes' Theorem: the posterior is proportional to the likelihood times the
+                    prior.</p>
+
+                <div class="math-block">
+                    $$p(\mu | y) \propto p(y | \mu) \times p(\mu)$$
+                </div>
+
+                <p class="font-semibold mt-4">1. Define the components:</p>
+                <ul class="list-disc ml-8 mb-4">
+                    <li><strong>Likelihood:</strong> $p(y | \mu) \propto \exp\left( -\frac{n}{2\sigma^2}(\bar{y} -
+                        \mu)^2 \right)$</li>
+                    <li><strong>Prior:</strong> $p(\mu) \propto \exp\left( -\frac{1}{2\tau_0^2}(\mu - \mu_0)^2 \right)$
+                    </li>
+                </ul>
+
+                <p class="font-semibold mt-4">2. Combine the exponents:</p>
+                <p class="mb-2">We look at the expression inside the exponential function:</p>
+                <div class="math-block">
+                    $$-\frac{1}{2} \left[ \frac{1}{\tau_0^2}(\mu - \mu_0)^2 + \frac{n}{\sigma^2}(\bar{y} - \mu)^2
+                    \right]$$
+                </div>
+
+                <p class="font-semibold mt-4">3. Completing the Square:</p>
+                <p class="mb-2">To find the new mean and variance, we expand the quadratic terms in $\mu$:</p>
+                <div class="math-block">
+                    $$\text{Exp} = \mu^2 \left( \frac{1}{\tau_0^2} + \frac{n}{\sigma^2} \right) - 2\mu \left(
+                    \frac{\mu_0}{\tau_0^2} + \frac{n\bar{y}}{\sigma^2} \right) + \text{const}$$
+                </div>
+
+                <p class="mt-4">In a Normal distribution $N(\mu_n, \tau_n^2)$, the quadratic form is
+                    $\frac{1}{\tau_n^2}\mu^2 - \frac{2\mu_n}{\tau_n^2}\mu$. By matching the coefficients:</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                    <div class="p-4 bg-slate-50 border border-slate-200 rounded">
+                        <p class="font-bold text-sm text-slate-500 uppercase">Posterior Precision (2.12)</p>
+                        $$\frac{1}{\tau_n^2} = \frac{1}{\tau_0^2} + \frac{n}{\sigma^2}$$
+                    </div>
+                    <div class="p-4 bg-slate-50 border border-slate-200 rounded">
+                        <p class="font-bold text-sm text-slate-500 uppercase">Posterior Mean (2.11)</p>
+                        $$\mu_n = \frac{\frac{1}{\tau_0^2}\mu_0 + \frac{n}{\sigma^2}\bar{y}}{\frac{1}{\tau_0^2} +
+                        \frac{n}{\sigma^2}}$$
+                    </div>
+                </div>
+            </div>
+
+            <!-- Part B -->
+            <div class="logic-step">
+                <h3 class="font-bold text-xl text-blue-700 mb-3">Part (b): Sequential Updating</h3>
+                <p class="mb-4">This demonstrates that Bayesian inference is internally consistent. If we observe $y_1$
+                    and then $y_2$, the posterior of $y_1$ becomes the prior for $y_2$.</p>
+
+                <p class="font-semibold mt-4">Step 1: Update with $y_1$</p>
+                <div class="math-block">
+                    $$\frac{1}{\tau_1^2} = \frac{1}{\tau_0^2} + \frac{1}{\sigma^2}, \quad \mu_1 =
+                    \frac{\frac{1}{\tau_0^2}\mu_0 + \frac{1}{\sigma^2}y_1}{\frac{1}{\tau_0^2} + \frac{1}{\sigma^2}}$$
+                </div>
+
+                <p class="font-semibold mt-4">Step 2: Use $N(\mu_1, \tau_1^2)$ as prior for $y_2$</p>
+                <p>The new precision after $y_2$ is:</p>
+                <div class="math-block">
+                    $$\frac{1}{\tau_2^2} = \frac{1}{\tau_1^2} + \frac{1}{\sigma^2} = \left( \frac{1}{\tau_0^2} +
+                    \frac{1}{\sigma^2} \right) + \frac{1}{\sigma^2} = \frac{1}{\tau_0^2} + \frac{2}{\sigma^2}$$
+                </div>
+                <p>The new mean after $y_2$ is:</p>
+                <div class="math-block">
+                    $$\mu_2 = \frac{\frac{1}{\tau_1^2}\mu_1 + \frac{1}{\sigma^2}y_2}{\frac{1}{\tau_1^2} +
+                    \frac{1}{\sigma^2}} = \frac{(\frac{\mu_0}{\tau_0^2} + \frac{y_1}{\sigma^2}) +
+                    \frac{y_2}{\sigma^2}}{\frac{1}{\tau_0^2} + \frac{2}{\sigma^2}} = \frac{\frac{\mu_0}{\tau_0^2} +
+                    \frac{y_1 + y_2}{\sigma^2}}{\frac{1}{\tau_0^2} + \frac{2}{\sigma^2}}$$
+                </div>
+
+                <p class="mt-4">Note that $\frac{y_1 + y_2}{2} = \bar{y}$ for $n=2$. Thus, the terms match the batch
+                    formulas exactly. By induction, this holds for any $n$.</p>
+            </div>
+        </section>
+
+        <!-- Conceptual Summary -->
+        <section class="mb-12 bg-slate-900 text-slate-100 rounded-xl p-8">
+            <h2 class="text-white border-slate-700 mt-0">Key Takeaway</h2>
+            <p class="mb-4 text-slate-300">
+                The posterior mean is a <strong>weighted average</strong> of the prior mean and the sample mean. The
+                weights are determined by the <em>precisions</em> (inverse variances):
+            </p>
+            <ul class="space-y-2 text-slate-300">
+                <li>As $n \to \infty$, the data dominates: $\mu_n \to \bar{y}$.</li>
+                <li>As $\tau_0^2 \to \infty$ (uninformative prior), $\mu_n \to \bar{y}$.</li>
+                <li>As $\sigma^2 \to \infty$ (noisy data), $\mu_n \to \mu_0$.</li>
+            </ul>
+        </section>
+
+        <footer class="text-center text-slate-500 text-sm mt-8 mb-12">
+            &copy; 2026 Educational Resource | Bayesian Statistics Foundations
+        </footer>
+    </div>
+
+</body>
+
+</html>
