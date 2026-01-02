@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bayesian Cauchy Inference Guide</title>
+    <!-- MathJax for LaTeX Equations -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <!-- Plotly.js for Scientific Interactive Charts -->
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <!-- Tailwind for Styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .code-block {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            overflow-x: auto;
+            margin-bottom: 1.5rem;
+            border: 1px solid #333;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .comment {
+            color: #6a9955;
+        }
+
+        .keyword {
+            color: #569cd6;
+        }
+
+        .string {
+            color: #ce9178;
+        }
+
+        .home-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .home-button:hover {
+            background: #34495e;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 font-sans leading-relaxed">
+    <a href="../../index.html" class="home-button">
+        <i class="fas fa-home"></i> ←Home
+    </a>
+    <div class="max-w-4xl mx-auto py-12 px-6">
+        <!-- Header -->
+        <header class="mb-12 border-b pb-8">
+            <h1 class="text-4xl font-bold text-slate-800 mb-4">Bayesian Cauchy Parameter Estimation</h1>
+            <p class="text-lg text-slate-600">A step-by-step guide to Grid Approximation and Posterior Predictive
+                Distributions.</p>
+        </header>
+
+        <!-- The Problem Statement -->
+        <section class="mb-12">
+            <h2 class="text-2xl font-semibold mb-4 text-indigo-700">The Problem</h2>
+            <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+                <p class="mb-4">Suppose \( y_1, \dots, y_5 \) are independent samples from a Cauchy distribution with
+                    unknown center \( \theta \) and known scale 1:</p>
+                <div class="bg-slate-100 p-6 rounded mb-4 text-center">
+                    \[ p(y_i | \theta) = \frac{1}{\pi (1 + (y_i - \theta)^2)} \]
+                </div>
+                <p class="mb-4">Assume that the prior distribution for \( \theta \) is uniform on [0, 100]. Given the
+                    observations \( y = \{43, 44, 45, 46.5, 47.5\} \):</p>
+                <ul class="list-disc ml-8 space-y-2 text-slate-700">
+                    <li><strong>(a)</strong> Compute the unnormalized posterior density, \( p(\theta)p(y|\theta) \), on
+                        a grid of points \( \theta = 0, \frac{1}{m}, \frac{2}{m}, \dots, 100 \) for some large integer
+                        \( m \). Using the grid approximation, compute and plot the normalized posterior density, \(
+                        p(\theta | y) \), as a function of \( \theta \).</li>
+                    <li><strong>(b)</strong> Sample 1,000 draws of \( \theta \) from the posterior distribution.</li>
+                    <li><strong>(c)</strong> Use the 1,000 samples from part (b) to obtain 1,000 samples from the
+                        predictive distribution for a future observation, \( y_6 \), and plot a histogram of these
+                        samples.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Part A -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-semibold mb-4 text-indigo-700">Part A: Grid Approximation</h2>
+            <p class="mb-4">We discretize the parameter space \( \theta \) into a grid to compute the unnormalized
+                posterior \( p(y|\theta)p(\theta) \). Working in the <strong>log-scale</strong> prevents numerical
+                underflow.</p>
+
+            <div class="bg-slate-50 border-l-4 border-indigo-400 p-4 mb-4 italic text-sm">
+                \[ \ln(p(\theta|y)) \propto \sum_{i=1}^n \ln(p(y_i|\theta)) + \ln(p(\theta)) \]
+            </div>
+
+            <div class="code-block">
+                <pre><code><span class="keyword">import</span> numpy <span class="keyword">as</span> np
+<span class="keyword">from</span> scipy.stats <span class="keyword">import</span> cauchy
+
+data = np.array([<span style="color: #b5cea8">43, 44, 45, 46.5, 47.5</span>])
+m = <span style="color: #b5cea8">100</span> <span class="comment"># Grid density (0.01 step)</span>
+theta_grid = np.linspace(<span style="color: #b5cea8">0</span>, <span style="color: #b5cea8">100</span>, <span style="color: #b5cea8">100</span> * m + <span style="color: #b5cea8">1</span>)
+
+<span class="comment"># Log-Prior: Constant (0 in log space) inside [0, 100]</span>
+log_prior = np.zeros_like(theta_grid)
+
+<span class="comment"># Log-Likelihood: Sum of log-densities for each data point</span>
+log_likelihood = np.zeros_like(theta_grid)
+<span class="keyword">for</span> y <span class="keyword">in</span> data:
+    log_likelihood += cauchy.logpdf(y, loc=theta_grid, scale=<span style="color: #b5cea8">1</span>)
+
+<span class="comment"># Calculate Posterior and Normalize</span>
+unnormalized_log_posterior = log_likelihood + log_prior
+<span class="comment"># Stable Exp: subtract max before exponentiating</span>
+posterior = np.exp(unnormalized_log_posterior - np.max(unnormalized_log_posterior))
+posterior /= np.sum(posterior)</code></pre>
+            </div>
+
+            <div id="posteriorPlot" class="bg-white p-4 rounded-lg shadow-md mb-6 h-[400px]"></div>
+        </section>
+
+        <!-- Part B -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-semibold mb-4 text-indigo-700">Part B: Sampling from the Posterior</h2>
+            <p class="mb-4">We draw samples from our grid based on the calculated probabilities to represent the
+                distribution \( p(\theta|y) \).</p>
+
+            <div class="code-block">
+                <pre><code><span class="comment"># Draw 1,000 samples from the grid based on posterior probabilities</span>
+samples_theta = np.random.choice(theta_grid, size=<span style="color: #b5cea8">1000</span>, p=posterior)</code></pre>
+            </div>
+
+            <div id="samplingPlot" class="bg-white p-4 rounded-lg shadow-md mb-6 h-[400px]"></div>
+        </section>
+
+        <!-- Part C -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-semibold mb-4 text-indigo-700">Part C: Posterior Predictive Distribution</h2>
+            <p class="mb-4">We sample \( y_6 \sim \text{Cauchy}(\theta, 1) \) for each sampled \( \theta \). This
+                accounts for both parameter uncertainty and model noise.</p>
+
+            <div class="bg-slate-50 border-l-4 border-indigo-400 p-4 mb-4 italic text-sm">
+                \[ p(y_6 | y) = \int p(y_6 | \theta) p(\theta | y) d\theta \]
+            </div>
+
+            <div class="code-block">
+                <pre><code><span class="comment"># For each sampled theta, draw one future observation y6</span>
+predictive_y6 = cauchy.rvs(loc=samples_theta, scale=<span style="color: #b5cea8">1</span>)</code></pre>
+            </div>
+
+            <div id="predictivePlot" class="bg-white p-4 rounded-lg shadow-md h-[400px]"></div>
+        </section>
+
+        <footer class="text-center text-slate-500 text-sm mt-12 border-t pt-6">
+            Built for Study Assistant - Visualizing Bayesian Computational Logic.
+        </footer>
+    </div>
+
+    <script>
+        // Data and Simulation Logic
+        const dataPoints = [43, 44, 45, 46.5, 47.5];
+        const thetaGrid = [];
+        for (let i = 40; i <= 50; i += 0.02) thetaGrid.push(i);
+
+        function cauchyPDF(y, loc, scale) {
+            return 1 / (Math.PI * scale * (1 + Math.pow((y - loc) / scale, 2)));
+        }
+
+        const posteriorValues = thetaGrid.map(theta => {
+            let likelihood = 1;
+            dataPoints.forEach(y => { likelihood *= cauchyPDF(y, theta, 1); });
+            return likelihood;
+        });
+
+        const sumPost = posteriorValues.reduce((a, b) => a + b, 0);
+        const normalizedPosterior = posteriorValues.map(v => v / sumPost);
+
+        // Sampling Logic
+        const samples = [];
+        for (let i = 0; i < 1000; i++) {
+            let r = Math.random();
+            let accum = 0;
+            for (let j = 0; j < thetaGrid.length; j++) {
+                accum += normalizedPosterior[j];
+                if (r <= accum) { samples.push(thetaGrid[j]); break; }
+            }
+        }
+
+        // Predictive Simulation (Cauchy around samples)
+        const predictive = samples.map(s => s + Math.tan(Math.PI * (Math.random() - 0.5)));
+
+        // --- Plotly Charts ---
+
+        const layoutConfig = {
+            margin: { t: 40, r: 30, l: 50, b: 40 },
+            hovermode: 'closest'
+        };
+
+        Plotly.newPlot('posteriorPlot', [{
+            x: thetaGrid,
+            y: normalizedPosterior,
+            type: 'scatter',
+            mode: 'lines',
+            fill: 'tozeroy',
+            name: 'Posterior p(θ|y)',
+            line: { color: '#6366f1', width: 3 }
+        }], { ...layoutConfig, title: 'Posterior Density (Grid Approximation)' });
+
+        Plotly.newPlot('samplingPlot', [{
+            x: samples,
+            type: 'histogram',
+            nbinsx: 40,
+            marker: { color: '#10b981', line: { color: 'white', width: 0.5 } },
+            name: 'Samples'
+        }], { ...layoutConfig, title: '1,000 Samples of θ' });
+
+        const filteredPredictive = predictive.filter(v => v > 35 && v < 55);
+        Plotly.newPlot('predictivePlot', [{
+            x: filteredPredictive,
+            type: 'histogram',
+            nbinsx: 50,
+            marker: { color: '#f59e0b', line: { color: 'white', width: 0.5 } },
+            name: 'y6 predictions'
+        }], {
+            ...layoutConfig,
+            title: 'Posterior Predictive Distribution (y6)',
+            xaxis: { title: 'Value of y6', range: [35, 55] }
+        });
+    </script>
+</body>
+
+</html>
