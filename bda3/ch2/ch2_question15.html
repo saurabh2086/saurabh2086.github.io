@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beta Distribution: Moments and Derivations</title>
+    <!-- Tailwind CSS for modern styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- MathJax for high-quality LaTeX rendering -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+        }
+
+        .math-block {
+            overflow-x: auto;
+            padding: 1rem 0;
+        }
+
+        .home-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .home-button:hover {
+            background: #34495e;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+    <a href="../../index.html" class="home-button">
+        <i class="fas fa-home"></i> ← Home
+    </a>
+    <div class="max-w-4xl mx-auto px-4 py-12">
+        <!-- Header Section -->
+        <header class="mb-12 border-b border-slate-200 pb-8">
+            <h1 class="text-4xl font-bold text-slate-800 mb-4 text-center sm:text-left">Beta Distribution Analysis</h1>
+            <p class="text-lg text-slate-600 italic text-center sm:text-left">Step-by-step derivation of moments, mean,
+                and variance.</p>
+        </header>
+
+        <!-- The Original Problem -->
+        <section class="mb-12 bg-white rounded-xl shadow-sm border border-slate-200 p-8">
+            <h2 class="text-2xl font-semibold text-blue-700 mb-4 flex items-center">
+                <span class="mr-2">Problem Statement</span>
+            </h2>
+            <div class="prose max-w-none text-slate-700">
+                <p>Assume the result from standard advanced calculus that:</p>
+                <div class="math-block">
+                    $$\int_{0}^{1} u^{\alpha-1}(1 - u)^{\beta-1} du = \frac{\Gamma(\alpha)\Gamma(\beta)}{\Gamma(\alpha +
+                    \beta)}$$
+                </div>
+                <p>If \( Z \) has a <strong>Beta distribution</strong> with parameters \( \alpha \) and \( \beta \),
+                    find \( E[Z^m(1 - Z)^n] \) for any non-negative integers \( m \) and \( n \). Hence, derive the mean
+                    and variance of \( Z \).</p>
+            </div>
+        </section>
+
+        <!-- Solution Steps -->
+        <div class="space-y-8">
+
+            <!-- Step 1 -->
+            <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-8">
+                <h3 class="text-xl font-bold text-slate-800 mb-4">Step 1: Finding \( E[Z^m(1 - Z)^n] \)</h3>
+                <p class="mb-4 text-slate-600">The Probability Density Function (PDF) of a Beta distribution is defined
+                    as:</p>
+                <div class="math-block bg-slate-50 rounded-lg p-4 mb-4">
+                    $$f_Z(z) = \frac{1}{B(\alpha, \beta)} z^{\alpha-1}(1-z)^{\beta-1}, \quad 0 \leq z \leq 1$$
+                </div>
+                <p class="mb-4 text-slate-600">Using the Law of the Unconscious Statistician (LOTUS), we have:</p>
+                <div class="math-block">
+                    $$E[Z^m(1 - Z)^n] = \int_{0}^{1} z^m(1 - z)^n \left[ \frac{1}{B(\alpha, \beta)}
+                    z^{\alpha-1}(1-z)^{\beta-1} \right] dz$$
+                </div>
+                <p class="mb-4 text-slate-600">Combine the terms with common bases:</p>
+                <div class="math-block">
+                    $$E[Z^m(1 - Z)^n] = \frac{1}{B(\alpha, \beta)} \int_{0}^{1} z^{(\alpha+m)-1}(1-z)^{(\beta+n)-1} dz$$
+                </div>
+                <p class="mb-4 text-slate-600 text-sm italic">Note that the integral above is the Beta function \(
+                    B(\alpha+m, \beta+n) \).</p>
+                <div class="p-4 bg-blue-50 border-l-4 border-blue-500 rounded text-blue-900 font-mono">
+                    $$E[Z^m(1 - Z)^n] = \frac{B(\alpha+m, \beta+n)}{B(\alpha, \beta)} =
+                    \frac{\Gamma(\alpha+m)\Gamma(\beta+n)}{\Gamma(\alpha+m+\beta+n)} \cdot
+                    \frac{\Gamma(\alpha+\beta)}{\Gamma(\alpha)\Gamma(\beta)}$$
+                </div>
+            </section>
+
+            <!-- Step 2 -->
+            <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-8">
+                <h3 class="text-xl font-bold text-slate-800 mb-4">Step 2: Deriving the Mean \( E[Z] \)</h3>
+                <p class="mb-4 text-slate-600">The mean is the expected value where \( m = 1 \) and \( n = 0 \):</p>
+                <div class="math-block">
+                    $$E[Z] = \frac{\Gamma(\alpha+1)\Gamma(\beta)}{\Gamma(\alpha+\beta+1)} \cdot
+                    \frac{\Gamma(\alpha+\beta)}{\Gamma(\alpha)\Gamma(\beta)}$$
+                </div>
+                <p class="mb-4 text-slate-600">Using the recursive property \( \Gamma(x+1) = x\Gamma(x) \):</p>
+                <div class="math-block">
+                    $$E[Z] = \frac{\alpha\Gamma(\alpha)\Gamma(\beta)}{(\alpha+\beta)\Gamma(\alpha+\beta)} \cdot
+                    \frac{\Gamma(\alpha+\beta)}{\Gamma(\alpha)\Gamma(\beta)} = \frac{\alpha}{\alpha + \beta}$$
+                </div>
+                <div class="mt-4 p-4 bg-green-50 rounded-lg text-center">
+                    <span class="text-green-800 font-bold uppercase tracking-wider text-xs">Result: Mean</span>
+                    <p class="text-2xl font-semibold text-green-900">\( \mu = \frac{\alpha}{\alpha + \beta} \)</p>
+                </div>
+            </section>
+
+            <!-- Step 3 -->
+            <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-8">
+                <h3 class="text-xl font-bold text-slate-800 mb-4">Step 3: Deriving the Variance \( Var(Z) \)</h3>
+                <p class="mb-2 text-slate-600">First, we find the second moment \( E[Z^2] \) by setting \( m = 2, n = 0
+                    \):</p>
+                <div class="math-block">
+                    $$E[Z^2] = \frac{\Gamma(\alpha+2)\Gamma(\beta)}{\Gamma(\alpha+\beta+2)} \cdot
+                    \frac{\Gamma(\alpha+\beta)}{\Gamma(\alpha)\Gamma(\beta)} =
+                    \frac{\alpha(\alpha+1)}{(\alpha+\beta)(\alpha+\beta+1)}$$
+                </div>
+                <p class="mb-2 text-slate-600">The variance is calculated as \( Var(Z) = E[Z^2] - (E[Z])^2 \):</p>
+                <div class="math-block">
+                    $$Var(Z) = \frac{\alpha(\alpha+1)}{(\alpha+\beta)(\alpha+\beta+1)} - \left(
+                    \frac{\alpha}{\alpha+\beta} \right)^2$$
+                </div>
+                <p class="mb-4 text-slate-600">After algebraic simplification (finding a common denominator):</p>
+                <div
+                    class="p-4 bg-indigo-50 border-l-4 border-indigo-500 rounded text-indigo-900 font-mono text-center">
+                    $$Var(Z) = \frac{\alpha\beta}{(\alpha+\beta)^2(\alpha+\beta+1)}$$
+                </div>
+            </section>
+
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-16 text-center text-slate-500 text-sm">
+            <p>Mathematical documentation generated for educational purposes.</p>
+        </footer>
+    </div>
+
+</body>
+
+</html>
