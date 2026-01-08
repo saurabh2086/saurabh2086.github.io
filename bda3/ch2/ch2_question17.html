@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bayesian Posterior Intervals: Solution & Explanation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Merriweather:ital,wght@0,300;0,400;0,700;1,400&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        h1,
+        h2,
+        h3 {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .math-text {
+            font-family: 'Merriweather', serif;
+        }
+
+        .step-card {
+            transition: all 0.3s ease;
+        }
+
+        .step-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .home-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .home-button:hover {
+            background: #34495e;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 text-gray-800 leading-relaxed">
+    <a href="../../index.html" class="home-button">
+        <i class="fas fa-home"></i> ← Home
+    </a>
+    <!-- Header / Hero Section -->
+    <header class="bg-indigo-700 text-white py-12 shadow-lg">
+        <div class="max-w-4xl mx-auto px-6">
+            <h1 class="text-3xl md:text-4xl font-bold mb-4">Bayesian Posterior Intervals</h1>
+            <p class="text-indigo-100 text-lg md:text-xl font-light">
+                Understanding Non-Informative Priors and the Non-Invariance of HPD Regions
+            </p>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-6 py-10 space-y-12">
+
+        <!-- Section 1: Original Question -->
+        <section class="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
+            <div class="bg-gray-100 px-6 py-4 border-b border-gray-200">
+                <h2 class="text-xl font-bold text-gray-700 flex items-center">
+                    <svg class="w-6 h-6 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                        </path>
+                    </svg>
+                    The Problem Statement
+                </h2>
+            </div>
+            <div class="p-8">
+                <p class="mb-4">
+                    <strong>Context:</strong> This problem explores the properties of non-informative prior
+                    distributions and how intervals change when we transform variables.
+                </p>
+                <div class="bg-blue-50 border-l-4 border-blue-500 p-6 rounded-r">
+                    <p class="mb-4"><strong>(a)</strong> Suppose that the prior density for the standard deviation,
+                        \(\sigma\), is \(p(\sigma) \propto \sigma^{-1}\). Show that the implied prior density for the
+                        variance, \(\sigma^2\), is \(p(\sigma^2) \propto \sigma^{-2}\).</p>
+                    <p><strong>(b)</strong> Show that the <strong>Highest Posterior Density (HPD)</strong> interval is
+                        not invariant to transformation. Specifically, show that if \([a, b]\) is the HPD interval for
+                        \(\sigma\), then \([a^2, b^2]\) is <em>not</em> the HPD interval for \(\sigma^2\).</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Explanation -->
+        <section>
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 pb-2 border-b border-gray-200">Understanding the Question
+            </h2>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="space-y-4">
+                    <h3 class="text-lg font-semibold text-indigo-600">What is Part (a) asking?</h3>
+                    <p class="text-gray-600">
+                        It asks us to perform a <strong>Change of Variables</strong>. In probability, if you change your
+                        unit of measurement (e.g., from meters to meters squared), the shape of the probability curve
+                        changes. We need to mathematically prove how the density curve transforms from \(\sigma\) to
+                        \(\sigma^2\).
+                    </p>
+                </div>
+                <div class="space-y-4">
+                    <h3 class="text-lg font-semibold text-indigo-600">What is Part (b) asking?</h3>
+                    <p class="text-gray-600">
+                        It deals with the "most probable" range of values, known as the <strong>HPD Interval</strong>.
+                        The question claims that you cannot simply square the endpoints of the best \(\sigma\) interval
+                        to get the best \(\sigma^2\) interval. We need to prove this by showing a contradiction arises
+                        if we try.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Solution Part A -->
+        <section class="space-y-6">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4 pb-2 border-b border-gray-200">Part (a): Solution</h2>
+
+            <div class="bg-white rounded-xl shadow p-6 step-card border-l-4 border-indigo-400">
+                <h3 class="text-lg font-bold text-gray-800 mb-2">Step 1: Identify the Transformation</h3>
+                <p class="text-gray-600 mb-2">We define our new variable \(\theta\) as the variance:</p>
+                <div class="bg-gray-50 p-3 rounded text-center math-text">
+                    \[ \theta = \sigma^2 \]
+                </div>
+                <p class="text-gray-600 mt-2">Conversely, we can express \(\sigma\) in terms of \(\theta\):</p>
+                <div class="bg-gray-50 p-3 rounded text-center math-text">
+                    \[ \sigma = \sqrt{\theta} = \theta^{1/2} \]
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow p-6 step-card border-l-4 border-indigo-500">
+                <h3 class="text-lg font-bold text-gray-800 mb-2">Step 2: Calculate the Derivative (Jacobian)</h3>
+                <p class="text-gray-600 mb-2">The change of variables formula requires the derivative of the
+                    <em>old</em> variable with respect to the <em>new</em> variable:
+                </p>
+                <div class="bg-gray-50 p-3 rounded text-center math-text">
+                    \[ \frac{d\sigma}{d\theta} = \frac{d}{d\theta}(\theta^{1/2}) = \frac{1}{2}\theta^{-1/2} =
+                    \frac{1}{2\sqrt{\theta}} = \frac{1}{2\sigma} \]
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow p-6 step-card border-l-4 border-indigo-600">
+                <h3 class="text-lg font-bold text-gray-800 mb-2">Step 3: Apply the Density Formula</h3>
+                <p class="text-gray-600 mb-2">We use the standard formula relating densities:</p>
+                <div class="bg-gray-50 p-3 rounded text-center math-text">
+                    \[ p_{\theta}(\theta) = p_{\sigma}(\sigma) \left| \frac{d\sigma}{d\theta} \right| \]
+                </div>
+                <p class="text-gray-600 mt-4 mb-2">Substitute the given prior \(p(\sigma) \propto \sigma^{-1}\) and our
+                    derivative:</p>
+                <div class="bg-gray-50 p-3 rounded text-center math-text">
+                    \[ p(\theta) \propto \sigma^{-1} \cdot \left| \frac{1}{2\sigma} \right| \]
+                    \[ p(\theta) \propto \frac{1}{2\sigma^2} \]
+                </div>
+                <p class="text-gray-600 mt-2">Since we are dealing with proportionality, we drop the constant
+                    \(\frac{1}{2}\):</p>
+                <div class="text-center font-bold text-xl text-indigo-700 py-2">
+                    \[ p(\sigma^2) \propto \sigma^{-2} \]
+                </div>
+                <p class="text-green-600 font-semibold text-center">Q.E.D. (Part a)</p>
+            </div>
+        </section>
+
+        <!-- Section 4: Solution Part B -->
+        <section class="space-y-6">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4 pb-2 border-b border-gray-200">Part (b): Solution</h2>
+
+            <div class="bg-white rounded-xl shadow p-6 step-card border-l-4 border-pink-400">
+                <h3 class="text-lg font-bold text-gray-800 mb-2">Step 1: Define the HPD Condition</h3>
+                <p class="text-gray-600 mb-2">An HPD (Highest Posterior Density) interval \([a, b]\) is defined as the
+                    shortest interval containing a specific probability. A key property is that the probability density
+                    at the endpoints must be equal:</p>
+                <div class="bg-gray-50 p-3 rounded text-center math-text">
+                    \[ p_{\sigma}(a) = p_{\sigma}(b) \]
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow p-6 step-card border-l-4 border-pink-500">
+                <h3 class="text-lg font-bold text-gray-800 mb-2">Step 2: Test the Transformed Interval</h3>
+                <p class="text-gray-600 mb-2">If HPD regions were invariant, the HPD interval for the variance
+                    \(\sigma^2\) would simply be \([a^2, b^2]\). This would require the density of the variance to be
+                    equal at these new endpoints:</p>
+                <div class="bg-gray-50 p-3 rounded text-center math-text">
+                    \[ p_{\sigma^2}(a^2) = p_{\sigma^2}(b^2) \]
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow p-6 step-card border-l-4 border-pink-600">
+                <h3 class="text-lg font-bold text-gray-800 mb-2">Step 3: Proof by Contradiction</h3>
+                <p class="text-gray-600 mb-2">From Part (a), we know the relationship between the densities is:</p>
+                <div class="bg-gray-50 p-3 rounded text-center math-text">
+                    \[ p_{\sigma^2}(\theta) \propto \frac{p_{\sigma}(\sqrt{\theta})}{\sqrt{\theta}} \]
+                </div>
+                <p class="text-gray-600 mt-4 mb-2">Substituting our endpoints \(a^2\) and \(b^2\):</p>
+                <div class="bg-gray-50 p-3 rounded text-center math-text">
+                    \[ p_{\sigma^2}(a^2) \propto \frac{p_{\sigma}(a)}{a} \quad \text{and} \quad p_{\sigma^2}(b^2)
+                    \propto \frac{p_{\sigma}(b)}{b} \]
+                </div>
+                <p class="text-gray-600 mt-4 mb-2">If we assume the new interval IS an HPD interval, then
+                    \(p_{\sigma^2}(a^2) = p_{\sigma^2}(b^2)\), which implies:</p>
+                <div class="bg-gray-50 p-3 rounded text-center math-text">
+                    \[ \frac{p_{\sigma}(a)}{a} = \frac{p_{\sigma}(b)}{b} \]
+                </div>
+                <p class="text-gray-600 mt-4 mb-2">However, we started with the condition that \(p_{\sigma}(a) =
+                    p_{\sigma}(b)\). Canceling these terms leaves:</p>
+                <div class="bg-red-50 p-4 rounded text-center border border-red-200 math-text text-red-700 font-bold">
+                    \[ \frac{1}{a} = \frac{1}{b} \implies a = b \]
+                </div>
+                <p class="text-gray-600 mt-4">
+                    <strong>Contradiction:</strong> A valid interval must have \(a < b\). Since \(a=b\) is impossible
+                        for an interval, our assumption was wrong. </p>
+            </div>
+        </section>
+
+        <!-- Conclusion -->
+        <section class="bg-gray-800 text-white rounded-xl shadow-lg p-8 mt-12 text-center">
+            <h2 class="text-2xl font-bold mb-4">Conclusion</h2>
+            <p class="text-gray-300 text-lg max-w-2xl mx-auto">
+                The Highest Posterior Density (HPD) region is <strong>not invariant</strong> under non-linear
+                transformations. While the logic of probability holds, the "shape" of the distribution stretches and
+                compresses, changing which regions have the "highest" density.
+            </p>
+            <div class="mt-6 inline-block bg-gray-700 px-4 py-2 rounded-full text-sm font-semibold tracking-wide">
+                Always recalculate HPDs after transformation.
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="text-center text-gray-500 py-8 text-sm">
+        <p>&copy; 2024 Study Assistant. Generated for Educational Purposes.</p>
+    </footer>
+
+</body>
+
+</html>
