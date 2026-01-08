@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poisson-Gamma Conjugate Derivation</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --bg-color: #f8f9fa;
+            --text-color: #333;
+            --card-bg: #ffffff;
+            --accent-color: #e67e22;
+            --code-bg: #f1f3f5;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            border-bottom: 3px solid var(--secondary-color);
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .problem-statement {
+            background-color: #fff3e0;
+            border-left: 6px solid var(--accent-color);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            font-style: italic;
+        }
+
+        section {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        h2 {
+            color: var(--secondary-color);
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+
+        .math-block {
+            background: var(--code-bg);
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 15px 0;
+            border-left: 3px solid var(--secondary-color);
+        }
+
+        .highlight {
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+
+        .conclusion-box {
+            background-color: #e8f4fd;
+            border-radius: 8px;
+            padding: 25px;
+            margin-top: 30px;
+            border: 1px solid var(--secondary-color);
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            font-size: 0.9em;
+            color: #7f8c8d;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                margin: 10px;
+                padding: 10px;
+            }
+        }
+
+        .home-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .home-button:hover {
+            background: #34495e;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <a href="../../index.html" class="home-button">
+            <i class="fas fa-home"></i> ← Home
+        </a>
+        <header>
+            <h1>Poisson-Gamma Conjugacy</h1>
+            <p>A Detailed Step-by-Step Bayesian Solution</p>
+        </header>
+
+        <div class="problem-statement">
+            <strong>Problem:</strong> Show that if \( y_i \) are independent observations from a Poisson distribution
+            parameterized by rate \( \theta \) and exposure \( x_i \), and we assume a \( \text{Gamma}(\alpha, \beta) \)
+            prior for \( \theta \), then the posterior distribution for \( \theta \) is also a Gamma distribution.
+            Derive the parameters for this posterior.
+        </div>
+
+        <section>
+            <h2>Step 1: Define the Likelihood</h2>
+            <p>The Poisson PMF for a single observation \( y_i \) with mean \( \lambda_i = x_i \theta \) is:</p>
+            <div class="math-block">
+                \[ P(y_i|\theta, x_i) = \frac{(x_i \theta)^{y_i} e^{-x_i \theta}}{y_i!} \]
+            </div>
+            <p>For \( n \) independent observations, the joint likelihood is the product of individual PMFs. We drop
+                terms that do not depend on \( \theta \) to find the likelihood kernel:</p>
+            <div class="math-block">
+                \[ L(\theta) \propto \prod_{i=1}^n \theta^{y_i} e^{-x_i \theta} = \theta^{\sum_{i=1}^n y_i} e^{-\theta
+                \sum_{i=1}^n x_i} \]
+            </div>
+        </section>
+
+        <section>
+            <h2>Step 2: Define the Prior</h2>
+            <p>We assume a Gamma distribution as the prior for our parameter \( \theta \). Its PDF kernel is defined by
+                shape \( \alpha \) and rate \( \beta \):</p>
+            <div class="math-block">
+                \[ P(\theta) \propto \theta^{\alpha-1} e^{-\beta \theta} \]
+            </div>
+        </section>
+
+        <section>
+            <h2>Step 3: Apply Bayes' Theorem</h2>
+            <p>The posterior is proportional to the likelihood multiplied by the prior:</p>
+            <div class="math-block">
+                \[ P(\theta|y, x) \propto \text{Likelihood}(\theta) \times \text{Prior}(\theta) \]
+                \[ P(\theta|y, x) \propto \left( \theta^{\sum y_i} e^{-\theta \sum x_i} \right) \times \left(
+                \theta^{\alpha-1} e^{-\beta \theta} \right) \]
+            </div>
+        </section>
+
+        <section>
+            <h2>Step 4: Combine and Simplify</h2>
+            <p>We group terms with the same base (\( \theta \) and \( e \)) by adding their exponents:</p>
+            <div class="math-block">
+                \[ P(\theta|y, x) \propto \theta^{(\alpha + \sum y_i) - 1} e^{-\theta (\beta + \sum x_i)} \]
+            </div>
+        </section>
+
+        <section>
+            <h2>Final Result</h2>
+            <p>The resulting kernel matches the form of a Gamma distribution kernel. We can identify the new parameters
+                by inspection:</p>
+            <div class="math-block">
+                \[ \theta|y, x \sim \text{Gamma}(\alpha^*, \beta^*) \]
+                \[ \text{where } \alpha^* = \alpha + \sum_{i=1}^n y_i \quad \text{and} \quad \beta^* = \beta +
+                \sum_{i=1}^n x_i \]
+            </div>
+        </section>
+
+        <div class="conclusion-box">
+            <h2>Final Conclusion</h2>
+            <p>This derivation demonstrates the mathematical elegance of <strong>conjugate priors</strong>. By choosing
+                a Gamma prior for a Poisson likelihood, we ensure that the posterior remains within the Gamma family,
+                allowing for straightforward, closed-form updates.</p>
+            <p>The logic of the update is intuitive:</p>
+            <ul>
+                <li>The <strong>Shape Parameter (\(\alpha\))</strong> is updated by the total number of events observed:
+                    <span class="highlight">\(\sum y_i\)</span>.
+                </li>
+                <li>The <strong>Rate Parameter (\(\beta\))</strong> is updated by the total amount of exposure: <span
+                        class="highlight">\(\sum x_i\)</span>.</li>
+            </ul>
+            <p>As the total exposure increases, our uncertainty decreases and the posterior mean converges toward the
+                observed rate in the data, illustrating the Bayesian transition from prior belief to evidence-based
+                conclusion.</p>
+        </div>
+
+        <div class="footer">
+            Generated for Study Assistant Session &bull; January 2026
+        </div>
+    </div>
+
+</body>
+
+</html>
