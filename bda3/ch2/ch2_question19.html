@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bayesian Statistics Solution</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- KaTeX CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+
+    <!-- KaTeX JS -->
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
+    <style>
+        /* Visual Styles for Headers */
+        .section-header {
+            background-color: #f8fafc;
+            /* slate-50 */
+            border-bottom: 1px solid #f1f5f9;
+            /* slate-100 */
+        }
+
+        /* Math Styling Defaults */
+        .math-inline {
+            color: #1e293b;
+            /* slate-800 */
+            padding: 0 0.25rem;
+        }
+
+        /* FIX: Override math color inside dark containers */
+        .dark-container .math-inline {
+            color: white !important;
+        }
+
+        .math-block-container {
+            overflow-x: auto;
+            padding: 0.75rem 0;
+            display: flex;
+            justify-content: center;
+            margin: 1rem 0;
+        }
+
+        .math-block-wrapper {
+            background-color: #f8fafc;
+            /* slate-50 */
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.25rem;
+            border: 1px solid #e2e8f0;
+            /* slate-200 */
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            min-width: min-content;
+            text-align: center;
+        }
+
+        .home-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .home-button:hover {
+            background: #34495e;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+
+<body class="bg-slate-100 min-h-screen font-sans text-slate-700 py-8 px-4 sm:px-6">
+    <a href="../../index.html" class="home-button">
+        <i class="fas fa-home"></i> ← Home
+    </a>
+    <div class="max-w-3xl mx-auto">
+
+        <!-- Header -->
+        <div class="text-center mb-10">
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 mb-2">
+                Question 19
+            </h1>
+            <p class="text-slate-500 font-medium">
+                Conjugate Priors & Sample Size Determination
+            </p>
+        </div>
+
+        <!-- 1. Original Problem -->
+        <div class="section mb-6 bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="section-header w-full flex items-center justify-between p-4 text-left">
+                <div class="flex items-center gap-3">
+                    <div class="p-2 bg-blue-100 text-blue-700 rounded-lg">
+                        <!-- Lightbulb Icon -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M15 14c.2-1 .7-1.7 1.5-2.5 1-1 1.5-2 1.5-3.5A6 6 0 0 0 6 8c0 1 .5 2 1.5 3.5 1 .9 1.5 1.6 1.5 2.5" />
+                            <path d="M9 18h6" />
+                            <path d="M10 22h4" />
+                        </svg>
+                    </div>
+                    <h2 class="text-lg font-bold text-slate-800">Original Problem</h2>
+                </div>
+            </div>
+
+            <div class="content">
+                <div class="p-6 border-t border-slate-100 prose max-w-none">
+                    <p class="mb-4">
+                        Let <span class="math-inline">\(y\)</span> denote the number of hours that a light bulb works
+                        before burning out.
+                        Assume that <span class="math-inline">\(y\)</span> has an exponential density with rate <span
+                            class="math-inline">\(\theta > 0\)</span>:
+                    </p>
+                    <div class="math-block-container">
+                        <div class="math-block-wrapper">
+                            \[f(y|\theta) = \theta e^{-\theta y}, \quad \text{for } y > 0\]
+                        </div>
+                    </div>
+                    <p class="mb-4">
+                        Suppose that the prior distribution for <span class="math-inline">\(\theta\)</span> is a Gamma
+                        distribution with shape parameter
+                        <span class="math-inline">\(\alpha\)</span> and rate parameter <span
+                            class="math-inline">\(\beta\)</span>:
+                    </p>
+                    <div class="math-block-container">
+                        <div class="math-block-wrapper">
+                            \[\pi(\theta) = \frac{\beta^\alpha}{\Gamma(\alpha)} \theta^{\alpha-1}e^{-\beta\theta}, \quad
+                            \text{for } \theta > 0\]
+                        </div>
+                    </div>
+
+                    <h3 class="font-bold text-slate-900 mt-6 mb-2 text-sm uppercase tracking-wider">The Tasks:</h3>
+                    <ul class="list-none space-y-3 pl-0">
+                        <li class="flex gap-3">
+                            <span class="font-bold text-blue-600">(a)</span>
+                            <span>Show that the posterior distribution for <span class="math-inline">\(\theta\)</span>
+                                is a Gamma distribution with parameters <span class="math-inline">\(\alpha + n\)</span>
+                                and <span class="math-inline">\(\beta + \sum y_i\)</span>.</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="font-bold text-blue-600">(b)</span>
+                            <span>Show that the mean time to failure <span class="math-inline">\(\phi =
+                                    1/\theta\)</span> has an Inverse-Gamma distribution with parameters <span
+                                    class="math-inline">\(\alpha\)</span> and <span
+                                    class="math-inline">\(\beta\)</span>.</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="font-bold text-blue-600">(c)</span>
+                            <span>Suppose the prior predictive Coefficient of Variation (CV) for <span
+                                    class="math-inline">\(\theta\)</span> is 0.5. How many light bulbs must be tested so
+                                that the posterior CV is 0.1?</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Solution Part A -->
+        <div class="section mb-6 bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="section-header w-full flex items-center justify-between p-4 text-left">
+                <div class="flex items-center gap-3">
+                    <div class="p-2 bg-blue-100 text-blue-700 rounded-lg">
+                        <!-- Variable Icon (Simulated with math symbols icon) -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 21v-7" />
+                            <path d="M4 10V3" />
+                            <path d="M12 21v-9" />
+                            <path d="M12 8V3" />
+                            <path d="M20 21v-5" />
+                            <path d="M20 12V3" />
+                            <path d="M1 14h6" />
+                            <path d="M9 8h6" />
+                            <path d="M17 16h6" />
+                        </svg>
+                    </div>
+                    <h2 class="text-lg font-bold text-slate-800">Solution Part (a): Conjugacy Proof</h2>
+                </div>
+            </div>
+
+            <div class="content">
+                <div class="p-6 border-t border-slate-100 space-y-6">
+                    <div>
+                        <h3 class="font-bold text-slate-900 mb-2">1. The Likelihood Function</h3>
+                        <p>
+                            Since the observations are independent and identically distributed (i.i.d.), the likelihood
+                            for a sample
+                            <span class="math-inline">\(y = (y_1, ..., y_n)\)</span> is the product of individual
+                            densities:
+                        </p>
+                        <div class="math-block-container">
+                            <div class="math-block-wrapper">
+                                \[L(\theta|y) = \prod_{i=1}^n f(y_i|\theta) = \prod_{i=1}^n (\theta e^{-\theta y_i}) =
+                                \theta^n e^{-\theta \sum_{i=1}^n y_i}\]
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border-l-4 border-blue-200 pl-4 py-1">
+                        <h3 class="font-bold text-slate-900 mb-2">2. Bayes' Theorem</h3>
+                        <p>
+                            The posterior is proportional to the Likelihood times the Prior. We only need to track the
+                            "kernel"
+                            (the terms involving <span class="math-inline">\(\theta\)</span>).
+                        </p>
+                        <div class="math-block-container">
+                            <div class="math-block-wrapper">
+                                \[p(\theta|y) \propto L(\theta|y) \times \pi(\theta)\]
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="font-bold text-slate-900 mb-2">3. Derivation</h3>
+                        <p>Substituting the kernels:</p>
+                        <div class="math-block-container">
+                            <div class="math-block-wrapper">
+                                \[p(\theta|y) \propto (\theta^n e^{-\theta \sum y_i}) \times (\theta^{\alpha-1}
+                                e^{-\beta\theta})\]
+                            </div>
+                        </div>
+                        <p>Combine terms with base <span class="math-inline">\(\theta\)</span> and terms in the
+                            exponent:</p>
+                        <div class="math-block-container">
+                            <div class="math-block-wrapper">
+                                \[p(\theta|y) \propto \theta^{(\alpha+n)-1} e^{-\theta(\beta + \sum y_i)}\]
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-emerald-50 p-4 rounded-lg border border-emerald-100">
+                        <h3 class="font-bold text-emerald-800 mb-2 flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                            Conclusion
+                        </h3>
+                        <p class="text-emerald-900">
+                            This kernel matches the form of a Gamma distribution <span
+                                class="math-inline">\(\theta^{A-1}e^{-B\theta}\)</span> where:
+                        </p>
+                        <div class="flex justify-center gap-8 mt-3 flex-wrap">
+                            <div class="bg-white px-3 py-1 rounded border border-emerald-200 text-emerald-800">
+                                <span class="math-inline">\(A = \alpha' = \alpha + n\)</span>
+                            </div>
+                            <div class="bg-white px-3 py-1 rounded border border-emerald-200 text-emerald-800">
+                                <span class="math-inline">\(B = \beta' = \beta + \sum y_i\)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Solution Part B -->
+        <div class="section mb-6 bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="section-header w-full flex items-center justify-between p-4 text-left">
+                <div class="flex items-center gap-3">
+                    <div class="p-2 bg-blue-100 text-blue-700 rounded-lg">
+                        <!-- Variable Icon -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 21v-7" />
+                            <path d="M4 10V3" />
+                            <path d="M12 21v-9" />
+                            <path d="M12 8V3" />
+                            <path d="M20 21v-5" />
+                            <path d="M20 12V3" />
+                            <path d="M1 14h6" />
+                            <path d="M9 8h6" />
+                            <path d="M17 16h6" />
+                        </svg>
+                    </div>
+                    <h2 class="text-lg font-bold text-slate-800">Solution Part (b): Transformation</h2>
+                </div>
+            </div>
+
+            <div class="content">
+                <div class="p-6 border-t border-slate-100 space-y-6">
+                    <p>
+                        We define a new variable <span class="math-inline">\(\phi = 1/\theta\)</span>. To find the PDF
+                        of <span class="math-inline">\(\phi\)</span>,
+                        we use the <strong>Change of Variables</strong> technique.
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                            <h4 class="font-bold text-slate-700 text-sm uppercase mb-2">Step 1: Inverse Mapping</h4>
+                            <p>Express old variable in terms of new:</p>
+                            <div class="math-block-container">
+                                <div class="math-block-wrapper">
+                                    \[\theta = 1/\phi = \phi^{-1}\]
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                            <h4 class="font-bold text-slate-700 text-sm uppercase mb-2">Step 2: Jacobian</h4>
+                            <p>Calculate the absolute derivative:</p>
+                            <div class="math-block-container">
+                                <div class="math-block-wrapper">
+                                    \[\left| \frac{d\theta}{d\phi} \right| = \left| -\phi^{-2} \right| =
+                                    \frac{1}{\phi^2}\]
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="font-bold text-slate-900 mb-2">Step 3: Substitution</h3>
+                        <p>Start with the Gamma density for <span class="math-inline">\(\theta\)</span>:</p>
+                        <div class="math-block-container">
+                            <div class="math-block-wrapper">
+                                \[f(\theta) \propto \theta^{\alpha-1} e^{-\beta\theta}\]
+                            </div>
+                        </div>
+                        <p>Replace <span class="math-inline">\(\theta\)</span> with <span
+                                class="math-inline">\(1/\phi\)</span> and multiply by the Jacobian:</p>
+                        <div class="math-block-container">
+                            <div class="math-block-wrapper">
+                                \[f(\phi) \propto \left(\frac{1}{\phi}\right)^{\alpha-1} e^{-\beta(1/\phi)} \cdot
+                                \frac{1}{\phi^2}\]
+                            </div>
+                        </div>
+                        <p>Simplify the powers of <span class="math-inline">\(\phi\)</span>:</p>
+                        <div class="math-block-container">
+                            <div class="math-block-wrapper">
+                                \[f(\phi) \propto \phi^{-(\alpha-1)} \cdot \phi^{-2} \cdot e^{-\beta/\phi}\]
+                            </div>
+                        </div>
+                        <div class="math-block-container">
+                            <div class="math-block-wrapper">
+                                \[f(\phi) \propto \phi^{-(\alpha+1)} e^{-\beta/\phi}\]
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-emerald-50 p-4 rounded-lg border border-emerald-100">
+                        <h3 class="font-bold text-emerald-800 mb-2 flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                            Conclusion
+                        </h3>
+                        <p class="text-emerald-900">
+                            The resulting density is proportional to <span
+                                class="math-inline">\(\phi^{-(\alpha+1)}e^{-\beta/\phi}\)</span>,
+                            which is the kernel of the <strong>Inverse-Gamma<span class="math-inline">(\alpha,
+                                    \beta)</span></strong> distribution.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. Solution Part C -->
+        <div class="section mb-6 bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="section-header w-full flex items-center justify-between p-4 text-left">
+                <div class="flex items-center gap-3">
+                    <div class="p-2 bg-blue-100 text-blue-700 rounded-lg">
+                        <!-- Calculator Icon -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="4" y="2" width="16" height="20" rx="2" />
+                            <line x1="8" y1="6" x2="16" y2="6" />
+                            <line x1="16" y1="14" x2="16" y2="14" />
+                            <line x1="16" y1="18" x2="16" y2="18" />
+                            <line x1="12" y1="14" x2="12" y2="14" />
+                            <line x1="12" y1="18" x2="12" y2="18" />
+                            <line x1="8" y1="14" x2="8" y2="14" />
+                            <line x1="8" y1="18" x2="8" y2="18" />
+                        </svg>
+                    </div>
+                    <h2 class="text-lg font-bold text-slate-800">Solution Part (c): Sample Size</h2>
+                </div>
+            </div>
+
+            <div class="content">
+                <div class="p-6 border-t border-slate-100 space-y-6">
+                    <p>
+                        We need to determine the sample size <span class="math-inline">\(n\)</span> to reduce the
+                        Coefficient of Variation (CV)
+                        from 0.5 (Prior) to 0.1 (Posterior).
+                    </p>
+
+                    <div class="bg-blue-50 p-4 rounded-lg border border-blue-100">
+                        <h3 class="font-bold text-blue-900 mb-2">Key Formula: CV of Gamma Distribution</h3>
+                        <p class="text-blue-800 mb-2">
+                            For <span class="math-inline">\(\theta \sim \text{Gamma}(\alpha, \beta)\)</span>:
+                        </p>
+                        <div class="flex flex-col sm:flex-row items-center justify-around gap-4">
+                            <div class="text-center">
+                                <span class="text-xs text-slate-500 uppercase font-bold">Mean</span>
+                                <div class="mt-1"><span class="math-inline">\(E[\theta] = \frac{\alpha}{\beta}\)</span>
+                                </div>
+                            </div>
+                            <div class="text-center">
+                                <span class="text-xs text-slate-500 uppercase font-bold">Variance</span>
+                                <div class="mt-1"><span class="math-inline">\(\text{Var}(\theta) =
+                                        \frac{\alpha}{\beta^2}\)</span></div>
+                            </div>
+                            <div class="bg-white p-2 rounded shadow-sm border border-blue-200">
+                                <span class="text-xs text-slate-500 uppercase font-bold">Coeff. of Variation</span>
+                                <div class="font-bold text-lg text-blue-700">
+                                    <span class="math-inline">\(CV = \frac{\sqrt{\text{Var}}}{E[\theta]} =
+                                        \frac{1}{\sqrt{\alpha}}\)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="font-bold text-slate-900 mb-4">Step 1: Calculate Shape Parameters</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="p-4 bg-white rounded border border-slate-200 shadow-sm">
+                                <h4 class="font-bold text-slate-500 text-xs uppercase mb-2">Prior (CV = 0.5)</h4>
+                                <div class="math-block-container">
+                                    <div class="math-block-wrapper">
+                                        \[0.5 = \frac{1}{\sqrt{\alpha_{prior}}}\]
+                                    </div>
+                                </div>
+                                <p class="text-center mt-2">
+                                    Squaring both sides: <br />
+                                    <span class="math-inline">\(0.25 = 1/\alpha_{prior}\)</span>
+                                </p>
+                                <p class="text-center font-bold text-lg text-emerald-600 mt-2">
+                                    <span class="math-inline">\(\alpha_{prior} = 4\)</span>
+                                </p>
+                            </div>
+                            <div class="p-4 bg-white rounded border border-slate-200 shadow-sm">
+                                <h4 class="font-bold text-slate-500 text-xs uppercase mb-2">Posterior (CV = 0.1)</h4>
+                                <div class="math-block-container">
+                                    <div class="math-block-wrapper">
+                                        \[0.1 = \frac{1}{\sqrt{\alpha_{post}}}\]
+                                    </div>
+                                </div>
+                                <p class="text-center mt-2">
+                                    Squaring both sides: <br />
+                                    <span class="math-inline">\(0.01 = 1/\alpha_{post}\)</span>
+                                </p>
+                                <p class="text-center font-bold text-lg text-emerald-600 mt-2">
+                                    <span class="math-inline">\(\alpha_{post} = 100\)</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="font-bold text-slate-900 mb-2">Step 2: Solve for n</h3>
+                        <p>
+                            From Part (a), we know the updating rule for the shape parameter is:
+                        </p>
+                        <div class="math-block-container">
+                            <div class="math-block-wrapper">
+                                \[\alpha_{post} = \alpha_{prior} + n\]
+                            </div>
+                        </div>
+                        <p>Substitute the values we found:</p>
+                        <div class="math-block-container">
+                            <div class="math-block-wrapper">
+                                \[100 = 4 + n\]
+                            </div>
+                        </div>
+
+                        <!-- FIX: Added 'dark-container' class to target specific CSS fix -->
+                        <div class="dark-container mt-6 p-6 bg-slate-800 text-white rounded-xl text-center shadow-lg">
+                            <p class="text-slate-300 text-sm uppercase tracking-widest font-bold mb-2">Final Answer</p>
+                            <div class="text-4xl font-extrabold text-white">
+                                <span class="math-inline">\(n = 96\)</span>
+                            </div>
+                            <p class="mt-2 text-slate-400">light bulbs must be tested.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center text-slate-400 text-sm mt-12 pb-8">
+            Generated for Bayesian Statistics Course Review
+        </div>
+
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            // 1. Initialize KaTeX Auto-render
+            renderMathInElement(document.body, {
+                delimiters: [
+                    { left: "\\[", right: "\\]", display: true },
+                    { left: "\\(", right: "\\)", display: false }
+                ],
+                throwOnError: false
+            });
+        });
+    </script>
+</body>
+
+</html>
