@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bayesian Inference: Exponential & Gamma</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+
+        h1,
+        h2,
+        h3 {
+            font-family: 'Lora', serif;
+        }
+
+        .math-block {
+            overflow-x: auto;
+            padding: 1rem;
+            background-color: #f1f5f9;
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .highlight-box {
+            border-left: 4px solid #3b82f6;
+            background-color: #eff6ff;
+        }
+
+        .concept-card {
+            transition: transform 0.2s;
+        }
+
+        .concept-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .home-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .home-button:hover {
+            background: #34495e;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+
+<body class="text-slate-800">
+    <a href="../../index.html" class="home-button">
+        <i class="fas fa-home"></i> ← Home
+    </a>
+
+
+    <!-- Navigation / Header -->
+    <nav class="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-10">
+        <div class="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-xl font-bold text-slate-900">Bayesian Problem Guide</h1>
+            <span class="text-sm text-slate-500">Problem 20</span>
+        </div>
+    </nav>
+
+    <main class="max-w-4xl mx-auto px-4 py-10 space-y-12">
+
+        <!-- Section 1: The Problem -->
+        <section id="problem" class="bg-white p-8 rounded-xl shadow-sm border border-slate-200">
+            <div class="uppercase tracking-wide text-sm text-blue-600 font-semibold mb-2">The Setup</div>
+            <h2 class="text-3xl font-bold mb-6 text-slate-900">Exponential Model with Gamma Prior</h2>
+
+            <p class="mb-4 leading-relaxed">
+                Consider a scenario where the lifetime of an object, \( y \), follows an Exponential distribution with
+                rate parameter \( \theta \):
+            </p>
+            <div class="math-block text-center">
+                $$ p(y|\theta) = \theta e^{-\theta y} \quad \text{for } y > 0 $$
+            </div>
+            <p class="mb-4 leading-relaxed">
+                We assign a conjugate Gamma prior to the parameter \( \theta \):
+            </p>
+            <div class="math-block text-center">
+                $$ \theta \sim \text{Gamma}(\alpha, \beta) \implies p(\theta) \propto \theta^{\alpha - 1} e^{-\beta
+                \theta} $$
+            </div>
+
+            <div class="mt-8 space-y-4">
+                <h3 class="font-bold text-lg">The Questions:</h3>
+                <ul class="list-decimal list-inside space-y-2 text-slate-700 ml-4">
+                    <li><strong>Part (a):</strong> Calculate the posterior distribution, mean, and variance if we
+                        observe censored data \( y \ge 100 \).</li>
+                    <li><strong>Part (b):</strong> Calculate the posterior distribution, mean, and variance if we
+                        observe exact data \( y = 100 \).</li>
+                    <li><strong>Part (c):</strong> Compare the variances. Explain why the result in (b) is higher than
+                        (a) and discuss its relation to the Law of Total Variance (Identity 2.8).</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Section 2: Part (a) Solution -->
+        <section id="part-a" class="bg-white p-8 rounded-xl shadow-sm border border-slate-200 relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-2 h-full bg-emerald-500"></div>
+            <h2 class="text-2xl font-bold mb-4">Part (a): Censored Data (\( y \ge 100 \))</h2>
+
+            <div class="space-y-6">
+                <div>
+                    <h3 class="font-semibold text-lg text-emerald-700">1. The Likelihood</h3>
+                    <p class="mt-2 text-slate-600">
+                        Since we only know that \( y \) is at least 100, the likelihood is the probability of this
+                        range:
+                    </p>
+                    <div class="math-block">
+                        $$ L(\theta) = P(Y \ge 100 | \theta) = \int_{100}^{\infty} \theta e^{-\theta y} \, dy $$
+                    </div>
+                    <p class="text-slate-600">Solving the integral:</p>
+                    <div class="math-block">
+                        $$ \left[ -e^{-\theta y} \right]_{100}^{\infty} = 0 - (-e^{-100\theta}) = e^{-100\theta} $$
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="font-semibold text-lg text-emerald-700">2. The Posterior</h3>
+                    <p class="mt-2 text-slate-600">
+                        Using Bayes' Theorem: \( \text{Posterior} \propto \text{Prior} \times \text{Likelihood} \).
+                    </p>
+                    <div class="math-block">
+                        $$ \begin{aligned}
+                        p(\theta | y \ge 100) &\propto (\theta^{\alpha - 1} e^{-\beta \theta}) \times (e^{-100 \theta})
+                        \\
+                        &\propto \theta^{\alpha - 1} e^{-(\beta + 100)\theta}
+                        \end{aligned} $$
+                    </div>
+                    <p class="text-slate-600">
+                        Recognizing the kernel of a Gamma distribution \( \theta^{A-1}e^{-B\theta} \):
+                    </p>
+                    <div class="bg-emerald-50 p-4 rounded-lg border border-emerald-100 mt-2">
+                        <ul class="space-y-2">
+                            <li><strong>Distribution:</strong> \( \text{Gamma}(\alpha, \beta + 100) \)</li>
+                            <li><strong>Mean:</strong> \( \frac{\alpha}{\beta + 100} \)</li>
+                            <li><strong>Variance:</strong> \( \frac{\alpha}{(\beta + 100)^2} \)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Part (b) Solution -->
+        <section id="part-b" class="bg-white p-8 rounded-xl shadow-sm border border-slate-200 relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-2 h-full bg-indigo-500"></div>
+            <h2 class="text-2xl font-bold mb-4">Part (b): Uncensored Data (\( y = 100 \))</h2>
+
+            <div class="space-y-6">
+                <div>
+                    <h3 class="font-semibold text-lg text-indigo-700">1. The Likelihood</h3>
+                    <p class="mt-2 text-slate-600">
+                        Here we observe the exact value. We use the probability density function (PDF) directly:
+                    </p>
+                    <div class="math-block">
+                        $$ L(\theta) = p(y=100 | \theta) = \theta e^{-100\theta} $$
+                    </div>
+                    <div class="highlight-box p-4 rounded text-sm text-slate-700">
+                        <strong>Why the extra \( \theta \)?</strong><br>
+                        In Part (a), we integrated the PDF, which removed the leading \( \theta \). In Part (b), we use
+                        the PDF directly. This extra \( \theta \) factor is crucial—it represents the "density" of
+                        observing an event.
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="font-semibold text-lg text-indigo-700">2. The Posterior</h3>
+                    <p class="mt-2 text-slate-600">
+                        Multiplying Prior by Likelihood:
+                    </p>
+                    <div class="math-block">
+                        $$ \begin{aligned}
+                        p(\theta | y = 100) &\propto (\theta^{\alpha - 1} e^{-\beta \theta}) \times (\theta e^{-100
+                        \theta}) \\
+                        &\propto \theta^{(\alpha + 1) - 1} e^{-(\beta + 100)\theta}
+                        \end{aligned} $$
+                    </div>
+                    <p class="text-slate-600">
+                        Note that the power of \( \theta \) increased by 1.
+                    </p>
+                    <div class="bg-indigo-50 p-4 rounded-lg border border-indigo-100 mt-2">
+                        <ul class="space-y-2">
+                            <li><strong>Distribution:</strong> \( \text{Gamma}(\alpha + 1, \beta + 100) \)</li>
+                            <li><strong>Mean:</strong> \( \frac{\alpha + 1}{\beta + 100} \)</li>
+                            <li><strong>Variance:</strong> \( \frac{\alpha + 1}{(\beta + 100)^2} \)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Deep Dive Example for Part B -->
+                <div class="mt-8 border-t border-slate-200 pt-6">
+                    <h4 class="font-bold text-slate-800 mb-2">💡 Deep Dive Example: Why does the likelihood change?</h4>
+                    <p class="text-slate-600 mb-4">
+                        Imagine you are fishing.
+                    </p>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="bg-slate-50 p-4 rounded border border-slate-200">
+                            <h5 class="font-semibold text-slate-700">Case A: "A fish was caught after 100 minutes"</h5>
+                            <p class="text-sm text-slate-600 mt-2">
+                                (Similar to \( y \ge 100 \)). You only know the fish survived <i>at least</i> that long.
+                                The probability of survival decreases purely exponentially with time.
+                            </p>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded border border-slate-200">
+                            <h5 class="font-semibold text-slate-700">Case B: "The fish was caught AT exactly 100
+                                minutes"</h5>
+                            <p class="text-sm text-slate-600 mt-2">
+                                (Similar to \( y = 100 \)). For an event to happen <i>exactly</i> now, the rate \(
+                                \theta \) matters. If \( \theta \) is tiny (events almost never happen), observing an
+                                event is unlikely. This is why the factor \( \theta \) appears—it penalizes very small
+                                values of \( \theta \) more than Case A does.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Part (c) Conceptual -->
+        <section id="part-c" class="bg-white p-8 rounded-xl shadow-sm border border-slate-200 relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-2 h-full bg-amber-500"></div>
+            <h2 class="text-2xl font-bold mb-4">Part (c): The Variance Paradox</h2>
+
+            <div class="space-y-6">
+                <div>
+                    <h3 class="font-semibold text-lg text-amber-700">1. Comparing the Variances</h3>
+                    <div class="math-block">
+                        $$ \text{Var}(y=100) = \frac{\alpha + 1}{(\beta+100)^2} \quad > \quad \text{Var}(y \ge 100) =
+                        \frac{\alpha}{(\beta+100)^2} $$
+                    </div>
+                    <p class="text-slate-600">
+                        The variance is <strong>higher</strong> when we know the exact value. This seems
+                        counter-intuitive: shouldn't more information reduce uncertainty?
+                    </p>
+                </div>
+
+                <div>
+                    <h3 class="font-semibold text-lg text-amber-700">2. Why did variance increase?</h3>
+                    <p class="text-slate-600 leading-relaxed">
+                        In the Gamma distribution, the variance is proportional to the mean.
+                        <br><br>
+                        In Part (b), the likelihood included an extra \( \theta \). This extra factor pushes the
+                        posterior probability toward <strong>larger values of \( \theta \)</strong> (since larger \(
+                        \theta \) makes the term \( \theta \) larger).
+                        <br><br>
+                        By shifting the mean to the right (to larger \( \theta \)), we inherently increase the spread
+                        (variance) of the distribution, because for Gamma distributions, larger values are more "spread
+                        out."
+                    </p>
+                </div>
+
+                <div class="bg-amber-50 p-6 rounded-lg border border-amber-100">
+                    <h3 class="font-semibold text-lg text-amber-800 mb-2">3. Resolving Identity 2.8 (Law of Total
+                        Variance)</h3>
+                    <p class="text-sm text-amber-900 font-mono mb-2">
+                        Var(θ) = E[Var(θ|y)] + Var(E[θ|y])
+                    </p>
+                    <p class="text-slate-700 mb-4">
+                        This identity implies that the <strong>Expected</strong> Posterior Variance must be less than
+                        the Prior Variance. So why did our specific variance increase?
+                    </p>
+
+                    <div class="bg-white p-4 rounded border border-amber-200">
+                        <h4 class="font-bold text-slate-800 mb-2">The "Average vs. Individual" Explanation</h4>
+                        <p class="text-slate-600 mb-2">
+                            The identity guarantees that <strong>on average</strong>, observing data reduces variance.
+                            It does <strong>not</strong> guarantee that variance decreases for <strong>every single data
+                                point</strong>.
+                        </p>
+                        <ul class="list-disc list-inside text-slate-600 space-y-2 mt-2">
+                            <li><strong>Analogy:</strong> On average, reading a textbook chapter clarifies a subject
+                                (reduces confusion/variance). However, if you open the book to a <i>specific</i>,
+                                incredibly complex page (like \( y=100 \)), you might end up more confused than when you
+                                started.</li>
+                            <li><strong>Mathematical Reality:</strong> \( y=100 \) is a "surprising" observation that
+                                supports high values of \( \theta \) (high variance). Other observations (like \( y=1
+                                \)) would have resulted in lower variances. When you average them all out, the Identity
+                                holds.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="text-center text-slate-400 py-8 text-sm">
+            <p>Generated for Study Session • Bayesian Statistics</p>
+        </footer>
+
+    </main>
+
+</body>
+
+</html>
