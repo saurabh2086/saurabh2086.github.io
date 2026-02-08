@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poisson Regression: Bayesian Analysis Solution</title>
+    <!-- MathJax for LaTeX rendering -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <!-- Plotly for charting -->
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h1,
+        h2,
+        h3 {
+            color: #2c3e50;
+        }
+
+        h1 {
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            margin-top: 40px;
+            border-left: 5px solid #3498db;
+            padding-left: 15px;
+        }
+
+        .math-block {
+            background-color: #f1f8ff;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        .plot-container {
+            width: 100%;
+            height: 500px;
+            margin: 20px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .highlight {
+            background-color: #fff3cd;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+
+        .btn {
+            background-color: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #2980b9;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .data-table th,
+        .data-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .data-table th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>Bayesian Poisson Regression: A Socratic Solution</h1>
+        <p class="text-lg"><strong>Professor's Note:</strong> Welcome to the solution key. We will walk through the
+            problem step-by-step, starting from the prior assumptions and moving through the derivation of the
+            posterior, concluding with a computational simulation of the results.</p>
+
+        <div class="bg-gray-100 p-4 rounded mb-6">
+            <h3 class="text-lg font-bold mb-2">The Data</h3>
+            <p>We are analyzing fatal airline accidents from 1976 to 1985. We define $t$ as the year index, where $t=1$
+                corresponds to 1976.</p>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Year</th>
+                        <th>Index ($t$)</th>
+                        <th>Fatal Accidents ($y$)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1976</td>
+                        <td>1</td>
+                        <td>24</td>
+                    </tr>
+                    <tr>
+                        <td>1977</td>
+                        <td>2</td>
+                        <td>25</td>
+                    </tr>
+                    <tr>
+                        <td>1978</td>
+                        <td>3</td>
+                        <td>31</td>
+                    </tr>
+                    <tr>
+                        <td>1979</td>
+                        <td>4</td>
+                        <td>31</td>
+                    </tr>
+                    <tr>
+                        <td>1980</td>
+                        <td>5</td>
+                        <td>22</td>
+                    </tr>
+                    <tr>
+                        <td>1981</td>
+                        <td>6</td>
+                        <td>21</td>
+                    </tr>
+                    <tr>
+                        <td>1982</td>
+                        <td>7</td>
+                        <td>26</td>
+                    </tr>
+                    <tr>
+                        <td>1983</td>
+                        <td>8</td>
+                        <td>20</td>
+                    </tr>
+                    <tr>
+                        <td>1984</td>
+                        <td>9</td>
+                        <td>16</td>
+                    </tr>
+                    <tr>
+                        <td>1985</td>
+                        <td>10</td>
+                        <td>22</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Part A -->
+        <h2>(a) The Noninformative Prior</h2>
+        <p><strong>Question:</strong> Discuss various choices for a 'noninformative' prior for $(\alpha, \beta)$. Choose
+            one.</p>
+
+        <p>We are modeling the rate of accidents as $\theta_t = \alpha + \beta t$. Since $\theta_t$ is a rate, it must
+            be positive for all observed years. A standard noninformative choice represents "ignorance" about the
+            location of the parameters.</p>
+
+        <div class="math-block">
+            $$ p(\alpha, \beta) \propto 1 $$
+        </div>
+
+        <p>This is a <strong>uniform improper prior</strong> defined over the region where $\alpha + \beta t > 0$ for
+            all relevant $t$. It implies that before seeing the data, we consider all valid pairs of $(\alpha, \beta)$
+            to be equally likely. This allows the likelihood (the data) to dominate the posterior.</p>
+
+        <!-- Part B -->
+        <h2>(b) The Informative Prior (Conceptual)</h2>
+        <p><strong>Question:</strong> Discuss a realistic informative prior.</p>
+        <p>If we were experts in 1976, we would know that accident counts are positive and finite (likely between 0 and
+            100). We might also expect safety to improve over time, suggesting $\beta < 0$.</p>
+                <p>A realistic prior could be a <strong>Bivariate Normal Distribution</strong> centered at our best
+                    guess (e.g., $\alpha \approx 25, \beta \approx -0.5$) with a negative correlation between $\alpha$
+                    and $\beta$. Why negative correlation? If the intercept $\alpha$ is higher than we thought, the
+                    slope $\beta$ must be more negative to bring the rate down to observed modern levels.</p>
+
+                <!-- Part C -->
+                <h2>(c) The Posterior Density</h2>
+                <p><strong>Question:</strong> Write the posterior density. What are the sufficient statistics?</p>
+
+                <p>The likelihood for independent Poisson observations is:</p>
+                <div class="math-block">
+                    $$ p(y|\alpha, \beta) = \prod_{i=1}^{n} \frac{(\alpha + \beta t_i)^{y_i} e^{-(\alpha + \beta
+                    t_i)}}{y_i!} $$
+                </div>
+
+                <p>Combining this with our uniform prior $p(\alpha, \beta) \propto 1$, the posterior is proportional to
+                    the likelihood:</p>
+
+                <div class="math-block">
+                    $$ p(\alpha, \beta | y) \propto \left( \prod_{i=1}^{n} (\alpha + \beta t_i)^{y_i} \right) \exp\left(
+                    - \sum_{i=1}^{n} (\alpha + \beta t_i) \right) $$
+                </div>
+
+                <p>Simplifying the exponential term:</p>
+                <div class="math-block">
+                    $$ p(\alpha, \beta | y) \propto \left( \prod_{i=1}^{n} (\alpha + \beta t_i)^{y_i} \right) e^{-
+                    (n\alpha + \beta \sum t_i)} $$
+                </div>
+
+                <p><strong>Sufficient Statistics:</strong> Because of the term $(\alpha + \beta t_i)^{y_i}$, we cannot
+                    separate the $y_i$ and $t_i$ into simple sums (like $\sum y_i$). The "timing" of the accidents
+                    matters. Therefore, the sufficient statistics are the <strong>entire set of pairs</strong> $(y_i,
+                    t_i)$ for $i=1 \dots n$. We cannot compress the data further without losing information.</p>
+
+                <!-- Part D -->
+                <h2>(d) Propriety of the Posterior</h2>
+                <p><strong>Question:</strong> Check that the posterior density is proper.</p>
+                <p>Although the prior was improper (integral is infinite), the likelihood function decays exponentially
+                    as $\alpha$ and $\beta$ grow large. The term $e^{-(n\alpha + \beta \sum t_i)}$ dominates the
+                    polynomial growth of the product term. As long as the data contains at least two distinct time
+                    points with non-zero counts, the integral of the posterior over the valid region converges to a
+                    finite number. Thus, the posterior is <strong>proper</strong>.</p>
+
+                <!-- Part E -->
+                <h2>(e) Crude Estimates</h2>
+                <p><strong>Question:</strong> Calculate crude estimates using linear regression.</p>
+                <p>We treat the counts $y$ as the dependent variable and time $t$ as the independent variable in a
+                    standard OLS regression: $y = \alpha + \beta t + \epsilon$.</p>
+
+                <div id="regression-results" class="bg-blue-100 p-4 rounded border-l-4 border-blue-500">
+                    Running regression...
+                </div>
+
+                <!-- Part F -->
+                <h2>(f) Posterior Contours & Sampling</h2>
+                <p><strong>Question:</strong> Plot contours and take 1000 draws from the joint posterior.</p>
+                <p>We use <strong>Grid Approximation</strong>. We compute the unnormalized posterior density on a fine
+                    grid of $\alpha$ and $\beta$ values, normalize them to sum to 1, and then sample from this discrete
+                    distribution.</p>
+
+                <div id="contour-plot" class="plot-container"></div>
+                <div class="text-center">
+                    <button class="btn" onclick="runSimulation()">Resample 1000 Draws</button>
+                </div>
+
+                <!-- Part G -->
+                <h2>(g) Posterior for Expected Accidents in 1986</h2>
+                <p><strong>Question:</strong> Plot the posterior density for the expected number of accidents in 1986
+                    ($\alpha + 11\beta$).</p>
+                <p>For each of our 1000 draws of $(\alpha, \beta)$, we calculate the expected rate $\lambda_{1986} =
+                    \alpha + \beta(11)$. This gives us the distribution of the <em>mean</em>.</p>
+
+                <div id="expected-hist" class="plot-container"></div>
+
+                <!-- Part H -->
+                <h2>(h) Predictive Interval for 1986</h2>
+                <p><strong>Question:</strong> Create simulation draws and obtain a 95% predictive interval for the
+                    <em>actual number</em> of accidents.
+                </p>
+                <p>To get the <strong>Posterior Predictive Distribution</strong>, we take each expected rate
+                    $\lambda_{1986}$ from the step above and generate a random Poisson number using that rate: $y_{pred}
+                    \sim \text{Poisson}(\lambda_{1986})$. This accounts for both parameter uncertainty and sampling
+                    uncertainty.</p>
+
+                <div id="predictive-hist" class="plot-container"></div>
+                <div id="predictive-interval-text"
+                    class="bg-green-100 p-4 rounded border-l-4 border-green-500 font-bold">
+                    Calculating...
+                </div>
+
+                <!-- Part I -->
+                <h2>(i) Comparison Discussion</h2>
+                <p><strong>Question:</strong> How does the informative prior differ?</p>
+                <p>The noninformative prior allows the data to drive the slope $\beta$. As seen in the plots, the data
+                    suggests a negative slope (accidents are decreasing). If we had used a strong informative prior that
+                    assumed safety was constant ($\beta \approx 0$), our posterior would have been pulled towards zero,
+                    resulting in a higher predicted accident rate for 1986. The noninformative approach fully accepts
+                    the "good news" in the data that safety is improving.</p>
+
+    </div>
+
+    <script>
+        // Using an IIFE to restrict scope and avoid "Identifier 't' has already been declared" errors on re-runs
+        (function () {
+            // --- DATA ---
+            const years = [1976, 1977, 1978, 1979, 1980, 1981, 1982, 1983, 1984, 1985];
+            // Rename t to time_steps to avoid conflicts with global t
+            const time_steps = years.map((y, i) => i + 1); // t = 1 to 10
+            const y_obs = [24, 25, 31, 31, 22, 21, 26, 20, 16, 22];
+            const n = y_obs.length;
+            const sum_t = time_steps.reduce((a, b) => a + b, 0);
+
+            // --- PART E: LINEAR REGRESSION ---
+            function linearRegression(x, y) {
+                const n = x.length;
+                const sumX = x.reduce((a, b) => a + b, 0);
+                const sumY = y.reduce((a, b) => a + b, 0);
+                const sumXY = x.reduce((sum, xi, i) => sum + xi * y[i], 0);
+                const sumXX = x.reduce((sum, xi) => sum + xi * xi, 0);
+
+                const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+                const intercept = (sumY - slope * sumX) / n;
+
+                // Std Error calculation (simplified)
+                const y_pred = x.map(xi => intercept + slope * xi);
+                const residuals = y.map((yi, i) => yi - y_pred[i]);
+                const sse = residuals.reduce((sum, r) => sum + r * r, 0);
+                const se_slope = Math.sqrt(sse / (n - 2)) / Math.sqrt(sumXX - sumX * sumX / n);
+
+                return { slope, intercept, se_slope };
+            }
+
+            const reg = linearRegression(time_steps, y_obs);
+            const regressionOutput = document.getElementById('regression-results');
+            if (regressionOutput) {
+                regressionOutput.innerHTML = `
+                <strong>Crude Estimates:</strong><br>
+                Intercept ($\\hat{\\alpha}$): ${reg.intercept.toFixed(3)} <br>
+                Slope ($\\hat{\\beta}$): ${reg.slope.toFixed(3)} (Standard Error: ${reg.se_slope.toFixed(3)})
+            `;
+                if (window.MathJax && window.MathJax.typesetPromise) {
+                    window.MathJax.typesetPromise([regressionOutput]);
+                }
+            }
+
+            // --- PART F: GRID APPROXIMATION ---
+            function logLikelihood(alpha, beta) {
+                let logL = 0;
+                // Check constraint: rate must be > 0 for all years
+                // We check boundaries t=1 and t=10 just to be safe
+                if (alpha + beta * 1 <= 0 || alpha + beta * 10 <= 0) return -Infinity;
+
+                // Log Likelihood formula derived in Part C
+                // sum [ y_i * ln(alpha + beta*t_i) ] - n*alpha - beta*sum_t
+                let sum_log_term = 0;
+                for (let i = 0; i < n; i++) {
+                    sum_log_term += y_obs[i] * Math.log(alpha + beta * time_steps[i]);
+                }
+                logL = sum_log_term - n * alpha - beta * sum_t;
+                return logL;
+            }
+
+            // Expose runSimulation to window so the button can call it
+            window.runSimulation = function () {
+                // 1. Setup Grid
+                // Based on regression, alpha ~ 30, beta ~ -1
+                const alpha_range = { min: 20, max: 45, steps: 100 };
+                const beta_range = { min: -2.5, max: 0.5, steps: 100 };
+
+                const alphas = [];
+                const betas = [];
+                const probs = [];
+                const alpha_step = (alpha_range.max - alpha_range.min) / alpha_range.steps;
+                const beta_step = (beta_range.max - beta_range.min) / beta_range.steps;
+
+                // Flattened arrays for sampling
+                const flat_probs = [];
+                const flat_coords = [];
+
+                let max_log_post = -Infinity;
+
+                // Calculate Log Posterior
+                for (let i = 0; i < beta_range.steps; i++) {
+                    let b = beta_range.min + i * beta_step;
+                    betas.push(b);
+                    let row_probs = [];
+                    for (let j = 0; j < alpha_range.steps; j++) {
+                        let a = alpha_range.min + j * alpha_step;
+                        if (i === 0) alphas.push(a);
+
+                        let lp = logLikelihood(a, b);
+                        if (lp > max_log_post) max_log_post = lp;
+                        row_probs.push(lp); // Store log for now
+                    }
+                    probs.push(row_probs);
+                }
+
+                // Exponentiate and Normalize (Log-Sum-Exp trick to prevent underflow)
+                let sum_prob = 0;
+                for (let i = 0; i < beta_range.steps; i++) {
+                    for (let j = 0; j < alpha_range.steps; j++) {
+                        // subtract max to keep exponents manageable
+                        let p = Math.exp(probs[i][j] - max_log_post);
+                        probs[i][j] = p; // overwrite log with actual prob
+                        sum_prob += p;
+                    }
+                }
+
+                // Final Normalize & Prepare for Sampling
+                for (let i = 0; i < beta_range.steps; i++) {
+                    for (let j = 0; j < alpha_range.steps; j++) {
+                        probs[i][j] /= sum_prob;
+                        flat_probs.push(probs[i][j]);
+                        flat_coords.push({
+                            alpha: alpha_range.min + j * alpha_step,
+                            beta: beta_range.min + i * beta_step
+                        });
+                    }
+                }
+
+                // 2. Plot Contours
+                const traceContour = {
+                    z: probs,
+                    x: alphas,
+                    y: betas,
+                    type: 'contour',
+                    colorscale: 'Viridis',
+                    contours: {
+                        showlabels: true,
+                        labelfont: { family: 'Raleway', size: 12, color: 'white' }
+                    }
+                };
+
+                const layoutContour = {
+                    title: 'Joint Posterior Density of Alpha and Beta',
+                    xaxis: { title: 'Alpha (Intercept)' },
+                    yaxis: { title: 'Beta (Slope)' }
+                };
+
+                Plotly.newPlot('contour-plot', [traceContour], layoutContour);
+
+                // 3. Sample 1000 Draws
+                const samples = [];
+                const n_draws = 1000;
+
+                // Build CDF
+                const cdf = [];
+                let cum = 0;
+                for (let p of flat_probs) {
+                    cum += p;
+                    cdf.push(cum);
+                }
+
+                for (let k = 0; k < n_draws; k++) {
+                    let r = Math.random();
+                    // Binary search for index
+                    let idx = cdf.findIndex(val => val >= r);
+                    if (idx === -1) idx = cdf.length - 1;
+                    samples.push(flat_coords[idx]);
+                }
+
+                // --- PART G: EXPECTED ACCIDENTS 1986 ---
+                // E[y|1986] = alpha + beta * 11
+                const expected_1986 = samples.map(s => s.alpha + s.beta * 11);
+
+                const traceHistExp = {
+                    x: expected_1986,
+                    type: 'histogram',
+                    marker: { color: '#3498db' },
+                    opacity: 0.7,
+                    name: 'Expected'
+                };
+
+                const layoutHistExp = {
+                    title: 'Posterior Density: Expected Accidents in 1986 (alpha + 11*beta)',
+                    xaxis: { title: 'Expected Number of Accidents' },
+                    yaxis: { title: 'Frequency' }
+                };
+
+                Plotly.newPlot('expected-hist', [traceHistExp], layoutHistExp);
+
+                // --- PART H: PREDICTIVE INTERVAL ---
+                // Sample y ~ Poisson(expected)
+                // Poisson Generator (Knuth's algorithm for small lambda, simpler approx for large)
+                // Since lambda ~ 20-30, we can use simple inverse transform or Box-Muller approx if needed
+                // But JS Math.random is fine for basic inverse transform here.
+
+                function poissonSample(lambda) {
+                    let L = Math.exp(-lambda);
+                    let k = 0;
+                    let p = 1;
+                    do {
+                        k++;
+                        p *= Math.random();
+                    } while (p > L);
+                    return k - 1;
+                }
+
+                const predictive_y = expected_1986.map(lambda => poissonSample(lambda));
+
+                // Calculate 95% Interval
+                const sorted_pred = [...predictive_y].sort((a, b) => a - b);
+                const lower = sorted_pred[Math.floor(0.025 * n_draws)];
+                const upper = sorted_pred[Math.floor(0.975 * n_draws)];
+
+                document.getElementById('predictive-interval-text').innerHTML = `
+                95% Predictive Interval for 1986 Accidents: [${lower}, ${upper}]
+            `;
+
+                const traceHistPred = {
+                    x: predictive_y,
+                    type: 'histogram',
+                    marker: { color: '#e74c3c' },
+                    opacity: 0.7,
+                    name: 'Predictive'
+                };
+
+                const layoutHistPred = {
+                    title: 'Posterior Predictive Distribution for Actual Accidents in 1986',
+                    xaxis: { title: 'Number of Accidents' },
+                    yaxis: { title: 'Frequency' },
+                    shapes: [
+                        { type: 'line', x0: lower, x1: lower, y0: 0, y1: 1, yref: 'paper', line: { color: 'black', width: 3, dash: 'dot' } },
+                        { type: 'line', x0: upper, x1: upper, y0: 0, y1: 1, yref: 'paper', line: { color: 'black', width: 3, dash: 'dot' } }
+                    ]
+                };
+
+                Plotly.newPlot('predictive-hist', [traceHistPred], layoutHistPred);
+            };
+
+            // Run on load
+            window.runSimulation();
+
+            // Re-render MathJax
+            window.addEventListener('load', () => {
+                if (window.MathJax && window.MathJax.typesetPromise) {
+                    MathJax.typesetPromise();
+                }
+            });
+
+        })();
+    </script>
+
+</body>
+
+</html>
