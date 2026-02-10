@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>4.1 Normal Approximations to the Posterior</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- MathJax for LaTeX rendering -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+        }
+
+        .step-card {
+            transition: all 0.2s ease;
+        }
+
+        .step-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Utility for hiding elements */
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="max-w-4xl mx-auto px-4 py-12">
+
+        <!-- Header -->
+        <header class="mb-12 text-center">
+            <div
+                class="inline-block px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-semibold tracking-wide mb-4">
+                Bayesian Data Analysis
+            </div>
+            <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 mb-6">
+                4.1 Normal Approximations to the Posterior Distribution
+            </h1>
+            <p class="text-xl text-slate-600 max-w-2xl mx-auto">
+                Using the Taylor Series expansion to bridge the gap between complex posteriors and the Gaussian
+                distribution.
+            </p>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <div class="flex justify-center mb-10">
+            <div class="bg-white p-1 rounded-xl shadow-sm border border-slate-200 inline-flex">
+                <button id="btn-theory" onclick="switchTab('theory')"
+                    class="px-6 py-2 rounded-lg text-sm font-medium transition-colors bg-blue-600 text-white">
+                    The Theory (Taylor Series)
+                </button>
+                <button id="btn-example" onclick="switchTab('example')"
+                    class="px-6 py-2 rounded-lg text-sm font-medium transition-colors text-slate-600 hover:bg-slate-50">
+                    The Example (Unknown Mean/Var)
+                </button>
+            </div>
+        </div>
+
+        <!-- Theory Section -->
+        <div id="theory-content">
+            <section class="mb-12">
+                <h2 class="text-2xl font-bold text-slate-800 mb-4 border-b pb-2 border-slate-200">The Intuition</h2>
+                <p class="mb-4 text-lg leading-relaxed">
+                    In Bayesian inference, posterior distributions can take complex shapes. However, a fundamental
+                    theorem (Bernstein-von Mises) suggests that as the sample size $n$ becomes large, the posterior
+                    distribution approaches a Normal distribution.
+                </p>
+                <p class="mb-4 text-lg leading-relaxed">
+                    This means we don't always need complex integration or simulation. If the posterior is unimodal (has
+                    one peak) and roughly symmetric, we can simply find the peak and the "width" of the curve to
+                    construct a Gaussian approximation.
+                </p>
+                <div class="bg-blue-50 border-l-4 border-blue-600 p-4 rounded-r-lg">
+                    <p class="italic text-blue-800">
+                        <strong>Goal:</strong> Find a Normal distribution $N(\hat{\theta}, \Sigma)$ that best fits the
+                        curvature of the posterior at its peak.
+                    </p>
+                </div>
+            </section>
+
+            <section class="mb-12">
+                <h2 class="text-2xl font-bold text-slate-800 mb-4 border-b pb-2 border-slate-200">Derivation from First
+                    Principles</h2>
+                <p class="mb-6">
+                    The Normal distribution is defined by an exponential of a quadratic function (e.g., $e^{-x^2}$).
+                    Therefore, its <em>logarithm</em> is a quadratic function ($-x^2$).
+                    To approximate the posterior $p(\theta|y)$ as a Normal, we approximate the log-posterior $\log
+                    p(\theta|y)$ as a quadratic function using a Taylor Series.
+                </p>
+
+                <!-- Step 1 -->
+                <div class="step-card bg-white p-6 rounded-lg border border-slate-200 shadow-sm mb-6">
+                    <div class="flex items-center mb-4">
+                        <div
+                            class="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-blue-600 text-white font-bold rounded-full mr-3">
+                            1</div>
+                        <h3 class="text-lg font-semibold text-slate-800">Taylor Series Expansion</h3>
+                    </div>
+                    <div class="text-slate-600 leading-relaxed">
+                        <p class="mb-3">We expand the log-posterior, let's call it $L(\theta) = \log p(\theta|y)$,
+                            around the posterior mode $\hat{\theta}$. Think of this as fitting a polynomial to a curve
+                            at a specific point.</p>
+                        $$L(\theta) \approx L(\hat{\theta}) + (\theta - \hat{\theta})^T \left[ \frac{d L}{d\theta}
+                        \right]_{\theta=\hat{\theta}} + \frac{1}{2} (\theta - \hat{\theta})^T \left[ \frac{d^2
+                        L}{d\theta^2} \right]_{\theta=\hat{\theta}} (\theta - \hat{\theta}) + \dots$$
+                        <p class="mt-3">The expansion gives us a Constant term, a Linear term (slope), and a Quadratic
+                            term (curvature).</p>
+                    </div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="step-card bg-white p-6 rounded-lg border border-slate-200 shadow-sm mb-6">
+                    <div class="flex items-center mb-4">
+                        <div
+                            class="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-blue-600 text-white font-bold rounded-full mr-3">
+                            2</div>
+                        <h3 class="text-lg font-semibold text-slate-800">Why the Linear Term Vanishes</h3>
+                    </div>
+                    <div class="text-slate-600 leading-relaxed">
+                        <p class="mb-3">The point $\hat{\theta}$ is the <strong>posterior mode</strong> (the peak of the
+                            hill). In calculus, the definition of a maximum (or minimum) is the point where the
+                            derivative (slope) is zero.</p>
+                        $$\left[ \frac{d}{d\theta} \log p(\theta|y) \right]_{\theta=\hat{\theta}} = 0$$
+                        <p class="mt-3">Because the slope is flat at the very top, the linear term in our approximation
+                            disappears completely. We are left with just the height and the curvature.</p>
+                    </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="step-card bg-white p-6 rounded-lg border border-slate-200 shadow-sm mb-6">
+                    <div class="flex items-center mb-4">
+                        <div
+                            class="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-blue-600 text-white font-bold rounded-full mr-3">
+                            3</div>
+                        <h3 class="text-lg font-semibold text-slate-800">The Quadratic Approximation</h3>
+                    </div>
+                    <div class="text-slate-600 leading-relaxed">
+                        <p class="mb-3">We neglect higher order terms (cubic, quartic) because as sample size $n$
+                            increases, the posterior mass concentrates very tightly around the mode. For $\theta$ close
+                            to $\hat{\theta}$, terms like $(\theta - \hat{\theta})^3$ become negligible.</p>
+                        $$\log p(\theta|y) \approx \text{constant} + \frac{1}{2} (\theta - \hat{\theta})^T
+                        H(\hat{\theta}) (\theta - \hat{\theta})$$
+                        <p class="mt-3">Where $H(\hat{\theta})$ is the Hessian matrix of second derivatives. Since
+                            $\hat{\theta}$ is a maximum, this matrix is negative-definite (concave down), representing
+                            how "sharp" the peak is.</p>
+                    </div>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="step-card bg-white p-6 rounded-lg border border-slate-200 shadow-sm mb-6">
+                    <div class="flex items-center mb-4">
+                        <div
+                            class="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-blue-600 text-white font-bold rounded-full mr-3">
+                            4</div>
+                        <h3 class="text-lg font-semibold text-slate-800">Matching to the Normal Distribution</h3>
+                    </div>
+                    <div class="text-slate-600 leading-relaxed">
+                        <p class="mb-3">We now compare our derived quadratic function to the known log-density of a
+                            multivariate Normal distribution $N(\mu, \Sigma)$:</p>
+                        $$\log N(\theta|\mu, \Sigma) = \text{constant} - \frac{1}{2} (\theta - \mu)^T \Sigma^{-1}
+                        (\theta - \mu)$$
+                        <p class="mb-3">The structures are identical! By equating terms, we find the parameters of our
+                            approximation:</p>
+                        <ul class="list-disc ml-6 mt-2 space-y-2">
+                            <li><strong>Mean:</strong> $\mu = \hat{\theta}$ (The Mode)</li>
+                            <li><strong>Variance:</strong> $\Sigma^{-1} = -H(\hat{\theta}) \implies \Sigma =
+                                [I(\hat{\theta})]^{-1}$</li>
+                        </ul>
+                        <p class="mt-4 text-sm text-slate-500 bg-slate-100 p-3 rounded">
+                            <strong>Key Insight:</strong> The variance is the inverse of the curvature
+                            ($I(\hat{\theta})$). A sharper peak (large negative curvature) implies a smaller variance
+                            (higher certainty).
+                        </p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Example Section (Initially Hidden) -->
+        <div id="example-content" class="hidden">
+            <section class="mb-12">
+                <h2 class="text-2xl font-bold text-slate-800 mb-4 border-b pb-2 border-slate-200">Example: Normal with
+                    Unknown Mean & Variance</h2>
+                <p class="mb-4">
+                    Let's apply the theory to a classic problem. We have data $y_1, \dots, y_n \sim N(\mu, \sigma^2)$.
+                    We want to approximate the joint posterior $p(\mu, \log\sigma | y)$.
+                </p>
+                <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded-r-lg mb-6">
+                    <p class="text-yellow-800 text-sm">
+                        <strong>Why log sigma?</strong> We approximate $\log \sigma$ instead of $\sigma$ because a
+                        Normal approximation spans $(-\infty, \infty)$. $\sigma$ must be positive, but $\log \sigma$ can
+                        be negative (if $\sigma < 1$), making it a valid candidate for a Normal approximation. </p>
+                </div>
+            </section>
+
+            <section class="mb-12">
+                <h2 class="text-2xl font-bold text-slate-800 mb-4 border-b pb-2 border-slate-200">Step-by-Step
+                    Derivation</h2>
+
+                <!-- Step 1 -->
+                <div class="step-card bg-white p-6 rounded-lg border border-slate-200 shadow-sm mb-6">
+                    <div class="flex items-center mb-4">
+                        <div
+                            class="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-blue-600 text-white font-bold rounded-full mr-3">
+                            1</div>
+                        <h3 class="text-lg font-semibold text-slate-800">Construct the Log-Posterior</h3>
+                    </div>
+                    <div class="text-slate-600 leading-relaxed">
+                        <p>We start with the Likelihood for $n$ independent Normal observations:</p>
+                        $$p(y|\mu, \sigma) = \prod_{i=1}^n \frac{1}{\sqrt{2\pi}\sigma}
+                        \exp\left(-\frac{(y_i-\mu)^2}{2\sigma^2}\right)$$
+                        <p>Taking the log turns the product into a sum:</p>
+                        $$\log p(y|\mu, \sigma) = -n\log\sigma - \frac{1}{2\sigma^2}\sum_{i=1}^n(y_i - \mu)^2$$
+                        <p class="mt-3">We use a uniform prior on $(\mu, \log\sigma)$. Since a uniform prior is just a
+                            constant number, its derivative is zero, so it doesn't affect the location of the mode or
+                            the curvature. We simplify the sum of squares using the identity $\sum(y_i-\mu)^2 = (n-1)s^2
+                            + n(\bar{y}-\mu)^2$.</p>
+                        $$\log p(\mu, \log\sigma|y) = \text{const} - n\log\sigma - \frac{1}{2\sigma^2}((n-1)s^2 +
+                        n(\bar{y}-\mu)^2)$$
+                    </div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="step-card bg-white p-6 rounded-lg border border-slate-200 shadow-sm mb-6">
+                    <div class="flex items-center mb-4">
+                        <div
+                            class="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-blue-600 text-white font-bold rounded-full mr-3">
+                            2</div>
+                        <h3 class="text-lg font-semibold text-slate-800">Find the Mode (First Derivatives)</h3>
+                    </div>
+                    <div class="text-slate-600 leading-relaxed">
+                        <p>We find the peak by setting the first derivatives (gradient) to zero.</p>
+                        <p class="mt-2 font-semibold">For $\mu$:</p>
+                        $$\frac{d}{d\mu} L = \frac{n(\bar{y}-\mu)}{\sigma^2} = 0 \implies \hat{\mu} = \bar{y}$$
+                        <p class="mt-2 font-semibold">For $\log\sigma$ (substitute $z = \log\sigma$, so $\sigma^{-2} =
+                            e^{-2z}$):</p>
+                        $$\frac{d}{dz} L = -n + e^{-2z}((n-1)s^2 + n(\bar{y}-\mu)^2) = 0$$
+                        <p>Substituting our result $\hat{\mu}=\bar{y}$, the term $n(\bar{y}-\mu)^2$ becomes zero. We
+                            solve for the variance:</p>
+                        $$-n + \frac{1}{\hat{\sigma}^2}(n-1)s^2 = 0 \implies \hat{\sigma}^2 = \frac{n-1}{n}s^2$$
+                    </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="step-card bg-white p-6 rounded-lg border border-slate-200 shadow-sm mb-6">
+                    <div class="flex items-center mb-4">
+                        <div
+                            class="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-blue-600 text-white font-bold rounded-full mr-3">
+                            3</div>
+                        <h3 class="text-lg font-semibold text-slate-800">Compute the Hessian (Second Derivatives)</h3>
+                    </div>
+                    <div class="text-slate-600 leading-relaxed">
+                        <p>The Hessian matrix captures the "curvature" at the peak. We take derivatives of our first
+                            derivatives.</p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                            <div class="bg-slate-50 p-4 rounded border border-slate-200">
+                                <h4 class="font-bold text-sm mb-2">Curvature w.r.t $\mu$</h4>
+                                $$\frac{d^2 L}{d\mu^2} = -\frac{n}{\sigma^2}$$
+                                <p class="text-xs text-slate-500 mt-2">Interpretation: The standard curvature for a
+                                    Normal mean.</p>
+                            </div>
+                            <div class="bg-slate-50 p-4 rounded border border-slate-200">
+                                <h4 class="font-bold text-sm mb-2">Curvature w.r.t $\log\sigma$</h4>
+                                <p class="text-xs text-slate-500 mb-2">Differentiating $-n + e^{-2z}((n-1)s^2)$ w.r.t
+                                    $z$:</p>
+                                $$\frac{d^2 L}{dz^2} = -2e^{-2z}((n-1)s^2)$$
+                                <p class="text-xs mt-2">At the mode, this simplifies cleanly to <strong>-2n</strong>.
+                                </p>
+                            </div>
+                        </div>
+
+                        <p class="mt-4">The mixed derivative $\frac{d^2 L}{d\mu d\log\sigma}$ contains $(\bar{y}-\mu)$,
+                            which is 0 at the mode. This means our estimates for the mean and variance are uncorrelated
+                            locally.</p>
+                        $$H(\hat{\theta}) = \begin{pmatrix} -n/\hat{\sigma}^2 & 0 \\ 0 & -2n \end{pmatrix}$$
+                    </div>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="step-card bg-white p-6 rounded-lg border border-slate-200 shadow-sm mb-6">
+                    <div class="flex items-center mb-4">
+                        <div
+                            class="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-blue-600 text-white font-bold rounded-full mr-3">
+                            4</div>
+                        <h3 class="text-lg font-semibold text-slate-800">Invert to get Variance</h3>
+                    </div>
+                    <div class="text-slate-600 leading-relaxed">
+                        <p>The covariance matrix of our Normal approximation is the negative inverse of the Hessian:
+                            $\Sigma = (-H)^{-1}$. Since the matrix is diagonal, we just invert the diagonal elements and
+                            flip the signs.</p>
+                        $$\Sigma = \begin{pmatrix} n/\hat{\sigma}^2 & 0 \\ 0 & 2n \end{pmatrix}^{-1} = \begin{pmatrix}
+                        \hat{\sigma}^2/n & 0 \\ 0 & 1/(2n) \end{pmatrix}$$
+                        <p class="mt-4">This gives us the final approximation:</p>
+                        $$p(\mu, \log\sigma|y) \approx N\left( \begin{pmatrix} \bar{y} \\ \log\hat{\sigma}
+                        \end{pmatrix}, \begin{pmatrix} \hat{\sigma}^2/n & 0 \\ 0 & \frac{1}{2n} \end{pmatrix} \right)$$
+                        <p class="mt-3 text-sm bg-green-50 text-green-800 p-3 rounded border border-green-200">
+                            <strong>Result:</strong> Notice that for $\log \sigma$, the variance is $1/(2n)$. This means
+                            our uncertainty about the scale of the data decreases purely as a function of sample size
+                            $n$, regardless of the actual variance of the data!
+                        </p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <footer class="mt-16 text-center text-slate-400 text-sm border-t border-slate-200 pt-8">
+            <p>Generated from First Principles &bull; Bayesian Data Analysis Study Guide</p>
+        </footer>
+    </div>
+
+    <!-- Vanilla JS Logic -->
+    <script>
+        function switchTab(tabId) {
+            // Content Elements
+            const theoryContent = document.getElementById('theory-content');
+            const exampleContent = document.getElementById('example-content');
+
+            // Button Elements
+            const btnTheory = document.getElementById('btn-theory');
+            const btnExample = document.getElementById('btn-example');
+
+            // Logic to switch content and button styles
+            if (tabId === 'theory') {
+                theoryContent.classList.remove('hidden');
+                exampleContent.classList.add('hidden');
+
+                // Active Style
+                btnTheory.className = "px-6 py-2 rounded-lg text-sm font-medium transition-colors bg-blue-600 text-white";
+                // Inactive Style
+                btnExample.className = "px-6 py-2 rounded-lg text-sm font-medium transition-colors text-slate-600 hover:bg-slate-50";
+            } else {
+                theoryContent.classList.add('hidden');
+                exampleContent.classList.remove('hidden');
+
+                // Active Style
+                btnExample.className = "px-6 py-2 rounded-lg text-sm font-medium transition-colors bg-blue-600 text-white";
+                // Inactive Style
+                btnTheory.className = "px-6 py-2 rounded-lg text-sm font-medium transition-colors text-slate-600 hover:bg-slate-50";
+            }
+        }
+    </script>
+</body>
+
+</html>
