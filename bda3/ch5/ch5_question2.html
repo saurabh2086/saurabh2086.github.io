@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exchangeability with Unknown Parameters</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400;1,6..72,600&display=swap" rel="stylesheet">
+
+    <!-- MathJax for LaTeX rendering -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bayesian: {
+                            bg: '#f7f9fb',
+                            text: '#191c1e',
+                            navy: '#131b2e',
+                            blue: '#0051d5',
+                            slate: '#75859d',
+                            surface: '#ffffff',
+                            surfaceAlt: '#f8fafc',
+                            border: '#e2e8f0'
+                        }
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 12px rgba(15, 23, 42, 0.05)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Newsreader', serif;
+            background-color: #f7f9fb;
+            color: #191c1e;
+            font-size: 1.25rem;
+            line-height: 1.7;
+        }
+
+        h1, h2, h3, h4, h5, h6, .ui-text {
+            font-family: 'Inter', sans-serif;
+            color: #131b2e; /* Deep Navy */
+        }
+
+        .math-inline {
+            font-family: 'Newsreader', serif;
+            font-size: 1.3rem;
+        }
+
+        .theorem-block {
+            background-color: #f8fafc;
+            border-left: 2px solid #0051d5;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .academic-card {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .academic-card:hover {
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+            transform: translateY(-2px);
+        }
+        
+        .code-block {
+            background-color: #1e293b;
+            color: #f8fafc;
+            font-family: monospace;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            padding: 1rem;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+
+<body class="antialiased">
+
+    <!-- Container constrained to 720px for optimal reading -->
+    <div class="max-w-[720px] mx-auto px-4 py-16">
+
+        <!-- Navigation -->
+        <nav class="mb-8">
+            <a href="../../index.html" class="inline-flex items-center text-sm font-semibold text-bayesian-slate hover:text-bayesian-navy transition-colors ui-text">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                Back to Index
+            </a>
+        </nav>
+
+        <!-- Header -->
+        <header class="mb-16">
+            <div class="inline-block px-3 py-1 bg-bayesian-surfaceAlt border border-bayesian-border text-bayesian-slate rounded text-xs font-semibold tracking-wide mb-6 uppercase ui-text">
+                Chapter 5 &bull; Question 2
+            </div>
+            <h1 class="text-5xl font-bold mb-6 tracking-tight leading-tight ui-text">
+                Exchangeability with Unknown Parameters
+            </h1>
+            <p class="text-xl text-bayesian-slate leading-relaxed">
+                Exploring how our learning process inherently links observations together, even when the physical sampling process replaces them.
+            </p>
+        </header>
+
+        <!-- The First Principles Section -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-semibold mb-8 border-b pb-3 border-bayesian-border ui-text">
+                The Core Principle: Marginal vs. Conditional
+            </h2>
+            
+            <div class="space-y-6">
+                <!-- Learning Block -->
+                <div class="theorem-block">
+                    <h3 class="text-lg font-bold text-bayesian-blue mb-2 ui-text uppercase tracking-wider text-sm">The Learning Effect</h3>
+                    <p class="mb-3">
+                        When the underlying parameters (e.g., the proportion of black balls $\theta$) are <strong>unknown</strong>, observing the first piece of data $y_1$ teaches us something about $\theta$. This newly acquired knowledge inherently changes our predictions for $y_2$.
+                    </p>
+                    <div class="code-block mb-3">
+                        $$p(y_2 | y_1) \neq p(y_2)$$
+                    </div>
+                    <p class="text-base text-bayesian-slate italic">
+                        Even if the physical process is entirely isolated (like drawing with replacement), our epistemological state links the two events. They are <strong>conditionally independent</strong> given $\theta$, but <strong>marginally dependent</strong> because $\theta$ is unknown.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Problem Breakdown Section -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-semibold mb-8 border-b pb-3 border-bayesian-border ui-text">
+                Analyzing the Scenarios
+            </h2>
+
+            <div class="space-y-10">
+                
+                <!-- Scenario A -->
+                <div class="academic-card p-8">
+                    <div class="mb-6">
+                        <span class="inline-block w-8 h-8 rounded bg-bayesian-surfaceAlt border border-bayesian-border text-center leading-8 font-bold text-bayesian-navy ui-text mb-4">A</span>
+                        <h3 class="text-2xl font-semibold text-bayesian-navy mb-4 ui-text">With Replacement (Unknown Composition)</h3>
+                        <p class="text-lg mb-6 bg-bayesian-surfaceAlt p-4 rounded border border-bayesian-border italic">
+                            "A box has $n$ black and white balls but we <strong>do not know how many</strong> of each color. We pick a ball $y_1$ at random, <strong>put it back</strong>, and pick another ball $y_2$ at random."
+                        </p>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="font-semibold text-bayesian-navy ui-text">(i) Are they Exchangeable?</h4>
+                            <p><strong>Yes.</strong> The order in which we learn about the box doesn't matter. The joint distribution $p(y_1, y_2)$ is symmetric because it is derived by integrating over all possible unknown compositions. Therefore, $p(y_1, y_2) = p(y_2, y_1)$.</p>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-bayesian-navy ui-text">(ii) Are they Independent?</h4>
+                            <p><strong>No.</strong> Because we don't know the composition, $y_1$ is informative. If $y_1$ is Black, we increase our estimate of the number of black balls in the box. This makes us more likely to predict that $y_2$ will also be Black. Our beliefs are linked.</p>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-bayesian-navy ui-text">(iii) Can we Act Independent?</h4>
+                            <p><strong>No.</strong> Acting as if they are independent implies that observing $y_1$ teaches us absolutely nothing about the box. If we did that, we would never be able to learn or update our posterior distribution.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Scenario B -->
+                <div class="academic-card p-8 relative">
+                    <div class="mb-6">
+                        <span class="inline-block w-8 h-8 rounded bg-bayesian-surfaceAlt border border-bayesian-border text-center leading-8 font-bold text-bayesian-navy ui-text mb-4">B</span>
+                        <h3 class="text-2xl font-semibold text-bayesian-navy mb-4 ui-text">Without Replacement (Unknown Composition)</h3>
+                        <p class="text-lg mb-6 bg-bayesian-surfaceAlt p-4 rounded border border-bayesian-border italic">
+                            "A box has $n$ black and white balls but we <strong>do not know how many</strong> of each color. We pick a ball $y_1$ at random, <strong>we do not put it back</strong>, then we pick ball $y_2$."
+                        </p>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="font-semibold text-bayesian-navy ui-text">(i) Are they Exchangeable?</h4>
+                            <p><strong>Yes.</strong> Symmetry holds. Before any balls are drawn, any specific sequence (like Black, then White) is just as likely as its permutation (White, then Black). The lack of knowledge preserves the symmetry of our ignorance.</p>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-bayesian-navy ui-text">(ii) Are they Independent?</h4>
+                            <p><strong>No.</strong> They are dependent for <em>two</em> reasons now. First, the <strong>learning effect</strong>: $y_1$ gives us clues about the initial unknown proportion. Second, the <strong>physical effect</strong>: $y_1$ literally alters the composition of the box for the next draw.</p>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-bayesian-navy ui-text">(iii) Can we Act Independent?</h4>
+                            <p><strong>Absolutely Not.</strong> The observations are highly intertwined both epistemologically (learning) and physically (depletion).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Scenario C -->
+                <div class="academic-card p-8">
+                    <div class="mb-6">
+                        <span class="inline-block w-8 h-8 rounded bg-bayesian-surfaceAlt border border-bayesian-border text-center leading-8 font-bold text-bayesian-navy ui-text mb-4">C</span>
+                        <h3 class="text-2xl font-semibold text-bayesian-navy mb-4 ui-text">Without Replacement (Unknown Vast Population)</h3>
+                        <p class="text-lg mb-6 bg-bayesian-surfaceAlt p-4 rounded border border-bayesian-border italic">
+                            "Same as (b) but we know that there are <strong>many balls</strong> of each color in the box."
+                        </p>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="font-semibold text-bayesian-navy ui-text">(i) Are they Exchangeable?</h4>
+                            <p><strong>Yes.</strong> Symmetry holds universally across all these variations.</p>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-bayesian-navy ui-text">(ii) Are they Independent?</h4>
+                            <p><strong>No.</strong> Because the population is vast, the <em>physical effect</em> of removing a single ball is negligible (as seen in Question 1c). However, the <strong>learning effect</strong> remains! Because the true proportion is unknown, drawing $y_1$ still shifts our belief about that underlying proportion.</p>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-bayesian-navy ui-text">(iii) Can we Act Independent?</h4>
+                            <p><strong>No.</strong> This is the crucial distinction from Question 1. Even though the population is infinite, we cannot treat the draws as independent because we must use them to learn the underlying parameter. If we acted independently, Bayesian inference would be impossible.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Summary Insight -->
+        <section>
+            <h2 class="text-3xl font-semibold mb-6 border-b pb-3 border-bayesian-border ui-text">
+                The "Why" Behind the Math
+            </h2>
+            <div class="prose max-w-none text-bayesian-text">
+                <p class="mb-4">
+                    This question contrasts perfectly with Question 1 to highlight the difference between <strong>physical independence</strong> and <strong>statistical independence</strong> in a Bayesian framework.
+                </p>
+                <p>
+                    In frequentist statistics, if you draw with replacement, the events are considered independent because the physical mechanism isolates them. But in Bayesian statistics, if the underlying parameter is unknown, your observations are <strong>never</strong> marginally independent. The very act of observing data is what allows you to learn. If observations were truly independent, past data would tell you absolutely nothing about future data!
+                </p>
+            </div>
+        </section>
+
+        <footer class="mt-16 text-center text-bayesian-slate text-sm border-t border-bayesian-border pt-8 ui-text">
+            <p>Generated from First Principles &bull; Bayesian Data Analysis</p>
+        </footer>
+    </div>
+
+</body>
+</html>
