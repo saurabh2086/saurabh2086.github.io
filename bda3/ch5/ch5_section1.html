@@ -333,6 +333,58 @@
             </div>
         </section>
 
+        <!-- Section 5: A Rough Point Estimate -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-semibold mb-6 border-b pb-2 border-bayesian-border ui-text">
+                A Rough Initial Estimate of the Population Parameters
+            </h2>
+            <div class="prose max-w-none text-bayesian-text mb-6">
+                <p class="mb-4">
+                    Once this historical data is available, what is the next step? A simple starting point is to directly calculate the raw tumor rates \( y_j / n_j \) for each of the 70 historical experiments, and compute their empirical mean and standard deviation.
+                </p>
+
+                <div class="code-block my-6 border-l-4 border-bayesian-navy bg-bayesian-surfaceAlt font-mono text-sm">
+                    <p class="text-bayesian-slate mb-2 italic"># Python Computation</p>
+                    <pre class="!bg-transparent !p-0 !m-0"><code class="text-bayesian-text">rates = [0/20, 0/20, ..., 9/24]
+
+mean_val = sum(rates) / len(rates)
+<span class="text-bayesian-blue font-bold"># Computed Mean: 0.136</span>
+
+std_val = math.sqrt(variance(rates))
+<span class="text-bayesian-blue font-bold"># Computed Standard Deviation: 0.103</span></code></pre>
+                </div>
+
+                <p class="mb-4">
+                    If we assume that the population distribution of these rates follows a Beta distribution, we can set the mean and standard deviation of our Beta prior to match these empirical values. Using the formulas we derived earlier, we can compute the exact values for the hyperparameters \(\alpha\) and \(\beta\):
+                </p>
+
+                <div class="academic-card p-6 my-6 bg-white text-center shadow-soft border border-bayesian-border">
+                    <p class="text-sm font-semibold uppercase tracking-wider text-bayesian-slate mb-4">Estimated Hyperparameters</p>
+                    <div class="flex justify-center items-center space-x-8">
+                        <span class="math-inline font-bold text-bayesian-navy text-2xl">\(\alpha \approx 1.36\)</span>
+                        <span class="text-bayesian-slate/50 text-2xl">|</span>
+                        <span class="math-inline font-bold text-bayesian-navy text-2xl">\(\beta \approx 8.62\)</span>
+                    </div>
+                </div>
+
+                <p class="mb-4">
+                    This provides us with a fixed prior of \(\text{Beta}(1.36, 8.62)\).
+                </p>
+
+                <div class="mt-8 p-6 rounded border-l-4 border-bayesian-blue bg-blue-50/50">
+                    <p class="font-bold text-bayesian-navy mb-2 flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        Wait, is this fully Bayesian?
+                    </p>
+                    <p class="mb-3">
+                        <strong class="text-bayesian-blue">No.</strong> This is not a true Bayesian computation because it is not based on a specific, full probability model. We simply extracted point estimates (the mean and variance) directly from the data and plugged them into the prior formulas. 
+                    </p>
+                    <p>
+                        However, this rough approximation serves as an excellent starting point from which we can explore the idea of estimating population parameters. In the following sections, we will present a <strong>fully Bayesian approach</strong> to finding \(\alpha\) and \(\beta\), treating them as unknown parameters with their own prior distributions.
+                    </p>
+                </div>
+            </div>
+        </section>
 
     </div>
 
