@@ -371,6 +371,30 @@ std_val = math.sqrt(variance(rates))
                     This provides us with a fixed prior of \(\text{Beta}(1.36, 8.62)\).
                 </p>
 
+                <p class="mb-4">
+                    If we use this simple estimate of the historical population distribution as the prior for our current experiment (\(y=4, n=14\)), the posterior distribution for \(\theta_{71}\) becomes \(\text{Beta}(1.36 + 4, 8.62 + 10)\), which is \(\text{Beta}(5.36, 18.62)\).
+                </p>
+
+                <div class="code-block my-4 flex justify-around">
+                    <span><strong>Posterior Mean:</strong> \(0.224\)</span>
+                    <span><strong>Posterior Std. Dev:</strong> \(0.083\)</span>
+                </div>
+
+                <p class="mb-6">
+                    Notice that this posterior mean (\(\approx 0.224\)) is considerably lower than the crude, unpooled estimate from the current experiment alone (\(4/14 \approx 0.286\)). This happens because the weight of the historical experience "pulls" our estimate down, telling us that a tumor proportion as high as \(4/14\) is unusually high compared to the broader population of similar rats.
+                </p>
+
+                <h3 class="text-xl font-semibold mb-4 text-bayesian-navy ui-text mt-8">Assumptions and Variance Inflation</h3>
+                <p class="mb-4">
+                    It is important to note that these analyses require a strong assumption: the current tumor risk (\(\theta_{71}\)) and the historical tumor risks (\(\theta_1, \dots, \theta_{70}\)) must be considered a random sample from a common distribution. 
+                </p>
+                <p class="mb-4">
+                    This assumption of exchangeability would be invalidated if, for example, it were known that all historical experiments were performed in Laboratory A, but the current data were gathered in Laboratory B. Similarly, if there were significant time trends in the data over the years, treating them all as drawn from the same pool would be inappropriate.
+                </p>
+                <p class="mb-6">
+                    In practice, a simple (although somewhat arbitrary) way to account for potential systematic differences between current and historical data is to artificially <strong>inflate the historical variance</strong>. For our Beta model, inflating the variance is achieved by decreasing the sum \((\alpha + \beta)\) while holding the ratio \(\alpha / \beta\) (which defines the mean) constant. Other systematic differences, such as explicit time trends in tumor risks, would require a more extensive, structured model.
+                </p>
+
                 <div class="mt-8 p-6 rounded border-l-4 border-bayesian-blue bg-blue-50/50">
                     <p class="font-bold text-bayesian-navy mb-2 flex items-center">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
@@ -379,10 +403,61 @@ std_val = math.sqrt(variance(rates))
                     <p class="mb-3">
                         <strong class="text-bayesian-blue">No.</strong> This is not a true Bayesian computation because it is not based on a specific, full probability model. We simply extracted point estimates (the mean and variance) directly from the data and plugged them into the prior formulas. 
                     </p>
+                    <p class="mb-4">
+                        Having used the 70 historical experiments to form a prior distribution for \(\theta_{71}\), we might now like to use this same prior distribution to obtain Bayesian inferences for the tumor probabilities in the first 70 experiments (\(\theta_1, \dots, \theta_{70}\)). However, there are several logical and practical problems with this approach of directly estimating a prior distribution from existing data:
+                    </p>
+                    <ul class="list-disc pl-6 mb-4 space-y-2 text-bayesian-text">
+                        <li>
+                            <strong>Using Data Twice:</strong> If we use the estimated prior distribution for inference about the first 70 experiments, the data is being used twice. First, all the results together are used to estimate the prior distribution, and then each individual experiment's results are used again to estimate its own \(\theta\). This causes us to artificially overestimate our precision.
+                        </li>
+                        <li>
+                            <strong>Ignoring Uncertainty:</strong> The point estimate for \(\alpha\) and \(\beta\) seems arbitrary. By plugging in a single point estimate for these hyperparameters, we necessarily ignore the posterior uncertainty in \(\alpha\) and \(\beta\) themselves.
+                        </li>
+                        <li>
+                            <strong>Philosophical Consistency:</strong> Does it make sense to "estimate" \(\alpha\) and \(\beta\) at all? They are part of the "prior" distribution, and according to strict Bayesian logic, priors should be established <em>before</em> the data are gathered.
+                        </li>
+                    </ul>
                     <p>
-                        However, this rough approximation serves as an excellent starting point from which we can explore the idea of estimating population parameters. In the following sections, we will present a <strong>fully Bayesian approach</strong> to finding \(\alpha\) and \(\beta\), treating them as unknown parameters with their own prior distributions.
+                        While this rough approximation serves as an excellent starting point, these limitations highlight the need for a better framework. In the next chapter section, we will resolve these issues by presenting a <strong>fully Bayesian approach</strong>, treating \(\alpha\) and \(\beta\) as unknown parameters with their own hyperprior distributions.
                     </p>
                 </div>
+
+                <h3 class="text-xl font-semibold mb-4 text-bayesian-navy ui-text mt-12">The Logic of Combining Information</h3>
+                <p class="mb-4">
+                    Despite the theoretical problems with using point estimates for the prior, it clearly makes more sense to try to estimate the population distribution from <em>all</em> the data—and thereby use it to help estimate each individual \(\theta_j\)—than to estimate all 71 values of \(\theta_j\) completely separately.
+                </p>
+                <p class="mb-4">
+                    Consider the following thought experiment about making inferences on two specific parameters, \(\theta_{26}\) and \(\theta_{27}\). In the historical data, both of these correspond to experiments with identical results: exactly 2 observed tumors out of 20 rats (\(2/20 = 0.10\)). 
+                </p>
+                <p class="mb-4">
+                    Suppose our initial population-level prior distribution suggests that the average tumor rate is around \(0.15\). Consequently, our initial posterior estimate for both \(\theta_{26}\) and \(\theta_{27}\) would naturally fall somewhere between the raw data (\(0.10\)) and the prior mean (\(0.15\))—let's say we estimate them to be around \(0.13\).
+                </p>
+                <p class="mb-4">
+                    Now, suppose a divine oracle comes down after you complete your analysis and reveals that the true underlying risk for experiment 26 is exactly \(\theta_{26} = 0.10\). How should this new, absolute knowledge affect your estimate for experiment 27?
+                </p>
+                <div class="academic-card p-6 my-6 bg-bayesian-surfaceAlt border-l-4 border-bayesian-blue">
+                    <p class="mb-3">
+                        If we were analyzing the experiments in total isolation, learning \(\theta_{26}\) would have zero impact on \(\theta_{27}\). 
+                    </p>
+                    <p>
+                        However, because we assume both experiments are drawn from a shared, common population, learning that \(\theta_{26}\) is much lower than our initial prior expectation (\(0.10\) vs \(0.15\)) tells us something profound: <strong>it tells us that the overall population of rats actually has a lower baseline tumor risk than we initially thought.</strong>
+                    </p>
+                </div>
+                <p class="mb-4">
+                    Because our belief about the shared population distribution has shifted downwards, our estimate for \(\theta_{27}\) must logically shift downwards along with it. We would revise our estimate of \(\theta_{27}\) to be lower than our original guess of \(0.13\).
+                </p>
+                <p class="mb-8">
+                    Thus, \(\theta_{26}\) and \(\theta_{27}\) are fundamentally dependent in the posterior distribution, meaning they cannot and should not be analyzed separately. This profound, shared dependency—where learning about one group improves our inferences about all other groups—is the core philosophical and mathematical justification for building hierarchical models.
+                </p>
+
+                <h3 class="text-xl font-semibold mb-4 text-bayesian-navy ui-text border-t pt-8 border-bayesian-border">Conclusion: Empirical vs. Full Hierarchical Bayes</h3>
+                <p class="mb-4">
+                    We can retain all the advantages of using the data to estimate prior parameters—while simultaneously eliminating all of the logical disadvantages just mentioned—by putting a probability model on the <em>entire set</em> of parameters and experiments, and then performing a Bayesian analysis on the joint distribution of all the model parameters simultaneously.
+                </p>
+                <p>
+                    The rough approach of using the raw data to plug in point estimates for the prior parameters (which is sometimes called <strong>Empirical Bayes</strong>) can simply be viewed as a fast, practical approximation to the complete, fully Bayesian hierarchical analysis we will develop next.
+                </p>
+
             </div>
         </section>
 
