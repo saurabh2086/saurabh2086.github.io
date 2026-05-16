@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Constructing a Parameterized Prior Distribution</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400;1,6..72,600&display=swap" rel="stylesheet">
+
+    <!-- MathJax for LaTeX rendering -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bayesian: {
+                            bg: '#f7f9fb',
+                            text: '#191c1e',
+                            navy: '#131b2e',
+                            blue: '#0051d5',
+                            slate: '#75859d',
+                            surface: '#ffffff',
+                            surfaceAlt: '#f8fafc',
+                            border: '#e2e8f0'
+                        }
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 12px rgba(15, 23, 42, 0.05)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Newsreader', serif;
+            background-color: #f7f9fb;
+            color: #191c1e;
+            font-size: 1.25rem;
+            line-height: 1.7;
+        }
+
+        h1, h2, h3, h4, h5, h6, .ui-text {
+            font-family: 'Inter', sans-serif;
+            color: #131b2e; /* Deep Navy */
+        }
+
+        .math-inline {
+            font-family: 'Newsreader', serif;
+            font-size: 1.3rem;
+        }
+
+        .theorem-block {
+            background-color: #f8fafc;
+            border-left: 2px solid #0051d5;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .academic-card {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .academic-card:hover {
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+            transform: translateY(-2px);
+        }
+        
+        .code-block {
+            background-color: #1e293b;
+            color: #f8fafc;
+            font-family: monospace;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            padding: 1rem;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+
+<body class="antialiased">
+
+    <!-- Container constrained to 720px for optimal reading -->
+    <div class="max-w-[720px] mx-auto px-4 py-16">
+
+        <!-- Navigation -->
+        <nav class="mb-8">
+            <a href="../../index.html" class="inline-flex items-center text-sm font-semibold text-bayesian-slate hover:text-bayesian-navy transition-colors ui-text">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                Back to Index
+            </a>
+        </nav>
+
+        <!-- Header -->
+        <header class="mb-16">
+            <div class="inline-block px-3 py-1 bg-bayesian-surfaceAlt border border-bayesian-border text-bayesian-slate rounded text-xs font-semibold tracking-wide mb-6 uppercase ui-text">
+                Bayesian Data Analysis &bull; Hierarchical Models
+            </div>
+            <h1 class="text-5xl font-bold mb-6 tracking-tight leading-tight ui-text">
+                Constructing a Parameterized Prior Distribution
+            </h1>
+            <p class="text-xl text-bayesian-slate leading-relaxed">
+            </p>
+        </header>
+
+        <!-- Section 1: Introduction -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-semibold mb-6 border-b pb-2 border-bayesian-border ui-text">
+                Introduction
+            </h2>
+            <div class="prose max-w-none text-bayesian-text mb-6">
+                <p class="mb-4">
+                    We begin our exploration of hierarchical models by considering a small-scale experiment. Suppose we have collected data from this current study, alongside data from several similar historical experiments. 
+                </p>
+                <p class="mb-4">
+                    Rather than analyzing the new experiment in isolation, we can leverage these historical studies to construct an informed prior distribution. This prior allows us to draw more robust inferences about the parameters of our current experiment. 
+                </p>
+                <p>
+                    Mathematically, this approach assumes that the underlying parameters of both the historical and current experiments are random samples drawn from a shared underlying population.
+                </p>
+            </div>
+        </section>
+
+        <!-- Section 2: Rat Tumor Example -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-semibold mb-6 border-b pb-2 border-bayesian-border ui-text">
+                Example. Estimating the risk of tumor in a group of rats
+            </h2>
+            <div class="prose max-w-none text-bayesian-text mb-6">
+                <p class="mb-4">
+                    To evaluate a drug for possible medical applications, scientists routinely perform preliminary studies on rodents. Suppose we are analyzing a particular study from the statistical literature where our immediate aim is to find the probability of a tumor, denoted as \(\theta\), in a population of laboratory rats of type 'F344' that receive a zero dose of the drug (i.e., the control group).
+                </p>
+                <p class="mb-6">
+                    The data from the current experiment shows that 4 out of 14 rats developed endometrial stromal polyps.
+                </p>
+
+                <figure class="my-8 flex flex-col items-center">
+                    <img src="rat_tumor_diagram.png" alt="Endometrial Stromal Polyp in Rat Uterus" class="rounded border border-bayesian-border shadow-soft max-w-full h-auto" style="max-height: 400px;">
+                    <figcaption class="mt-3 text-sm text-bayesian-slate text-center max-w-md">
+                        <strong>Figure 1.</strong> Endometrial stromal polyps are common, spontaneously occurring benign tumors originating from the endometrial stroma that project into the uterine lumen of aging female F344 rats.
+                    </figcaption>
+                </figure>
+
+                <div class="academic-card p-6 mb-6 mt-8">
+                    <h4 class="font-semibold text-bayesian-navy ui-text mb-2">The Model Setup</h4>
+                    <p class="mb-4">Given this data, it is natural to assume a Binomial model for the number of observed tumors \(y\), given the total number of rats \(n\) and the parameter \(\theta\):</p>
+                    <div class="code-block mb-4 text-center">
+                        $$y | \theta \sim \text{Binomial}(n, \theta)$$
+                    </div>
+                    <p class="text-sm text-bayesian-slate italic mb-4">where \(n = 14\) and \(y = 4\).</p>
+                    
+                    <p class="mb-4">For mathematical convenience and to achieve conjugacy, we assume that the prior distribution of \(\theta\) follows a Beta distribution characterized by unknown hyperparameters \(\alpha\) and \(\beta\):</p>
+                    <div class="code-block text-center">
+                        $$\theta \sim \text{Beta}(\alpha, \beta)$$
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Analysis with Fixed Prior -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-semibold mb-6 border-b pb-2 border-bayesian-border ui-text">
+                Analysis with a Fixed Prior Distribution
+            </h2>
+            <div class="prose max-w-none text-bayesian-text mb-6">
+                <p class="mb-4">
+                    Before we look at complex hierarchical models, let's start with a simpler approach using a fixed prior. Imagine that by looking at historical data, we find that the tumor probabilities from previous experiments follow a Beta distribution with a known average (mean, \(\mu\)) and a known spread (standard deviation, \(\sigma\)).
+                </p>
+                <p class="mb-4">
+                    It makes sense that tumor probabilities aren't exactly the same in every experiment. This variation happens naturally because of slight differences in the rats themselves, their age, or their environment.
+                </p>
+
+                <div class="theorem-block my-8">
+                    <h3 class="text-lg font-bold text-bayesian-blue mb-2 ui-text uppercase tracking-wider text-sm">Finding <span class="normal-case">\(\alpha\)</span> and <span class="normal-case">\(\beta\)</span> from the Average and Spread</h3>
+                    <p class="mb-3">
+                        If we know the average (\(\mu\)) and the variance (\(\sigma^2\), which is just the standard deviation squared) of the historical data, we can figure out the exact \(\alpha\) and \(\beta\) parameters for our Beta distribution. The formulas for the mean and variance of a \(\text{Beta}(\alpha, \beta)\) distribution are:
+                    </p>
+                    <div class="code-block mb-3 text-center">
+                        $$\mu = \frac{\alpha}{\alpha + \beta}$$
+                        $$\sigma^2 = \frac{\alpha \beta}{(\alpha + \beta)^2 (\alpha + \beta + 1)} = \frac{\mu(1-\mu)}{\alpha+\beta+1}$$
+                    </div>
+                    <p>
+                        By doing a little algebra to rearrange these equations, we can find \(\alpha\) and \(\beta\) directly:
+                    </p>
+                    <div class="code-block mt-3 text-center">
+                        $$\alpha = \mu \left( \frac{\mu(1-\mu)}{\sigma^2} - 1 \right)$$
+                        $$\beta = (1-\mu) \left( \frac{\mu(1-\mu)}{\sigma^2} - 1 \right)$$
+                    </div>
+                </div>
+
+                <p class="mb-4">
+                    Once we calculate \(\alpha\) and \(\beta\) from the historical data, we can use this specific Beta distribution as our fixed prior. 
+                </p>
+                <p>
+                    Because we are using a Beta prior with a Binomial model (a combination known as "conjugate"), updating our beliefs with new data is extremely easy. In our current experiment, we observed \(y = 4\) rats with tumors out of \(n = 14\) total rats (meaning 10 rats did not have tumors). To find the new, updated distribution (the posterior) for \(\theta\), we simply add these new counts to our prior parameters:
+                </p>
+                
+                <div class="academic-card p-6 my-6">
+                    <div class="code-block text-center">
+                        $$\theta | y \sim \text{Beta}(\alpha + y, \beta + n - y)$$
+                        $$\theta | y \sim \text{Beta}(\alpha + 4, \beta + 10)$$
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Estimating Population Distribution -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-semibold mb-6 border-b pb-2 border-bayesian-border ui-text">
+                Approximate Estimate of the Population Distribution using Historical Data
+            </h2>
+            <div class="prose max-w-none text-bayesian-text mb-6">
+                <p class="mb-4">
+                    Typically, the true underlying risk of tumors—and its exact mean and standard deviation—is not known in advance. Rather, we only have the raw historical data from past experiments performed on similar groups of rats. In our running example, we have access to historical data from 70 past experiments.
+                </p>
+
+                <div class="academic-card p-6 my-6 bg-bayesian-surfaceAlt">
+                    <h4 class="font-semibold text-bayesian-navy ui-text mb-3">Historical Data (70 Past Experiments)</h4>
+                    <p class="text-sm font-mono text-bayesian-slate leading-relaxed">
+                        0/20 &nbsp;0/20 &nbsp;0/20 &nbsp;0/20 &nbsp;0/20 &nbsp;0/20 &nbsp;0/20 &nbsp;0/19 &nbsp;0/19 &nbsp;0/19<br>
+                        0/19 &nbsp;0/18 &nbsp;0/18 &nbsp;0/17 &nbsp;1/20 &nbsp;1/20 &nbsp;1/20 &nbsp;1/20 &nbsp;1/19 &nbsp;1/19<br>
+                        1/18 &nbsp;1/18 &nbsp;2/25 &nbsp;2/24 &nbsp;2/23 &nbsp;2/20 &nbsp;2/20 &nbsp;2/20 &nbsp;2/20 &nbsp;2/20<br>
+                        2/20 &nbsp;1/10 &nbsp;5/49 &nbsp;2/19 &nbsp;5/46 &nbsp;3/27 &nbsp;2/17 &nbsp;7/49 &nbsp;7/47 &nbsp;3/20<br>
+                        3/20 &nbsp;2/13 &nbsp;9/48 10/50 &nbsp;4/20 &nbsp;4/20 &nbsp;4/20 &nbsp;4/20 &nbsp;4/20 &nbsp;4/20<br>
+                        4/20 10/48 &nbsp;4/19 &nbsp;4/19 &nbsp;4/19 &nbsp;5/22 11/46 12/49 &nbsp;5/20 &nbsp;5/20<br>
+                        6/23 &nbsp;5/19 &nbsp;6/22 &nbsp;6/20 &nbsp;6/20 &nbsp;6/20 16/52 15/47 15/46 &nbsp;9/24
+                    </p>
+                    <p class="text-xs text-bayesian-slate mt-2 italic">Format: (number of tumors / total number of rats)</p>
+                </div>
+
+                <p class="mb-4">
+                    For the \(j\)-th experiment, let \(y_j\) denote the number of rats with tumors, and \(n_j\) denote the total number of rats in that experiment. We assume that these experiments are completely independent of each other. We model each \(y_j\) as independent Binomial data, given the sample size \(n_j\) and the underlying probability of tumor \(\theta_j\):
+                </p>
+                <div class="code-block mb-4 text-center">
+                    $$y_j | \theta_j \sim \text{Binomial}(n_j, \theta_j)$$
+                </div>
+
+                <p class="mb-4">
+                    We assume that the population distribution of these underlying probabilities \(\theta_j\) can be represented by a common Beta distribution, controlled by the hyperparameters \(\alpha\) and \(\beta\):
+                </p>
+                <div class="code-block mb-8 text-center">
+                    $$\theta_j | \alpha, \beta \sim \text{Beta}(\alpha, \beta)$$
+                </div>
+
+                <p>
+                    This completes the structure of our hierarchical model. Below is a schematic representation of these dependencies, where the nodes \(\theta_{71}\) and \(y_{71}\) represent our current, ongoing experiment:
+                </p>
+
+                <!-- Hierarchical Model Schematic Diagram -->
+                <div class="my-16 flex flex-col items-center relative font-sans">
+                    <!-- Level 1: Hyperparameters -->
+                    <div class="relative z-10 flex flex-col items-center">
+                        <div class="w-16 h-16 rounded-full border-2 border-bayesian-blue bg-white flex items-center justify-center shadow-soft relative z-20">
+                            <span class="math-inline">\(\alpha, \beta\)</span>
+                        </div>
+                        <!-- short vertical line dropping from alpha,beta -->
+                        <div class="w-[2px] h-4 bg-bayesian-slate/30"></div>
+                    </div>
+
+                    <!-- Horizontal Bar -->
+                    <!-- The px-4 padding is 1rem (16px). The w-14 is 3.5rem (56px). Center is 16 + 28 = 44px. -->
+                    <div class="w-full max-w-[500px] px-[44px]">
+                        <div class="w-full h-[2px] bg-bayesian-slate/30"></div>
+                    </div>
+
+                    <!-- Connecting lines container 1 (drops to theta) -->
+                    <div class="w-full max-w-[500px] h-8 relative flex justify-between px-4">
+                        <div class="w-14 flex justify-center"><div class="w-[2px] h-full bg-bayesian-slate/30"></div></div>
+                        <div class="w-14 flex justify-center"><div class="w-[2px] h-full bg-bayesian-slate/30"></div></div>
+                        <div class="flex items-center justify-center px-4 relative"><div class="w-[2px] h-4 bg-bayesian-slate/30 absolute top-0"></div><span class="text-3xl text-bayesian-slate tracking-widest opacity-0">...</span></div>
+                        <div class="w-14 flex justify-center"><div class="w-[2px] h-full bg-bayesian-slate/30"></div></div>
+                        <div class="w-14 flex justify-center"><div class="w-[2px] h-full bg-bayesian-slate/30"></div></div>
+                    </div>
+
+                    <!-- Level 2: Theta -->
+                    <div class="relative z-10 flex w-full max-w-[500px] justify-between px-4">
+                        <div class="w-14 h-14 rounded-full border-2 border-bayesian-navy bg-bayesian-surfaceAlt flex items-center justify-center shadow-sm"><span class="math-inline">\(\theta_1\)</span></div>
+                        <div class="w-14 h-14 rounded-full border-2 border-bayesian-navy bg-bayesian-surfaceAlt flex items-center justify-center shadow-sm"><span class="math-inline">\(\theta_2\)</span></div>
+                        <div class="flex items-center justify-center px-4"><span class="text-3xl text-bayesian-slate tracking-widest">...</span></div>
+                        <div class="w-14 h-14 rounded-full border-2 border-bayesian-navy bg-bayesian-surfaceAlt flex items-center justify-center shadow-sm"><span class="math-inline">\(\theta_{70}\)</span></div>
+                        <div class="w-14 h-14 rounded-full border-2 border-bayesian-blue bg-blue-50 flex items-center justify-center shadow-md relative">
+                            <span class="math-inline font-bold text-bayesian-blue">\(\theta_{71}\)</span>
+                            <div class="absolute -top-7 text-xs font-bold text-bayesian-blue whitespace-nowrap bg-blue-100 px-2 py-1 rounded">Current Exp.</div>
+                        </div>
+                    </div>
+
+                    <!-- Connecting lines container 2 -->
+                    <div class="w-full max-w-[500px] h-10 relative flex justify-between px-4">
+                        <div class="w-14 flex justify-center"><div class="w-[2px] h-full bg-bayesian-slate/30"></div></div>
+                        <div class="w-14 flex justify-center"><div class="w-[2px] h-full bg-bayesian-slate/30"></div></div>
+                        <div class="flex items-center justify-center px-4"><span class="text-3xl text-bayesian-slate tracking-widest opacity-0">...</span></div>
+                        <div class="w-14 flex justify-center"><div class="w-[2px] h-full bg-bayesian-slate/30"></div></div>
+                        <div class="w-14 flex justify-center"><div class="w-[2px] h-full bg-bayesian-blue/40"></div></div>
+                    </div>
+
+                    <!-- Level 3: y -->
+                    <div class="relative z-10 flex w-full max-w-[500px] justify-between px-4">
+                        <div class="w-14 h-12 rounded border border-bayesian-slate bg-white flex items-center justify-center text-sm shadow-sm"><span class="math-inline">\(y_1\)</span></div>
+                        <div class="w-14 h-12 rounded border border-bayesian-slate bg-white flex items-center justify-center text-sm shadow-sm"><span class="math-inline">\(y_2\)</span></div>
+                        <div class="flex items-center justify-center px-4"><span class="text-3xl text-bayesian-slate tracking-widest opacity-0">...</span></div>
+                        <div class="w-14 h-12 rounded border border-bayesian-slate bg-white flex items-center justify-center text-sm shadow-sm"><span class="math-inline">\(y_{70}\)</span></div>
+                        <div class="w-14 h-12 rounded border-2 border-bayesian-blue bg-blue-50 flex items-center justify-center shadow-md">
+                            <span class="math-inline font-bold text-bayesian-blue">\(y_{71}\)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+    </div>
+
+</body>
+</html>
