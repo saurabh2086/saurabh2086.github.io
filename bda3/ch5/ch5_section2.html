@@ -801,8 +801,14 @@
                         And the full joint posterior distribution is calculated via Bayes' rule:
                     </p>
                     <div class="text-center my-6 bg-white p-4 rounded border border-bayesian-border">
-                        <span class="math-inline text-bayesian-navy block mb-2">\(p(\phi, \theta \mid y) \propto p(\phi, \theta) p(y \mid \phi, \theta)\)</span>
-                        <span class="math-inline text-bayesian-navy block">\(= p(\phi, \theta)p(y \mid \theta)\)</span>
+                        <div class="text-bayesian-navy overflow-x-auto">
+                            $$
+                            \begin{aligned}
+                            p(\phi, \theta \mid y) &\propto p(\phi, \theta) p(y \mid \phi, \theta) \\
+                            &= p(\phi, \theta) p(y \mid \theta)
+                            \end{aligned}
+                            $$
+                        </div>
                         <div class="text-sm text-bayesian-slate mt-2 text-right mr-4">(5.3)</div>
                     </div>
 
