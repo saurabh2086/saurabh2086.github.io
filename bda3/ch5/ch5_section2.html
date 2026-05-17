@@ -824,6 +824,39 @@
                         \(\phi\) via the hyper-prior \(p(\phi)\), we have completed the theoretical foundation for the
                         full hierarchical model.
                     </p>
+
+                    <h4 class="font-bold text-bayesian-navy mt-10 mb-3 text-lg">The Hyperprior Distribution</h4>
+                    <p class="mb-4">
+                        In order to create the joint probability distribution for \((\phi, \theta)\), we must assign a prior distribution specifically to the hyperparameter \(\phi\). If little is known about \(\phi\), we can assign a diffuse (noninformative) prior distribution. However, we must be extremely careful when using an <em>improper</em> prior density to verify that the resulting posterior distribution remains mathematically proper. Furthermore, we should assess whether our final conclusions are overly sensitive to this simplifying "diffuse" assumption.
+                    </p>
+                    <p class="mb-4">
+                        In most real-world problems, one usually possesses enough substantive domain knowledge about \(\phi\) to at least constrain the hyperparameters into a finite, realistic region, even if a highly specific substantive hyperprior cannot be constructed. As is standard practice in nonhierarchical models, it is often practical to start with a simple, relatively noninformative prior distribution on \(\phi\), and then seek to add more informative prior constraints later if the resulting posterior distribution exhibits too much variation.
+                    </p>
+                    <p class="mb-6">
+                        Returning to the rat tumor example, the overarching hyperparameters are \((\alpha, \beta)\). These two values completely determine the Beta population distribution from which all the local \(\theta_j\)'s are drawn. We will thoroughly illustrate one approach to constructing an appropriate hyperprior distribution for \((\alpha, \beta)\) as we continue that example in the next section.
+                    </p>
+
+                    <h4 class="font-bold text-bayesian-navy mt-10 mb-3 text-lg">Posterior Predictive Distributions</h4>
+                    <p class="mb-4">
+                        Because hierarchical models are uniquely characterized by two levels of unknowns—the hyperparameters \(\phi\) and the local parameters \(\theta\)—there are actually <strong>two distinct types</strong> of posterior predictive distributions that might interest a data analyst:
+                    </p>
+                    <ol class="list-decimal pl-8 mb-4 text-bayesian-text space-y-2">
+                        <li><strong>Future observations from an existing group:</strong> The distribution of future observations \(\tilde{y}\) corresponding to an <em>existing</em> \(\theta_j\).</li>
+                        <li><strong>Observations from a completely new group:</strong> The distribution of observations \(\tilde{y}\) corresponding to a <em>future</em> parameter \(\tilde{\theta}\) drawn from the same underlying superpopulation.</li>
+                    </ol>
+                    <p class="mb-4">
+                        Both types of posterior replications are invaluable for assessing model adequacy (a topic explored deeply in Chapter 6). 
+                    </p>
+                    <div class="bg-white p-5 rounded border-l-4 border-bayesian-blue shadow-sm mt-4 mb-4">
+                        <h5 class="font-semibold text-bayesian-navy mb-2">Application to the Rat Tumors</h5>
+                        <p class="mb-2">
+                            In the rat tumor framework, "future observations" can mean two entirely different things:
+                        </p>
+                        <ul class="list-disc pl-5 mb-2 text-sm text-bayesian-text space-y-2">
+                            <li><strong>Scenario 1:</strong> Testing <em>additional rats</em> from one of the 71 existing experiments. In this case, the posterior predictive draws \(\tilde{y}\) are generated directly from the posterior draws of \(\theta_j\) for that specific, existing experiment.</li>
+                            <li><strong>Scenario 2:</strong> Conducting a <em>brand new, 72nd experiment</em>. In this case, the generation requires two steps: first, you must draw a new \(\tilde{\theta}\) from the population distribution (using the posterior draws of the hyperparameters \(\phi\)). Then, you draw the new data \(\tilde{y}\) conditionally based on that simulated \(\tilde{\theta}\).</li>
+                        </ul>
+                    </div>
                 </div>
 
             </div>
