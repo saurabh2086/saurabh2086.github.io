@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exchangeability and Hierarchical Models</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400;1,6..72,600&display=swap" rel="stylesheet">
+
+    <!-- MathJax for LaTeX rendering -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bayesian: {
+                            bg: '#f7f9fb',
+                            text: '#191c1e',
+                            navy: '#131b2e',
+                            blue: '#0051d5',
+                            slate: '#75859d',
+                            surface: '#ffffff',
+                            surfaceAlt: '#f8fafc',
+                            border: '#e2e8f0'
+                        }
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 12px rgba(15, 23, 42, 0.05)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Newsreader', serif;
+            background-color: #f7f9fb;
+            color: #191c1e;
+            font-size: 1.25rem;
+            line-height: 1.7;
+        }
+
+        h1, h2, h3, h4, h5, h6, .ui-text {
+            font-family: 'Inter', sans-serif;
+            color: #131b2e; /* Deep Navy */
+        }
+
+        .math-inline {
+            font-family: 'Newsreader', serif;
+            font-size: 1.3rem;
+        }
+
+        .theorem-block {
+            background-color: #f8fafc;
+            border-left: 2px solid #0051d5;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .academic-card {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .academic-card:hover {
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+            transform: translateY(-2px);
+        }
+        
+        .code-block {
+            background-color: #1e293b;
+            color: #f8fafc;
+            font-family: monospace;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            padding: 1rem;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+
+<body class="antialiased">
+
+    <!-- Container constrained to 720px for optimal reading -->
+    <div class="max-w-[720px] mx-auto px-4 py-16">
+
+        <!-- Navigation -->
+        <nav class="mb-8">
+            <a href="../../index.html" class="inline-flex items-center text-sm font-semibold text-bayesian-slate hover:text-bayesian-navy transition-colors ui-text">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                Back to Index
+            </a>
+        </nav>
+
+        <!-- Header -->
+        <header class="mb-16">
+            <div class="inline-block px-3 py-1 bg-bayesian-surfaceAlt border border-bayesian-border text-bayesian-slate rounded text-xs font-semibold tracking-wide mb-6 uppercase ui-text">
+                Bayesian Data Analysis &bull; Hierarchical Models
+            </div>
+            <h1 class="text-5xl font-bold mb-6 tracking-tight leading-tight ui-text">
+                Exchangeability and Hierarchical Models
+            </h1>
+            <p class="text-xl text-bayesian-slate leading-relaxed">
+            </p>
+        </header>
+
+        <!-- Main Content -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-semibold mb-6 border-b pb-2 border-bayesian-border ui-text">
+                Generalizing the Model
+            </h2>
+            <div class="prose max-w-none text-bayesian-text mb-6">
+                <p class="mb-4">
+                    Generalizing from the rat tumor example, consider a set of \(J\) separate experiments, indexed as \(j = 1, 2, \dots, J\). For each experiment, we observe a data vector \(y_j\) that is modeled by a parameter vector \(\theta_j\) according to a likelihood function \(p(y_j \mid \theta_j)\).
+                </p>
+                <p class="mb-4">
+                    It is common for the parameter vectors \(\theta_j\) to have overlapping or shared components across different experiments. For example, if each \(y_j\) is drawn from a normal distribution with a group-specific mean \(\mu_j\) but a common, shared standard deviation \(\sigma\), then the parameter vector for the \(j\)-th experiment would be defined as \(\theta_j = (\mu_j, \sigma^2)\).
+                </p>
+                <p class="mb-4">
+                    To build a joint probability model for the entire set of parameters \(\theta = (\theta_1, \dots, \theta_J)\), we rely on a critical foundational concept in Bayesian statistics: <strong>exchangeability</strong>.
+                </p>
+
+                <div class="theorem-block my-8">
+                    <h4 class="font-bold text-bayesian-navy mb-2">Definition: Exchangeability</h4>
+                    <p class="mb-2">
+                        A set of parameters \(\theta_1, \dots, \theta_J\) is said to be <em>exchangeable</em> if our prior beliefs about them are invariant to permutations of their indices. Mathematically, their joint prior distribution satisfies:
+                    </p>
+                    <div class="text-center my-4">
+                        <span class="math-inline">\(p(\theta_1, \dots, \theta_J) = p(\theta_{\pi(1)}, \dots, \theta_{\pi(J)})\)</span>
+                    </div>
+                    <p>
+                        for any permutation \(\pi\) of \((1, \dots, J)\).
+                    </p>
+                </div>
+
+                <p class="mb-4">
+                    When no information—other than the observed data \(y\)—is available to distinguish any parameter \(\theta_j\) from any other, and no meaningful ordering or grouping of the parameters exists, we must assume symmetry among the parameters in their prior distribution. In Bayesian statistics, this symmetry is expressed probabilistically through the concept of <strong>exchangeability</strong>. Formally, the parameters \((\theta_1, \dots, \theta_J)\) are exchangeable if their joint prior probability distribution, \(p(\theta_1, \dots, \theta_J)\), is invariant to any permutation of the parameter indices.
+                </p>
+                <p class="mb-4">
+                    For example, in our rat tumor analysis, suppose we have no means to distinguish between the 71 separate experiments other than their respective sample sizes, \(n_j\). If we assume that the sample size \(n_j\) provides no information about the underlying tumor risk \(\theta_j\)—that is, the true probability of a tumor is unrelated to how many rats the researchers chose to place in the control group—then we cannot meaningfully order or group the experiments prior to analyzing the data. Consequently, we must employ an exchangeable model for the parameters \(\theta_1, \dots, \theta_{71}\).
+                </p>
+
+                <!-- Concept Check Block -->
+                <div class="mt-10 p-6 rounded-lg border border-bayesian-border bg-white shadow-sm">
+                    <h4 class="flex items-center text-lg font-bold text-bayesian-navy mb-4">
+                        <svg class="w-5 h-5 mr-2 text-bayesian-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        Concept Check: Multiple Choice
+                    </h4>
+                    <div class="space-y-6 text-bayesian-text">
+                        
+                        <!-- Question 1 -->
+                        <div class="p-5 bg-bayesian-surfaceAlt rounded border-l-2 border-bayesian-slate">
+                            <p class="font-semibold mb-3">1. Why does the assumption of exchangeability require that we have <em>no</em> prior information distinguishing the parameters?</p>
+                            <div class="space-y-2 mb-4 text-sm">
+                                <label class="flex items-start cursor-pointer"><input type="radio" name="q1" class="mt-1 mr-2"> <span>A) Any prior information violates the laws of probability.</span></label>
+                                <label class="flex items-start cursor-pointer"><input type="radio" name="q1" class="mt-1 mr-2"> <span>B) Prior information distinguishing parameters would mean their joint prior is no longer invariant to permutations.</span></label>
+                                <label class="flex items-start cursor-pointer"><input type="radio" name="q1" class="mt-1 mr-2"> <span>C) We must exclusively use the data to construct our priors.</span></label>
+                                <label class="flex items-start cursor-pointer"><input type="radio" name="q1" class="mt-1 mr-2"> <span>D) Exchangeability means all parameters are exactly mathematically equal.</span></label>
+                            </div>
+                            <details class="text-sm">
+                                <summary class="cursor-pointer text-bayesian-blue font-semibold outline-none">Reveal Answer</summary>
+                                <div class="mt-2 p-3 bg-green-50 text-green-800 border border-green-200 rounded">
+                                    <strong>Correct Answer: B.</strong> Exchangeability requires mathematical symmetry. If you know information that makes one parameter inherently different from another, you cannot arbitrarily swap their indices without changing your prior beliefs.
+                                </div>
+                            </details>
+                        </div>
+
+                        <!-- Question 2 -->
+                        <div class="p-5 bg-bayesian-surfaceAlt rounded border-l-2 border-bayesian-slate">
+                            <p class="font-semibold mb-3">2. If we knew that experiments 1-10 used male rats and 11-20 used female rats, are the parameters \(\theta_1, \dots, \theta_{20}\) fully exchangeable?</p>
+                            <div class="space-y-2 mb-4 text-sm">
+                                <label class="flex items-start cursor-pointer"><input type="radio" name="q2" class="mt-1 mr-2"> <span>A) Yes, because they are still measuring rat tumors.</span></label>
+                                <label class="flex items-start cursor-pointer"><input type="radio" name="q2" class="mt-1 mr-2"> <span>B) Yes, as long as we haven't seen the actual tumor data yet.</span></label>
+                                <label class="flex items-start cursor-pointer"><input type="radio" name="q2" class="mt-1 mr-2"> <span>C) No, because we can now logically group the parameters, meaning permutations across groups are no longer symmetric.</span></label>
+                                <label class="flex items-start cursor-pointer"><input type="radio" name="q2" class="mt-1 mr-2"> <span>D) No, because male rats always have higher tumor rates.</span></label>
+                            </div>
+                            <details class="text-sm">
+                                <summary class="cursor-pointer text-bayesian-blue font-semibold outline-none">Reveal Answer</summary>
+                                <div class="mt-2 p-3 bg-green-50 text-green-800 border border-green-200 rounded">
+                                    <strong>Correct Answer: C.</strong> The knowledge of sex provides a meaningful grouping. Swapping a male rat parameter with a female rat parameter might change our joint probability, violating full exchangeability (we would instead use <em>partial exchangeability</em>).
+                                </div>
+                            </details>
+                        </div>
+
+                        <!-- Question 3 -->
+                        <div class="p-5 bg-bayesian-surfaceAlt rounded border-l-2 border-bayesian-slate">
+                            <p class="font-semibold mb-3">3. How does the concept of exchangeability differ from the assumption of independence?</p>
+                            <div class="space-y-2 mb-4 text-sm">
+                                <label class="flex items-start cursor-pointer"><input type="radio" name="q3" class="mt-1 mr-2"> <span>A) They are exactly the same concept.</span></label>
+                                <label class="flex items-start cursor-pointer"><input type="radio" name="q3" class="mt-1 mr-2"> <span>B) Independence means learning one parameter tells us nothing about another; exchangeability means they are drawn from a shared distribution, so learning about one <em>does</em> teach us about the others.</span></label>
+                                <label class="flex items-start cursor-pointer"><input type="radio" name="q3" class="mt-1 mr-2"> <span>C) Independence applies to data, while exchangeability applies exclusively to priors.</span></label>
+                                <label class="flex items-start cursor-pointer"><input type="radio" name="q3" class="mt-1 mr-2"> <span>D) Exchangeability implies that parameters must be mutually exclusive.</span></label>
+                            </div>
+                            <details class="text-sm">
+                                <summary class="cursor-pointer text-bayesian-blue font-semibold outline-none">Reveal Answer</summary>
+                                <div class="mt-2 p-3 bg-green-50 text-green-800 border border-green-200 rounded">
+                                    <strong>Correct Answer: B.</strong> If parameters are truly independent, they have zero correlation. If they are exchangeable, they are linked by a shared population hyperparameter, creating dependency in the posterior distribution.
+                                </div>
+                            </details>
+                        </div>
+
+                    </div>
+                </div>
+
+                <h3 class="text-xl font-semibold mb-4 text-bayesian-navy ui-text mt-12 border-t pt-8 border-bayesian-border">Ignorance Implies Exchangeability</h3>
+                <p class="mb-4">
+                    In practice, ignorance implies exchangeability. Generally, the less we know about a problem, the more confidently we can invoke the assumption of exchangeability. (However, as a statistician, this is certainly not a valid excuse to avoid learning more about a problem before analyzing the data!)
+                </p>
+                <p class="mb-4">
+                    Consider the classic example of rolling a die. Initially, we assign equal probability to all six outcomes. Because we have no distinguishing information about any specific face of the die, our prior beliefs about the probabilities \(\theta_1, \dots, \theta_6\) are perfectly symmetric. Any permutation of these parameters has the exact same joint probability.
+                </p>
+                <p class="mb-6">
+                    But suppose we carefully measure and weigh the die, discovering that the side with the "6" is physically heavier. Because the heavy side is more likely to land face down, we now have strong physical reasons to favor the outcome "1" (the opposite face) over the outcome "6". We can no longer arbitrarily swap \(\theta_1\) and \(\theta_6\) in our joint probability distribution without changing our prior belief. The introduction of specific, distinguishing knowledge has fundamentally broken the symmetry, thereby eliminating exchangeability.
+                </p>
+
+                <!-- Concept Check Block 2 -->
+                <div class="mt-10 p-6 rounded-lg border border-bayesian-border bg-white shadow-sm">
+                    <h4 class="flex items-center text-lg font-bold text-bayesian-navy mb-4">
+                        <svg class="w-5 h-5 mr-2 text-bayesian-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        Concept Check: Ignorance vs. Knowledge
+                    </h4>
+                    <div class="space-y-6 text-bayesian-text">
+                        <!-- Question 4 -->
+                        <div class="p-5 bg-bayesian-surfaceAlt rounded border-l-2 border-bayesian-slate">
+                            <p class="font-semibold mb-3">1. Based on the die example, what is the core paradox of exchangeability in statistical modeling?</p>
+                            <div class="space-y-2 mb-4 text-sm">
+                                <label class="flex items-start cursor-pointer"><input type="radio" name="q4" class="mt-1 mr-2"> <span>A) The more data you collect, the less exchangeable the parameters become.</span></label>
+                                <label class="flex items-start cursor-pointer"><input type="radio" name="q4" class="mt-1 mr-2"> <span>B) Exchangeability requires absolute mathematical equality, which is impossible in the real world.</span></label>
+                                <label class="flex items-start cursor-pointer"><input type="radio" name="q4" class="mt-1 mr-2"> <span>C) We can make stronger claims of exchangeability when we are more ignorant, but a good statistician should always seek out information that might break that ignorance.</span></label>
+                                <label class="flex items-start cursor-pointer"><input type="radio" name="q4" class="mt-1 mr-2"> <span>D) Exchangeability only applies to casino games like dice and roulette.</span></label>
+                            </div>
+                            <details class="text-sm">
+                                <summary class="cursor-pointer text-bayesian-blue font-semibold outline-none">Reveal Answer</summary>
+                                <div class="mt-2 p-3 bg-green-50 text-green-800 border border-green-200 rounded">
+                                    <strong>Correct Answer: C.</strong> Ignorance allows us to assume symmetry (exchangeability), simplifying our models. However, we should always strive to find covariates or physical measurements that explain variance, even if it forces us to abandon simple exchangeability and build more complex models.
+                                </div>
+                            </details>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="text-xl font-semibold mb-4 text-bayesian-navy ui-text mt-12 border-t pt-8 border-bayesian-border">The Mixture of Independent Distributions</h3>
+                <p class="mb-4">
+                    In practice, the simplest and most universally applied form of an exchangeable distribution models each individual parameter \(\theta_j\) as an independent sample drawn from a shared prior (or population) distribution. This shared population distribution is, in turn, governed by some unknown hyperparameter vector, \(\phi\).
+                </p>
+                <p class="mb-4">
+                    If we magically knew the true value of \(\phi\), the parameters would be conditionally independent. The joint probability of all the parameters, given \(\phi\), is simply the product of their individual probabilities:
+                </p>
+                <div class="text-center my-6">
+                    <span class="math-inline text-xl text-bayesian-navy">\(p(\theta \mid \phi) = \prod_{j=1}^{J} p(\theta_j \mid \phi)\)</span>
+                </div>
+                <p class="mb-4">
+                    However, in the real world, the population hyperparameter \(\phi\) is fundamentally unknown. To construct the true joint prior distribution for \(\theta\) before seeing any data, we must average over our uncertainty regarding \(\phi\). We achieve this by integrating the conditionally independent distributions over all possible values of \(\phi\), weighted by our prior belief about \(\phi\) itself (\(p(\phi)\)):
+                </p>
+                <div class="text-center my-6">
+                    <span class="math-inline text-xl text-bayesian-navy">\(p(\theta) = \int \left( \prod_{j=1}^{J} p(\theta_j \mid \phi) \right ) p(\phi) d\phi\)</span>
+                </div>
+                <p class="mb-6">
+                    This powerful mathematical structure—a <strong>mixture of independent identical distributions (i.i.d.)</strong>—is De Finetti's theorem in action. For almost all applied Bayesian work, this mixture formulation is all we need to mathematically capture the concept of exchangeability.
+                </p>
+
+                <!-- Concept Check Block 3 -->
+                <div class="mt-10 p-6 rounded-lg border border-bayesian-border bg-white shadow-sm">
+                    <h4 class="flex items-center text-lg font-bold text-bayesian-navy mb-4">
+                        <svg class="w-5 h-5 mr-2 text-bayesian-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        Concept Check: The Mixture Distribution
+                    </h4>
+                    <div class="space-y-6 text-bayesian-text">
+                        <!-- Question 5 -->
+                        <div class="p-5 bg-bayesian-surfaceAlt rounded border-l-2 border-bayesian-slate">
+                            <p class="font-semibold mb-3">1. According to the mixture distribution formula, what happens to the parameters \(\theta_1, \dots, \theta_J\) if we actually know the exact, true value of \(\phi\)?</p>
+                            <div class="space-y-2 mb-4 text-sm">
+                                <label class="flex items-start cursor-pointer"><input type="radio" name="q5" class="mt-1 mr-2"> <span>A) They become completely deterministic and equal to \(\phi\).</span></label>
+                                <label class="flex items-start cursor-pointer"><input type="radio" name="q5" class="mt-1 mr-2"> <span>B) They become mathematically independent of one another.</span></label>
+                                <label class="flex items-start cursor-pointer"><input type="radio" name="q5" class="mt-1 mr-2"> <span>C) They are no longer exchangeable.</span></label>
+                                <label class="flex items-start cursor-pointer"><input type="radio" name="q5" class="mt-1 mr-2"> <span>D) The integral evaluates to zero.</span></label>
+                            </div>
+                            <details class="text-sm">
+                                <summary class="cursor-pointer text-bayesian-blue font-semibold outline-none">Reveal Answer</summary>
+                                <div class="mt-2 p-3 bg-green-50 text-green-800 border border-green-200 rounded">
+                                    <strong>Correct Answer: B.</strong> If the population hyperparameter \(\phi\) is known, the parameters no longer need to "share information" with one another to guess the population. They are conditionally independent, and their joint probability is simply the product of their individual probabilities.
+                                </div>
+                            </details>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-12">
+                    <p class="mb-4">
+                        The mathematical mixture we just constructed is a direct application of a foundational result known as <strong>de Finetti's Theorem</strong>. This theorem formally states that in the limit as the number of parameters \(J \rightarrow \infty\), any suitably well-behaved exchangeable distribution on \((\theta_1, \dots, \theta_J)\) can be expressed as a mixture of independent and identical distributions. 
+                    </p>
+                    <p class="mb-4">
+                        From a statistical modeling perspective, this mixture model characterizes the parameters \(\theta\) as being drawn from a shared, overarching <strong>"superpopulation."</strong> The shape and location of this superpopulation are determined entirely by the unknown hyperparameters, \(\phi\). 
+                    </p>
+                    <p>
+                        Interestingly, we are already quite familiar with exchangeable models. In standard likelihood functions, we almost always assume that our observed data points \(y_1, \dots, y_n\) are independent and identically distributed (i.i.d.) given some underlying parameter \(\theta\). De Finetti's theorem simply extends this exact same logical assumption from the <em>data</em> level up to the <em>parameter</em> level, creating the robust foundation needed for all hierarchical models.
+                    </p>
+                </div>
+
+                <div class="mt-8 p-6 bg-bayesian-surfaceAlt border-l-4 border-yellow-500 rounded-r shadow-sm">
+                    <h4 class="font-bold text-bayesian-navy mb-2 flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                        Counterexample: Finite \(J\) and Constraints
+                    </h4>
+                    <p class="text-bayesian-text text-sm">
+                        As a simple counterexample demonstrating why de Finetti's theorem strictly specifies the limit as \(J \rightarrow \infty\), consider the probabilities of a given die landing on each of its six faces. If we know nothing about the physical weighting of the die, the probabilities \(\theta_1, \dots, \theta_6\) are perfectly <strong>exchangeable</strong>. 
+                    </p>
+                    <p class="text-bayesian-text text-sm mt-2">
+                        However, the six parameters are physically constrained to sum to exactly 1 (\(\sum \theta_j = 1\)). Because of this strict mathematical constraint, if we somehow learn the first five probabilities, we automatically know the sixth with absolute certainty. Therefore, they are fundamentally dependent and <strong>cannot</strong> be modeled as a mixture of conditionally independent identical distributions. This proves that while infinite exchangeable sequences can always be modeled as i.i.d. mixtures via de Finetti, finite exchangeable sequences (like the six faces of a die) sometimes cannot due to physical constraints.
+                    </p>
+                </div>
+
+                <h3 class="text-xl font-semibold mb-4 text-bayesian-navy ui-text mt-12 border-t pt-8 border-bayesian-border">Example: Exchangeability and Sampling</h3>
+                <p class="mb-6">
+                    The following thought experiment illustrates the critical role that exchangeability plays in drawing inferences from random sampling. For the sake of simplicity, we will use a nonhierarchical example where the exchangeability is applied at the level of the raw data observations (\(y_1, \dots, y_n\)) rather than at the level of the underlying parameters (\(\theta\)).
+                </p>
+
+                <!-- Divorce Rate Example -->
+                <div class="academic-card p-6 my-6 bg-white border-l-4 border-bayesian-blue">
+                    <p class="mb-4">
+                        Suppose we randomly select eight states from the United States and record the divorce rate per 1,000 population in each state for the year 1981. We label these unknown rates \(y_1, \dots, y_8\). Without giving you any further information, we ask: <em>What can you say about \(y_8\), the divorce rate in the eighth state?</em>
+                    </p>
+                    <p class="mb-4">
+                        Because you have been given absolutely no information to distinguish any one of the eight states from the others (you don't even know their names), you must model them <strong>exchangeably</strong>. You might choose to assign a vague prior distribution—perhaps a Beta distribution or a logit-normal—to the eight \(y_j\)'s, reflecting your general uncertainty about historical US divorce statistics. 
+                    </p>
+                    <p class="mb-4">
+                        Now, we reveal the actual data for seven of the randomly sampled states: 
+                    </p>
+                    <div class="text-center font-mono text-bayesian-navy text-lg mb-4 bg-bayesian-surfaceAlt p-2 rounded inline-block mx-auto border border-bayesian-border">
+                        5.8, 6.6, 7.8, 5.6, 7.0, 7.1, 5.4
+                    </div>
+                    <p class="mb-4">
+                        Given this new data, you can update your prior. A reasonable posterior predictive distribution for the remaining unseen value, \(y_8\), would likely be centered around 6.5, with the vast majority of its probability mass falling between 5.0 and 8.0.
+                    </p>
+                    <p class="mb-4">
+                        The key insight here is the <strong>symmetry</strong> of the problem. Because the labels 1 through 8 carry no specific physical meaning, the joint distribution is completely invariant to permutation. If we randomly shuffled the labels and called the unknown state \(y_3\) instead of \(y_8\), your posterior predictive estimate would be completely mathematically identical.
+                    </p>
+                    <p class="mb-4">
+                        Notice a crucial distinction here: while the \(y_j\)'s are <strong>exchangeable</strong>, they are <strong>not independent</strong>. Because we assume they are drawn from the same underlying US population, seeing the data from the first seven states heavily influences our prediction for the eighth state.
+                    </p>
+
+                    <div class="border-t border-bayesian-border my-6"></div>
+
+                    <h5 class="font-bold text-bayesian-navy mb-2">Scenario B: Changing the Prior, Maintaining Exchangeability</h5>
+                    <p class="mb-4">
+                        Now, suppose we give you additional prior information: the eight states are specifically the Mountain states (Arizona, Colorado, Idaho, Montana, Nevada, New Mexico, Utah, and Wyoming). However, we <em>still</em> do not tell you which observed rate corresponds to which state; the index labels remain randomly scrambled.
+                    </p>
+                    <p class="mb-4">
+                        Before seeing any data, the eight divorce rates must <em>still</em> be modeled exchangeably because you cannot link any specific index to a specific state. However, your <strong>prior distribution itself</strong> should change dramatically. You might reasonably expect Utah (with a large Mormon population) to have a much lower divorce rate, and Nevada (with liberal divorce laws) to have a much higher rate. Anticipating these extreme outliers, you should assign a prior distribution with much wider, heavier tails.
+                    </p>
+                    <p class="mb-4">
+                        When you are finally shown the tightly clustered seven observed values (5.8, 6.6, 7.8, 5.6, 7.0, 7.1, 5.4), a logical inference emerges. It is highly probable that this clustered data represents the "normal" states, meaning the missing eighth state is likely one of the extreme outliers (either Nevada or Utah).
+                    </p>
+                    <p>
+                        Consequently, your posterior predictive distribution for \(y_8\) would no longer be a simple bell curve centered at 6.5. It would likely become <strong>bimodal</strong> (having two peaks)—one peak significantly lower than 5.4 (representing the possibility it is Utah) and one peak significantly higher than 7.8 (representing the possibility it is Nevada). Yet, despite this complex, multi-modal posterior, the parameters remain perfectly exchangeable because you still lack the information to definitively link an index number to a state name.
+                    </p>
+
+                    <div class="border-t border-bayesian-border my-6"></div>
+
+                    <h5 class="font-bold text-bayesian-navy mb-2">Scenario C: Breaking Exchangeability</h5>
+                    <p class="mb-4">
+                        Finally, suppose we explicitly tell you that the single unobserved state (corresponding to the index \(y_8\)) is <strong>Nevada</strong>. 
+                    </p>
+                    <p class="mb-4">
+                        Now, even before seeing the seven observed values, you <strong>cannot</strong> assign an exchangeable prior distribution to the set of eight divorce rates. Why? Because you now have specific information that distinguishes \(y_8\) from the other seven numbers—specifically, your strong prior suspicion that Nevada's rate will be significantly larger than the rest. The symmetry is broken.
+                    </p>
+                    <p class="mb-4">
+                        Once the data for \(y_1, \dots, y_7\) has been observed, a reasonable posterior predictive distribution for \(y_8\) should have the vast majority of its probability mass located <em>above</em> the largest observed rate. Mathematically, the probability \(p(y_8 > \max(y_1, \dots, y_7) \mid y_1, \dots, y_7)\) should be exceptionally large.
+                    </p>
+                    <p class="text-sm italic text-bayesian-slate">
+                        (Incidentally, Nevada’s actual divorce rate in 1981 was 13.9 per 1,000 population—almost double the highest observed value in the sample!)
+                    </p>
+                </div>
+
+            </div>
+        </section>
+
+    </div>
+
+</body>
+</html>
