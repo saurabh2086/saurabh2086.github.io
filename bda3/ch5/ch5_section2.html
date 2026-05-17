@@ -442,6 +442,26 @@
                     </div>
                 </div>
 
+                <div class="mt-12">
+                    <h3 class="text-xl font-semibold mb-4 text-bayesian-navy ui-text border-t pt-8 border-bayesian-border">Revisiting the Rat Tumors: Could Sample Size be a Covariate?</h3>
+                    <p class="mb-4">
+                        In our rat tumor example, we previously noted that the sample size \(n_j\) of each experiment is the <em>only</em> available information we have to distinguish the different experiments. Intuitively, it does not seem likely that the number of rats in a cage (\(n_j\)) would be a useful variable for modeling the biological tumor rate (\(\theta_j\)). However, if one were interested, we could create a conditionally exchangeable model for the \(J\) pairs of \((y_j, n_j)\).
+                    </p>
+                    <p class="mb-4">
+                        A natural first step in exploratory data analysis would be to plot the observed tumor rates (\(y_j / n_j\)) against the sample sizes (\(n_j\)) to see if any obvious relationship exists that should be modeled. For example, perhaps some experiments had larger sample sizes because the investigators correctly suspected rarer events—that is, they suspected a smaller \(\theta_j\) and thus expected a smaller rate of \(y_j / n_j\), prompting them to use more rats to achieve statistical power.
+                    </p>
+                    <p class="mb-6">
+                        If such a relationship existed, we would be forced to use \(n_j\) as a covariate. However, as the plot of the historical data below demonstrates, there is no apparent relationship between the two variables. The observed tumor rates are spread randomly across all sample sizes, validating our decision to model the parameters purely exchangeably without conditioning on \(n_j\).
+                    </p>
+
+                    <div class="my-8 text-center">
+                        <img src="rat_tumor_rate_vs_n.png" alt="Scatter plot of observed tumor rate vs sample size" class="mx-auto rounded border border-bayesian-border shadow-soft max-w-full h-auto" style="max-height: 500px;">
+                        <p class="text-sm text-bayesian-slate mt-3 italic">
+                            <strong>Figure 2.</strong> Observed tumor rates (\(y_j / n_j\)) plotted against sample size (\(n_j\)) for the 70 historical experiments. The lack of a clear trend suggests \(n_j\) is not a necessary covariate.
+                        </p>
+                    </div>
+                </div>
+
             </div>
         </section>
 
