@@ -397,6 +397,51 @@
                     </p>
                 </div>
 
+                <h3 class="text-xl font-semibold mb-4 text-bayesian-navy ui-text mt-12 border-t pt-8 border-bayesian-border">Partial and Conditional Exchangeability</h3>
+                <p class="mb-4">
+                    In real-world data analysis, we frequently possess additional information about the units we are observing. Often, this extra information breaks the perfect symmetry of full exchangeability. However, all is not lost! We can typically still leverage the powerful mathematics of exchangeability by using <strong>partial</strong> or <strong>conditional</strong> exchangeability. 
+                </p>
+                <div class="space-y-6 text-bayesian-text mb-8">
+                    <div class="p-5 bg-bayesian-surfaceAlt rounded border-l-4 border-bayesian-blue shadow-sm">
+                        <h4 class="font-bold text-bayesian-navy mb-2">1. Grouping (Partial Exchangeability)</h4>
+                        <p class="mb-2">
+                            If observations can be logically categorized into distinct groups (e.g., separating the rat experiments into "tumor-prone" and "tumor-resistant" strains), the full set of observations is no longer exchangeable. 
+                        </p>
+                        <p class="mb-4">
+                            To solve this, we construct a hierarchical model where each group has its own specific sub-model. While the individual observations across different groups are not exchangeable, the observations <em>within</em> a specific group are exchangeable. Furthermore, if we assume the unknown properties of the groups themselves are symmetric, we can treat the group properties as exchangeable, drawing them from a shared higher-level prior distribution.
+                        </p>
+                        <p class="text-sm bg-white p-4 rounded border border-bayesian-border">
+                            <strong>Application:</strong> In our rat tumor analysis, the \(y_j\)'s were initially exchangeable because no additional knowledge was available regarding the experimental conditions. However, if we later discovered that specific batches of experiments were conducted in different laboratories, we would assume <em>partial exchangeability</em>. We would construct a two-level hierarchical model to account for variation <em>within</em> each laboratory, as well as variation <em>between</em> the laboratories.
+                        </p>
+                    </div>
+
+                    <div class="p-5 bg-bayesian-surfaceAlt rounded border-l-4 border-bayesian-blue shadow-sm">
+                        <h4 class="font-bold text-bayesian-navy mb-2">2. Covariates (Conditional Exchangeability)</h4>
+                        <p class="mb-2">
+                            If an observation \(y_i\) is accompanied by additional covariate information \(x_i\) (e.g., measuring a rat's weight or age alongside its tumor outcome), the raw \(y_i\)'s alone are no longer exchangeable because the covariates physically distinguish them.
+                        </p>
+                        <p class="mb-4">
+                            However, the joint pairs \((y_i, x_i)\) may still be exchangeable. In this case, we can build a joint model for \((y_i, x_i)\), or more commonly, we construct a conditional model for \(y_i \mid x_i\) (such as a standard regression model). By conditioning the outcome on the known covariate, we restore mathematical exchangeability to the residual variation.
+                        </p>
+                        <p class="text-sm bg-white p-4 rounded border border-bayesian-border">
+                            <strong>Application:</strong> Returning to the divorce rate problem, suppose we also knew \(x_j\), the divorce rate in state \(j\) from the <em>previous</em> year, but still didn't know which index corresponded to which state. We can clearly distinguish the eight values of \(y_j\) based on their history, but the joint prior distribution \(p(x_j, y_j)\) remains the same for each state. For states having the exact same historical rate \(x_j\), we could use grouping (partial exchangeability). But since \(x_j\) can take many continuous values, it is much more practical to assume <em>conditional exchangeability</em> and use \(x_j\) as a covariate in a standard regression model.
+                        </p>
+                        
+                        <div class="mt-6 border-t border-bayesian-border pt-4">
+                            <h5 class="font-bold text-bayesian-navy mb-2">The Universal Applicability of Exchangeability</h5>
+                            <p class="mb-4">
+                                In general, the mathematical way to model this conditional exchangeability with covariates is through conditional independence:
+                            </p>
+                            <div class="text-center my-4 overflow-x-auto bg-white p-3 rounded border border-bayesian-border">
+                                <span class="math-inline text-bayesian-navy">\(p(\theta_1, \dots, \theta_J \mid x_1, \dots, x_J ) = \int \left[ \prod_{j=1}^{J} p(\theta_j \mid \phi, x_j ) \right] p(\phi \mid x) d\phi\)</span>
+                            </div>
+                            <p>
+                                This equation reveals why exchangeable models are almost universally applicable. Even if every observation in the real world is entirely unique, we simply measure the factors that make them unique and encode them as the covariates \(x\). By pushing all the distinguishing, asymmetric information into the \(x\) and \(y\) variables, the residual variation becomes completely symmetric.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </section>
 
