@@ -308,9 +308,9 @@ Keep the original expected accuracies intact (95%, 85%, 70%), but artificially i
                 
                 <!-- Results Area -->
                 <div class="results card">
-                    <h2>Monte Carlo Simulation (5,000 runs)</h2>
+                    <h2>Monte Carlo Simulation (10,000 runs)</h2>
                     <div class="alert">
-                        <strong>What am I looking at?</strong> This models a single student with a <em>consistent</em> underlying ability profile taking the same exam format 5,000 times. The spread below shows how much their grade fluctuates purely due to natural test-day variance and statistical luck.
+                        <strong>What am I looking at?</strong> This models a single student with a <em>consistent</em> underlying ability profile taking the same exam format 10,000 times. The spread below shows how much their grade fluctuates purely due to natural test-day variance and statistical luck.
                     </div>
                     
                     <div class="results-grid">
@@ -352,7 +352,7 @@ Keep the original expected accuracies intact (95%, 85%, 70%), but artificially i
         });
         
         // ---- SIMULATOR LOGIC ----
-        const nSimulations = 5000;
+        const nSimulations = 10000;
         let chart = null;
 
         function getBetaParams(mean, stdDev) {
