@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fully Bayesian Analysis of Conjugate Hierarchical Models</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400;1,6..72,600&display=swap"
+        rel="stylesheet">
+
+    <!-- MathJax for LaTeX rendering -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bayesian: {
+                            bg: '#f7f9fb',
+                            text: '#191c1e',
+                            navy: '#131b2e',
+                            blue: '#0051d5',
+                            slate: '#75859d',
+                            surface: '#ffffff',
+                            surfaceAlt: '#f8fafc',
+                            border: '#e2e8f0'
+                        }
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 12px rgba(15, 23, 42, 0.05)',
+                        'premium': '0 12px 30px rgba(19, 27, 46, 0.08)'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Newsreader', serif;
+            background-color: #f7f9fb;
+            color: #191c1e;
+            font-size: 1.25rem;
+            line-height: 1.7;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        .ui-text {
+            font-family: 'Inter', sans-serif;
+            color: #131b2e;
+        }
+
+        .math-inline {
+            font-family: 'Newsreader', serif;
+            font-size: 1.3rem;
+        }
+
+        .theorem-block {
+            background-color: #f8fafc;
+            border-left: 2px solid #0051d5;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .academic-card {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .academic-card:hover {
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+            transform: translateY(-1px);
+        }
+
+        .code-block {
+            background-color: #1e293b;
+            color: #f8fafc;
+            font-family: monospace;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            padding: 1rem;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+
+        /* Custom scrollbar for visualization control panels */
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        .custom-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body class="antialiased">
+
+    <!-- Main Container -->
+    <div class="max-w-[760px] mx-auto px-4 py-16">
+
+        <!-- Navigation -->
+        <nav class="mb-8 flex items-center gap-6">
+            <a href="../../index.html"
+                class="inline-flex items-center text-sm font-semibold text-bayesian-slate hover:text-bayesian-navy transition-colors ui-text">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                Back to Index
+            </a>
+            <span class="text-bayesian-border">|</span>
+            <a href="../../index.html"
+                class="inline-flex items-center text-sm font-semibold text-bayesian-slate hover:text-bayesian-navy transition-colors ui-text">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                </svg>
+                Home
+            </a>
+        </nav>
+
+        <!-- Header -->
+        <header class="mb-16">
+            <div
+                class="inline-block px-3 py-1 bg-bayesian-surfaceAlt border border-bayesian-border text-bayesian-slate rounded text-xs font-semibold tracking-wide mb-6 uppercase ui-text">
+                Bayesian Data Analysis &bull; Hierarchical Models
+            </div>
+            <h1 class="text-4xl font-bold mb-6 tracking-tight leading-tight ui-text">
+                5.3 Fully Bayesian Analysis of Conjugate Hierarchical Models
+            </h1>
+            <p class="text-xl text-bayesian-slate leading-relaxed">
+                Overcoming point-estimation limitations by putting a probability model on the hyperparameters themselves.
+            </p>
+        </header>
+
+        <!-- Main Content -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-semibold mb-6 border-b pb-2 border-bayesian-border ui-text">
+                The Fully Bayesian Philosophy
+            </h2>
+            <div class="prose max-w-none text-bayesian-text mb-6">
+                <p class="mb-4">
+                    In the previous section, we explored an <strong>Empirical Bayes</strong> approach: we calculated the empirical mean and standard deviation of historical rat tumor rates, and "plugged" those values in to determine a fixed Beta prior distribution.
+                </p>
+                <p class="mb-4">
+                    While mathematically convenient, that approach has a fatal logical flaw: it ignores our uncertainty regarding the population hyperparameters \(\alpha\) and \(\beta\). By treating them as absolute, known constants, we artificially inflate our posterior precision and "use our data twice" (once to construct the prior, and once to update it).
+                </p>
+                <p class="mb-4">
+                    To remain theoretically consistent and structurally rigorous, we must treat the hyperparameters \(\alpha\) and \(\beta\) as <strong>random variables</strong>. This requires setting up a joint prior probability distribution, \(p(\alpha, \beta)\)—referred to as a <strong>hyperprior</strong>—and computing the joint posterior distribution for all parameters simultaneously.
+                </p>
+            </div>
+        </section>
+
+        <!-- Mathematical Setup -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-semibold mb-6 border-b pb-2 border-bayesian-border ui-text">
+                The Probability Model
+            </h2>
+            <div class="prose max-w-none text-bayesian-text mb-6">
+                <p class="mb-4">
+                    Let \(y_j\) be the number of tumors observed in the \(j\)-th experiment, with sample size \(n_j\), for \(j = 1, \dots, J\). We assume a Binomial likelihood for each group:
+                </p>
+                <div class="text-center my-6">
+                    <span class="math-inline">\(y_j \mid \theta_j \sim \text{Binomial}(n_j, \theta_j)\)</span>
+                </div>
+                <p class="mb-4">
+                    The local parameters \(\theta_j\) are independent draws from a shared population-level prior:
+                </p>
+                <div class="text-center my-6">
+                    <span class="math-inline">\(\theta_j \mid \alpha, \beta \sim \text{Beta}(\alpha, \beta)\)</span>
+                </div>
+                <p class="mb-4">
+                    In a fully Bayesian setup, we define a joint hyperprior distribution \(p(\alpha, \beta)\). The full joint posterior distribution of all parameters is given by:
+                </p>
+                <div class="text-center my-6 bg-white p-4 rounded border border-bayesian-border">
+                    <span class="math-inline">\(p(\theta, \alpha, \beta \mid y) \propto p(\alpha, \beta) p(\theta \mid \alpha, \beta) p(y \mid \theta)\)</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- The Hyperprior Selection -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-semibold mb-6 border-b pb-2 border-bayesian-border ui-text">
+                Specifying the Hyperprior
+            </h2>
+            <div class="prose max-w-none text-bayesian-text mb-6">
+                <p class="mb-4">
+                    Choosing a hyperprior \(p(\alpha, \beta)\) requires care. A simple flat prior on \((\alpha, \beta)\) is undesirable because if any experiment in our dataset has 0 observed tumors (as many historical rat control groups do), the posterior distribution would become improper (having an infinite integral).
+                </p>
+                <p class="mb-4">
+                    Instead, Gelman et al. recommend a weakly informative joint prior reflecting relative ignorance about the population distribution's shape and scale:
+                </p>
+                <div class="theorem-block my-6">
+                    <h4 class="font-bold text-bayesian-navy mb-2">The Standard BDA Hyperprior</h4>
+                    <div class="text-center my-4">
+                        <span class="math-inline">\(p(\alpha, \beta) \propto (\alpha + \beta)^{-5/2}\)</span>
+                    </div>
+                    <p class="text-sm">
+                        This specific decay power (\(-2.5\)) provides a proper posterior even when some local groups have zero successes or failures.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Reparameterization and Marginal Posterior -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-semibold mb-6 border-b pb-2 border-bayesian-border ui-text">
+                Deriving the Marginal Posterior
+            </h2>
+            <div class="prose max-w-none text-bayesian-text mb-6">
+                <p class="mb-4">
+                    Because the Beta-Binomial conjugate structure is mathematically tractable, we can analytically <strong>integrate out</strong> the local parameters \(\theta\) to obtain the marginal posterior distribution of the hyperparameters \(p(\alpha, \beta \mid y)\):
+                </p>
+                <div class="text-center my-6 bg-white p-4 rounded border border-bayesian-border overflow-x-auto">
+                    <span class="math-inline">\(p(\alpha, \beta \mid y) \propto p(\alpha, \beta) \prod_{j=1}^J \frac{\Gamma(\alpha+\beta)}{\Gamma(\alpha)\Gamma(\beta)} \frac{\Gamma(\alpha+y_j)\Gamma(\beta+n_j-y_j)}{\Gamma(\alpha+\beta+n_j)}\)</span>
+                </div>
+
+                <h3 class="text-lg font-semibold text-bayesian-navy mt-8 mb-4 ui-text">Reparameterization for Sampling</h3>
+                <p class="mb-4">
+                    The parameters \(\alpha\) and \(\beta\) are highly correlated and positive-only, making them difficult to plot or explore. To create a well-behaved space, we transform them using the following reparameterization:
+                </p>
+                <ul class="list-disc pl-8 mb-6 space-y-2 text-sm">
+                    <li><strong>Log-odds of the mean:</strong> \(u = \log\left(\frac{\alpha}{\beta}\right)\)</li>
+                    <li><strong>Log of the precision:</strong> \(v = \log(\alpha + \beta)\)</li>
+                </ul>
+                <p class="mb-4">
+                    To compute the joint posterior probability in terms of the new coordinates \((u, v)\), we multiply our density by the Jacobian determinant:
+                </p>
+                <div class="text-center my-6">
+                    <span class="math-inline">\(J(u, v) = \frac{\alpha\beta}{\alpha+\beta}\)</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interactive Simulation Dashboard -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-semibold mb-6 border-b pb-2 border-bayesian-border ui-text">
+                Interactive Hyperparameter Space
+            </h2>
+            <p class="text-base text-bayesian-slate mb-8">
+                Below is a live numerical simulation of the 70 historical rat experiments. The contour plot represents the exact joint marginal posterior \(p(u, v \mid y)\). Hover anywhere to see the corresponding Beta population prior, or click to draw hierarchical samples.
+            </p>
+
+            <!-- Dashboard Card -->
+            <div class="academic-card p-6 border-2 border-bayesian-blue/10 bg-white shadow-premium rounded-lg mb-12">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+                    <!-- Left: Joint Posterior Canvas -->
+                    <div class="flex flex-col">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-xs font-bold text-bayesian-navy uppercase tracking-wider ui-text">Joint Marginal Posterior \(p(u, v \mid y)\)</span>
+                            <span class="text-xs text-bayesian-blue font-semibold" id="coords-display">Hover to explore</span>
+                        </div>
+                        <div class="relative bg-bayesian-surfaceAlt rounded border border-bayesian-border p-2 flex items-center justify-center">
+                            <canvas id="posterior-canvas" width="280" height="280" class="cursor-crosshair rounded"></canvas>
+                            <!-- Visual indicators -->
+                            <div class="absolute bottom-2 left-10 text-[10px] text-bayesian-slate/75 font-mono">u = log(α/β)</div>
+                            <div class="absolute top-1/2 left-2 -rotate-90 text-[10px] text-bayesian-slate/75 font-mono origin-center">v = log(α+β)</div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Dynamic Population Prior Chart -->
+                    <div class="flex flex-col justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-bayesian-navy uppercase tracking-wider ui-text block mb-3">Beta Population Prior: \(\text{Beta}(\alpha, \beta)\)</span>
+                            <div class="bg-bayesian-surfaceAlt rounded border border-bayesian-border p-2 flex items-center justify-center h-[180px]">
+                                <canvas id="prior-canvas" width="280" height="160" class="rounded"></canvas>
+                            </div>
+                        </div>
+                        <div class="mt-4 border-t border-bayesian-border pt-4">
+                            <div class="grid grid-cols-2 gap-2 text-xs font-mono text-bayesian-text">
+                                <div>Mean (\(\mu\)): <span id="val-mean" class="font-bold text-bayesian-blue">0.136</span></div>
+                                <div>Sum (\(\alpha+\beta\)): <span id="val-sum" class="font-bold text-bayesian-blue">10.00</span></div>
+                                <div>\(\alpha\): <span id="val-alpha" class="font-bold">1.36</span></div>
+                                <div>\(\beta\): <span id="val-beta" class="font-bold">8.64</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Simulation Controls & Interactive Samples -->
+                <div class="mt-8 pt-6 border-t border-bayesian-border">
+                    <div class="flex flex-wrap gap-4 items-center justify-between">
+                        <div class="flex gap-2">
+                            <button id="btn-draw" class="px-4 py-2 bg-bayesian-blue text-white rounded text-sm font-semibold hover:bg-blue-700 transition-colors shadow-sm ui-text">
+                                Draw MCMC Sample
+                            </button>
+                            <button id="btn-clear" class="px-3 py-2 border border-bayesian-border text-bayesian-slate hover:text-bayesian-navy rounded text-sm transition-colors ui-text">
+                                Clear Samples
+                            </button>
+                        </div>
+                        <span class="text-xs text-bayesian-slate font-mono" id="sample-count">Samples: 0</span>
+                    </div>
+
+                    <!-- Live Sample Output -->
+                    <div class="mt-4 p-4 bg-bayesian-surfaceAlt rounded border border-bayesian-border text-xs font-mono text-bayesian-text h-[120px] overflow-y-auto custom-scroll" id="sample-log">
+                        <div class="text-bayesian-slate italic">No MCMC draws yet. Click the button to simulate a fully Bayesian draw.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- The Simulation Logic -->
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                // 70 historical rat experiments (y_j / n_j)
+                const data = [
+                    {y: 0, n: 20}, {y: 0, n: 20}, {y: 0, n: 20}, {y: 0, n: 20}, {y: 0, n: 20}, {y: 0, n: 20}, {y: 0, n: 20},
+                    {y: 0, n: 19}, {y: 0, n: 19}, {y: 0, n: 19}, {y: 0, n: 19}, {y: 0, n: 18}, {y: 0, n: 18}, {y: 0, n: 17},
+                    {y: 1, n: 20}, {y: 1, n: 20}, {y: 1, n: 20}, {y: 1, n: 20}, {y: 1, n: 19}, {y: 1, n: 19}, {y: 1, n: 18},
+                    {y: 1, n: 18}, {y: 2, n: 25}, {y: 2, n: 24}, {y: 2, n: 23}, {y: 2, n: 20}, {y: 2, n: 20}, {y: 2, n: 20},
+                    {y: 2, n: 20}, {y: 2, n: 20}, {y: 2, n: 20}, {y: 1, n: 10}, {y: 5, n: 49}, {y: 2, n: 19}, {y: 5, n: 46},
+                    {y: 3, n: 27}, {y: 2, n: 17}, {y: 7, n: 49}, {y: 7, n: 47}, {y: 3, n: 20}, {y: 3, n: 20}, {y: 2, n: 13},
+                    {y: 9, n: 48}, {y: 10, n: 50}, {y: 4, n: 20}, {y: 4, n: 20}, {y: 4, n: 20}, {y: 4, n: 20}, {y: 4, n: 20},
+                    {y: 4, n: 20}, {y: 4, n: 20}, {y: 10, n: 48}, {y: 4, n: 19}, {y: 4, n: 19}, {y: 4, n: 19}, {y: 5, n: 22},
+                    {y: 11, n: 46}, {y: 12, n: 49}, {y: 5, n: 20}, {y: 5, n: 20}, {y: 6, n: 23}, {y: 5, n: 19}, {y: 6, n: 22},
+                    {y: 6, n: 20}, {y: 6, n: 20}, {y: 6, n: 20}, {y: 16, n: 52}, {y: 15, n: 47}, {y: 15, n: 46}, {y: 9, n: 24}
+                ];
+
+                // Lanczos Gamma Approximation
+                function logGamma(z) {
+                    const g = 7;
+                    const p = [
+                        0.99999999999980993,
+                        676.5203681218851,
+                        -1259.1392167224028,
+                        771.32342877765313,
+                        -176.61502916214059,
+                        12.507301707322683,
+                        -0.13857109526572012,
+                        9.9843695780195716e-6,
+                        1.5056327351493116e-7
+                    ];
+                    if (z < 0.5) {
+                        return Math.log(Math.PI) - Math.log(Math.sin(Math.PI * z)) - logGamma(1 - z);
+                    }
+                    z -= 1;
+                    let x = p[0];
+                    for (let i = 1; i < g + 2; i++) {
+                        x += p[i] / (z + i);
+                    }
+                    let t = z + g + 0.5;
+                    return 0.5 * Math.log(2 * Math.PI) + (z + 0.5) * Math.log(t) - t + Math.log(x);
+                }
+
+                // Log Beta Function
+                function logBeta(a, b) {
+                    return logGamma(a) + logGamma(b) - logGamma(a + b);
+                }
+
+                // Reconstruct alpha and beta from (u, v)
+                function getAlphaBeta(u, v) {
+                    const sum = Math.exp(v);
+                    const ratio = Math.exp(u);
+                    const beta = sum / (1 + ratio);
+                    const alpha = sum - beta;
+                    return { alpha, beta, sum };
+                }
+
+                // Calculate log-posterior density for a given (u, v)
+                function logPosterior(u, v) {
+                    const { alpha, beta } = getAlphaBeta(u, v);
+                    if (alpha <= 0.001 || beta <= 0.001) return -Infinity;
+
+                    // Hyperprior: p(alpha, beta) propto (alpha + beta)^(-5/2)
+                    let logPrior = -2.5 * Math.log(alpha + beta);
+
+                    // Add Jacobian log determinant: u + v - 2 * log(1 + e^u)
+                    logPrior += u + v - 2 * Math.log(1 + Math.exp(u));
+
+                    // Add product over the 70 experiments
+                    let logLikelihood = 0;
+                    for (let i = 0; i < data.length; i++) {
+                        const { y, n } = data[i];
+                        logLikelihood += logBeta(alpha + y, beta + n - y) - logBeta(alpha, beta);
+                    }
+
+                    return logPrior + logLikelihood;
+                }
+
+                // Grid parameters
+                const uMin = -3.2, uMax = -1.0;
+                const vMin = 1.0, vMax = 4.8;
+                const gridWidth = 80, gridHeight = 80;
+
+                // Precompute density grid
+                const densityGrid = [];
+                let maxLogPost = -Infinity;
+
+                for (let r = 0; r < gridHeight; r++) {
+                    const row = [];
+                    const v = vMax - (r / (gridHeight - 1)) * (vMax - vMin);
+                    for (let c = 0; c < gridWidth; c++) {
+                        const u = uMin + (c / (gridWidth - 1)) * (uMax - uMin);
+                        const lp = logPosterior(u, v);
+                        row.push(lp);
+                        if (lp > maxLogPost) maxLogPost = lp;
+                    }
+                    densityGrid.push(row);
+                }
+
+                // Normalize density to a relative 0 to 1 scale
+                const normGrid = [];
+                for (let r = 0; r < gridHeight; r++) {
+                    const normRow = [];
+                    for (let c = 0; c < gridWidth; c++) {
+                        const relativeVal = Math.exp(densityGrid[r][c] - maxLogPost);
+                        normRow.push(relativeVal);
+                    }
+                    normGrid.push(normRow);
+                }
+
+                // Setup Posterior Canvas
+                const postCanvas = document.getElementById('posterior-canvas');
+                const postCtx = postCanvas.getContext('2d');
+                const samples = [];
+
+                function drawPosterior() {
+                    const cellW = postCanvas.width / gridWidth;
+                    const cellH = postCanvas.height / gridHeight;
+
+                    // Draw density map
+                    for (let r = 0; r < gridHeight; r++) {
+                        for (let c = 0; c < gridWidth; c++) {
+                            const val = normGrid[r][c];
+                            // Beautiful Bayesian Indigo-Blue heatmap styling
+                            const opacity = val * 0.9 + 0.05;
+                            postCtx.fillStyle = `rgba(0, 81, 213, ${val})`;
+                            postCtx.fillRect(c * cellW, r * cellH, cellW + 0.5, cellH + 0.5);
+                        }
+                    }
+
+                    // Draw contour-like boundaries
+                    postCtx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+                    postCtx.lineWidth = 1;
+                    for (let level of [0.1, 0.3, 0.5, 0.7, 0.9]) {
+                        // Drawing subtle contour points
+                        for (let r = 1; r < gridHeight - 1; r++) {
+                            for (let c = 1; c < gridWidth - 1; c++) {
+                                if (normGrid[r][c] >= level && (
+                                    normGrid[r-1][c] < level || normGrid[r+1][c] < level ||
+                                    normGrid[r][c-1] < level || normGrid[r][c+1] < level
+                                )) {
+                                    postCtx.fillStyle = `rgba(255, 255, 255, ${0.15 * level})`;
+                                    postCtx.fillRect(c * cellW, r * cellH, 1.5, 1.5);
+                                }
+                            }
+                        }
+                    }
+
+                    // Draw MCMC samples
+                    samples.forEach((s) => {
+                        const px = ((s.u - uMin) / (uMax - uMin)) * postCanvas.width;
+                        const py = (1 - (s.v - vMin) / (vMax - vMin)) * postCanvas.height;
+                        postCtx.beginPath();
+                        postCtx.arc(px, py, 4, 0, 2 * Math.PI);
+                        postCtx.fillStyle = '#ef4444'; // Red sample markers
+                        postCtx.shadowBlur = 4;
+                        postCtx.shadowColor = 'rgba(239, 68, 68, 0.8)';
+                        postCtx.fill();
+                        postCtx.shadowBlur = 0; // reset
+                    });
+                }
+
+                // Setup Prior Canvas (Beta Distribution Plotter)
+                const priorCanvas = document.getElementById('prior-canvas');
+                const priorCtx = priorCanvas.getContext('2d');
+
+                function drawBetaPrior(alpha, beta) {
+                    priorCtx.clearRect(0, 0, priorCanvas.width, priorCanvas.height);
+                    
+                    // Grid lines
+                    priorCtx.strokeStyle = '#e2e8f0';
+                    priorCtx.lineWidth = 0.5;
+                    for (let x = 50; x < priorCanvas.width; x += 50) {
+                        priorCtx.beginPath();
+                        priorCtx.moveTo(x, 0);
+                        priorCtx.lineTo(x, priorCanvas.height);
+                        priorCtx.stroke();
+                    }
+
+                    priorCtx.beginPath();
+                    priorCtx.lineWidth = 2;
+                    priorCtx.strokeStyle = '#0051d5';
+
+                    // Compute path
+                    let first = true;
+                    const steps = 100;
+                    for (let i = 0; i <= steps; i++) {
+                        const x = i / steps;
+                        // Avoid direct division by zero bounds
+                        const px = Math.max(0.0001, Math.min(0.9999, x));
+                        
+                        // Compute Beta PDF value
+                        // pdf(x) = x^(alpha-1) * (1-x)^(beta-1) / Beta(alpha, beta)
+                        const logPdf = (alpha - 1) * Math.log(px) + (beta - 1) * Math.log(1 - px) - logBeta(alpha, beta);
+                        const pdfVal = Math.exp(logPdf);
+
+                        // Scale to canvas coordinates
+                        const canvasX = x * priorCanvas.width;
+                        const canvasY = priorCanvas.height - (pdfVal / 6) * priorCanvas.height; // scale down slightly
+
+                        if (first) {
+                            priorCtx.moveTo(canvasX, canvasY);
+                            first = false;
+                        } else {
+                            priorCtx.lineTo(canvasX, canvasY);
+                        }
+                    }
+                    priorCtx.stroke();
+                }
+
+                // Interactive hover state
+                postCanvas.addEventListener('mousemove', (e) => {
+                    const rect = postCanvas.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+
+                    // Map canvas x,y back to u,v
+                    const pctX = x / postCanvas.width;
+                    const pctY = 1 - (y / postCanvas.height);
+
+                    const u = uMin + pctX * (uMax - uMin);
+                    const v = vMin + pctY * (vMax - vMin);
+
+                    const { alpha, beta, sum } = getAlphaBeta(u, v);
+                    const mean = alpha / sum;
+
+                    // Update UI Labels
+                    document.getElementById('coords-display').innerText = `u: ${u.toFixed(2)}, v: ${v.toFixed(2)}`;
+                    document.getElementById('val-alpha').innerText = alpha.toFixed(2);
+                    document.getElementById('val-beta').innerText = beta.toFixed(2);
+                    document.getElementById('val-sum').innerText = sum.toFixed(2);
+                    document.getElementById('val-mean').innerText = mean.toFixed(3);
+
+                    // Re-render
+                    postCtx.clearRect(0, 0, postCanvas.width, postCanvas.height);
+                    drawPosterior();
+
+                    // Draw cursor
+                    postCtx.beginPath();
+                    postCtx.arc(x, y, 6, 0, 2*Math.PI);
+                    postCtx.strokeStyle = '#ef4444';
+                    postCtx.lineWidth = 1.5;
+                    postCtx.stroke();
+
+                    // Draw active Beta prior
+                    drawBetaPrior(alpha, beta);
+                });
+
+                // Standard initialization
+                const initU = -2.0, initV = 2.3; // Center of the mass
+                const initAB = getAlphaBeta(initU, initV);
+                drawPosterior();
+                drawBetaPrior(initAB.alpha, initAB.beta);
+
+                // Draw button listener (Grid-based Categorical sampling)
+                const btnDraw = document.getElementById('btn-draw');
+                const btnClear = document.getElementById('btn-clear');
+                const sampleLog = document.getElementById('sample-log');
+                const sampleCountLabel = document.getElementById('sample-count');
+
+                btnDraw.addEventListener('click', () => {
+                    // Sample from grid using CDF method
+                    const cells = [];
+                    let sumProb = 0;
+                    for (let r = 0; r < gridHeight; r++) {
+                        for (let c = 0; c < gridWidth; c++) {
+                            const val = normGrid[r][c];
+                            cells.push({ r, c, val });
+                            sumProb += val;
+                        }
+                    }
+
+                    const rVal = Math.random() * sumProb;
+                    let currentSum = 0;
+                    let selected = cells[cells.length - 1];
+                    for (let i = 0; i < cells.length; i++) {
+                        currentSum += cells[i].val;
+                        if (rVal <= currentSum) {
+                            selected = cells[i];
+                            break;
+                        }
+                    }
+
+                    // Map grid indices back to u,v
+                    const u = uMin + (selected.c / (gridWidth - 1)) * (uMax - uMin);
+                    const v = vMin + (1 - selected.r / (gridHeight - 1)) * (vMax - vMin);
+                    const { alpha, beta, sum } = getAlphaBeta(u, v);
+                    const mean = alpha / sum;
+
+                    samples.push({ u, v, alpha, beta });
+
+                    // Update UI log
+                    if (samples.length === 1) sampleLog.innerHTML = '';
+                    const logEntry = document.createElement('div');
+                    logEntry.className = 'py-1 border-b border-bayesian-border flex justify-between';
+                    logEntry.innerHTML = `
+                        <span>Draw #${samples.length}: α = <b class="text-bayesian-navy">${alpha.toFixed(2)}</b>, β = <b class="text-bayesian-navy">${beta.toFixed(2)}</b></span>
+                        <span class="text-bayesian-blue">Mean = ${mean.toFixed(3)}</span>
+                    `;
+                    sampleLog.insertBefore(logEntry, sampleLog.firstChild);
+                    sampleCountLabel.innerText = `Samples: ${samples.length}`;
+
+                    // Refresh
+                    drawPosterior();
+                });
+
+                btnClear.addEventListener('click', () => {
+                    samples.length = 0;
+                    sampleCountLabel.innerText = `Samples: 0`;
+                    sampleLog.innerHTML = `<div class="text-bayesian-slate italic">No MCMC draws yet. Click the button to simulate a fully Bayesian draw.</div>`;
+                    drawPosterior();
+                });
+            });
+        </script>
+
+        <!-- Fully Bayesian Sampling Workflow -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-semibold mb-6 border-b pb-2 border-bayesian-border ui-text">
+                The Hierarchical Sampling Steps
+            </h2>
+            <div class="prose max-w-none text-bayesian-text mb-6">
+                <p class="mb-4">
+                    Once the joint posterior density \(p(\alpha, \beta \mid y)\) is mapped, obtaining fully Bayesian draws from our models is extremely simple and computationally robust:
+                </p>
+                <div class="academic-card p-6 my-6 bg-bayesian-surfaceAlt border-l-4 border-bayesian-blue">
+                    <h4 class="font-bold text-bayesian-navy mb-4">Step-by-Step Simulation Algorithm</h4>
+                    <ol class="list-decimal pl-6 space-y-4">
+                        <li>
+                            <strong>Sample the Hyperparameters:</strong> Draw a pair \((\alpha, \beta)\) from the joint marginal posterior distribution \(p(\alpha, \beta \mid y)\) plotted above.
+                        </li>
+                        <li>
+                            <strong>Sample the Group Parameters:</strong> For each experiment \(j\), draw a group parameter \(\theta_j\) from its conditionally conjugate Beta posterior distribution:
+                            <div class="text-center my-4 font-mono text-bayesian-blue">
+                                \(\theta_j \mid \alpha, \beta, y_j \sim \text{Beta}(\alpha + y_j, \beta + n_j - y_j)\)
+                            </div>
+                        </li>
+                    </ol>
+                </div>
+                <p class="mb-4">
+                    Notice how this elegant, two-step structure propagates all hyperparameter uncertainties directly into the local estimations. If \(\alpha\) and \(\beta\) have wide margins of error, our individual group estimates will naturally adjust to incorporate that broader range.
+                </p>
+            </div>
+        </section>
+
+    </div>
+
+</body>
+
+</html>
