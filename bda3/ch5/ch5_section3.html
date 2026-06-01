@@ -207,8 +207,30 @@
                 <p class="mb-4">
                     In a fully Bayesian setup, we define a joint hyperprior distribution \(p(\alpha, \beta)\). The full joint posterior distribution of all parameters is given by:
                 </p>
-                <div class="text-center my-6 bg-white p-4 rounded border border-bayesian-border">
-                    <span class="math-inline">\(p(\theta, \alpha, \beta \mid y) \propto p(\alpha, \beta) p(\theta \mid \alpha, \beta) p(y \mid \theta)\)</span>
+                <div class="text-center my-6 bg-white p-4 rounded border border-bayesian-border overflow-x-auto">
+                    <span class="math-inline">\(p(\theta, \alpha, \beta \mid y) \propto p(\alpha, \beta) p(\theta \mid \alpha, \beta) p(y \mid \theta, \alpha, \beta)\)</span>
+                </div>
+                <p class="mb-4">
+                    We can expand the terms \(p(\theta \mid \alpha, \beta) p(y \mid \theta, \alpha, \beta)\) by substituting the probability density function of the Beta distribution and the probability mass function of the Binomial distribution:
+                </p>
+                <div class="text-center my-6 bg-white p-4 rounded border border-bayesian-border overflow-x-auto">
+                    <div class="math-inline">
+                        $$
+                        \begin{aligned}
+                        p(\theta \mid \alpha, \beta) p(y \mid \theta, \alpha, \beta) &= \prod_{j=1}^J p(\theta_j \mid \alpha, \beta) p(y_j \mid \theta_j, \alpha, \beta) \\
+                        &= \prod_{j=1}^J \left[ \frac{\Gamma(\alpha+\beta)}{\Gamma(\alpha)\Gamma(\beta)} \theta_j^{\alpha-1}(1-\theta_j)^{\beta-1} \right] \left[ \binom{n_j}{y_j} \theta_j^{y_j}(1-\theta_j)^{n_j-y_j} \right] \\
+                        &= \prod_{j=1}^J \binom{n_j}{y_j} \frac{\Gamma(\alpha+\beta)}{\Gamma(\alpha)\Gamma(\beta)} \theta_j^{\alpha + y_j - 1} (1-\theta_j)^{\beta + n_j - y_j - 1}
+                        \end{aligned}
+                        $$
+                    </div>
+                </div>
+                <p class="mb-4">
+                    Combining these, we obtain the total formula for the joint posterior distribution \(p(\theta, \alpha, \beta \mid y)\). Since the binomial coefficient \(\binom{n_j}{y_j}\) is a constant with respect to all the model parameters, we can omit it to express the standard proportional relation:
+                </p>
+                <div class="text-center my-6 bg-white p-4 rounded border border-bayesian-border overflow-x-auto">
+                    <div class="math-inline">
+                        $$p(\theta, \alpha, \beta \mid y) \propto p(\alpha, \beta) \prod_{j=1}^J \frac{\Gamma(\alpha+\beta)}{\Gamma(\alpha)\Gamma(\beta)} \theta_j^{\alpha + y_j - 1} (1-\theta_j)^{\beta + n_j - y_j - 1}$$
+                    </div>
                 </div>
             </div>
         </section>
@@ -220,20 +242,82 @@
             </h2>
             <div class="prose max-w-none text-bayesian-text mb-6">
                 <p class="mb-4">
-                    Choosing a hyperprior \(p(\alpha, \beta)\) requires care. A simple flat prior on \((\alpha, \beta)\) is undesirable because if any experiment in our dataset has 0 observed tumors (as many historical rat control groups do), the posterior distribution would become improper (having an infinite integral).
+                    To perform a fully Bayesian hierarchical analysis, we must specify a joint prior distribution \(p(\alpha, \beta)\) for the hyperparameters. Choosing a naive flat prior directly on the original scale, such as \(p(\alpha, \beta) \propto 1\), is highly problematic: if any individual experiment has 0 successes or 0 failures (which is common in sparse datasets like the rat tumor study), the tail of the posterior distribution will not decay, rendering the final posterior distribution <strong>improper</strong> (its integral over the parameter space diverges to infinity).
                 </p>
                 <p class="mb-4">
-                    Instead, Gelman et al. recommend a weakly informative joint prior reflecting relative ignorance about the population distribution's shape and scale:
+                    To solve this, Gelman et al. construct a prior based on the physical interpretation of the population Beta distribution. We can parameterize the prior distribution by its <strong>location</strong> (prior mean) and its <strong>scale</strong> (which relates directly to the prior standard deviation):
+                </p>
+                <ul class="list-disc pl-8 mb-6 space-y-2 text-base">
+                    <li><strong>Prior Mean (\(\mu\)):</strong> \(\mu = \frac{\alpha}{\alpha+\beta}\), representing where the population rate is centered on the interval \([0, 1]\).</li>
+                    <li><strong>Prior Scale (\(\eta\)):</strong> \(\eta = (\alpha+\beta)^{-1/2}\), which represents the prior standard deviation (when \(\mu\) is held constant, the standard deviation is proportional to \((\alpha+\beta)^{-1/2}\)).</li>
+                </ul>
+                <p class="mb-4">
+                    A standard, objective way to express complete relative ignorance about these two decoupled aspects is to assign a joint flat (uniform) prior to them:
                 </p>
                 <div class="theorem-block my-6">
-                    <h4 class="font-bold text-bayesian-navy mb-2">The Standard BDA Hyperprior</h4>
+                    <h4 class="font-bold text-bayesian-navy mb-2">Diffuse Hyperprior in the Location-Scale Space</h4>
                     <div class="text-center my-4">
-                        <span class="math-inline">\(p(\alpha, \beta) \propto (\alpha + \beta)^{-5/2}\)</span>
+                        <span class="math-inline">\(p(\mu, \eta) \propto 1\)</span>
                     </div>
                     <p class="text-sm">
-                        This specific decay power (\(-2.5\)) provides a proper posterior even when some local groups have zero successes or failures.
+                        This reflects a uniform distribution over the prior mean \(\mu \in [0, 1]\) and the precision-scale \(\eta \in [0, \infty)\).
                     </p>
                 </div>
+                <p class="mb-4">
+                    To translate this uniform prior back to the original hyperparameters \((\alpha, \beta)\), we must apply the multivariate change of variables formula using the <strong>Jacobian determinant</strong>:
+                </p>
+                
+                <!-- Jacobian Proof Accordion -->
+                <details class="academic-card mb-8 border border-bayesian-border rounded bg-bayesian-surfaceAlt overflow-hidden group">
+                    <summary class="px-5 py-4 font-semibold text-bayesian-navy hover:bg-slate-100/50 cursor-pointer flex justify-between items-center transition-colors select-none">
+                        <span class="ui-text">Show Complete Mathematical Proof of the Hyperprior Jacobian Derivation</span>
+                        <svg class="w-4 h-4 transform group-open:rotate-180 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </summary>
+                    <div class="px-6 py-6 border-t border-bayesian-border bg-white text-sm leading-relaxed">
+                        <p class="mb-4">
+                            The change of variables theorem states that:
+                            $$p(\alpha, \beta) = p(\mu(\alpha, \beta), \eta(\alpha, \beta)) \times |J|$$
+                            Since the prior is uniform on the transformed coordinates, \(p(\mu, \eta) \propto 1\), the density is simply proportional to the absolute determinant of the Jacobian matrix:
+                            $$p(\alpha, \beta) \propto \left| \det \begin{pmatrix} 
+                            \frac{\partial \mu}{\partial \alpha} & \frac{\partial \mu}{\partial \beta} \\ 
+                            \frac{\partial \eta}{\partial \alpha} & \frac{\partial \eta}{\partial \beta} 
+                            \end{pmatrix} \right|$$
+                        </p>
+                        <h4 class="font-bold text-bayesian-navy mt-6 mb-2">1. Computing the Partial Derivatives</h4>
+                        <p class="mb-4">
+                            First, for the prior mean \(\mu = \frac{\alpha}{\alpha+\beta}\), we apply the quotient rule:
+                            $$\frac{\partial \mu}{\partial \alpha} = \frac{1 \cdot (\alpha+\beta) - \alpha \cdot 1}{(\alpha+\beta)^2} = \frac{\beta}{(\alpha+\beta)^2}$$
+                            $$\frac{\partial \mu}{\partial \beta} = \frac{0 \cdot (\alpha+\beta) - \alpha \cdot 1}{(\alpha+\beta)^2} = -\frac{\alpha}{(\alpha+\beta)^2}$$
+                        </p>
+                        <p class="mb-4">
+                            Second, for the scale parameter \(\eta = (\alpha+\beta)^{-1/2}\), we apply the power and chain rules:
+                            $$\frac{\partial \eta}{\partial \alpha} = -\frac{1}{2}(\alpha+\beta)^{-3/2}$$
+                            $$\frac{\partial \eta}{\partial \beta} = -\frac{1}{2}(\alpha+\beta)^{-3/2}$$
+                        </p>
+                        
+                        <h4 class="font-bold text-bayesian-navy mt-6 mb-2">2. Computing the Determinant</h4>
+                        <p class="mb-4">
+                            Plugging these partial derivatives into the determinant formula:
+                            $$
+                            \begin{aligned}
+                            \det(J) &= \left(\frac{\beta}{(\alpha+\beta)^2}\right)\left(-\frac{1}{2}(\alpha+\beta)^{-3/2}\right) - \left(-\frac{\alpha}{(\alpha+\beta)^2}\right)\left(-\frac{1}{2}(\alpha+\beta)^{-3/2}\right) \\
+                            &= -\frac{1}{2}(\alpha+\beta)^{-3/2} \left[ \frac{\beta}{(\alpha+\beta)^2} + \frac{\alpha}{(\alpha+\beta)^2} \right] \\
+                            &= -\frac{1}{2}(\alpha+\beta)^{-3/2} \left[ \frac{\alpha+\beta}{(\alpha+\beta)^2} \right] \\
+                            &= -\frac{1}{2}(\alpha+\beta)^{-3/2} \left[ \frac{1}{\alpha+\beta} \right] \\
+                            &= -\frac{1}{2}(\alpha+\beta)^{-5/2}
+                            \end{aligned}
+                            $$
+                        </p>
+                        <h4 class="font-bold text-bayesian-navy mt-6 mb-2">3. Conclusion</h4>
+                        <p class="mb-2">
+                            Taking the absolute value and dropping the constant multiplier \(\frac{1}{2}\) yields the exact prior density on the original scale:
+                            $$p(\alpha, \beta) \propto (\alpha + \beta)^{-5/2}$$
+                            This is <strong>Equation 5.9</strong> in BDA3. This power of decay (\(-2.5\)) is critical; it decays quickly enough as \(\alpha+\beta \to \infty\) to guarantee that the posterior integrates to a finite volume, producing a mathematically valid (proper) posterior distribution.
+                        </p>
+                    </div>
+                </details>
             </div>
         </section>
 
@@ -244,26 +328,85 @@
             </h2>
             <div class="prose max-w-none text-bayesian-text mb-6">
                 <p class="mb-4">
-                    Because the Beta-Binomial conjugate structure is mathematically tractable, we can analytically <strong>integrate out</strong> the local parameters \(\theta\) to obtain the marginal posterior distribution of the hyperparameters \(p(\alpha, \beta \mid y)\):
+                    To sample from the joint posterior density, we must first compute the marginal posterior density of the hyperparameters, \(p(\alpha, \beta \mid y)\). We can do this by analytically <strong>integrating out</strong> the local parameters \(\theta\) from the joint posterior density:
                 </p>
+                
                 <div class="text-center my-6 bg-white p-4 rounded border border-bayesian-border overflow-x-auto">
-                    <span class="math-inline">\(p(\alpha, \beta \mid y) \propto p(\alpha, \beta) \prod_{j=1}^J \frac{\Gamma(\alpha+\beta)}{\Gamma(\alpha)\Gamma(\beta)} \frac{\Gamma(\alpha+y_j)\Gamma(\beta+n_j-y_j)}{\Gamma(\alpha+\beta+n_j)}\)</span>
+                    <div class="math-inline">
+                        $$
+                        \begin{aligned}
+                        p(\alpha, \beta \mid y) &= \int p(\theta, \alpha, \beta \mid y) \, d\theta \\
+                        &\propto \int p(\alpha, \beta) \prod_{j=1}^J \left[ \frac{\Gamma(\alpha+\beta)}{\Gamma(\alpha)\Gamma(\beta)} \theta_j^{\alpha+y_j-1} (1-\theta_j)^{\beta+n_j-y_j-1} \right] \, d\theta \\
+                        &= p(\alpha, \beta) \prod_{j=1}^J \int_0^1 \frac{\Gamma(\alpha+\beta)}{\Gamma(\alpha)\Gamma(\beta)} \theta_j^{\alpha+y_j-1} (1-\theta_j)^{\beta+n_j-y_j-1} \, d\theta_j \\
+                        &= p(\alpha, \beta) \prod_{j=1}^J \frac{\Gamma(\alpha+\beta)}{\Gamma(\alpha)\Gamma(\beta)} \left[ \int_0^1 \theta_j^{\alpha+y_j-1} (1-\theta_j)^{\beta+n_j-y_j-1} \, d\theta_j \right]
+                        \end{aligned}
+                        $$
+                    </div>
+                </div>
+                
+                <p class="mb-4">
+                    Notice that the expression inside the integral is the kernel of an unnormalized Beta distribution, specifically \(\text{Beta}(\alpha + y_j, \beta + n_j - y_j)\). Since a Beta probability density function integrates to 1, we know that:
+                    $$\int_0^1 \theta_j^{\alpha+y_j-1} (1-\theta_j)^{\beta+n_j-y_j-1} \, d\theta_j = \frac{\Gamma(\alpha+y_j)\Gamma(\beta+n_j-y_j)}{\Gamma(\alpha+\beta+n_j)}$$
+                </p>
+                
+                <p class="mb-4">
+                    Substituting this back into the product yields the standard analytical marginal posterior formula:
+                </p>
+                
+                <div class="text-center my-6 bg-white p-4 rounded border border-bayesian-border overflow-x-auto">
+                    <div class="math-inline">
+                        $$p(\alpha, \beta \mid y) \propto p(\alpha, \beta) \prod_{j=1}^J \frac{\Gamma(\alpha+\beta)}{\Gamma(\alpha)\Gamma(\beta)} \frac{\Gamma(\alpha+y_j)\Gamma(\beta+n_j-y_j)}{\Gamma(\alpha+\beta+n_j)}$$
+                    </div>
+                </div>
+                
+                <p class="mb-4">
+                    This is <strong>Equation 5.8</strong> in BDA3.
+                </p>
+
+                <div class="academic-card p-6 my-6 bg-bayesian-surfaceAlt border-l-4 border-bayesian-slate text-sm">
+                    <h4 class="font-bold text-bayesian-navy mb-2">Alternative Intuition: The Beta-Binomial Mixture</h4>
+                    <p class="mb-2">
+                        We can obtain the exact same result directly through probability rules without performing calculus. Conditional on the hyperparameters \((\alpha, \beta)\), each group parameter \(\theta_j\) has an independent Beta distribution, and the data \(y_j\) has a Binomial likelihood.
+                    </p>
+                    <p class="mb-2">
+                        This compound model represents a <strong>Beta-Binomial distribution</strong> for each experiment \(j\). The marginal probability of observing \(y_j\) successes in \(n_j\) trials given hyperparameters \((\alpha, \beta)\) is:
+                        $$p(y_j \mid \alpha, \beta) = \binom{n_j}{y_j} \frac{\Gamma(\alpha+\beta)}{\Gamma(\alpha)\Gamma(\beta)} \frac{\Gamma(\alpha+y_j)\Gamma(\beta+n_j-y_j)}{\Gamma(\alpha+\beta+n_j)}$$
+                    </p>
+                    <p class="mb-0">
+                        Since each experiment is conditionally independent, the joint probability of the entire dataset is the product of these Beta-Binomial probabilities. Multiplying this joint probability by the hyperprior \(p(\alpha, \beta)\) and omitting constant binomial coefficients gives the identical marginal posterior distribution (5.8).
+                    </p>
                 </div>
 
-                <h3 class="text-lg font-semibold text-bayesian-navy mt-8 mb-4 ui-text">Reparameterization for Sampling</h3>
                 <p class="mb-4">
-                    The parameters \(\alpha\) and \(\beta\) are highly correlated and positive-only, making them difficult to plot or explore. To create a well-behaved space, we transform them using the following reparameterization:
+                    Substituting our derived hyperprior \(p(\alpha, \beta) \propto (\alpha + \beta)^{-5/2}\) completes the analytical specification.
                 </p>
-                <ul class="list-disc pl-8 mb-6 space-y-2 text-sm">
-                    <li><strong>Log-odds of the mean:</strong> \(u = \log\left(\frac{\alpha}{\beta}\right)\)</li>
-                    <li><strong>Log of the precision:</strong> \(v = \log(\alpha + \beta)\)</li>
+
+                <h3 class="text-lg font-semibold text-bayesian-navy mt-8 mb-4 ui-text">Reparameterization to Unconstrained Space</h3>
+                <p class="mb-4">
+                    Although we have the analytical marginal posterior, computing it directly on the positive quadrant \((\alpha > 0, \beta > 0)\) is numerically unstable because \(\alpha\) and \(\beta\) are highly correlated and span several orders of magnitude. 
+                </p>
+                <p class="mb-4">
+                    To make computation and grid plotting highly stable and well-behaved, we perform a second transformation to map the positive parameters to the unconstrained real plane \(\mathbb{R}^2\):
+                </p>
+                <ul class="list-disc pl-8 mb-6 space-y-2 text-base">
+                    <li><strong>Log-odds of the Mean (\(u\)):</strong> \(u = \log\left(\frac{\alpha}{\beta}\right)\) &mdash; controls the prior location.</li>
+                    <li><strong>Log of the Precision (\(v\)):</strong> \(v = \log(\alpha + \beta)\) &mdash; controls the prior concentration.</li>
                 </ul>
                 <p class="mb-4">
-                    To compute the joint posterior probability in terms of the new coordinates \((u, v)\), we multiply our density by the Jacobian determinant:
+                    To evaluate the posterior density on this grid, we must transform our marginal probability density from \((\alpha, \beta)\) coordinates to the new grid coordinates \((u, v)\). The Jacobian determinant for this log-transformation maps as:
+                    $$\left| \det \frac{\partial(u, v)}{\partial(\alpha, \beta)} \right| = \left| \det \begin{pmatrix} \frac{1}{\alpha} & -\frac{1}{\beta} \\ \frac{1}{\alpha+\beta} & \frac{1}{\alpha+\beta} \end{pmatrix} \right| = \frac{1}{\alpha\beta}$$
                 </p>
-                <div class="text-center my-6">
-                    <span class="math-inline">\(J(u, v) = \frac{\alpha\beta}{\alpha+\beta}\)</span>
+                <p class="mb-4">
+                    Therefore, the inverse transformation Jacobian determinant to map the density from the original scale to the log-grid scale is the reciprocal, \(\alpha\beta\). Multiplying our density by this factor yields <strong>Equation 5.10</strong> from BDA3:
+                </p>
+                <div class="text-center my-6 bg-white p-4 rounded border border-bayesian-border overflow-x-auto">
+                    <div class="math-inline">
+                        $$p(u, v \mid y) \propto \alpha\beta \, (\alpha + \beta)^{-5/2} \prod_{j=1}^J \frac{\Gamma(\alpha+\beta)}{\Gamma(\alpha)\Gamma(\beta)} \frac{\Gamma(\alpha+y_j)\Gamma(\beta+n_j-y_j)}{\Gamma(\alpha+\beta+n_j)}$$
+                    </div>
                 </div>
+                <p class="mb-4">
+                    This is the exact, unconstrained joint posterior distribution that is plotted and evaluated on the grid in our interactive dashboard below.
+                </p>
             </div>
         </section>
 

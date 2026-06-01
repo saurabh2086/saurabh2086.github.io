@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estimating exchangeable parameters from a normal model</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400;1,6..72,600&display=swap"
+        rel="stylesheet">
+
+    <!-- MathJax for LaTeX rendering -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bayesian: {
+                            bg: '#f7f9fb',
+                            text: '#191c1e',
+                            navy: '#131b2e',
+                            blue: '#0051d5',
+                            slate: '#75859d',
+                            surface: '#ffffff',
+                            surfaceAlt: '#f8fafc',
+                            border: '#e2e8f0'
+                        }
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 12px rgba(15, 23, 42, 0.05)',
+                        'premium': '0 12px 30px rgba(19, 27, 46, 0.08)'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Newsreader', serif;
+            background-color: #f7f9fb;
+            color: #191c1e;
+            font-size: 1.25rem;
+            line-height: 1.7;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        .ui-text {
+            font-family: 'Inter', sans-serif;
+            color: #131b2e;
+        }
+
+        .math-inline {
+            font-family: 'Newsreader', serif;
+            font-size: 1.3rem;
+        }
+
+        .theorem-block {
+            background-color: #f8fafc;
+            border-left: 2px solid #0051d5;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .academic-card {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .academic-card:hover {
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+
+<body class="antialiased">
+
+    <!-- Main Container -->
+    <div class="max-w-[760px] mx-auto px-4 py-16">
+
+        <!-- Navigation -->
+        <nav class="mb-8 flex items-center gap-6">
+            <a href="../../index.html"
+                class="inline-flex items-center text-sm font-semibold text-bayesian-slate hover:text-bayesian-navy transition-colors ui-text">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                Back to Index
+            </a>
+            <span class="text-bayesian-border">|</span>
+            <a href="../../index.html"
+                class="inline-flex items-center text-sm font-semibold text-bayesian-slate hover:text-bayesian-navy transition-colors ui-text">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                </svg>
+                Home
+            </a>
+        </nav>
+
+        <!-- Header -->
+        <header class="mb-16">
+            <div
+                class="inline-block px-3 py-1 bg-bayesian-surfaceAlt border border-bayesian-border text-bayesian-slate rounded text-xs font-semibold tracking-wide mb-6 uppercase ui-text">
+                Bayesian Data Analysis &bull; Hierarchical Models
+            </div>
+            <h1 class="text-4xl font-bold mb-6 tracking-tight leading-tight ui-text">
+                5.4 Estimating Exchangeable Parameters from a Normal Model
+            </h1>
+            <p class="text-xl text-bayesian-slate leading-relaxed">
+                Analyzing exchangeable parameters under normal likelihood and hierarchical structures.
+            </p>
+        </header>
+
+        <!-- Introduction Content -->
+        <section class="mb-16">
+            <div class="prose max-w-none text-bayesian-text mb-6">
+                <p class="mb-4">
+                    We now present a full treatment of a simple hierarchical model based on the normal distribution, in which observed data are normally distributed with a different mean for each &ldquo;group&rdquo; or &ldquo;experiment,&rdquo; with known observation variance, and a normal population distribution for the group means. This model is sometimes termed the <strong>one-way normal random-effects model</strong> with known data variance and is widely applicable, being an important special case of the hierarchical normal linear model, which we treat in some generality in Chapter 15.
+                </p>
+                <p class="mb-4">
+                    In this section, we present a general treatment following the computational approach of Section 5.3. The following section presents a detailed example; those impatient with the algebraic details may wish to look ahead at the example for motivation.
+                </p>
+            </div>
+        </section>
+
+        <!-- The Data Structure -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-semibold mb-6 border-b pb-2 border-bayesian-border ui-text">
+                The Data Structure
+            </h2>
+            <div class="prose max-w-none text-bayesian-text mb-6">
+                <p class="mb-4">
+                    Consider \(J\) independent experiments, with experiment \(j\) estimating the parameter \(\theta_j\) from \(n_j\) independent normally distributed data points, \(y_{ij}\), each with known error variance \(\sigma^2\); that is:
+                </p>
+                
+                <div class="text-center my-6 bg-white p-4 rounded border border-bayesian-border overflow-x-auto">
+                    <span class="math-inline">
+                        \(y_{ij} \mid \theta_j \sim N(\theta_j, \sigma^2), \quad \text{for } i=1, \dots, n_j; \; j=1, \dots, J.\) &nbsp; &mdash; <strong>Equation 5.11</strong>
+                    </span>
+                </div>
+
+                <h3 class="text-lg font-semibold text-bayesian-navy mt-8 mb-4 ui-text">Parameter Explanations</h3>
+                <p class="mb-4">
+                    To understand Equation 5.11, we can break down its constituent terms:
+                </p>
+                <ul class="list-disc pl-8 mb-6 space-y-3 text-base">
+                    <li>
+                        <strong>\(y_{ij}\) (Observed Data Point):</strong> Represents the \(i\)-th individual measurement or observation within the \(j\)-th group or experiment.
+                    </li>
+                    <li>
+                        <strong>\(\theta_j\) (Group Mean Parameter):</strong> The true, unobserved parameter representing the mean of experiment \(j\). The parameters \(\theta_j\) are the key targets of our hierarchical model and are assumed to be exchangeable.
+                    </li>
+                    <li>
+                        <strong>\(\sigma^2\) (Known Data Variance):</strong> The error variance of the individual observations. In this formulation, it is assumed to be known and shared across all observations in all groups.
+                    </li>
+                    <li>
+                        <strong>\(n_j\) (Group Sample Size):</strong> The number of observations in experiment \(j\). Groups do not need to be of equal size (i.e., unbalanced designs are fully supported).
+                    </li>
+                    <li>
+                        <strong>\(J\) (Total Groups):</strong> The number of independent experiments or groups in our dataset.
+                    </li>
+                </ul>
+
+                <h3 class="text-lg font-semibold text-bayesian-navy mt-8 mb-4 ui-text">Simplifying via Sufficient Statistics</h3>
+                <p class="mb-4">
+                    Using standard notation from the analysis of variance, we can summarize the individual observations \(y_{ij}\) by their group sample means, \(\bar{y}_{\cdot j}\), which serve as sufficient statistics for \(\theta_j\):
+                    $$\bar{y}_{\cdot j} = \frac{1}{n_j} \sum_{i=1}^{n_j} y_{ij}$$
+                </p>
+                <p class="mb-4">
+                    Since the individual data points \(y_{ij}\) are independent and normally distributed, their sample mean is also normally distributed:
+                    $$\bar{y}_{\cdot j} \mid \theta_j \sim N(\theta_j, \sigma_j^2)$$
+                    where the sampling variance is:
+                    $$\sigma_j^2 = \frac{\sigma^2}{n_j}$$
+                </p>
+                <p class="mb-4">
+                    This simplifies our likelihood formulation significantly, allowing us to model the hierarchical system in terms of the \(J\) sample means \(\bar{y}_{\cdot j}\) and their associated sampling variances \(\sigma_j^2\).
+                </p>
+
+                <h3 class="text-lg font-semibold text-bayesian-navy mt-8 mb-4 ui-text">Understanding the Sampling Variance \(\sigma_j^2\)</h3>
+                <p class="mb-4">
+                    The parameter \(\sigma_j^2 = \frac{\sigma^2}{n_j}\) is the <strong>sampling variance</strong> of the group mean \(\bar{y}_{\cdot j}\), and it plays a foundational role in how information is combined and pooled across the experiments:
+                </p>
+                <ul class="list-disc pl-8 mb-6 space-y-3 text-base">
+                    <li>
+                        <strong>Mathematical Derivation:</strong> Because each observation \(y_{ij}\) within group \(j\) is assumed to be independent and identically distributed (i.i.d.) with variance \(\sigma^2\), the variance of their average scales as:
+                        $$\text{var}(\bar{y}_{\cdot j} \mid \theta_j) = \text{var}\left(\frac{1}{n_j} \sum_{i=1}^{n_j} y_{ij} \Bigm| \theta_j\right) = \frac{1}{n_j^2} \sum_{i=1}^{n_j} \text{var}(y_{ij} \mid \theta_j) = \frac{n_j \sigma^2}{n_j^2} = \frac{\sigma^2}{n_j}$$
+                    </li>
+                    <li>
+                        <strong>Precision and Sample Size:</strong> The sampling variance is inversely proportional to the sample size \(n_j\) of the group. A larger sample size (\(n_j \to \infty\)) drives \(\sigma_j^2 \to 0\), meaning that groups with extensive local data have highly precise, low-noise sample means. Conversely, small groups have large sampling variances, meaning their observed sample mean is a highly noisy estimate of the true mean \(\theta_j\).
+                    </li>
+                    <li>
+                        <strong>Weighting and Shrinkage:</strong> In the hierarchical normal framework, the sampling variance \(\sigma_j^2\) determines the balance of pooling. In estimating \(\theta_j\), the observed sample mean \(\bar{y}_{\cdot j}\) is weighted against the population-level mean \(\mu\). The weight of the observed data is proportional to the precision (inverse variance) \(1/\sigma_j^2\). Thus, large experiments (small \(\sigma_j^2\)) are shrunk very little toward the population mean, while small, noisy experiments (large \(\sigma_j^2\)) are shrunk aggressively toward the population average because their local data is less reliable.
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+    </div>
+
+</body>
+
+</html>
