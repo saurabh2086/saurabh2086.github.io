@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Derivation and First Principles of Random-Effects ANOVA & the F-Test</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400;1,6..72,600&display=swap"
+        rel="stylesheet">
+
+    <!-- MathJax for LaTeX rendering -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bayesian: {
+                            bg: '#f7f9fb',
+                            text: '#191c1e',
+                            navy: '#131b2e',
+                            blue: '#0051d5',
+                            slate: '#75859d',
+                            surface: '#ffffff',
+                            surfaceAlt: '#f8fafc',
+                            border: '#e2e8f0'
+                        }
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 12px rgba(15, 23, 42, 0.05)',
+                        'premium': '0 12px 30px rgba(19, 27, 46, 0.08)'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Newsreader', serif;
+            background-color: #f7f9fb;
+            color: #191c1e;
+            font-size: 1.25rem;
+            line-height: 1.7;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        .ui-text {
+            font-family: 'Inter', sans-serif;
+            color: #131b2e;
+        }
+
+        .math-inline {
+            font-family: 'Newsreader', serif;
+            font-size: 1.3rem;
+        }
+    </style>
+</head>
+
+<body class="antialiased">
+
+    <!-- Main Container -->
+    <div class="max-w-[880px] mx-auto px-4 py-16">
+
+        <!-- Navigation -->
+        <nav class="mb-8 flex items-center gap-6">
+            <a href="ch5_section4.html"
+                class="inline-flex items-center text-sm font-semibold text-bayesian-slate hover:text-bayesian-navy transition-colors ui-text">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                Back to Section 5.4
+            </a>
+            <span class="text-bayesian-border">|</span>
+            <a href="../../index.html"
+                class="inline-flex items-center text-sm font-semibold text-bayesian-slate hover:text-bayesian-navy transition-colors ui-text">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                </svg>
+                Home
+            </a>
+        </nav>
+
+        <!-- Header -->
+        <header class="mb-16">
+            <div
+                class="inline-block px-3 py-1 bg-bayesian-surfaceAlt border border-bayesian-border text-bayesian-slate rounded text-xs font-semibold tracking-wide mb-6 uppercase ui-text">
+                Background Knowledge &bull; Classical Inference
+            </div>
+            <h1 class="text-4xl font-bold mb-6 tracking-tight leading-tight ui-text">
+                Classical Random-Effects ANOVA and the F-Test
+            </h1>
+            <p class="text-xl text-bayesian-slate leading-relaxed">
+                Deriving the sum of squares partitioning, expected mean squares, and the classical decision rules from first principles.
+            </p>
+        </header>
+
+        <!-- Introduction -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-semibold mb-6 border-b pb-2 border-bayesian-border ui-text">
+                1. The Classical ANOVA Framework
+            </h2>
+            <div class="prose max-w-none text-bayesian-text mb-6">
+                <p class="mb-4">
+                    In classical (non-Bayesian) statistics, Analysis of Variance (ANOVA) is a collection of models and statistical procedures used to analyze the differences among group means. While a standard fixed-effects ANOVA asks whether specific group means are different from each other, a <strong>random-effects ANOVA</strong> assumes that the groups themselves are a random sample from a larger population.
+                </p>
+                <p class="mb-4">
+                    To make the derivations as simple and clear as possible, we assume a <strong>balanced design</strong>. This means we have \(J\) independent groups (or experiments), and we collect exactly \(n\) observations from each group, for a total of \(Jn\) observations.
+                </p>
+                <p class="mb-4">
+                    Let \(y_{ij}\) represent the \(i\)-th observation in the \(j\)-th group. The mathematical model is:
+                    $$y_{ij} = \mu + \alpha_j + \epsilon_{ij}$$
+                    where:
+                </p>
+                <ul class="list-disc pl-8 mb-6 space-y-2 text-base">
+                    <li><strong>\(\mu\) (Grand Mean):</strong> The overall average value of the population.</li>
+                    <li><strong>\(\alpha_j\) (Group Effect):</strong> The deviation of group \(j\)'s mean from the grand mean, distributed as \(\alpha_j \sim N(0, \tau^2)\).</li>
+                    <li><strong>\(\epsilon_{ij}\) (Residual Error):</strong> The individual-level deviation of observation \(i\) in group \(j\) from its group mean, distributed as \(\epsilon_{ij} \sim N(0, \sigma^2)\).</li>
+                </ul>
+                <p class="mb-4">
+                    Under this formulation, the total variance of any single observation \(y_{ij}\) is the sum of two components: the group-level variance \(\tau^2\) and the individual-level measurement variance \(\sigma^2\):
+                    $$\text{var}(y_{ij}) = \tau^2 + \sigma^2$$
+                </p>
+            </div>
+        </section>
+
+        <!-- Sum of Squares Derivation -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-semibold mb-6 border-b pb-2 border-bayesian-border ui-text">
+                2. Partitioning the Sum of Squares
+            </h2>
+            <div class="prose max-w-none text-bayesian-text mb-6">
+                <p class="mb-4">
+                    The core idea of ANOVA is to decompose the total variation in the data into variation <em>between groups</em> and variation <em>within groups</em>. 
+                </p>
+                <p class="mb-4">
+                    Let \(\bar{y}_{\cdot j}\) be the sample mean of group \(j\), and \(\bar{y}_{\cdot\cdot}\) be the grand mean of all observations:
+                    $$\bar{y}_{\cdot j} = \frac{1}{n} \sum_{i=1}^n y_{ij}, \quad \bar{y}_{\cdot\cdot} = \frac{1}{Jn} \sum_{j=1}^J \sum_{i=1}^n y_{ij}$$
+                </p>
+                <p class="mb-4">
+                    We can write the total deviation of any observation \(y_{ij}\) from the grand mean as:
+                    $$y_{ij} - \bar{y}_{\cdot\cdot} = (\bar{y}_{\cdot j} - \bar{y}_{\cdot\cdot}) + (y_{ij} - \bar{y}_{\cdot j})$$
+                    If we square both sides and sum over all \(i\) and \(j\), we obtain:
+                    $$\sum_{j=1}^J \sum_{i=1}^n (y_{ij} - \bar{y}_{\cdot\cdot})^2 = \sum_{j=1}^J \sum_{i=1}^n \left[ (\bar{y}_{\cdot j} - \bar{y}_{\cdot\cdot}) + (y_{ij} - \bar{y}_{\cdot j}) \right]^2$$
+                    $$\sum_{j=1}^J \sum_{i=1}^n (y_{ij} - \bar{y}_{\cdot\cdot})^2 = \sum_{j=1}^J \sum_{i=1}^n (\bar{y}_{\cdot j} - \bar{y}_{\cdot\cdot})^2 + \sum_{j=1}^J \sum_{i=1}^n (y_{ij} - \bar{y}_{\cdot j})^2 + 2 \sum_{j=1}^J \sum_{i=1}^n (\bar{y}_{\cdot j} - \bar{y}_{\cdot\cdot})(y_{ij} - \bar{y}_{\cdot j})$$
+                </p>
+                
+                <h3 class="text-lg font-semibold text-bayesian-navy mt-6 mb-4 ui-text">Proof that the Cross-Product Term is Zero</h3>
+                <p class="mb-4">
+                    Let's analyze the cross-product term:
+                    $$2 \sum_{j=1}^J \sum_{i=1}^n (\bar{y}_{\cdot j} - \bar{y}_{\cdot\cdot})(y_{ij} - \bar{y}_{\cdot j})$$
+                    Since \((\bar{y}_{\cdot j} - \bar{y}_{\cdot\cdot})\) does not depend on the individual index \(i\), we can pull it out of the inner sum:
+                    $$2 \sum_{j=1}^J (\bar{y}_{\cdot j} - \bar{y}_{\cdot\cdot}) \left[ \sum_{i=1}^n (y_{ij} - \bar{y}_{\cdot j}) \right]$$
+                    Now consider the term inside the brackets:
+                    $$\sum_{i=1}^n (y_{ij} - \bar{y}_{\cdot j}) = \sum_{i=1}^n y_{ij} - \sum_{i=1}^n \bar{y}_{\cdot j} = n \bar{y}_{\cdot j} - n \bar{y}_{\cdot j} = 0$$
+                    Because the sum of deviations around any sample mean is always zero, the entire cross-product term is zero.
+                </p>
+
+                <p class="mb-4">
+                    Therefore, the total sum of squares splits cleanly into two parts:
+                    $$\sum_{j=1}^J \sum_{i=1}^n (y_{ij} - \bar{y}_{\cdot\cdot})^2 = n \sum_{j=1}^J (\bar{y}_{\cdot j} - \bar{y}_{\cdot\cdot})^2 + \sum_{j=1}^J \sum_{i=1}^n (y_{ij} - \bar{y}_{\cdot j})^2$$
+                    In standard notation, this is:
+                    $$SS_{\text{Total}} = SS_{\text{Between}} + SS_{\text{Within}}$$
+                </p>
+            </div>
+        </section>
+
+        <!-- Degrees of Freedom and Mean Squares -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-semibold mb-6 border-b pb-2 border-bayesian-border ui-text">
+                3. Degrees of Freedom & Mean Squares
+            </h2>
+            <div class="prose max-w-none text-bayesian-text mb-6">
+                <p class="mb-4">
+                    To turn these sums of squares into estimates of variance, we must divide them by their respective <strong>degrees of freedom</strong> (\(df\)):
+                </p>
+                <ul class="list-disc pl-8 mb-6 space-y-3 text-base">
+                    <li>
+                        <strong>Between-Group \(df\) (\(J-1\)):</strong> We are comparing \(J\) group means, but they are constrained to sum to the grand mean, removing 1 degree of freedom.
+                    </li>
+                    <li>
+                        <strong>Within-Group \(df\) (\(J(n-1)\)):</strong> Inside each of the \(J\) groups, we have \(n\) observations. Estimating the group mean removes 1 degree of freedom per group, leaving \(n-1\) per group, summed over all \(J\) groups.
+                    </li>
+                </ul>
+                <p class="mb-4">
+                    By dividing the Sum of Squares (\(SS\)) by the degrees of freedom (\(df\)), we obtain the <strong>Mean Squares</strong> (\(MS\)), which act as sample variance estimators:
+                    $$MS_{\text{Between}} = \frac{SS_{\text{Between}}}{J-1}, \quad MS_{\text{Within}} = \frac{SS_{\text{Within}}}{J(n-1)}$$
+                </p>
+            </div>
+        </section>
+
+        <!-- Expected Mean Squares Derivation -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-semibold mb-6 border-b pb-2 border-bayesian-border ui-text">
+                4. Derivation of Expected Mean Squares \(E(MS)\)
+            </h2>
+            <div class="prose max-w-none text-bayesian-text mb-6">
+                <p class="mb-4">
+                    To see what these Mean Squares are actually estimating, we compute their expected values under our random-effects assumptions.
+                </p>
+
+                <h3 class="text-lg font-semibold text-bayesian-navy mt-6 mb-4 ui-text">Deriving \(E(MS_{\text{Within}})\)</h3>
+                <p class="mb-4">
+                    For any group \(j\), the observations \(y_{ij}\) given the group mean \(\theta_j\) are independent and identically distributed as \(N(\theta_j, \sigma^2)\). The sample variance within group \(j\) is:
+                    $$S_j^2 = \frac{1}{n-1} \sum_{i=1}^n (y_{ij} - \bar{y}_{\cdot j})^2$$
+                    Since \(S_j^2\) is an unbiased estimator of the individual-level variance \(\sigma^2\), its expected value is:
+                    $$E[S_j^2] = \sigma^2$$
+                    Summing over all groups \(j\), we find:
+                    $$E[SS_{\text{Within}}] = E\left[ \sum_{j=1}^J (n-1) S_j^2 \right] = \sum_{j=1}^J (n-1) \sigma^2 = J(n-1) \sigma^2$$
+                    Dividing by the degrees of freedom \(J(n-1)\):
+                    $$E[MS_{\text{Within}}] = \sigma^2$$
+                    This proves that \(MS_{\text{Within}}\) is an unbiased estimator of the individual-level measurement noise \(\sigma^2\).
+                </p>
+
+                <h3 class="text-lg font-semibold text-bayesian-navy mt-8 mb-4 ui-text">Deriving \(E(MS_{\text{Between}})\)</h3>
+                <p class="mb-4">
+                    Now let's examine the group means \(\bar{y}_{\cdot j}\). In our model:
+                    $$\bar{y}_{\cdot j} = \frac{1}{n}\sum_{i=1}^n (\mu + \alpha_j + \epsilon_{ij}) = \mu + \alpha_j + \bar{\epsilon}_{\cdot j}$$
+                    where \(\bar{\epsilon}_{\cdot j} = \frac{1}{n} \sum_{i=1}^n \epsilon_{ij}\).
+                </p>
+                <p class="mb-4">
+                    Since \(\alpha_j \sim N(0, \tau^2)\) and the average residual error is \(\bar{\epsilon}_{\cdot j} \sim N(0, \sigma^2/n)\), the group means are independent, normally distributed variables:
+                    $$\bar{y}_{\cdot j} \sim N\left(\mu, \tau^2 + \frac{\sigma^2}{n}\right)$$
+                </p>
+                <p class="mb-4">
+                    The sample variance of these \(J\) independent group means is:
+                    $$S_{\text{means}}^2 = \frac{1}{J-1} \sum_{j=1}^J (\bar{y}_{\cdot j} - \bar{y}_{\cdot\cdot})^2$$
+                    Since \(S_{\text{means}}^2\) is an unbiased estimator of the variance of \(\bar{y}_{\cdot j}\), its expected value must equal \(\text{var}(\bar{y}_{\cdot j})\):
+                    $$E[S_{\text{means}}^2] = \tau^2 + \frac{\sigma^2}{n}$$
+                </p>
+                <p class="mb-4">
+                    Now we express the expected value of \(SS_{\text{Between}}\):
+                    $$E[SS_{\text{Between}}] = E\left[ n \sum_{j=1}^J (\bar{y}_{\cdot j} - \bar{y}_{\cdot\cdot})^2 \right] = n (J-1) E[S_{\text{means}}^2] = n(J-1) \left( \tau^2 + \frac{\sigma^2}{n} \right) = (J-1)(n\tau^2 + \sigma^2)$$
+                </p>
+                <p class="mb-4">
+                    Dividing by the degrees of freedom \(J-1\) yields:
+                    $$E[MS_{\text{Between}}] = n\tau^2 + \sigma^2$$
+                    This shows that the variation between group averages is driven by both the individual measurement noise (\(\sigma^2\)) and the true variation between group means (\(\tau^2\)), scaled by the group size \(n\).
+                </p>
+            </div>
+        </section>
+
+        <!-- The F-Test Decision Rule -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-semibold mb-6 border-b pb-2 border-bayesian-border ui-text">
+                5. The F-Statistic and Decision Rule
+            </h2>
+            <div class="prose max-w-none text-bayesian-text mb-6">
+                <p class="mb-4">
+                    We want to test the null hypothesis:
+                    $$H_0: \tau^2 = 0 \quad \text{(all group means are identical)}$$
+                    Under this null hypothesis, both expected mean squares simplify:
+                    $$E[MS_{\text{Within}}] = \sigma^2, \quad E[MS_{\text{Between}}] = \sigma^2$$
+                </p>
+                <p class="mb-4">
+                    This means that under \(H_0\), both \(MS_{\text{Between}}\) and \(MS_{\text{Within}}\) are independent estimates of the exact same variance \(\sigma^2\). The ratio of two independent chi-square variables divided by their degrees of freedom follows an <strong>F-distribution</strong>:
+                    $$F = \frac{MS_{\text{Between}}}{MS_{\text{Within}}} \sim F_{J-1, \; J(n-1)}$$
+                </p>
+                <p class="mb-4">
+                    If the true group-level variance \(\tau^2\) is greater than 0, then \(E[MS_{\text{Between}}] = n\tau^2 + \sigma^2 > \sigma^2\). In this case, the ratio \(F\) will tend to be significantly larger than 1. 
+                </p>
+                
+                <h3 class="text-lg font-semibold text-bayesian-navy mt-6 mb-4 ui-text">The Classical Decision Rule</h3>
+                <ul class="list-disc pl-8 mb-6 space-y-2 text-base">
+                    <li>
+                        <strong>If \(F\) is statistically significant (large value):</strong> We reject the null hypothesis \(H_0\) and conclude that \(\tau^2 > 0\). Epistemologically, this means the groups are distinct enough to warrant separate group-specific estimates: \(\hat{\theta}_j = \bar{y}_{\cdot j}\) (no pooling).
+                    </li>
+                    <li>
+                        <strong>If \(F\) is not statistically significant:</strong> We fail to reject \(H_0\). Classical statistics concludes that we do not have enough evidence to claim the groups are different, leading to the decision to use a single pooled estimate: \(\hat{\theta}_j = \bar{y}_{\cdot\cdot}\) for all \(j\) (complete pooling).
+                    </li>
+                </ul>
+                <p class="mb-4">
+                    As Andrew Gelman points out in Section 5.4, this binary "all-or-nothing" choice is a major limitation of classical inference. Rather than forcing a choice between the extremes of complete pooling and separate estimates, the Bayesian hierarchical approach uses the data to estimate the actual value of \(\tau\), creating a continuous compromise (shrinkage) based on our real uncertainty.
+                </p>
+            </div>
+        </section>
+
+        <!-- References & Study Disclaimer -->
+        <section class="mt-20 pt-8 border-t border-bayesian-border">
+            <div class="p-6 bg-bayesian-surfaceAlt border border-bayesian-border rounded-lg text-sm text-bayesian-text leading-relaxed">
+                <h4 class="font-bold text-bayesian-navy text-base mb-3 ui-text">References & Study Disclaimer</h4>
+                <p class="mb-4">
+                    This page represents personal study notes and derivations written to clarify my own understanding of hierarchical Bayesian models. The content is based on:
+                </p>
+                <blockquote class="pl-4 border-l-2 border-bayesian-slate italic mb-4 text-bayesian-slate">
+                    Gelman, A., Carlin, J. B., Stern, H. S., Dunson, D. B., Vehtari, A., & Rubin, D. B. (2013). <em>Bayesian Data Analysis</em> (3rd ed.). CRC Press.
+                </blockquote>
+                <p class="mb-0">
+                    For official materials, including a copy of the textbook PDF for non-commercial use, please visit the official <a href="http://www.stat.columbia.edu/~gelman/book/" target="_blank" rel="noopener noreferrer" class="text-bayesian-blue hover:underline">Columbia University BDA Page</a> or explore Aki Vehtari's <a href="https://avehtari.github.io/BDA_course_Aalto/" target="_blank" rel="noopener noreferrer" class="text-bayesian-blue hover:underline">Aalto BDA Course Portal</a>. Any typos or mathematical errors on this page are my own.
+                </p>
+            </div>
+        </section>
+
+    </div>
+
+</body>
+
+</html>

@@ -105,7 +105,7 @@
 <body class="antialiased">
 
     <!-- Main Container -->
-    <div class="max-w-[760px] mx-auto px-4 py-16">
+    <div class="max-w-[880px] mx-auto px-4 py-16">
 
         <!-- Navigation -->
         <nav class="mb-8 flex items-center gap-6">
@@ -223,6 +223,599 @@
                         <strong>Weighting and Shrinkage:</strong> In the hierarchical normal framework, the sampling variance \(\sigma_j^2\) determines the balance of pooling. In estimating \(\theta_j\), the observed sample mean \(\bar{y}_{\cdot j}\) is weighted against the population-level mean \(\mu\). The weight of the observed data is proportional to the precision (inverse variance) \(1/\sigma_j^2\). Thus, large experiments (small \(\sigma_j^2\)) are shrunk very little toward the population mean, while small, noisy experiments (large \(\sigma_j^2\)) are shrunk aggressively toward the population average because their local data is less reliable.
                     </li>
                 </ul>
+
+                <h3 class="text-lg font-semibold text-bayesian-navy mt-8 mb-4 ui-text">The Likelihood Function</h3>
+                <p class="mb-4">
+                    By compressing the individual measurements \(y_{ij}\) into their sufficient statistics \(\bar{y}_{\cdot j}\), we can formulate the group-level likelihood for each exchangeable parameter \(\theta_j\):
+                </p>
+                <div class="text-center my-6 bg-white p-4 rounded border border-bayesian-border overflow-x-auto">
+                    <span class="math-inline">
+                        \(\bar{y}_{\cdot j} \mid \theta_j \sim N(\theta_j, \sigma_j^2), \quad \text{for } j=1, \dots, J.\) &nbsp; &mdash; <strong>Equation 5.12</strong>
+                    </span>
+                </div>
+                <p class="mb-4">
+                    This notation is extremely useful because of the flexibility it provides in allowing a separate, known variance \(\sigma_j^2\) for the mean of each group. While we assume these variances are known here, this is actually a powerful conceptual choice: by fixing the local measurement noise of each group, we can conceptually separate it from the population-level variation. This lets us isolate and study the pure mechanics of exchangeability and shrinkage. All subsequent calculations in this chapter will be implicitly conditional on these known variances \(\sigma_j^2\). Although we rarely know variances perfectly in real-world problems, this assumption serves as an excellent, robust approximation (we discuss how to handle unknown variances in Chapters 11 and 13).
+                </p>
+                <p class="mb-4">
+                    Furthermore, this model is much more general than it first appears. It applies even to situations where the individual observations \(y_{ij}\) are not normally distributed. If the sample size \(n_j\) in each group is large enough, the Central Limit Theorem guarantees that the group means \(\bar{y}_{\cdot j}\) will be approximately normally distributed around their true values \(\theta_j\). Philosophically, this shows that regular behavior at the group level emerges naturally from complex or noisy behavior at the individual level. This makes our hierarchical model highly robust: it functions as a reliable "macro-model" that captures the group-to-group variation, even while remaining agnostic to the specific non-normalities of the individual data points.
+                </p>
+            </div>
+        </section>
+
+        <!-- Constructing a Prior Distribution -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-semibold mb-6 border-b pb-2 border-bayesian-border ui-text">
+                Constructing a Prior Distribution from Pragmatic Considerations
+            </h2>
+            <div class="prose max-w-none text-bayesian-text mb-6">
+                <p class="mb-4">
+                    Before defining a formal prior distribution for all the group means \(\theta = (\theta_1, \dots, \theta_J)\), it is helpful to think about what kinds of estimates would make sense in practice.
+                </p>
+                <p class="mb-4">
+                    A simple and direct approach is to estimate each group mean \(\theta_j\) using only its own group sample average, \(\bar{y}_{\cdot j}\). This is the "no pooling" estimate, where each group is treated as entirely independent. However, this approach can fail when data is sparse. For instance, if we have \(J = 20\) groups with only \(n_j = 2\) observations per group, the sample averages will be highly noisy and unreliable. If these 20 groups represent assays from the same strain of rat under identical conditions, it is unreasonable to treat them as completely unrelated.
+                </p>
+                <p class="mb-4">
+                    In such cases, we might prefer to combine all the data together and estimate every \(\theta_j\) using a single pooled estimate, \(\bar{y}_{\cdot\cdot}\). This "complete pooling" estimate is a weighted average of the group means, where each group is weighted by its precision (the inverse of its sampling variance, \(1/\sigma_j^2\)):
+                </p>
+
+                <div class="text-center my-6 bg-white p-4 rounded border border-bayesian-border overflow-x-auto">
+                    <span class="math-inline">
+                        \(\bar{y}_{\cdot\cdot} = \frac{\sum_{j=1}^J \frac{1}{\sigma_j^2} \bar{y}_{\cdot j}}{\sum_{j=1}^J \frac{1}{\sigma_j^2}}\) &nbsp; &mdash; <strong>Equation 5.13</strong>
+                    </span>
+                </div>
+
+                <p class="mb-4">
+                    This formula has a very intuitive meaning: groups with larger sample sizes (smaller sampling variances \(\sigma_j^2\)) carry more precision and therefore have a greater influence on the pooled estimate \(\bar{y}_{\cdot\cdot}\). 
+                </p>
+                <p class="mb-4">
+                    These two options represent opposite extremes: "no pooling" assumes the groups have nothing in common, while "complete pooling" assumes the group means are completely identical. A key goal of hierarchical modeling is to find a compromise between these two extremes.
+                </p>
+
+                <h3 class="text-lg font-semibold text-bayesian-navy mt-8 mb-4 ui-text">
+                    The Classical Decision Rule: Random-Effects ANOVA
+                </h3>
+                <p class="mb-4">
+                    To decide whether to use separate estimates or a pooled estimate, a traditional approach in classical statistics is to perform a random-effects <strong>Analysis of Variance (ANOVA) F-test</strong>. 
+                </p>
+                <p class="mb-4">
+                    For simplicity, let us assume a balanced design in which each of the \(J\) groups has exactly \(n\) observations (so the sample size is the same, and \(\sigma_j^2 = \sigma^2/n\) for all \(j\)). Here, \(\tau^2\) represents the true variance between the group means \(\theta_j\). The theoretical ANOVA table partitions the variation as follows:
+                </p>
+
+                <!-- ANOVA Table -->
+                <div class="overflow-x-auto my-6 border border-bayesian-border rounded-lg bg-white">
+                    <table class="min-w-full divide-y divide-bayesian-border text-sm">
+                        <thead class="bg-bayesian-surfaceAlt">
+                            <tr class="ui-text font-semibold text-bayesian-navy text-left">
+                                <th class="px-4 py-3">Source of Variation</th>
+                                <th class="px-4 py-3">Degrees of Freedom (df)</th>
+                                <th class="px-4 py-3">Sum of Squares (SS)</th>
+                                <th class="px-4 py-3">Mean Square (MS)</th>
+                                <th class="px-4 py-3">Expected Mean Square \(E(MS \mid \sigma^2, \tau^2)\)</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-bayesian-border text-bayesian-text">
+                            <tr>
+                                <td class="px-4 py-3 font-semibold">Between Groups</td>
+                                <td class="px-4 py-3">\(J - 1\)</td>
+                                <td class="px-4 py-3">\(n \sum_{j=1}^J (\bar{y}_{\cdot j} - \bar{y}_{\cdot\cdot})^2\)</td>
+                                <td class="px-4 py-3">\(SS_{\text{Between}} / (J - 1)\)</td>
+                                <td class="px-4 py-3">\(n\tau^2 + \sigma^2\)</td>
+                            </tr>
+                            <tr>
+                                <td class="px-4 py-3 font-semibold">Within Groups (Error)</td>
+                                <td class="px-4 py-3">\(J(n - 1)\)</td>
+                                <td class="px-4 py-3">\(\sum_{j=1}^J \sum_{i=1}^n (y_{ij} - \bar{y}_{\cdot j})^2\)</td>
+                                <td class="px-4 py-3">\(SS_{\text{Within}} / [J(n - 1)]\)</td>
+                                <td class="px-4 py-3">\(\sigma^2\)</td>
+                            </tr>
+                            <tr class="bg-bayesian-surfaceAlt font-semibold">
+                                <td class="px-4 py-3">Total</td>
+                                <td class="px-4 py-3">\(Jn - 1\)</td>
+                                <td class="px-4 py-3">\(\sum_{j=1}^J \sum_{i=1}^n (y_{ij} - \bar{y}_{\cdot\cdot})^2\)</td>
+                                <td class="px-4 py-3"></td>
+                                <td class="px-4 py-3"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <p class="mb-4">
+                    In classical hypothesis testing, we compute the ratio of the between-group variation to the within-group variation:
+                    $$F = \frac{MS_{\text{Between}}}{MS_{\text{Within}}}$$
+                    Under the null hypothesis \(H_0: \tau^2 = 0\) (which assumes all group means are identical), both \(MS_{\text{Between}}\) and \(MS_{\text{Within}}\) are independent estimators of the same variance \(\sigma^2\). Therefore, the ratio \(F\) follows an \(F\)-distribution with \(J-1\) and \(J(n-1)\) degrees of freedom.
+                </p>
+                <p class="mb-4">
+                    If \(F\) is significantly greater than 1, we reject the null hypothesis and choose separate estimates (\(\hat{\theta}_j = \bar{y}_{\cdot j}\)). If \(F\) is not statistically significant, the F-test cannot reject \(H_0\), and we use the single pooled estimate (\(\hat{\theta}_j = \bar{y}_{\cdot\cdot}\)). 
+                </p>
+                <p class="mb-4">
+                    Instead of forcing this binary, "all-or-nothing" choice between complete pooling and no pooling, the hierarchical Bayesian approach uses the data to estimate the actual value of \(\tau\), creating a continuous compromise (shrinkage) based on real uncertainty.
+                </p>
+
+                <!-- First Principles Derivation Link -->
+                <div class="my-8 p-6 bg-bayesian-surfaceAlt border border-bayesian-border rounded-lg flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                    <div class="max-w-[480px]">
+                        <h4 class="font-semibold text-bayesian-navy text-sm mb-1 ui-text">Detailed Classical Derivation</h4>
+                        <p class="text-xs text-bayesian-slate leading-relaxed">
+                            Interested in how these sum of squares partitions and expected mean square values are mathematically derived? Read our full, step-by-step first-principles guide.
+                        </p>
+                    </div>
+                    <a href="anova_f_test.html" class="px-4 py-2 bg-bayesian-blue text-white rounded text-xs font-semibold hover:bg-blue-700 transition-colors ui-text whitespace-nowrap">
+                        View ANOVA Derivation
+                    </a>
+                </div>
+
+                <h3 class="text-lg font-semibold text-bayesian-navy mt-8 mb-4 ui-text">
+                    Weighted Compromise: Shrinkage and Prior Foundations
+                </h3>
+                <p class="mb-4">
+                    In practice, we are not forced to choose between the two extremes of complete pooling and no pooling. An alternative, more realistic approach is to use a weighted combination of both:
+                    $$\hat{\theta}_j = \lambda_j \bar{y}_{\cdot j} + (1 - \lambda_j) \bar{y}_{\cdot\cdot}$$
+                    where the weight \(\lambda_j\) is a shrinkage factor between 0 and 1.
+                </p>
+                <p class="mb-4">
+                    What kinds of prior models produce these different types of estimates? We can think about them in terms of our assumptions about the group means:
+                </p>
+                <ul class="list-decimal pl-8 mb-6 space-y-3 text-base">
+                    <li>
+                        <strong>The Unpooled Estimate (\(\hat{\theta}_j = \bar{y}_{\cdot j}\)):</strong> This is the posterior mean if we assume the \(J\) group means \(\theta_j\) are completely unrelated. In Bayesian terms, this corresponds to assigning independent, uniform prior densities on the range \((-\infty, \infty)\). This represents an infinite prior variance (\(\lambda_j = 1\) for all \(j\)).
+                    </li>
+                    <li>
+                        <strong>The Pooled Estimate (\(\hat{\theta}_j = \bar{y}_{\cdot\cdot}\)):</strong> This is the posterior mean if we restrict all the \(J\) values of \(\theta_j\) to be absolutely identical. This corresponds to assigning a uniform prior density on the single common value. This represents a prior variance of zero (\(\lambda_j = 0\) for all \(j\)).
+                    </li>
+                    <li>
+                        <strong>The Weighted Combination:</strong> This is the posterior mean if we assume the group means \(\theta_j\) are independent and identically distributed draws from a shared normal population distribution. This allows the prior variance to be estimated from the data.
+                    </li>
+                </ul>
+                <p class="mb-4">
+                    All three of these options assume that the group means are exchangeable. Crucially, the no-pooling and complete-pooling options are simply special, limiting cases of the normal population model. This is the foundation of the hierarchical model.
+                </p>
+            </div>
+        </section>
+
+        <!-- The Hierarchical Model -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-semibold mb-6 border-b pb-2 border-bayesian-border ui-text">
+                The Hierarchical Model
+            </h2>
+            <div class="prose max-w-none text-bayesian-text mb-6">
+                <p class="mb-4">
+                    For mathematical convenience and to model the exchangeable nature of the groups, we assume that the group means \(\theta_j\) are drawn from a shared normal population distribution with hyperparameters \(\mu\) (the population mean) and \(\tau\) (the population standard deviation):
+                </p>
+                <div class="text-center my-6 bg-white p-4 rounded border border-bayesian-border overflow-x-auto">
+                    <span class="math-inline">
+                        \(p(\theta_1, \dots, \theta_J \mid \mu, \tau) = \prod_{j=1}^J N(\theta_j \mid \mu, \tau^2)\) &nbsp; &mdash; <strong>Equation 5.14</strong>
+                    </span>
+                </div>
+                <p class="mb-4">
+                    If we integrate out the hyperparameters \(\mu\) and \(\tau\), we obtain the prior joint distribution of the group means:
+                    $$p(\theta_1, \dots, \theta_J) = \int \prod_{j=1}^J \left[ N(\theta_j \mid \mu, \tau^2) \right] p(\mu, \tau) \, d(\mu, \tau)$$
+                </p>
+                <p class="mb-4">
+                    This formulation means that, conditional on the hyperparameters \(\mu\) and \(\tau\), the group means \(\theta_j\) are independent. The hierarchical structure allows us to treat the \(\theta_j\)'s as a random sample from a shared population distribution.
+                </p>
+                <p class="mb-4">
+                    To complete the model, we must assign a prior distribution to the hyperparameters themselves (referred to as a hyperprior). We assign a noninformative uniform hyperprior distribution to \(\mu\) given \(\tau\):
+                </p>
+                <div class="text-center my-6 bg-white p-4 rounded border border-bayesian-border overflow-x-auto">
+                    <span class="math-inline">
+                        \(p(\mu, \tau) = p(\mu \mid \tau) p(\tau) \propto p(\tau)\) &nbsp; &mdash; <strong>Equation 5.15</strong>
+                    </span>
+                </div>
+                <p class="mb-4">
+                    A uniform prior density for \(\mu\) is generally reasonable here because the combined data from all \(J\) experiments is highly informative about the location of the population mean. Therefore, the choice of prior on \(\mu\) has little impact on the final posterior distribution. We will discuss the prior distribution for \(\tau\) in detail later in this analysis.
+                </p>
+                <p class="mb-4">
+                    As is standard in hierarchical modeling, we will first solve the equations conditionally on the hyperparameters \(\mu\) and \(\tau\), and then combine them with their prior and posterior distributions to obtain the full joint posterior distribution.
+                </p>
+            </div>
+        </section>
+
+        <!-- The Joint Posterior Distribution -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-semibold mb-6 border-b pb-2 border-bayesian-border ui-text">
+                The Joint Posterior Distribution
+            </h2>
+            <div class="prose max-w-none text-bayesian-text mb-6">
+                <p class="mb-4">
+                    By combining the likelihood of our observed data and the hierarchical prior model, we can write down the joint posterior distribution for all parameters and hyperparameters: \(p(\theta, \mu, \tau \mid y)\).
+                </p>
+                
+                <h3 class="text-lg font-semibold text-bayesian-navy mt-8 mb-4 ui-text">Step-by-Step Derivation</h3>
+                
+                <p class="mb-4">
+                    <strong>Step 1: Apply Bayes' Rule</strong><br>
+                    The joint posterior density is proportional to the product of the joint prior and the joint likelihood:
+                    $$p(\theta, \mu, \tau \mid y) \propto p(\theta, \mu, \tau) p(y \mid \theta, \mu, \tau)$$
+                </p>
+
+                <p class="mb-4">
+                    <strong>Step 2: Decompose the Joint Prior</strong><br>
+                    Using the chain rule of probability, we decompose the joint prior distribution of the parameters and hyperparameters:
+                    $$p(\theta, \mu, \tau) = p(\mu, \tau) p(\theta \mid \mu, \tau)$$
+                    Since the group means \(\theta_j\) are conditionally independent given the hyperparameters \(\mu\) and \(\tau\) (as established in Equation 5.14), this factors as:
+                    $$p(\theta \mid \mu, \tau) = \prod_{j=1}^J N(\theta_j \mid \mu, \tau^2)$$
+                    Thus, the joint prior is:
+                    $$p(\theta, \mu, \tau) = p(\mu, \tau) \prod_{j=1}^J N(\theta_j \mid \mu, \tau^2)$$
+                </p>
+
+                <p class="mb-4">
+                    <strong>Step 3: Decompose the Joint Likelihood</strong><br>
+                    Because the data \(y\) depend only on the group means \(\theta\) (and not directly on the population hyperparameters \(\mu\) and \(\tau\) once \(\theta\) is known), the likelihood simplifies:
+                    $$p(y \mid \theta, \mu, \tau) = p(y \mid \theta)$$
+                    Furthermore, because each experiment \(j\) is conditionally independent, the joint likelihood factors into the product of the likelihoods for each of the \(J\) groups:
+                    $$p(y \mid \theta) = \prod_{j=1}^J p(y_{\cdot j} \mid \theta_j)$$
+                    where \(y_{\cdot j} = (y_{1j}, \dots, y_{n_j j})\) represents the observations within group \(j\).
+                </p>
+
+                <p class="mb-4">
+                    <strong>Step 4: Reduce to Sufficient Statistics for Each Group</strong><br>
+                    For each group \(j\), the individual measurements \(y_{ij}\) are normally distributed around the group mean \(\theta_j\) with error variance \(\sigma^2\). We can expand the exponent of the group likelihood around the sample mean \(\bar{y}_{\cdot j}\):
+                    $$\sum_{i=1}^{n_j} (y_{ij} - \theta_j)^2 = \sum_{i=1}^{n_j} \left[ (y_{ij} - \bar{y}_{\cdot j}) + (\bar{y}_{\cdot j} - \theta_j) \right]^2$$
+                    $$\sum_{i=1}^{n_j} (y_{ij} - \theta_j)^2 = \sum_{i=1}^{n_j} (y_{ij} - \bar{y}_{\cdot j})^2 + n_j (\bar{y}_{\cdot j} - \theta_j)^2 + 2 (\bar{y}_{\cdot j} - \theta_j) \sum_{i=1}^{n_j} (y_{ij} - \bar{y}_{\cdot j})$$
+                    Since the sum of deviations around the sample mean is zero (\(\sum_{i=1}^{n_j} (y_{ij} - \bar{y}_{\cdot j}) = 0\)), the cross-product term disappears:
+                    $$\sum_{i=1}^{n_j} (y_{ij} - \theta_j)^2 = \sum_{i=1}^{n_j} (y_{ij} - \bar{y}_{\cdot j})^2 + n_j (\bar{y}_{\cdot j} - \theta_j)^2$$
+                    Plugging this back into the joint likelihood of group \(j\) yields:
+                    $$p(y_{\cdot j} \mid \theta_j) = (2\pi\sigma^2)^{-n_j/2} \exp\left( -\frac{\sum_{i=1}^{n_j} (y_{ij} - \bar{y}_{\cdot j})^2}{2\sigma^2} \right) \exp\left( -\frac{n_j(\bar{y}_{\cdot j} - \theta_j)^2}{2\sigma^2} \right)$$
+                    Since \(\sigma^2\) is assumed known, the first exponential term and the coefficient depend only on the data and do not vary with the parameter \(\theta_j\). We can absorb them into the proportionality constant:
+                    $$p(y_{\cdot j} \mid \theta_j) \propto \exp\left( -\frac{(\bar{y}_{\cdot j} - \theta_j)^2}{2(\sigma^2/n_j)} \right)$$
+                    This is proportional to the normal probability density of the group sample mean \(\bar{y}_{\cdot j}\) with sampling variance \(\sigma_j^2 = \sigma^2/n_j\):
+                    $$p(y_{\cdot j} \mid \theta_j) \propto N(\bar{y}_{\cdot j} \mid \theta_j, \sigma_j^2)$$
+                </p>
+
+                <p class="mb-4">
+                    <strong>Step 5: Assemble the Joint Posterior Distribution</strong><br>
+                    Now we substitute the decomposed prior from Step 2 and the simplified likelihood from Step 4 back into our initial Bayes' rule formula from Step 1:
+                    $$p(\theta, \mu, \tau \mid y) \propto p(\mu, \tau) \left( \prod_{j=1}^J N(\theta_j \mid \mu, \tau^2) \right) \left( \prod_{j=1}^J N(\bar{y}_{\cdot j} \mid \theta_j, \sigma_j^2) \right)$$
+                </p>
+
+                <div class="text-center my-6 bg-white p-4 rounded border border-bayesian-border overflow-x-auto">
+                    <span class="math-inline">
+                        \(p(\theta, \mu, \tau \mid y) \propto p(\mu, \tau) \prod_{j=1}^J N(\theta_j \mid \mu, \tau^2) \prod_{j=1}^J N(\bar{y}_{\cdot j} \mid \theta_j, \sigma_j^2)\) &nbsp; &mdash; <strong>Equation 5.16</strong>
+                    </span>
+                </div>
+
+                <p class="mb-4">
+                    Here, we can ignore any factors that depend only on the observed data \(y\) and the known sampling variances \(\sigma_j^2\). This equation is the foundation for all posterior calculations, allowing us to perform inference on both the individual group means \(\theta_j\) and the population parameters \(\mu\) and \(\tau\).
+                </p>
+            </div>
+        </section>
+
+        <!-- Conditional Posterior of the Group Means -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-semibold mb-6 border-b pb-2 border-bayesian-border ui-text">
+                Conditional Posterior of the Group Means Given the Hyperparameters
+            </h2>
+            <div class="prose max-w-none text-bayesian-text mb-6">
+                <p class="mb-4">
+                    In a hierarchical model, once we assume the hyperparameters \(\mu\) and \(\tau\) are known, the individual group means \(\theta_j\) are conditionally independent of each other. Furthermore, each \(\theta_j\) only appears in the factor of the prior corresponding to group \(j\) and in the factor of the likelihood corresponding to group \(j\).
+                </p>
+                <p class="mb-4">
+                    This means that, given the hyperparameters, the joint posterior of the group means factors into \(J\) independent components:
+                    $$p(\theta \mid \mu, \tau, y) = \prod_{j=1}^J p(\theta_j \mid \mu, \tau, y_{\cdot j})$$
+                    For each group \(j\), we are simply updating a single normal mean with a normal prior—a standard conjugate update derived in Section 2.5 of the book.
+                </p>
+
+                <h3 class="text-lg font-semibold text-bayesian-navy mt-8 mb-4 ui-text">Step-by-Step Conjugate Update Derivation</h3>
+                <p class="mb-4">
+                    For any group \(j\), we have a normal likelihood and a normal prior:
+                    - <strong>Likelihood:</strong> \(\bar{y}_{\cdot j} \mid \theta_j \sim N(\theta_j, \sigma_j^2)\)<br>
+                    - <strong>Prior:</strong> \(\theta_j \mid \mu, \tau \sim N(\mu, \tau^2)\)
+                </p>
+                <p class="mb-4">
+                    The conditional posterior density of \(\theta_j\) is proportional to the product of these two densities:
+                    $$p(\theta_j \mid \mu, \tau, y) \propto p(\theta_j \mid \mu, \tau) p(\bar{y}_{\cdot j} \mid \theta_j, \sigma_j^2)$$
+                    $$p(\theta_j \mid \mu, \tau, y) \propto \exp\left( -\frac{(\theta_j - \mu)^2}{2\tau^2} \right) \exp\left( -\frac{(\bar{y}_{\cdot j} - \theta_j)^2}{2\sigma_j^2} \right)$$
+                </p>
+                <p class="mb-4">
+                    To find the mean and variance of this posterior distribution, we combine the terms in the exponent (ignoring the factor of \(-1/2\) for algebraic simplicity):
+                    $$\frac{(\theta_j - \mu)^2}{\tau^2} + \frac{(\theta_j - \bar{y}_{\cdot j})^2}{\sigma_j^2}$$
+                    Expanding these squared terms:
+                    $$\frac{\theta_j^2 - 2\theta_j\mu + \mu^2}{\tau^2} + \frac{\theta_j^2 - 2\theta_j\bar{y}_{\cdot j} + \bar{y}_{\cdot j}^2}{\sigma_j^2}$$
+                    Now, we group the terms by powers of \(\theta_j\):
+                    $$\theta_j^2 \left( \frac{1}{\sigma_j^2} + \frac{1}{\tau^2} \right) - 2\theta_j \left( \frac{\bar{y}_{\cdot j}}{\sigma_j^2} + \frac{\mu}{\tau^2} \right) + \text{constants}$$
+                    where the "constants" represent terms that do not depend on the parameter \(\theta_j\) and can be absorbed into the normalization constant of the probability density.
+                </p>
+                <p class="mb-4">
+                    Recall that a normal distribution \(N(m, V)\) has the exponent form \(\exp\left( -\frac{(\theta_j - m)^2}{2V} \right)\). Expanding this exponent yields:
+                    $$\frac{(\theta_j - m)^2}{V} = \frac{\theta_j^2 - 2\theta_j m + m^2}{V} = \theta_j^2 \left(\frac{1}{V}\right) - 2\theta_j \left(\frac{m}{V}\right) + \text{constants}$$
+                    By matching coefficients with our grouped expression:
+                    <ul class="list-disc pl-8 my-4 space-y-2 text-base">
+                        <li><strong>Posterior Precision (Inverse Variance):</strong> \(\frac{1}{V_j} = \frac{1}{\sigma_j^2} + \frac{1}{\tau^2}\)</li>
+                        <li><strong>Posterior Mean scaled by Precision:</strong> \(\frac{\hat{\theta}_j}{V_j} = \frac{\bar{y}_{\cdot j}}{\sigma_j^2} + \frac{\mu}{\tau^2}\)</li>
+                    </ul>
+                </p>
+                <p class="mb-4">
+                    Solving for the posterior variance \(V_j\) and the posterior mean \(\hat{\theta}_j\) yields the standard updating equations:
+                </p>
+
+                <div class="text-center my-6 bg-white p-4 rounded border border-bayesian-border overflow-x-auto">
+                    <span class="math-inline">
+                        \(\theta_j \mid \mu, \tau, y \sim N(\hat{\theta}_j, V_j), \quad \text{where } \hat{\theta}_j = \frac{\frac{1}{\sigma_j^2}\bar{y}_{\cdot j} + \frac{1}{\tau^2}\mu}{\frac{1}{\sigma_j^2} + \frac{1}{\tau^2}} \text{ and } V_j = \frac{1}{\frac{1}{\sigma_j^2} + \frac{1}{\tau^2}}\) &nbsp; &mdash; <strong>Equation 5.17</strong>
+                    </span>
+                </div>
+
+                <p class="mb-4">
+                    The conditional posterior density for each \(\theta_j\) given \(\mu\) and \(\tau\) is a proper normal density.
+                </p>
+
+                <h3 class="text-lg font-semibold text-bayesian-navy mt-8 mb-4 ui-text">Intuitive Meaning: Precision-Weighted Shrinkage</h3>
+                <p class="mb-4">
+                    The formula for the conditional posterior mean \(\hat{\theta}_j\) has a highly intuitive interpretation:
+                </p>
+                <ul class="list-disc pl-8 mb-6 space-y-3 text-base">
+                    <li>
+                        <strong>Precision Weighting:</strong> The posterior mean is a weighted average of two sources of information: the local group sample average (\(\bar{y}_{\cdot j}\)) and the global population mean (\(\mu\)). The weight of each source is proportional to its <em>precision</em> (inverse variance).
+                    </li>
+                    <li>
+                        <strong>The Role of \(\sigma_j^2\):</strong> The precision of the local data is \(1/\sigma_j^2\). If a group has a large sample size (so \(\sigma_j^2 \to 0\)), its local precision is extremely high. The weight of the sample mean approaches 1, meaning that \(\hat{\theta}_j \approx \bar{y}_{\cdot j}\) and we shrink the estimate very little.
+                    </li>
+                    <li>
+                        <strong>The Role of \(\tau^2\):</strong> The precision of the population distribution is \(1/\tau^2\). If the population is highly homogeneous (so \(\tau^2 \to 0\)), the population precision is extremely high. The weight of the population mean \(\mu\) dominates, meaning that we shrink all group estimates aggressively toward \(\mu\).
+                    </li>
+                </ul>
+                <p class="mb-4">
+                    Because the hyperparameters \(\mu\) and \(\tau\) are not actually known, we cannot use Equation 5.17 on its own. In the next subsections, we will calculate the marginal posterior distribution of the hyperparameters from the data, allowing us to account for our uncertainty about their values.
+                </p>
+            </div>
+        </section>
+
+        <!-- The Marginal Posterior Distribution of the Hyperparameters -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-semibold mb-6 border-b pb-2 border-bayesian-border ui-text">
+                The Marginal Posterior Distribution of the Hyperparameters
+            </h2>
+            <div class="prose max-w-none text-bayesian-text mb-6">
+                <p class="mb-4">
+                    The conditional posterior solution for the group means \(\theta_j\) depends on knowing the population hyperparameters \(\mu\) and \(\tau\). Since these parameters are unknown, we must perform a full Bayesian treatment on them by deriving their marginal posterior distribution, \(p(\mu, \tau \mid y)\).
+                </p>
+                <p class="mb-4">
+                    We can obtain the marginal posterior by starting with the relation:
+                    $$p(\mu, \tau \mid y) \propto p(\mu, \tau) p(y \mid \mu, \tau)$$
+                    Here, the term \(p(y \mid \mu, \tau)\) is the marginal likelihood of the data after integrating out the individual group parameters \(\theta\). For many models, this integration is mathematically intractable, but for the normal distribution, it can be written analytically in closed form.
+                </p>
+
+                <h3 class="text-lg font-semibold text-bayesian-navy mt-8 mb-4 ui-text">Step-by-Step Derivation</h3>
+                <p class="mb-4">
+                    <strong>Step 1: Integrate Out the Group parameters</strong><br>
+                    For each group \(j\), the sample mean \(\bar{y}_{\cdot j}\) conditional on \(\theta_j\) is normally distributed, and \(\theta_j\) is itself normally distributed given the hyperparameters:
+                    $$\bar{y}_{\cdot j} \mid \theta_j \sim N(\theta_j, \sigma_j^2)$$
+                    $$\theta_j \mid \mu, \tau \sim N(\mu, \tau^2)$$
+                    To find the marginal distribution of \(\bar{y}_{\cdot j}\) given only the hyperparameters, we integrate over \(\theta_j\):
+                    $$p(\bar{y}_{\cdot j} \mid \mu, \tau) = \int p(\bar{y}_{\cdot j} \mid \theta_j, \sigma_j^2) p(\theta_j \mid \mu, \tau) \, d\theta_j$$
+                </p>
+                <p class="mb-4">
+                    <strong>Step 2: Apply the Laws of Total Expectation and Variance</strong><br>
+                    Because we are convolving two normal distributions, the resulting marginal distribution of \(\bar{y}_{\cdot j}\) is also normal. We can find its mean and variance directly:
+                    <ul class="list-disc pl-8 my-4 space-y-2 text-base">
+                        <li><strong>Expected Value:</strong><br>
+                            $$E[\bar{y}_{\cdot j} \mid \mu, \tau] = E[ E[\bar{y}_{\cdot j} \mid \theta_j] \mid \mu, \tau ] = E[ \theta_j \mid \mu, \tau ] = \mu$$
+                        </li>
+                        <li><strong>Variance:</strong><br>
+                            $$\text{var}(\bar{y}_{\cdot j} \mid \mu, \tau) = E[ \text{var}(\bar{y}_{\cdot j} \mid \theta_j) \mid \mu, \tau ] + \text{var}( E[\bar{y}_{\cdot j} \mid \theta_j] \mid \mu, \tau )$$
+                            $$\text{var}(\bar{y}_{\cdot j} \mid \mu, \tau) = E[ \sigma_j^2 \mid \mu, \tau ] + \text{var}( \theta_j \mid \mu, \tau ) = \sigma_j^2 + \tau^2$$
+                        </li>
+                    </ul>
+                    Therefore, the marginal distribution of each group mean is:
+                    $$\bar{y}_{\cdot j} \mid \mu, \tau \sim N(\mu, \sigma_j^2 + \tau^2)$$
+                </p>
+                <p class="mb-4">
+                    <strong>Step 3: Factor the Joint Likelihood</strong><br>
+                    Because each group average \(\bar{y}_{\cdot j}\) is independent given \(\mu\) and \(\tau\), the joint marginal likelihood of all group averages factors into the product of the individual densities:
+                    $$p(y \mid \mu, \tau) \propto \prod_{j=1}^J N(\bar{y}_{\cdot j} \mid \mu, \sigma_j^2 + \tau^2)$$
+                </p>
+                <p class="mb-4">
+                    <strong>Step 4: Multiply by the Hyperprior</strong><br>
+                    Multiplying this joint likelihood by the hyperprior \(p(\mu, \tau)\) yields the joint marginal posterior distribution of the hyperparameters:
+                </p>
+
+                <div class="text-center my-6 bg-white p-4 rounded border border-bayesian-border overflow-x-auto">
+                    <span class="math-inline">
+                        \(p(\mu, \tau \mid y) \propto p(\mu, \tau) \prod_{j=1}^J N(\bar{y}_{\cdot j} \mid \mu, \sigma_j^2 + \tau^2)\) &nbsp; &mdash; <strong>Equation 5.18</strong>
+                    </span>
+                </div>
+
+                <p class="mb-4">
+                    This equation allows us to calculate how much support the overall dataset provides for various values of the population mean \(\mu\) and population variance \(\tau^2\).
+                </p>
+        </section>
+
+        <!-- Posterior Distribution of mu Given tau -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-semibold mb-6 border-b pb-2 border-bayesian-border ui-text">
+                Posterior Distribution of \(\mu\) Given \(\tau\)
+            </h2>
+            <div class="prose max-w-none text-bayesian-text mb-6">
+                <p class="mb-4">
+                    To compute the joint posterior density \(p(\mu, \tau \mid y)\) over the hyperparameters, we factor it into a conditional distribution and a marginal distribution:
+                </p>
+                <div class="text-center my-6 bg-white p-4 rounded border border-bayesian-border overflow-x-auto">
+                    <span class="math-inline">
+                        \(p(\mu, \tau \mid y) = p(\mu \mid \tau, y) p(\tau \mid y)\) &nbsp; &mdash; <strong>Equation 5.19</strong>
+                    </span>
+                </div>
+                <p class="mb-4">
+                    The first factor, \(p(\mu \mid \tau, y)\), is the posterior distribution of the population mean \(\mu\) if the standard deviation \(\tau\) were known.
+                </p>
+                <p class="mb-4">
+                    If we assume \(\tau\) is known, and assign a uniform conditional prior density \(p(\mu \mid \tau) \propto 1\), the log posterior density of \(\mu\) is quadratic. This means \(p(\mu \mid \tau, y)\) is normally distributed.
+                </p>
+                <p class="mb-4">
+                    We can derive its mean \(\hat{\mu}\) and variance \(V_{\mu}\) directly by viewing the group averages \(\bar{y}_{\cdot j}\) as \(J\) independent measurements of \(\mu\) with variances equal to \(\sigma_j^2 + \tau^2\):
+                </p>
+                <div class="text-center my-6 bg-white p-4 rounded border border-bayesian-border overflow-x-auto">
+                    <span class="math-inline">
+                        \(\mu \mid \tau, y \sim N(\hat{\mu}, V_{\mu}), \quad \text{where } \hat{\mu} = \frac{\sum_{j=1}^J \frac{1}{\sigma_j^2 + \tau^2}\bar{y}_{\cdot j}}{\sum_{j=1}^J \frac{1}{\sigma_j^2 + \tau^2}} \text{ and } V_{\mu} = \frac{1}{\sum_{j=1}^J \frac{1}{\sigma_j^2 + \tau^2}}\) &nbsp; &mdash; <strong>Equation 5.20</strong>
+                    </span>
+                </div>
+                <p class="mb-4">
+                    This gives us a proper normal posterior distribution for the population mean \(\mu\) conditional on any given value of the variance parameter \(\tau^2\).
+                </p>
+            </div>
+        </section>
+
+        <!-- Posterior Distribution of tau -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-semibold mb-6 border-b pb-2 border-bayesian-border ui-text">
+                Posterior Distribution of \(\tau\)
+            </h2>
+            <div class="prose max-w-none text-bayesian-text mb-6">
+                <p class="mb-4">
+                    We can now derive the marginal posterior distribution of the population standard deviation, \(p(\tau \mid y)\), by rearranging Equation 5.19:
+                    $$p(\tau \mid y) = \frac{p(\mu, \tau \mid y)}{p(\mu \mid \tau, y)}$$
+                    Substituting Equation 5.18 for the numerator and Equation 5.20 for the denominator yields:
+                    $$p(\tau \mid y) \propto \frac{p(\tau) \prod_{j=1}^J N(\bar{y}_{\cdot j} \mid \mu, \sigma_j^2 + \tau^2)}{N(\mu \mid \hat{\mu}, V_{\mu})}$$
+                </p>
+                <p class="mb-4">
+                    Because this identity must hold for any value of \(\mu\), we can choose any convenient value to evaluate it. Setting \(\mu = \hat{\mu}\) makes the calculation particularly straightforward:
+                    $$p(\tau \mid y) \propto \frac{p(\tau) \prod_{j=1}^J N(\bar{y}_{\cdot j} \mid \hat{\mu}, \sigma_j^2 + \tau^2)}{N(\hat{\mu} \mid \hat{\mu}, V_{\mu})}$$
+                    Recall the normal probability density function forms:
+                    - \(N(\bar{y}_{\cdot j} \mid \hat{\mu}, \sigma_j^2 + \tau^2) = [2\pi(\sigma_j^2 + \tau^2)]^{-1/2} \exp\left( -\frac{(\bar{y}_{\cdot j} - \hat{\mu})^2}{2(\sigma_j^2 + \tau^2)} \right)\)<br>
+                    - \(N(\hat{\mu} \mid \hat{\mu}, V_{\mu}) = (2\pi V_{\mu})^{-1/2}\)
+                </p>
+                <p class="mb-4">
+                    Plugging these in and canceling out the common factors of \(2\pi\):
+                </p>
+                <div class="text-center my-6 bg-white p-4 rounded border border-bayesian-border overflow-x-auto">
+                    <span class="math-inline">
+                        \(p(\tau \mid y) \propto p(\tau) V_{\mu}^{1/2} \prod_{j=1}^J (\sigma_j^2 + \tau^2)^{-1/2} \exp\left( -\frac{(\bar{y}_{\cdot j} - \hat{\mu})^2}{2(\sigma_j^2 + \tau^2)} \right)\) &nbsp; &mdash; <strong>Equation 5.21</strong>
+                    </span>
+                </div>
+                <p class="mb-4">
+                    Since both \(\hat{\mu}\) and \(V_{\mu}\) are themselves functions of \(\tau\), the marginal posterior density \(p(\tau \mid y)\) is a complex, non-standard function of \(\tau\) that must be analyzed numerically.
+                </p>
+            </div>
+        </section>
+
+        <!-- Prior Distribution for tau -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-semibold mb-6 border-b pb-2 border-bayesian-border ui-text">
+                Prior Distribution for \(\tau\)
+            </h2>
+            <div class="prose max-w-none text-bayesian-text mb-6">
+                <p class="mb-4">
+                    To complete our model, we must choose a prior distribution for \(\tau\). A standard objective choice is the uniform prior on the standard deviation scale:
+                    $$p(\tau) \propto 1$$
+                    When using an improper prior (one that does not integrate to a finite number), we must check that the resulting posterior distribution is proper (integrates to 1). The uniform prior for \(\tau\) leads to a proper posterior because the density decays rapidly as \(\tau \to \infty\).
+                </p>
+                <p class="mb-4">
+                    In contrast, the standard noninformative prior for a scale parameter, \(p(\log \tau) \propto 1\) (equivalent to \(p(\tau) \propto 1/\tau\)), leads to an <strong>improper posterior</strong>. This is because as \(\tau \to 0\), the likelihood remains positive and finite, meaning the posterior density behaves like \(1/\tau\) near zero. The integral of \(1/\tau\) near zero diverges to infinity.
+                </p>
+                <p class="mb-4">
+                    Alternatively, we can construct a proper prior using the scaled inverse-chi-square family (the conjugate family for normal variance parameters). We can set its parameters by matching its mean to a "best guess" of the group-level variance and placing its upper percentiles near a conservative upper bound.
+                </p>
+            </div>
+        </section>
+
+        <!-- Computation -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-semibold mb-6 border-b pb-2 border-bayesian-border ui-text">
+                Computation via Simulation
+            </h2>
+            <div class="prose max-w-none text-bayesian-text mb-6">
+                <p class="mb-4">
+                    We can easily draw samples from the joint posterior distribution \(p(\theta, \mu, \tau \mid y)\) by using a step-by-step factorization approach:
+                    $$p(\theta, \mu, \tau \mid y) = p(\tau \mid y) p(\mu \mid \tau, y) p(\theta \mid \mu, \tau, y)$$
+                </p>
+                <p class="mb-4">
+                    The simulation is performed in three steps:
+                </p>
+                <ul class="list-disc pl-8 mb-6 space-y-3 text-base">
+                    <li>
+                        <strong>Step 1: Draw \(\tau\)</strong><br>
+                        Evaluate the marginal posterior density \(p(\tau \mid y)\) (Equation 5.21) on a grid of uniformly spaced values. We can then draw samples from this discrete grid using the inverse CDF method.
+                    </li>
+                    <li>
+                        <strong>Step 2: Draw \(\mu\)</strong><br>
+                        For each simulated draw of \(\tau\), calculate the corresponding mean \(\hat{\mu}\) and variance \(V_{\mu}\) using Equation 5.20. Then, draw a value for \(\mu\) from the normal distribution:
+                        $$\mu \sim N(\hat{\mu}, V_{\mu})$$
+                    </li>
+                    <li>
+                        <strong>Step 3: Draw \(\theta_j\)</strong><br>
+                        For each simulated pair of \((\mu, \tau)\), draw the group parameters \(\theta_j\) independently for each group \(j\) from their conditional posterior distribution (Equation 5.17):
+                        $$\theta_j \sim N(\hat{\theta}_j, V_j)$$
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Posterior Predictive Distributions -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-semibold mb-6 border-b pb-2 border-bayesian-border ui-text">
+                Posterior Predictive Distributions
+            </h2>
+            <div class="prose max-w-none text-bayesian-text mb-6">
+                <p class="mb-4">
+                    Once we have simulated draws from the joint posterior distribution of the parameters, we can easily generate predictions for future observations. We consider two main scenarios:
+                </p>
+
+                <h3 class="text-lg font-semibold text-bayesian-navy mt-6 mb-4 ui-text">Scenario 1: Predicting Future Data from the Existing Groups</h3>
+                <p class="mb-4">
+                    To predict new observations \(\tilde{y}\) for one of our current groups \(j\) (with mean parameter \(\theta_j\)):
+                    <ol class="list-decimal pl-8 mb-6 space-y-2 text-base">
+                        <li>Take a simulated draw of \(\theta_j\) from our posterior samples.</li>
+                        <li>Draw the new data point from the sampling distribution: \(\tilde{y} \sim N(\theta_j, \sigma^2)\).</li>
+                    </ol>
+                </p>
+
+                <h3 class="text-lg font-semibold text-bayesian-navy mt-8 mb-4 ui-text">Scenario 2: Predicting Future Data from New Groups</h3>
+                <p class="mb-4">
+                    To predict observations \(\tilde{y}\) for a completely new group (with mean parameter \(\tilde{\theta}\)):
+                    <ol class="list-decimal pl-8 mb-6 space-y-2 text-base">
+                        <li>Take a simulated draw of the hyperparameters \((\mu, \tau)\) from our posterior samples.</li>
+                        <li>Draw a new group parameter from the population distribution: \(\tilde{\theta} \sim N(\mu, \tau^2)\).</li>
+                        <li>Draw the new data point from the sampling distribution: \(\tilde{y} \sim N(\tilde{\theta}, \sigma^2)\).</li>
+                    </ol>
+                </p>
+            </div>
+        </section>
+
+        <!-- Comparison with Point Estimation -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-semibold mb-6 border-b pb-2 border-bayesian-border ui-text">
+                Comparison with Classical Point Estimation
+            </h2>
+            <div class="prose max-w-none text-bayesian-text mb-6">
+                <p class="mb-4">
+                    To see the benefits of this fully Bayesian approach, we can compare it to an approximate method that substitutes point estimates for the hyperparameters \(\mu\) and \(\tau\).
+                </p>
+                <p class="mb-4">
+                    Classical analysis of variance gives the following unbiased estimators:
+                </p>
+                <div class="text-center my-6 bg-white p-4 rounded border border-bayesian-border overflow-x-auto">
+                    <span class="math-inline">
+                        \(\hat{\mu} = \bar{y}_{\cdot\cdot} \quad \text{and} \quad \hat{\tau}^2 = \frac{MS_{\text{Between}} - MS_{\text{Within}}}{n}\) &nbsp; &mdash; <strong>Equation 5.22</strong>
+                    </span>
+                </div>
+                <p class="mb-4">
+                    In this approximate approach, inference for \(\theta_j\) is based on the conditional distribution \(p(\theta \mid \hat{\mu}, \hat{\tau})\) using these fixed estimates.
+                </p>
+                <p class="mb-4">
+                    There are two major limitations with this point-estimate approach:
+                </p>
+                <ul class="list-disc pl-8 mb-6 space-y-3 text-base">
+                    <li>
+                        <strong>Underestimating Uncertainty:</strong> Substituting point estimates for \(\mu\) and \(\tau\) ignores our uncertainty about their true values. This leads to posterior intervals for the group means \(\theta_j\) that are artificially narrow.
+                    </li>
+                    <li>
+                        <strong>Negative Variance Estimates:</strong> The classical estimator \(\hat{\tau}^2\) in Equation 5.22 can be negative when the within-group variation \(MS_{\text{Within}}\) exceeds the between-group variation \(MS_{\text{Between}}\). While classical analysis typically truncates a negative estimate to zero, this implies we are certain that all group means are absolutely identical (\(\tau^2 = 0\)). This is a strong and scientifically indefensible claim that is avoided by the fully Bayesian approach.
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- References & Study Disclaimer -->
+        <section class="mt-20 pt-8 border-t border-bayesian-border">
+            <div class="p-6 bg-bayesian-surfaceAlt border border-bayesian-border rounded-lg text-sm text-bayesian-text leading-relaxed">
+                <h4 class="font-bold text-bayesian-navy text-base mb-3 ui-text">References & Study Disclaimer</h4>
+                <p class="mb-4">
+                    This page represents personal study notes and derivations written to clarify my own understanding of hierarchical Bayesian models. The content is based on:
+                </p>
+                <blockquote class="pl-4 border-l-2 border-bayesian-slate italic mb-4 text-bayesian-slate">
+                    Gelman, A., Carlin, J. B., Stern, H. S., Dunson, D. B., Vehtari, A., & Rubin, D. B. (2013). <em>Bayesian Data Analysis</em> (3rd ed.). CRC Press.
+                </blockquote>
+                <p class="mb-0">
+                    For official materials, including a copy of the textbook PDF for non-commercial use, please visit the official <a href="http://www.stat.columbia.edu/~gelman/book/" target="_blank" rel="noopener noreferrer" class="text-bayesian-blue hover:underline">Columbia University BDA Page</a> or explore Aki Vehtari's <a href="https://avehtari.github.io/BDA_course_Aalto/" target="_blank" rel="noopener noreferrer" class="text-bayesian-blue hover:underline">Aalto BDA Course Portal</a>. Any typos or mathematical errors on this page are my own.
+                </p>
             </div>
         </section>
 
