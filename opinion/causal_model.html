@@ -207,10 +207,10 @@
                 <!-- Perceived Utility (Û) to Executive Approval (A) -->
                 <line x1="800" y1="280" x2="880" y2="280" class="causal-link active-flow link-uhat-a" stroke="#8b5cf6" stroke-width="2" marker-end="url(#arrow)"/>
 
-                <!-- Delivery Timeline (T) directly to Executive Approval (Approval speed / timeline friction) -->
+                <!-- Delivery Timeline (T) directly to Executive Approval -->
                 <path d="M 520 280 L 860 280" class="causal-link active-flow link-t-app" stroke="#fb923c" stroke-width="1.5" marker-end="url(#arrow)"/>
 
-                <!-- Peer Benchmark (B) to Executive Approval (modulates baseline expectations) -->
+                <!-- Peer Benchmark (B) to Executive Approval -->
                 <line x1="880" y1="420" x2="880" y2="305" class="causal-link active-flow link-b-app" stroke="#ec4899" stroke-width="1.5" marker-end="url(#arrow)"/>
 
                 <!-- Latent Rigor to Actual Utility -->
@@ -369,7 +369,7 @@
             <div class="p-6 bg-slate-950 border-t border-slate-900 text-xs text-slate-400 space-y-2">
                 <span class="font-semibold text-slate-300 block">Epistemological Status</span>
                 <p id="status-summary" class="leading-relaxed">
-                    Under the **Pre-GenAI Era**, presentation is highly correlated with rigor due to symmetric developmental costs. The evaluator's cognitive shortcuts are rational.
+                    Under the **Pre-GenAI Era**, visual flash was difficult and costly to build. Consequently, applications were evaluated and approved based on actual mathematical rigor, high scrutiny, and structural validity.
                 </p>
             </div>
         </aside>
@@ -431,7 +431,9 @@
                 symbolColor: '#3b82f6',
                 badgeBg: 'bg-blue-950/50 text-accentBlue border-blue-900/30',
                 equation: '$$ \\mathbf{P} = [P_{\\text{aesthetic}}, P_{\\text{fluency}}, P_{\\text{immediacy}}] $$',
-                description: 'The superficial presentation layer of the application. Includes user interface beauty, visual responsiveness, conversational flow, and the confident delivery of charts and text.',
+                preDescription: 'Aesthetic polish and conversational interfaces were extremely difficult and costly to build. Because of this high barrier, a polished interface was rare and acted as a proxy for a highly invested, resource-rich project.',
+                postDescription: 'GenAI commoditizes visual polish and conversational fluency. High presentation is now trivial to achieve with zero backend rigor, decoupling it from structural engineering capital.',
+                get description() { return currentMode === 'pre' ? this.preDescription : this.postDescription; },
                 genaiEffect: 'GenAI ($G$) turns presentation into a cheap commodity. Anyone can generate high-$P$ applications with zero design skills, raising the baseline of what looks "premium".',
                 philosophy: 'The signifier. Presentation is designed to seduce the evaluator. Under the GenAI regime, the signifier is no longer bound to any underlying analytical truth (the signified).'
             },
@@ -442,7 +444,9 @@
                 symbolColor: '#f59e0b',
                 badgeBg: 'bg-amber-950/50 text-accentAmber border-amber-900/30',
                 equation: '$$ S_R = \\mathbf{R} + \\epsilon_R $$',
-                description: 'The observable signals that the application is mathematically and scientifically sound (e.g., source code audits, performance benchmarks, error rate disclosures, mathematically defined limitations).',
+                preDescription: 'The observable signals that the application is mathematically and scientifically sound. In the Pre-GenAI era, evaluators actively audited equations, logical derivations, and validation steps.',
+                postDescription: 'Because evaluators are pressed for time and distracted by visual flows, they rarely inspect the source code or audit equations ($S_R$), rendering this signal weak compared to the loud signal of flash.',
+                get description() { return currentMode === 'pre' ? this.preDescription : this.postDescription; },
                 genaiEffect: 'Because evaluators are pressed for time, they rarely inspect the source code or audit equations ($S_R$), rendering this signal weak compared to the loud, immediate signal of presentation ($S_P$).',
                 philosophy: 'Epistemic cost: verifying a proof takes hours; checking a UI takes seconds. The asymmetric cost of observation drives the evaluator to ignore the signal of rigor.'
             },
@@ -463,8 +467,10 @@
                 symbol: 'R̂',
                 symbolColor: '#8b5cf6',
                 badgeBg: 'bg-violet-950/50 text-accentViolet border-violet-900/30',
-                equation: '$$ \\hat{R} = E[R \\mid S_R, S_P] \\approx \\alpha S_R + \\beta(S_P) $$',
-                description: 'The evaluator\'s estimate of the application\'s underlying mathematical and scientific correctness. Heavily biased by the visual flashiness of the presentation.',
+                equation: '$$ \\hat{R} = E[R \\mid S_R, S_P] $$',
+                preDescription: 'The evaluator\'s estimate of the application\'s underlying mathematical correctness. Grounded heavily in deep scrutiny ($S_R$) of mathematical models, with little to no bias from visual presentation.',
+                postDescription: 'The evaluator\'s estimate of rigor. Because auditing math is hard, the evaluator relies on visual flashiness ($S_P$) as a proxy, creating a massive positive bias (the Halo Effect).',
+                get description() { return currentMode === 'pre' ? this.preDescription : this.postDescription; },
                 genaiEffect: 'Because true rigor is hard to assess, the evaluator uses a cognitive proxy: "If the interface is polished ($S_P$), the analytical logic ($R$) must be sound." This creates a massive positive bias (the Halo Effect).',
                 philosophy: 'The cognitive transfer: the beauty of the form is mistakenly transferred to the correctness of the content. This is the core mechanism of the semiotic trap.'
             },
@@ -486,7 +492,9 @@
                 symbolColor: '#8b5cf6',
                 badgeBg: 'bg-violet-950/50 text-accentViolet border-violet-905/30',
                 equation: '$$ \\hat{U} = w_{\\hat{r}} \\hat{R} + w_{\\hat{p}} \\hat{P} $$',
-                description: 'The evaluator\'s cognitive synthesis of the application\'s total utility, formed by combining perceived mathematical rigor ($\\hat{R}$) and perceived visual polish (\\$\\hat{P}$).',
+                preDescription: 'The evaluator\'s cognitive estimate of the application\'s usefulness. Pre-GenAI, this was heavily dominated by Perceived Rigor ($w_{\\hat{r}} \\gg w_{\\hat{p}}$) because flash was rare and scrutiny was high.',
+                postDescription: 'The evaluator\'s cognitive estimate of utility. Driven heavily by visual flashiness and natural language fluency ($w_{\\hat{p}} \\ge w_{\\hat{r}}$) as polish creates a strong illusion of use-value.',
+                get description() { return currentMode === 'pre' ? this.preDescription : this.postDescription; },
                 genaiEffect: 'Since GenAI inflates perceived presentation ($\\hat{P}$) and induces positive bias on perceived rigor ($\\hat{R}$), perceived utility is artificially inflated, decoupled from real utility ($U$).',
                 philosophy: 'The simulation of use-value. In the hyperreal space of executive review, the perceived utility ($\\hat{U}$) replaces actual utility ($U$) as the object of value, completing the abstraction.'
             },
@@ -508,7 +516,9 @@
                 symbolColor: '#f59e0b',
                 badgeBg: 'bg-amber-950/50 text-accentAmber border-amber-900/30',
                 equation: '$$ A = \\theta \\hat{U} - \\beta T - \\gamma B $$',
-                description: 'The decision by leadership or stakeholders to validate, fund, or deploy the application. It is positively driven by Perceived Utility ($\\hat{U}$), penalized by long delivery timelines ($T$), and moderated by baseline benchmarks ($B$).',
+                preDescription: 'Granted after thorough scrutiny of the application\'s analytical validity and actual rigor. Flash was a secondary luxury and did not drive approval.',
+                postDescription: 'Granted rapidly due to high perceived utility ($\\hat{U}$) from the AI demo, combined with intense pressure to match the delivery speeds of other teams.',
+                get description() { return currentMode === 'pre' ? this.preDescription : this.postDescription; },
                 genaiEffect: 'Since executives are under competitive organizational pressure, their approval is highly sensitive to timelines ($T$). AI allows teams to score high on $A$ by delivering fast, flashy apps, forcing a company-wide standard.',
                 philosophy: 'The validation loop. Executive approval reifies the simulation: a product is declared "good" not because it works, but because the hierarchy has validated its aesthetic presentation.'
             },
@@ -565,7 +575,7 @@
                 document.getElementById('node-U-circle').setAttribute('stroke', '#10b981');
                 document.getElementById('node-U-text').setAttribute('fill', '#10b981');
 
-                statusSummary.innerHTML = "Under the <strong>Pre-GenAI Era</strong>, presentation is highly correlated with rigor due to symmetric developmental costs. The evaluator's cognitive shortcuts are rational.";
+                statusSummary.innerHTML = "Under the <strong>Pre-GenAI Era</strong>, visual flash was difficult and costly to build. Consequently, applications were evaluated and approved based on actual mathematical rigor, high scrutiny, and structural validity.";
             } else {
                 svg.setAttribute('class', 'w-full h-full max-w-5xl max-h-[600px] mode-post-genai');
                 toggleBg.style.left = '109px';
@@ -584,7 +594,7 @@
                 document.getElementById('node-U-circle').setAttribute('stroke', '#f43f5e');
                 document.getElementById('node-U-text').setAttribute('fill', '#f43f5e');
 
-                statusSummary.innerHTML = "Under the <strong>Post-GenAI Era</strong>, GenAI breaks the correlation between presentation and rigor. Low-rigor apps easily masquerade as premium systems, inducing systemic decay.";
+                statusSummary.innerHTML = "Under the <strong>Post-GenAI Era</strong>, GenAI makes flash trivial to generate. Evaluators' scrutiny is overwhelmed by visual polish (the Halo Effect), leading to high perceived utility and rapid approval for apps with zero actual rigor.";
             }
             
             // Re-render MathJax if active content is open
