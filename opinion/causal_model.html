@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Causal Model of AI Analytics Decay</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    
+    <!-- MathJax for LaTeX rendering -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#090d16',
+                        panelBg: '#111827',
+                        accentBlue: '#3b82f6',
+                        accentEmerald: '#10b981',
+                        accentRose: '#f43f5e',
+                        accentAmber: '#f59e0b',
+                        accentViolet: '#8b5cf6',
+                        accentOrange: '#fb923c',
+                        accentPink: '#ec4899',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                        mono: ['Fira Code', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #070a13;
+            color: #e2e8f0;
+        }
+        
+        .glassmorphism {
+            background: rgba(17, 24, 39, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        
+        /* Node Hover Effects */
+        .node-circle {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+        .node-circle:hover {
+            filter: drop-shadow(0 0 8px var(--glow-color));
+            r: 26;
+        }
+        
+        /* Causal Links */
+        .causal-link {
+            transition: stroke-dashoffset 2s linear, stroke 0.5s ease, stroke-width 0.5s ease, opacity 0.5s ease;
+            stroke-dasharray: 8, 4;
+        }
+        
+        .causal-link.active-flow {
+            animation: flow 30s linear infinite;
+        }
+
+        @keyframes flow {
+            to {
+                stroke-dashoffset: -100;
+            }
+        }
+
+        /* Mode transition classes */
+        .mode-pre-genai .link-genai {
+            opacity: 0.15;
+            stroke-width: 1;
+            stroke-dasharray: 4, 4;
+        }
+        .mode-pre-genai .link-corr {
+            opacity: 1;
+            stroke-width: 2.5;
+            stroke: #10b981;
+        }
+        .mode-post-genai .link-genai {
+            opacity: 1;
+            stroke-width: 3;
+            stroke: #3b82f6;
+        }
+        .mode-post-genai .link-corr {
+            opacity: 0.1;
+            stroke-width: 0.5;
+            stroke: #4b5563;
+        }
+    </style>
+</head>
+<body class="font-sans antialiased overflow-hidden h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="px-8 py-4 border-b border-slate-900 glassmorphism flex items-center justify-between z-10">
+        <div>
+            <h1 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+                <span class="text-accentBlue">☯</span> The Semiotic Decay of AI Analytics
+            </h1>
+            <p class="text-xs text-slate-400">An Epistemological & Game-Theoretic Causal Model</p>
+        </div>
+        
+        <div class="flex items-center gap-4">
+            <!-- Mode Switcher Toggle -->
+            <div class="bg-slate-950 p-1 rounded-full border border-slate-800 flex items-center relative">
+                <button id="btn-pre" onclick="setMode('pre')" class="px-4 py-1.5 rounded-full text-xs font-semibold tracking-wider transition-all z-10 text-white">
+                    PRE-GENAI ERA
+                </button>
+                <button id="btn-post" onclick="setMode('post')" class="px-4 py-1.5 rounded-full text-xs font-semibold tracking-wider transition-all z-10 text-slate-400">
+                    POST-GENAI ERA
+                </button>
+                <div id="toggle-bg" class="absolute top-1 left-1 bottom-1 w-[105px] bg-slate-800 rounded-full transition-all duration-300"></div>
+            </div>
+            
+            <a href="exam_simulator.html" class="text-xs font-medium text-slate-400 hover:text-white transition-colors">
+                ← Portfolio
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <div class="flex-1 flex overflow-hidden relative">
+        
+        <!-- Left Side: Interactive Causal Graph Canvas -->
+        <main class="flex-1 relative flex items-center justify-center p-4">
+            <div class="absolute inset-0 pointer-events-none bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:24px_24px] opacity-15"></div>
+            
+            <!-- SVG Causal Graph -->
+            <svg id="causal-svg" class="w-full h-full max-w-5xl max-h-[600px] mode-pre-genai" viewBox="0 0 960 560" xmlns="http://www.w3.org/2000/svg">
+                <!-- Defs for arrows, gradients -->
+                <defs>
+                    <!-- Standard Marker -->
+                    <marker id="arrow" viewBox="0 0 10 10" refX="28" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 1 L 10 5 L 0 9 z" fill="#475569"/>
+                    </marker>
+                    <!-- Active Blue Marker -->
+                    <marker id="arrow-blue" viewBox="0 0 10 10" refX="28" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 1 L 10 5 L 0 9 z" fill="#3b82f6"/>
+                    </marker>
+                    <!-- Active Emerald Marker -->
+                    <marker id="arrow-emerald" viewBox="0 0 10 10" refX="28" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 1 L 10 5 L 0 9 z" fill="#10b981"/>
+                    </marker>
+                    <!-- Active Rose Marker -->
+                    <marker id="arrow-rose" viewBox="0 0 10 10" refX="28" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 1 L 10 5 L 0 9 z" fill="#f43f5e"/>
+                    </marker>
+                </defs>
+
+                <!-- Causal Links (Paths) -->
+                
+                <!-- Inputs to Core -->
+                <line x1="100" y1="120" x2="280" y2="170" class="causal-link active-flow link-expert" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
+                <line x1="100" y1="280" x2="280" y2="190" class="causal-link active-flow link-budget-r" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
+                <line x1="100" y1="280" x2="280" y2="370" class="causal-link active-flow link-budget-p" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
+                
+                <!-- GenAI links -->
+                <line x1="100" y1="440" x2="280" y2="390" class="causal-link active-flow link-genai link-genai-p" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
+                <path d="M 100 440 Q 200 320 280 200" fill="none" class="causal-link active-flow link-genai link-genai-r" stroke="#f43f5e" stroke-width="1.5" stroke-dasharray="4,4" marker-end="url(#arrow)"/>
+
+                <!-- Latent Correlation (Pre-GenAI only) -->
+                <path d="M 280 180 Q 230 280 280 380" fill="none" class="causal-link active-flow link-corr" stroke="#10b981" stroke-width="2" marker-end="url(#arrow)"/>
+
+                <!-- Latent to Signal -->
+                <line x1="300" y1="180" x2="480" y2="180" class="causal-link active-flow link-r-sr" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
+                <line x1="300" y1="380" x2="480" y2="380" class="causal-link active-flow link-p-sp" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+                <!-- Core and Inputs to Delivery Timeline (T) -->
+                <line x1="300" y1="190" x2="480" y2="270" class="causal-link active-flow link-r-t" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
+                <line x1="300" y1="370" x2="480" y2="290" class="causal-link active-flow link-p-t" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
+                <line x1="100" y1="280" x2="480" y2="280" class="causal-link active-flow link-k-t" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
+                <path d="M 100 440 Q 300 420 480 290" fill="none" class="causal-link active-flow link-genai-t" stroke="#3b82f6" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+                <!-- Signal to Perceived -->
+                <line x1="500" y1="180" x2="680" y2="180" class="causal-link active-flow link-sr-er" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
+                <line x1="500" y1="380" x2="680" y2="380" class="causal-link active-flow link-sp-ep" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
+                
+                <!-- The Halo Effect / Heuristic Proxy (Signal P to Est Rigor) -->
+                <path d="M 500 380 Q 590 280 680 195" fill="none" class="causal-link active-flow link-halo" stroke="#f59e0b" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+                <!-- Perceived to Perceived Utility (Û) -->
+                <line x1="700" y1="180" x2="780" y2="260" class="causal-link active-flow link-er-uhat" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
+                <line x1="700" y1="380" x2="780" y2="300" class="causal-link active-flow link-ep-uhat" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+                <!-- Perceived Utility (Û) to Executive Approval (A) -->
+                <line x1="800" y1="280" x2="880" y2="280" class="causal-link active-flow link-uhat-a" stroke="#8b5cf6" stroke-width="2" marker-end="url(#arrow)"/>
+
+                <!-- Delivery Timeline (T) directly to Executive Approval (Approval speed / timeline friction) -->
+                <path d="M 520 280 L 860 280" class="causal-link active-flow link-t-app" stroke="#fb923c" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+                <!-- Peer Benchmark (B) to Executive Approval (modulates baseline expectations) -->
+                <line x1="880" y1="420" x2="880" y2="305" class="causal-link active-flow link-b-app" stroke="#ec4899" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+                <!-- Latent Rigor to Actual Utility -->
+                <path d="M 300 170 Q 580 80 880 125" fill="none" class="causal-link active-flow link-r-ut" stroke="#10b981" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+                <!-- Feedback Loop -->
+                <path d="M 880 440 Q 500 530 100 290" fill="none" class="causal-link active-flow link-feedback" stroke="#8b5cf6" stroke-width="1.5" stroke-dasharray="6,6" marker-end="url(#arrow)"/>
+
+
+                <!-- Nodes (Grouped by Category) -->
+
+                <!-- INPUT NODES (Green/Grey) -->
+                <g id="node-E" onclick="selectNode('E')" style="--glow-color: #10b981">
+                    <circle cx="100" cy="120" r="22" fill="#0f172a" stroke="#10b981" stroke-width="2.5" class="node-circle"/>
+                    <text x="100" y="125" text-anchor="middle" font-family="Inter" font-weight="700" font-size="14" fill="#10b981">E</text>
+                    <text x="100" y="160" text-anchor="middle" font-family="Inter" font-weight="500" font-size="11" fill="#94a3b8">Expertise</text>
+                </g>
+
+                <g id="node-K" onclick="selectNode('K')" style="--glow-color: #94a3b8">
+                    <circle cx="100" cy="280" r="22" fill="#0f172a" stroke="#64748b" stroke-width="2.5" class="node-circle"/>
+                    <text x="100" y="285" text-anchor="middle" font-family="Inter" font-weight="700" font-size="14" fill="#94a3b8">K</text>
+                    <text x="100" y="320" text-anchor="middle" font-family="Inter" font-weight="500" font-size="11" fill="#94a3b8">Budget</text>
+                </g>
+
+                <g id="node-G" onclick="selectNode('G')" style="--glow-color: #3b82f6">
+                    <circle cx="100" cy="440" r="22" fill="#0f172a" stroke="#4b5563" stroke-width="2" class="node-circle opacity-40 transition-opacity duration-300" id="node-G-circle"/>
+                    <text x="100" y="445" text-anchor="middle" font-family="Inter" font-weight="700" font-size="14" fill="#6b7280" id="node-G-text">G</text>
+                    <text x="100" y="480" text-anchor="middle" font-family="Inter" font-weight="500" font-size="11" fill="#6b7280" id="node-G-label">GenAI</text>
+                </g>
+
+                <!-- LATENT STATES (Blue/Cyan/Green) -->
+                <g id="node-R" onclick="selectNode('R')" style="--glow-color: #10b981">
+                    <circle cx="300" cy="180" r="22" fill="#0f172a" stroke="#10b981" stroke-width="2.5" class="node-circle"/>
+                    <text x="300" y="185" text-anchor="middle" font-family="Inter" font-weight="700" font-size="14" fill="#10b981">R</text>
+                    <text x="300" y="220" text-anchor="middle" font-family="Inter" font-weight="500" font-size="11" fill="#94a3b8">Rigor (R)</text>
+                </g>
+
+                <g id="node-P" onclick="selectNode('P')" style="--glow-color: #3b82f6">
+                    <circle cx="300" cy="380" r="22" fill="#0f172a" stroke="#3b82f6" stroke-width="2.5" class="node-circle"/>
+                    <text x="300" y="385" text-anchor="middle" font-family="Inter" font-weight="700" font-size="14" fill="#3b82f6">P</text>
+                    <text x="300" y="420" text-anchor="middle" font-family="Inter" font-weight="500" font-size="11" fill="#94a3b8">Presentation (P)</text>
+                </g>
+
+                <!-- OBSERVED SIGNALS (Orange/Gold/Salmon) -->
+                <g id="node-SR" onclick="selectNode('SR')" style="--glow-color: #f59e0b">
+                    <circle cx="500" cy="180" r="22" fill="#0f172a" stroke="#d97706" stroke-width="2" class="node-circle"/>
+                    <text x="500" y="185" text-anchor="middle" font-family="Inter" font-weight="700" font-size="14" fill="#f59e0b">S_R</text>
+                    <text x="500" y="220" text-anchor="middle" font-family="Inter" font-weight="500" font-size="11" fill="#94a3b8">Signal of Rigor</text>
+                </g>
+
+                <!-- DELIVERY TIMELINE NODE (Orange) -->
+                <g id="node-T" onclick="selectNode('T')" style="--glow-color: #fb923c">
+                    <circle cx="500" cy="280" r="22" fill="#0f172a" stroke="#fb923c" stroke-width="2.5" class="node-circle"/>
+                    <text x="500" y="285" text-anchor="middle" font-family="Inter" font-weight="700" font-size="14" fill="#fb923c">T</text>
+                    <text x="500" y="320" text-anchor="middle" font-family="Inter" font-weight="500" font-size="11" fill="#94a3b8">Timeline (T)</text>
+                </g>
+
+                <g id="node-SP" onclick="selectNode('SP')" style="--glow-color: #f59e0b">
+                    <circle cx="500" cy="380" r="22" fill="#0f172a" stroke="#d97706" stroke-width="2" class="node-circle"/>
+                    <text x="500" y="385" text-anchor="middle" font-family="Inter" font-weight="700" font-size="14" fill="#f59e0b">S_P</text>
+                    <text x="500" y="420" text-anchor="middle" font-family="Inter" font-weight="500" font-size="11" fill="#94a3b8">Signal of Flash</text>
+                </g>
+
+                <!-- PERCEIVED QUALITIES (Violet) -->
+                <g id="node-ER" onclick="selectNode('ER')" style="--glow-color: #8b5cf6">
+                    <circle cx="700" cy="180" r="22" fill="#0f172a" stroke="#8b5cf6" stroke-width="2" class="node-circle"/>
+                    <text x="700" y="185" text-anchor="middle" font-family="Inter" font-weight="700" font-size="14" fill="#8b5cf6">R̂</text>
+                    <text x="700" y="220" text-anchor="middle" font-family="Inter" font-weight="500" font-size="11" fill="#94a3b8">Perceived Rigor</text>
+                </g>
+
+                <!-- PERCEIVED UTILITY (Violet/Blue) -->
+                <g id="node-UH" onclick="selectNode('UH')" style="--glow-color: #8b5cf6">
+                    <circle cx="780" cy="280" r="22" fill="#0f172a" stroke="#8b5cf6" stroke-width="2.5" class="node-circle"/>
+                    <text x="780" y="285" text-anchor="middle" font-family="Inter" font-weight="700" font-size="14" fill="#8b5cf6">Û</text>
+                    <text x="780" y="320" text-anchor="middle" font-family="Inter" font-weight="500" font-size="11" fill="#94a3b8">Perceived Utility</text>
+                </g>
+
+                <g id="node-EP" onclick="selectNode('EP')" style="--glow-color: #8b5cf6">
+                    <circle cx="700" cy="380" r="22" fill="#0f172a" stroke="#8b5cf6" stroke-width="2" class="node-circle"/>
+                    <text x="700" y="385" text-anchor="middle" font-family="Inter" font-weight="700" font-size="14" fill="#8b5cf6">P̂</text>
+                    <text x="700" y="420" text-anchor="middle" font-family="Inter" font-weight="500" font-size="11" fill="#94a3b8">Perceived Flash</text>
+                </g>
+
+                <!-- OUTCOMES (Red/Green/Purple/Pink) -->
+                <g id="node-U" onclick="selectNode('U')" style="--glow-color: #10b981">
+                    <circle cx="880" cy="120" r="22" fill="#0f172a" stroke="#10b981" stroke-width="2.5" class="node-circle" id="node-U-circle"/>
+                    <text x="880" y="125" text-anchor="middle" font-family="Inter" font-weight="700" font-size="14" fill="#10b981" id="node-U-text">U</text>
+                    <text x="880" y="160" text-anchor="middle" font-family="Inter" font-weight="500" font-size="11" fill="#94a3b8">Real Utility</text>
+                </g>
+
+                <g id="node-A" onclick="selectNode('A')" style="--glow-color: #f59e0b">
+                    <circle cx="880" cy="280" r="22" fill="#0f172a" stroke="#f59e0b" stroke-width="2.5" class="node-circle"/>
+                    <text x="880" y="285" text-anchor="middle" font-family="Inter" font-weight="700" font-size="14" fill="#f59e0b">A</text>
+                    <text x="880" y="320" text-anchor="middle" font-family="Inter" font-weight="500" font-size="11" fill="#94a3b8">Approval (A)</text>
+                </g>
+
+                <!-- PEER BENCHMARK NODE (Pink) -->
+                <g id="node-B" onclick="selectNode('B')" style="--glow-color: #ec4899">
+                    <circle cx="880" cy="420" r="22" fill="#0f172a" stroke="#ec4899" stroke-width="2.5" class="node-circle"/>
+                    <text x="880" y="425" text-anchor="middle" font-family="Inter" font-weight="700" font-size="14" fill="#ec4899">B</text>
+                    <text x="880" y="460" text-anchor="middle" font-family="Inter" font-weight="500" font-size="11" fill="#94a3b8">Peer Benchmark</text>
+                </g>
+            </svg>
+        </main>
+        
+        <!-- Right Side: Philosophical & Mathematical Explanation Panel -->
+        <aside class="w-[450px] border-l border-slate-900 glassmorphism flex flex-col h-full overflow-y-auto">
+            <!-- Node Detail Card Container -->
+            <div id="detail-card" class="p-8 flex-1">
+                <!-- Fallback content if no node selected -->
+                <div id="fallback-content" class="h-full flex flex-col justify-center text-center text-slate-400">
+                    <span class="text-4xl mb-4">🔍</span>
+                    <p class="text-lg font-serif italic">"The signifier is detached from the signified, floating in a self-referential loop of simulated utility."</p>
+                    <p class="text-xs text-slate-500 mt-4">Select a node in the causal graph to explore its equations, philosophical meaning, and how Generative AI disrupts it.</p>
+                </div>
+
+                <!-- Active Content Dynamic template -->
+                <div id="active-content" class="hidden space-y-6">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                        <div>
+                            <span id="detail-badge" class="px-2 py-0.5 rounded text-[10px] font-bold tracking-widest uppercase">LATENT CORE</span>
+                            <h2 id="detail-title" class="text-2xl font-bold text-white mt-1">Rigor Vector (R)</h2>
+                        </div>
+                        <div id="detail-symbol" class="w-12 h-12 rounded-full bg-slate-950 flex items-center justify-center font-bold text-lg border">R</div>
+                    </div>
+
+                    <!-- Mathematical Formulation -->
+                    <div class="bg-slate-950 p-4 rounded border border-slate-900 font-mono text-sm overflow-x-auto">
+                        <span class="text-slate-500 text-xs block mb-1">Mathematical Representation</span>
+                        <div id="detail-equation" class="text-white">$$ \mathbf{R} = [R_{\text{math}}, R_{\text{sci}}, R_{\text{comp}}, R_{\text{phil}}] $$</div>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="space-y-2">
+                        <h4 class="text-xs font-semibold uppercase tracking-wider text-slate-400">Definition & Role</h4>
+                        <p id="detail-description" class="text-sm text-slate-300 leading-relaxed">The multi-dimensional core representing empirical accuracy, mathematical correctness, edge-case coverage, and epistemological awareness.</p>
+                    </div>
+
+                    <!-- The GenAI Distortions -->
+                    <div class="p-4 rounded-lg bg-red-950/20 border border-red-900/30 space-y-2" id="detail-genai-container">
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-accentRose flex items-center gap-1.5">
+                            <span>⚡</span> The Generative AI Shock
+                        </h4>
+                        <p id="detail-genai-effect" class="text-sm text-slate-300 leading-relaxed">With GenAI, the cost of synthesizing presentation decays, creating a strong market pressure to divert budget away from human-driven rigor.</p>
+                    </div>
+
+                    <!-- Philosophical Context -->
+                    <div class="space-y-2 border-t border-slate-800 pt-6">
+                        <h4 class="text-xs font-semibold uppercase tracking-wider text-slate-400">Philosophical Implications</h4>
+                        <p id="detail-philosophy" class="text-sm text-slate-300 italic font-serif leading-relaxed">"The reification of analytics: where the model ceases to represent reality and instead begins to generate its own self-validating framework."</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Context Summary Footer inside Panel -->
+            <div class="p-6 bg-slate-950 border-t border-slate-900 text-xs text-slate-400 space-y-2">
+                <span class="font-semibold text-slate-300 block">Epistemological Status</span>
+                <p id="status-summary" class="leading-relaxed">
+                    Under the **Pre-GenAI Era**, presentation is highly correlated with rigor due to symmetric developmental costs. The evaluator's cognitive shortcuts are rational.
+                </p>
+            </div>
+        </aside>
+
+    </div>
+
+    <!-- Causal Graph Interactive Logic -->
+    <script>
+        // Database of Node Metadata
+        const nodesData = {
+            'E': {
+                title: 'Developer Expertise',
+                badge: 'SYSTEM INPUT',
+                symbol: 'E',
+                symbolColor: '#10b981',
+                badgeBg: 'bg-emerald-950/50 text-accentEmerald border-emerald-900/30',
+                equation: '$$ E \\in [0, 1] $$',
+                description: 'The cognitive capability, scientific training, and philosophical depth of the developing agent. Expertise is the primary driver of mathematical accuracy ($R_{\\text{math}}$) and philosophical modesty ($R_{\\text{phil}}$).',
+                genaiEffect: 'GenAI creates an illusion of expertise, allowing low-expertise developers to produce high-fluency interfaces ($P_{\\text{fluency}}$). This lowers the barriers to entry but dilutes the average competence of active developers.',
+                philosophy: 'Expertise is the true repository of mathematical and structural truth. When expertise is bypassed in favor of simulated templates, the system suffers from an epistemic gap: the developer does not know what they do not know.'
+            },
+            'K': {
+                title: 'Resource Budget Allocation',
+                badge: 'SYSTEM INPUT',
+                symbol: 'K',
+                symbolColor: '#94a3b8',
+                badgeBg: 'bg-slate-900/50 text-slate-400 border-slate-800',
+                equation: '$$ K = K_R + K_P \\quad (\\text{Rigor vs. Presentation}) $$',
+                description: 'The finite pool of cognitive bandwidth, developmental hours, and financial capital available to the developer. The developer must choose how to allocate this budget between presentation ($P$) and underlying analytical rigor ($R$).',
+                genaiEffect: 'Because GenAI drives the cost of presentation ($P$) down to near-zero, the marginal utility of allocating capital to presentation skyrockets, leaving true rigor ($R$) starving for budget under standard market timelines.',
+                philosophy: 'The division of labor and capital: in a hyper-accelerated market, budgets conform to what is visible. The unseen (underlying math, validation checks) is systematically defunded.'
+            },
+            'G': {
+                title: 'Generative AI Tools Usage',
+                badge: 'TECHNOLOGY ACCELERATOR',
+                symbol: 'G',
+                symbolColor: '#3b82f6',
+                badgeBg: 'bg-blue-950/50 text-accentBlue border-blue-900/30',
+                equation: '$$ G \\in [0, 1] \\quad \\implies \\quad \\text{Cost}(P) \\propto e^{-G} $$',
+                description: 'The degree to which LLMs, automatic code-generation systems, and template agents are integrated into the design and production phase of the application.',
+                genaiEffect: 'Acts as an asymmetric amplifier: it reduces the time-to-market for presentation ($P$) by orders of magnitude, but introduces unverified hallucinations and logic gaps in rigor ($R$) if not audited by human experts.',
+                philosophy: 'The machine of simulations. GenAI generates the signifiers of expertise without requiring the ontological foundations. It makes incompetence look elegant.'
+            },
+            'R': {
+                title: 'Rigor Vector',
+                badge: 'LATENT PRODUCT STATE',
+                symbol: 'R',
+                symbolColor: '#10b981',
+                badgeBg: 'bg-emerald-950/50 text-accentEmerald border-emerald-900/30',
+                equation: '$$ \\mathbf{R} = [R_{\\text{math}}, R_{\\text{sci}}, R_{\\text{comp}}, R_{\\text{phil}}] $$',
+                description: 'The real, latent epistemological value of the application. It represents the mathematical validity of the code, empirical validations, robustness to boundary conditions, and philosophical awareness of the model\'s limits.',
+                genaiEffect: 'As GenAI usage ($G$) increases, true rigor ($R$) tends to decline unless countered by high Developer Expertise ($E$). The developer relies on the AI to write the math, which often results in plausible-looking but statistically flawed structures.',
+                philosophy: 'Rigor is the anchor to reality. Without it, the application is a house of cards: it performs beautifully in mock demos but crashes under real-world non-linear stressors (ontological shock).'
+            },
+            'P': {
+                title: 'Presentation Vector',
+                badge: 'LATENT PRODUCT STATE',
+                symbol: 'P',
+                symbolColor: '#3b82f6',
+                badgeBg: 'bg-blue-950/50 text-accentBlue border-blue-900/30',
+                equation: '$$ \\mathbf{P} = [P_{\\text{aesthetic}}, P_{\\text{fluency}}, P_{\\text{immediacy}}] $$',
+                description: 'The superficial presentation layer of the application. Includes user interface beauty, visual responsiveness, conversational flow, and the confident delivery of charts and text.',
+                genaiEffect: 'GenAI ($G$) turns presentation into a cheap commodity. Anyone can generate high-$P$ applications with zero design skills, raising the baseline of what looks "premium".',
+                philosophy: 'The signifier. Presentation is designed to seduce the evaluator. Under the GenAI regime, the signifier is no longer bound to any underlying analytical truth (the signified).'
+            },
+            'SR': {
+                title: 'Signal of Rigor',
+                badge: 'OBSERVABLE SIGNAL',
+                symbol: 'S_R',
+                symbolColor: '#f59e0b',
+                badgeBg: 'bg-amber-950/50 text-accentAmber border-amber-900/30',
+                equation: '$$ S_R = \\mathbf{R} + \\epsilon_R $$',
+                description: 'The observable signals that the application is mathematically and scientifically sound (e.g., source code audits, performance benchmarks, error rate disclosures, mathematically defined limitations).',
+                genaiEffect: 'Because evaluators are pressed for time, they rarely inspect the source code or audit equations ($S_R$), rendering this signal weak compared to the loud, immediate signal of presentation ($S_P$).',
+                philosophy: 'Epistemic cost: verifying a proof takes hours; checking a UI takes seconds. The asymmetric cost of observation drives the evaluator to ignore the signal of rigor.'
+            },
+            'SP': {
+                title: 'Signal of Flash',
+                badge: 'OBSERVABLE SIGNAL',
+                symbol: 'S_P',
+                symbolColor: '#f59e0b',
+                badgeBg: 'bg-amber-950/50 text-accentAmber border-amber-900/30',
+                equation: '$$ S_P = \\mathbf{P} + \\epsilon_P $$',
+                description: 'The immediate, loud signal of how good the app looks during a live demonstration or in a pitch deck (e.g., smooth transitions, fluent conversational responses, glossy visualizations).',
+                genaiEffect: 'LLMs make this signal incredibly strong and easy to optimize, producing a "wow factor" that immediately captures attention.',
+                philosophy: 'The spectacle (Guy Debord). In the spectacle of the demo, the application is judged entirely on its performance in a sanitized environment, masking its structural flaws.'
+            },
+            'ER': {
+                title: 'Perceived Rigor',
+                badge: 'EVALUATOR BELIEF STATE',
+                symbol: 'R̂',
+                symbolColor: '#8b5cf6',
+                badgeBg: 'bg-violet-950/50 text-accentViolet border-violet-900/30',
+                equation: '$$ \\hat{R} = E[R \\mid S_R, S_P] \\approx \\alpha S_R + \\beta(S_P) $$',
+                description: 'The evaluator\'s estimate of the application\'s underlying mathematical and scientific correctness. Heavily biased by the visual flashiness of the presentation.',
+                genaiEffect: 'Because true rigor is hard to assess, the evaluator uses a cognitive proxy: "If the interface is polished ($S_P$), the analytical logic ($R$) must be sound." This creates a massive positive bias (the Halo Effect).',
+                philosophy: 'The cognitive transfer: the beauty of the form is mistakenly transferred to the correctness of the content. This is the core mechanism of the semiotic trap.'
+            },
+            'EP': {
+                title: 'Perceived Flash',
+                badge: 'EVALUATOR BELIEF STATE',
+                symbol: 'P̂',
+                symbolColor: '#8b5cf6',
+                badgeBg: 'bg-violet-950/50 text-accentViolet border-violet-900/30',
+                equation: '$$ \\hat{P} = S_P + \\epsilon_e $$',
+                description: 'The evaluator\'s appreciation of the application\'s visual and operational polish.',
+                genaiEffect: 'Evaluators are wowed by conversational fluency, leading them to rate the app\'s presentation as exceptionally high.',
+                philosophy: 'Immediate aesthetic consumption. Perceived presentation requires no cognitive reflection; it is felt instantly.'
+            },
+            'UH': {
+                title: 'Perceived Utility',
+                badge: 'EVALUATOR COGNITIVE STATE',
+                symbol: 'Û',
+                symbolColor: '#8b5cf6',
+                badgeBg: 'bg-violet-950/50 text-accentViolet border-violet-905/30',
+                equation: '$$ \\hat{U} = w_{\\hat{r}} \\hat{R} + w_{\\hat{p}} \\hat{P} $$',
+                description: 'The evaluator\'s cognitive synthesis of the application\'s total utility, formed by combining perceived mathematical rigor ($\\hat{R}$) and perceived visual polish (\\$\\hat{P}$).',
+                genaiEffect: 'Since GenAI inflates perceived presentation ($\\hat{P}$) and induces positive bias on perceived rigor ($\\hat{R}$), perceived utility is artificially inflated, decoupled from real utility ($U$).',
+                philosophy: 'The simulation of use-value. In the hyperreal space of executive review, the perceived utility ($\\hat{U}$) replaces actual utility ($U$) as the object of value, completing the abstraction.'
+            },
+            'U': {
+                title: 'Real-World Utility',
+                badge: 'ORGANIZATIONAL OUTCOME',
+                symbol: 'U',
+                symbolColor: '#10b981',
+                badgeBg: 'bg-emerald-950/50 text-accentEmerald border-emerald-900/30',
+                equation: '$$ U(A) = g(\\mathbf{R}) \\quad (\\text{Depends entirely on Rigor}) $$',
+                description: 'The actual value the application generates for the business or scientific task when deployed in production over time (dependent on mathematical accuracy and scientific validity).',
+                genaiEffect: 'When developers sacrifice Rigor ($R$) to optimize for rapid release and high Presentation ($P$), the real-world utility of the deployed app crashes, leading to silent analytical errors and financial risk.',
+                philosophy: 'The Ontological Shock. The real world is not a simulator. Flawed mathematical assumptions eventually collide with reality, resulting in catastrophic failure.'
+            },
+            'A': {
+                title: 'Executive Approval',
+                badge: 'ORGANIZATIONAL OUTCOME',
+                symbol: 'A',
+                symbolColor: '#f59e0b',
+                badgeBg: 'bg-amber-950/50 text-accentAmber border-amber-900/30',
+                equation: '$$ A = \\theta \\hat{U} - \\beta T - \\gamma B $$',
+                description: 'The decision by leadership or stakeholders to validate, fund, or deploy the application. It is positively driven by Perceived Utility ($\\hat{U}$), penalized by long delivery timelines ($T$), and moderated by baseline benchmarks ($B$).',
+                genaiEffect: 'Since executives are under competitive organizational pressure, their approval is highly sensitive to timelines ($T$). AI allows teams to score high on $A$ by delivering fast, flashy apps, forcing a company-wide standard.',
+                philosophy: 'The validation loop. Executive approval reifies the simulation: a product is declared "good" not because it works, but because the hierarchy has validated its aesthetic presentation.'
+            },
+            'T': {
+                title: 'Delivery Timeline',
+                badge: 'OPERATIONAL OUTCOME',
+                symbol: 'T',
+                symbolColor: '#fb923c',
+                badgeBg: 'bg-orange-950/50 text-accentOrange border-orange-900/30',
+                equation: '$$ T = \\frac{w_r \\mathbf{R} + w_p \\mathbf{P} \\cdot e^{-\\alpha G}}{K \\cdot E} $$',
+                description: 'The actual time taken to deploy the application. True Rigor ($R$) adds significant development/testing time, whereas Presentation ($P$) is highly compressed by GenAI ($G$). Budget ($K$) and Expertise ($E$) act to accelerate the timeline.',
+                genaiEffect: 'GenAI collapses the timeline needed for presentation ($e^{-\\alpha G}$), making it possible to ship highly polished products in days. This sets an impossible velocity standard for teams doing manual mathematical audits.',
+                philosophy: 'The acceleration of history. Under the pressure of instantaneity, time-consuming activities like verification and conceptual reflection are discarded as dead weight.'
+            },
+            'B': {
+                title: 'Peer Benchmark Recognition',
+                badge: 'SOCIAL / ORGANIZATIONAL CONTEXT',
+                symbol: 'B',
+                symbolColor: '#ec4899',
+                badgeBg: 'bg-pink-950/50 text-accentPink border-pink-900/30',
+                equation: '$$ B = \\mathbb{E}[\\mathbf{P}_{\\text{peers}}] \\cdot \\mathbb{E}[1/T_{\\text{peers}}] $$',
+                description: 'The baseline standard of visual polish and speed established by other teams within the organization. When other teams get executive praise for fast, flashy deliverables, this baseline goes up.',
+                genaiEffect: 'If adjacent teams deploy low-rigor, GenAI-wrapped apps in record time and receive recognition, this raises $B$. Executives begin to evaluate all analytics teams under this distorted expectation.',
+                philosophy: 'Mimetic Desire (René Girard). The organization\'s appreciation is comparative, not absolute. The developer does not compete against a standard of truth, but against the simulated speed of their peers.'
+            }
+        };
+
+        let currentMode = 'pre';
+
+        function setMode(mode) {
+            currentMode = mode;
+            const svg = document.getElementById('causal-svg');
+            const toggleBg = document.getElementById('toggle-bg');
+            const btnPre = document.getElementById('btn-pre');
+            const btnPost = document.getElementById('btn-post');
+            const statusSummary = document.getElementById('status-summary');
+            
+            // Adjust toggle style
+            if (mode === 'pre') {
+                svg.setAttribute('class', 'w-full h-full max-w-5xl max-h-[600px] mode-pre-genai');
+                toggleBg.style.left = '4px';
+                toggleBg.style.width = '105px';
+                btnPre.classList.add('text-white');
+                btnPre.classList.remove('text-slate-400');
+                btnPost.classList.add('text-slate-400');
+                btnPost.classList.remove('text-white');
+                
+                // Reset Node G opacity (disabled in pre-genai)
+                document.getElementById('node-G-circle').setAttribute('class', 'node-circle opacity-20');
+                document.getElementById('node-G-text').setAttribute('fill', '#334155');
+                document.getElementById('node-G-label').setAttribute('fill', '#334155');
+                
+                // Reset node U color
+                document.getElementById('node-U-circle').setAttribute('stroke', '#10b981');
+                document.getElementById('node-U-text').setAttribute('fill', '#10b981');
+
+                statusSummary.innerHTML = "Under the <strong>Pre-GenAI Era</strong>, presentation is highly correlated with rigor due to symmetric developmental costs. The evaluator's cognitive shortcuts are rational.";
+            } else {
+                svg.setAttribute('class', 'w-full h-full max-w-5xl max-h-[600px] mode-post-genai');
+                toggleBg.style.left = '109px';
+                toggleBg.style.width = '115px';
+                btnPost.classList.add('text-white');
+                btnPost.classList.remove('text-slate-400');
+                btnPre.classList.add('text-slate-400');
+                btnPre.classList.remove('text-white');
+                
+                // Activate Node G
+                document.getElementById('node-G-circle').setAttribute('class', 'node-circle opacity-100');
+                document.getElementById('node-G-text').setAttribute('fill', '#3b82f6');
+                document.getElementById('node-G-label').setAttribute('fill', '#94a3b8');
+
+                // Visual collapse of utility U in post-genai (due to low rigor)
+                document.getElementById('node-U-circle').setAttribute('stroke', '#f43f5e');
+                document.getElementById('node-U-text').setAttribute('fill', '#f43f5e');
+
+                statusSummary.innerHTML = "Under the <strong>Post-GenAI Era</strong>, GenAI breaks the correlation between presentation and rigor. Low-rigor apps easily masquerade as premium systems, inducing systemic decay.";
+            }
+            
+            // Re-render MathJax if active content is open
+            if (activeNode) {
+                selectNode(activeNode);
+            }
+        }
+
+        let activeNode = null;
+
+        function selectNode(nodeId) {
+            // Remove previous active outline on circles
+            if (activeNode) {
+                const prevNodeEl = document.querySelector(`#node-${activeNode} circle`);
+                if (prevNodeEl) prevNodeEl.setAttribute('stroke-width', activeNode === 'E' || activeNode === 'R' || activeNode === 'K' || activeNode === 'U' || activeNode === 'A' || activeNode === 'T' || activeNode === 'B' || activeNode === 'UH' ? '2.5' : '2');
+            }
+            
+            activeNode = nodeId;
+            
+            // Highlight current active circle
+            const nodeEl = document.querySelector(`#node-${nodeId} circle`);
+            if (nodeEl) nodeEl.setAttribute('stroke-width', '4');
+            
+            // Show Detail Panel
+            document.getElementById('fallback-content').classList.add('hidden');
+            const activeContent = document.getElementById('active-content');
+            activeContent.classList.remove('hidden');
+            
+            const data = nodesData[nodeId];
+            
+            // Map values dynamically
+            document.getElementById('detail-title').innerText = data.title;
+            
+            const badge = document.getElementById('detail-badge');
+            badge.innerText = data.badge;
+            badge.setAttribute('class', `px-2 py-0.5 rounded text-[10px] font-bold tracking-widest uppercase border ${data.badgeBg}`);
+            
+            const symbol = document.getElementById('detail-symbol');
+            symbol.innerText = data.symbol;
+            symbol.style.color = data.symbolColor;
+            symbol.style.borderColor = data.symbolColor + '30';
+            
+            document.getElementById('detail-description').innerText = data.description;
+            document.getElementById('detail-philosophy').innerHTML = `"${data.philosophy}"`;
+            
+            // Handle GenAI Effect highlight
+            const genaiContainer = document.getElementById('detail-genai-container');
+            const genaiEffectText = document.getElementById('detail-genai-effect');
+            
+            if (currentMode === 'pre' && nodeId !== 'G') {
+                genaiContainer.classList.add('opacity-40');
+                genaiEffectText.innerText = "Inactive in Pre-GenAI Era. In this era, resource constraints naturally enforce a symmetry between visual representation and underlying correctness.";
+            } else {
+                genaiContainer.classList.remove('opacity-40');
+                genaiEffectText.innerText = data.genaiEffect;
+            }
+            
+            // Set equation & trigger MathJax compile
+            const eqContainer = document.getElementById('detail-equation');
+            eqContainer.innerHTML = data.equation;
+            MathJax.typesetPromise([eqContainer]);
+        }
+    </script>
+</body>
+</html>
