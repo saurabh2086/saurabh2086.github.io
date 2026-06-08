@@ -731,21 +731,35 @@
 
                 <h3 class="text-lg font-semibold text-stone-800 mt-8 mb-4 ui-text">Conclusion: Re-anchoring the Sign</h3>
                 <p class="mb-6">
-                    The semiotic decay of AI analytics is not an inevitable consequence of technological progress, but a structural pathology of our incentive systems and cognitive limits. When generative tools collapse the cost of presentation to zero, they break the historical link between visual form and logical substance. In the vacuum left by this decoupling, corporate echo chambers optimize for simulated success, leaving organizations exposed to unhedged out-of-distribution shocks.
+                    The semiotic decay of AI analytics is not an inevitable consequence of technological progress, but a structural pathology of our incentive systems, cognitive constraints, and institutional architectures. To understand how we can generate real value, we must trace how each mathematical phase of this autopsy connects step-by-step to the final organizational balance sheet.
                 </p>
                 <p class="mb-6">
-                    We can evaluate the total expected value of the organization, $V_{\text{org}}$, as the difference between the model's real operational utility ($U$) and its catastrophic failure losses ($L(X)$):
+                    The sequence begins with the collapse of the presentation barrier. When generative tools drive the time required to build interfaces to zero ($T_{\text{req}}(\mathbf{P}) \to \epsilon_p \approx 0$), they break the historical correlation between visual form and logical substance. In the vacuum left by this decoupling, the evaluator's cognitive limitations trigger a systemic bypass. Auditing mathematical correctness requires slow, high-energy System 2 processing, whereas inspecting interface polish is immediate and cheap. This asymmetry, combined with the Halo Effect ($\frac{\partial \hat{R}}{\partial \mathbf{S}_P} > 0$), leads the evaluator's brain to substitute visual fluency for core rigor.
+                </p>
+                <p class="mb-6">
+                    This cognitive shortcut is institutionalized through compressed corporate schedules. The fear of temporal obsolescence discounts a project's value exponentially, $d(T) = \exp(-\gamma \max(0, T - T_{\text{benchmark}}))$, while peer AI wrappers compress the benchmark $T_{\text{benchmark}}$ into a Dirac delta spike. This forces the available development window to collapse ($T_{\text{avail}}' \ll T_{\text{avail}}$), pushing the likelihood of achieving mathematical verification to zero: $P(T_{\text{avail}}' \ge T_{\text{req}}(\mathbf{R})) \to 0$. For developers, allocating resources to rigor becomes a losing game; the rational, utility-maximizing strategy is to build zero-rigor wraps ($K_{R}^* \to \epsilon_r$).
+                </p>
+                <p class="mb-6">
+                    Inside the closed corporate Sanctuary, these un-rigorous models easily pass validation tests because automated benchmarks are themselves biased toward linguistic polish ($\mu \to 1$), yielding simulated success: $\mathbf{V}_{\text{sim}} \ge \mathbf{V}_{\text{threshold}}$. But once deployed in the open-loop Arena, the system's real utility is a function of actual rigor alone: $U = g(\mathbf{R}_{\text{min}}) \approx \epsilon_u$. Exposed to heavy-tailed real-world environments ($P(X \ge x) \sim x^{-\alpha_{\text{tail}}}$) without epistemic modesty bounds ($R_{\text{phil}} \approx 0$), the model generates fluent, authoritative hallucinations under tail-risk states, loading massive, unhedged losses onto the organization: $\mathbb{E}[L(x) \mid x \in \mathcal{X}_{\text{OOD}}] \gg 0$. This tension builds silently until an extreme state triggers a catastrophic failure, causing the executive's scrutiny parameter to jump discontinuously ($\lambda_{\text{post-shock}} \to 1$) and causing the perceived utility simulation to dissolve instantly into the operational floor: $\hat{U}_{\text{shock}} \approx \epsilon_u \approx 0$.
+                </p>
+                <p class="mb-6">
+                    To prevent this collapse and generate sustainable value, the organization must evaluate its long-term expected value, $V_{\text{org}}$, as the difference between empirical utility and tail losses:
                     $$ V_{\text{org}}(\mathbf{R}) = \mathbb{E}[U] - \mathbb{E}[L(X)] = \mathbb{E}[g(\mathbf{R})] - \mathbb{E}[L(X)] $$
                 </p>
                 <p class="mb-6">
-                    Under the current Nash Equilibrium of Fragility, developers choose a zero-rigor wrapper strategy ($\mathbf{R} \to \mathbf{R}_{\text{min}}$). While this satisfies the short-term perceived utility ($\hat{U} \ge \mathbf{V}_{\text{threshold}}$) and avoids temporal discounts, the lack of epistemic modesty ($R_{\text{phil}} \approx 0$) results in massive expected losses under fat-tailed out-of-distribution events: $\mathbb{E}[L(x) \mid x \in \mathcal{X}_{\text{OOD}}] \gg 0$. The real utility is minimal ($g(\mathbf{R}_{\text{min}}) \approx \epsilon_u$), yielding a collapsed organizational value:
+                    Without intervention, the Nash Equilibrium of Fragility dominates, and organizational value collapses:
                     $$ V_{\text{org}}(\mathbf{R}_{\text{min}}) = \epsilon_u - \mathbb{E}[L(X)] \ll 0 $$
                 </p>
                 <p class="mb-6">
-                    By implementing the proposed epistemic restoration—hiring deep domain experts (raising $C_{\text{eval}}$), decoupling evaluation ($\mu_{\text{audit}} = 0 \implies \lambda_{\text{audit}} \to 1$), and building software with density-based safety bounds ($\rho(x) < \rho_{\text{threshold}}$)—we shift the developer's optimal strategy to genuine rigor ($K_{R,i}^* > 0$). This ensures the model achieves true rigor ($\mathbf{R} \to \mathbf{R}_{\text{max}}$), elevating real utility: $U = g(\mathbf{R}_{\text{max}}) \gg \epsilon_u$.
+                    Epistemic restoration resolves this collapse through three integrated structural steps:
+                    <ul class="list-disc pl-8 mb-6 space-y-2 text-base">
+                        <li><strong>Incentive Alignment:</strong> By setting the developer liability weight above the critical threshold ($w_L > w_{\text{threshold}}$), we penalize the zero-rigor shortcut, shifting the developer's optimal optimization gradient to rigor: $K_{R}^* > 0$.</li>
+                        <li><strong>Decoupled Expert Audits:</strong> By blinding the evaluation channel ($\mu_{\text{audit}} = 0$) and staffing it with deep domain human experts (raising $C_{\text{eval}} \gg 0$), we force the scrutiny parameter to the limit ($\lambda_{\text{audit}} \to 1$), ensuring that perceived rigor matches empirical reality: $\hat{R}_{\text{audit}} \approx \mathbf{R}$.</li>
+                        <li><strong>Architectural Epistemic Modesty:</strong> By implementing density-based boundaries ($\rho(x) < \rho_{\text{threshold}}$), the software is forced to bypass prediction and trigger deterministic fallbacks under out-of-distribution states, capping the tail loss: $\mathbb{E}[L(x) \mid x \in \mathcal{X}_{\text{OOD}}] \le \text{Constant}$.</li>
+                    </ul>
                 </p>
                 <p class="mb-6">
-                    Furthermore, the architectural safety fallback bounds the prediction error in out-of-distribution states, capping the expected failure loss: $\mathbb{E}[L(x) \mid x \in \mathcal{X}_{\text{OOD}}] \le \text{Constant}$. Substituting these into the organizational objective function yields:
+                    When these attributes are combined, the model achieves true mathematical rigor ($\mathbf{R} \to \mathbf{R}_{\text{max}}$), elevating real operational utility: $U = g(\mathbf{R}_{\text{max}}) \gg \epsilon_u$. Substituting these parameters into the organizational value function yields:
                     $$ V_{\text{org}}(\mathbf{R}_{\text{max}}) = \mathbb{E}[g(\mathbf{R}_{\text{max}})] - \text{Constant} \gg V_{\text{org}}(\mathbf{R}_{\text{min}}) $$
                 </p>
                 <p class="mb-6">
