@@ -620,7 +620,17 @@
                     </ul>
                 </p>
                 <p class="mb-6">
-                    Under this blinded auditing protocol, the presentation bias coefficient $\mu$ in the validation pipeline is set to zero:
+                    However, implementing a blinded channel is a necessary but insufficient condition. As modeled in Section 3.1, the residual uncertainty of rigor after scrutiny is bounded by the evaluator's information processing capacity, $C_{\text{eval}}$:
+                    $$ H_{\text{residual}}(\mathbf{R}) = H(\mathbf{R}) - C_{\text{eval}} \cdot \tau_R $$
+                </p>
+                <p class="mb-6">
+                    If the Epistemic Red-Team is staffed by generalists, junior developers, or automated LLM-evaluators, their capacity to audit non-trivial statistical logic is effectively zero ($C_{\text{eval}} \to \epsilon_c \approx 0$). In this scenario, no amount of blinded auditing can reduce uncertainty; the residual entropy remains at the ceiling: $\lim_{C_{\text{eval}} \to 0} H_{\text{residual}}(\mathbf{R}) = H(\mathbf{R})$.
+                </p>
+                <p class="mb-6">
+                    Consequently, de-biasing evaluation requires staffing the Epistemic Red-Team with <strong>deep domain experts</strong>—individuals with advanced mathematical, scientific, and statistical training. These experts possess the cognitive framework to formulate adversarial hypotheses, probe edge cases, and perform rigorous code audits. By utilizing highly qualified human auditors, the organization increases the channel capacity ($C_{\text{eval}} \gg 0$), allowing them to drive down the residual uncertainty of rigor ($H_{\text{residual}}(\mathbf{R}) \to 0$) in finite time $\tau_R$. This institutional design structurally elevates the market demand and value of deep subject-matter experts, rendering their specialized knowledge irreplaceable by automated presentation layers.
+                </p>
+                <p class="mb-6">
+                    Under this expert, blinded auditing protocol, the presentation bias coefficient $\mu$ in the validation pipeline is set to zero:
                     $$ \mu_{\text{audit}} = 0 $$
                 </p>
                 <p class="mb-6">
@@ -664,7 +674,22 @@
                     The semiotic decay of AI analytics is not an inevitable consequence of technological progress, but a structural pathology of our incentive systems and cognitive limits. When generative tools collapse the cost of presentation to zero, they break the historical link between visual form and logical substance. In the vacuum left by this decoupling, corporate echo chambers optimize for simulated success, leaving organizations exposed to unhedged out-of-distribution shocks.
                 </p>
                 <p class="mb-6">
-                    Restoring rigor requires that we dismantle the spectacles of the conference room. By imposing skin in the game on developers, blinding the auditors of mathematical systems, and engineering software that bounds its own ignorance, we can re-anchor the analytical signifier to its empirical signified. Only then can we move past the hyperreal simulation of competence and build systems that are quiet, modest, and true.
+                    We can evaluate the total expected value of the organization, $V_{\text{org}}$, as the difference between the model's real operational utility ($U$) and its catastrophic failure losses ($L(X)$):
+                    $$ V_{\text{org}}(\mathbf{R}) = \mathbb{E}[U] - \mathbb{E}[L(X)] = \mathbb{E}[g(\mathbf{R})] - \mathbb{E}[L(X)] $$
+                </p>
+                <p class="mb-6">
+                    Under the current Nash Equilibrium of Fragility, developers choose a zero-rigor wrapper strategy ($\mathbf{R} \to \mathbf{R}_{\text{min}}$). While this satisfies the short-term perceived utility ($\hat{U} \ge \mathbf{V}_{\text{threshold}}$) and avoids temporal discounts, the lack of epistemic modesty ($R_{\text{phil}} \approx 0$) results in massive expected losses under fat-tailed out-of-distribution events: $\mathbb{E}[L(x) \mid x \in \mathcal{X}_{\text{OOD}}] \gg 0$. The real utility is minimal ($g(\mathbf{R}_{\text{min}}) \approx \epsilon_u$), yielding a collapsed organizational value:
+                    $$ V_{\text{org}}(\mathbf{R}_{\text{min}}) = \epsilon_u - \mathbb{E}[L(X)] \ll 0 $$
+                </p>
+                <p class="mb-6">
+                    By implementing the proposed epistemic restoration—hiring deep domain experts (raising $C_{\text{eval}}$), decoupling evaluation ($\mu_{\text{audit}} = 0 \implies \lambda_{\text{audit}} \to 1$), and building software with density-based safety bounds ($\rho(x) < \rho_{\text{threshold}}$)—we shift the developer's optimal strategy to genuine rigor ($K_{R,i}^* > 0$). This ensures the model achieves true rigor ($\mathbf{R} \to \mathbf{R}_{\text{max}}$), elevating real utility: $U = g(\mathbf{R}_{\text{max}}) \gg \epsilon_u$.
+                </p>
+                <p class="mb-6">
+                    Furthermore, the architectural safety fallback bounds the prediction error in out-of-distribution states, capping the expected failure loss: $\mathbb{E}[L(x) \mid x \in \mathcal{X}_{\text{OOD}}] \le \text{Constant}$. Substituting these into the organizational objective function yields:
+                    $$ V_{\text{org}}(\mathbf{R}_{\text{max}}) = \mathbb{E}[g(\mathbf{R}_{\text{max}})] - \text{Constant} \gg V_{\text{org}}(\mathbf{R}_{\text{min}}) $$
+                </p>
+                <p class="mb-6">
+                    Even though this transition requires slowing down the delivery cycle ($T > T_{\text{benchmark}}$) and paying a high premium for deep expert audits, the long-term expected value of the organization is vastly maximized. Rigor is revealed not as an administrative tax or a drag on speed, but as the core asset that protects the enterprise from structural ruin. By re-anchoring the analytical signifier to its empirical signified, we move past the hyperreal simulation of competence and build systems that are quiet, modest, and true.
                 </p>
             </section>
         </article>
