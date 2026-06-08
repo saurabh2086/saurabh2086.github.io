@@ -369,7 +369,7 @@
                             <p class="mb-2"><strong>$T_0$</strong>: Baseline build time for a zero-rigor GenAI wrapper application.</p>
                             <p class="mb-2"><strong>$T(K_R)$</strong>: Actual project development timeline ($T_0 + \theta K_R$, $\theta > 0$).</p>
                             <p class="mb-2"><strong>$\mathcal{O}$</strong>: Set of observed timeline realizations in the task category.</p>
-                            <p class="mb-2"><strong>$T_{\text{benchmark}}(\mathcal{C})$</strong>: Dynamically updated timeline benchmark for complexity $\mathcal{C}$.</p>
+                            <p class="mb-2"><strong>$p(t \mid \text{class}, \mathcal{C}, \mathcal{O})$</strong>: Posterior distribution of the timeline benchmark for complexity $\mathcal{C}$.</p>
                             <p class="mb-2"><strong>$U_{\text{dev}}$</strong>: Total game-theoretic utility of the developer.</p>
                         </div>
                     </div>
@@ -396,10 +396,14 @@
                     Where $T_0$ is the baseline build time of a pure, unvalidated GenAI wrapper, and $\theta > 0$ is the timeline multiplier for rigor.
                 </p>
                 <p class="mb-6">
-                    The developer's objective is to maximize their utility, $U_{\text{dev}}$, which is a function of the discounted perceived utility, $\hat{U}_{\text{discounted}}$, minus their resource expenditures:
-                    $$ U_{\text{dev}}(K_R, K_P) = w_u \cdot \hat{U}_{\text{discounted}} - \left( C_R(K_R) + C_P(K_P) \right) $$
-                    By substituting the estimations from Sections II and III, we obtain the complete payoff equation:
-                    $$ U_{\text{dev}}(K_R, K_P) = w_u \left( w_{\hat{r}}\hat{R} + w_{\hat{p}}\hat{P} \right) \exp\left( -\gamma \max(0, \; T_0 + \theta K_R - T_{\text{benchmark}}(\mathcal{C})) \right) - \beta K_R^2 - \alpha K_P $$
+                    The developer's objective is to maximize their utility, $U_{\text{dev}}$, which is a function of their resource expenditures and the expected value of their discounted perceived utility, taken over the probability distribution of the evaluator's benchmark timeline:
+                    $$ U_{\text{dev}}(K_R, K_P) = w_u \cdot \mathbb{E}_{T_{\text{benchmark}}(\mathcal{C})} \left[ \hat{U}_{\text{discounted}} \right] - \left( C_R(K_R) + C_P(K_P) \right) $$
+                </p>
+                <p class="mb-6">
+                    By substituting the estimations from Sections II and III, we write the complete expected payoff equation:
+                    $$ U_{\text{dev}}(K_R, K_P) = w_u \left( w_{\hat{r}}\hat{R} + w_{\hat{p}}\hat{P} \right) \mathbb{E}_{T_{\text{benchmark}}(\mathcal{C})} \left[ \exp\left( -\gamma \max(0, \; T(K_R) - T_{\text{benchmark}}(\mathcal{C})) \right) \right] - \beta K_R^2 - \alpha K_P $$
+                    Where the expectation is computed over the posterior density $p(t \mid \text{class}, \; \mathcal{C}, \; \mathcal{O})$ of the benchmark:
+                    $$ \mathbb{E}_{T_{\text{benchmark}}(\mathcal{C})}[d(T)] = \int_{0}^{\infty} \exp\left( -\gamma \max(0, \; T_0 + \theta K_R - t) \right) p(t \mid \text{class}, \; \mathcal{C}, \; \mathcal{O}) \, dt $$
                 </p>
 
                 <h3 class="text-lg font-semibold text-stone-800 mt-8 mb-4 ui-text">4.2 Hierarchical Timelines and Mimetic Pressure</h3>
@@ -410,7 +414,7 @@
                     <ul class="list-disc pl-8 mb-6 space-y-2 text-base">
                         <li><strong>Global Prior:</strong> The distribution of timelines across all software and data science projects in the organization: $P(T \mid \text{global}) \sim \mathcal{D}_{\text{global}}$. This has a wide variance and covers everything from basic scripting to infrastructure migrations.</li>
                         <li><strong>Category Prior:</strong> The distribution of timelines specific to the class of predictive analytics and complex modeling: $P(T \mid \text{class}) \sim \mathcal{D}_{\text{class}}$.</li>
-                        <li><strong>Complexity-Conditioned Expectation:</strong> The evaluator's active expectation of required time given the category and the perceived complexity $\mathcal{C}$ of the current project: $P(T \mid \text{class}, \; \mathcal{C}) \sim \mathcal{D}_{\text{task}}(\mathcal{C})$.</li>
+                        <li><strong>Complexity-Conditioned Prior:</strong> The evaluator's active expectation of required time given the category and the perceived complexity $\mathcal{C}$ of the current project: $P(T \mid \text{class}, \; \mathcal{C}) \sim \mathcal{D}_{\text{task}}(\mathcal{C})$.</li>
                     </ul>
                 </p>
                 <p class="mb-6">
@@ -420,12 +424,12 @@
                     Generative AI exploits this distribution. A developer deploying a zero-rigor GenAI wrapper ($K_R = 0$) can deliver at the baseline wrapper speed, $T_0$. However, because they wrap this zero-rigor backend in a highly fluent, premium presentation layer ($\mathbf{P} \to 1$), the interface signals a high perceived complexity $\mathcal{C}$. The wrapper masquerades as a complex statistical solution that was solved instantly.
                 </p>
                 <p class="mb-6">
-                    When the evaluator observes the timeline realizations of peer projects in this category, $\mathcal{O} = \{T_1, T_2, \dots, T_M\}$, they update their posterior expectation of the timeline required for complexity $\mathcal{C}$:
-                    $$ T_{\text{benchmark}}(\mathcal{C}) = \mathbb{E}[T \mid \text{class}, \; \mathcal{C}, \; \mathcal{O}] $$
+                    When the evaluator observes the timeline realizations of peer projects in this category, $\mathcal{O} = \{T_1, T_2, \dots, T_M\}$, they update their posterior belief distribution of the benchmark timeline required for complexity $\mathcal{C}$:
+                    $$ p(T_{\text{benchmark}}(\mathcal{C}) \mid \text{class}, \; \mathcal{C}, \; \mathcal{O}) $$
                 </p>
                 <p class="mb-6">
-                    Because the set of observations $\mathcal{O}$ includes these zero-rigor wrappers (which require no logical debugging or data validation, so $T_j \to T_0$), the sample distribution is skewed heavily to the left. The evaluator updates their hierarchical prior, interpreting these rapid realizations not as lazy simulations, but as the new expectation for what an efficient developer can achieve. The expected timeline benchmark for complexity $\mathcal{C}$ collapses:
-                    $$ T_{\text{benchmark}}(\mathcal{C}) \to T_0 $$
+                    In the Pre-GenAI era, this distribution had a broad variance and a high mean, reflecting the inherent variability and cognitive difficulty of mathematical verification. However, because the set of observations $\mathcal{O}$ now includes zero-rigor wrappers (which require no statistical auditing or data validation, delivering at $T_j \to T_0$), the probability mass of the posterior distribution collapses. The evaluator updates their hierarchical prior, treating these rapid realizations as proof of achievable timeline limits. The distribution of the timeline benchmark degenerates into a Dirac delta distribution centered at the wrapper speed $T_0$:
+                    $$ p(T_{\text{benchmark}}(\mathcal{C}) \mid \text{class}, \; \mathcal{C}, \; \mathcal{O}) \to \delta(T_{\text{benchmark}}(\mathcal{C}) - T_0) $$
                 </p>
                 <p class="mb-6">
                     This collapse induces a powerful <strong>Girardian Mimetic Pressure</strong>. Once a single peer establishes that a "complex predictive model" can be delivered in time $T_0$, this speed is reified as the baseline standard of competence. Other developers, fearing they will be labeled slow or obsolete, copy this strategy, abandoning verification loops to keep pace with the illusion of progress.
@@ -433,16 +437,18 @@
 
                 <h3 class="text-lg font-semibold text-stone-800 mt-8 mb-4 ui-text">4.3 The Nash Equilibrium of Fragility</h3>
                 <p class="mb-6">
-                    We now analyze the strategy of a rational developer under the compressed timeline $T_{\text{benchmark}}(\mathcal{C}) = T_0$. Let us solve for the optimal allocation of resources.
+                    We now analyze the strategy of a rational developer under the compressed timeline distribution $p(t) \to \delta(t - T_0)$. Let us solve for the optimal allocation of resources.
                 </p>
                 <p class="mb-6">
-                    If Developer $i$ chooses to invest in rigor, such that $K_{R,i} > 0$, their development timeline exceeds the benchmark: $T_i = T_0 + \theta K_{R,i} > T_0$. The temporal discount factor kicks in:
-                    $$ d(T_i) = \exp\left( -\gamma \theta K_{R,i} \right) $$
-                    Because the impatience parameter $\gamma$ and the rigor timeline multiplier $\theta$ are positive, this term decays exponentially. For any meaningful investment in rigor, the exponential discount drives the developer's perceived reward to zero, leaving them with only the highly convex cost of development:
+                    If Developer $i$ chooses to invest in rigor, such that $K_{R,i} > 0$, their development timeline exceeds the benchmark: $T_i = T_0 + \theta K_{R,i} > T_0$. The expected temporal discount factor is computed by integrating against the collapsed Dirac delta prior:
+                    $$ \mathbb{E}_{T_{\text{benchmark}}(\mathcal{C})}[d(T_i)] = \int_{0}^{\infty} \exp\left( -\gamma \max(0, \; T_0 + \theta K_{R,i} - t) \right) \delta(t - T_0) \, dt = \exp\left( -\gamma \theta K_{R,i} \right) $$
+                </p>
+                <p class="mb-6">
+                    Because the impatience parameter $\gamma$ and the rigor timeline multiplier $\theta$ are positive, this term decays exponentially. For any meaningful investment in rigor, the expected discount drives the developer's perceived reward to zero, leaving them with only the highly convex cost of development:
                     $$ U_{\text{dev}}(K_{R,i} > 0, K_{P,i}) \approx - \beta K_{R,i}^2 < 0 $$
                 </p>
                 <p class="mb-6">
-                    If Developer $i$ abdicates rigor completely, setting $K_{R,i}^* = 0$ and allocating their entire budget to presentation ($K_{P,i}^* = K$), their delivery time matches the benchmark ($T_i = T_0$). The discount factor is $d(T_i) = 1$, and they receive full credit for their high presentation quality (inflated by the System 1 Halo Effect):
+                    If Developer $i$ abdicates rigor completely, setting $K_{R,i}^* = 0$ and allocating their entire budget to presentation ($K_{P,i}^* = K$), their delivery time matches the benchmark ($T_i = T_0$). The discount factor is $\mathbb{E}[d(T_0)] = 1$, and they receive full credit for their high presentation quality (inflated by the System 1 Halo Effect):
                     $$ U_{\text{dev}}(0, K) = w_u \left( w_{\hat{r}} h(\mathbf{S}_P) + w_{\hat{p}}\hat{P} \right) - \alpha K > 0 $$
                 </p>
                 <p class="mb-6">
