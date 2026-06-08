@@ -256,54 +256,90 @@
                 <h2 class="text-2xl font-bold mb-6 border-b border-stone-200 pb-2 text-stone-900 ui-text">
                     III. The Cognitive Bypass: How Evaluators Are Seduced
                 </h2>
+
+                <!-- Mathematical Glossary Card -->
+                <div class="my-8 p-6 bg-stone-50 border border-stone-200 rounded-lg ui-text">
+                    <h4 class="text-sm font-bold uppercase tracking-wider text-burntOrange mb-4">
+                        Mathematical Glossary for Section III
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-sans text-stone-600">
+                        <div>
+                            <p class="mb-2"><strong>$C_{\text{eval}}$</strong>: Evaluator's cognitive channel capacity (bits/sec).</p>
+                            <p class="mb-2"><strong>$\tau_R$</strong>: Time allocated by the evaluator to audit the rigor signal.</p>
+                            <p class="mb-2"><strong>$H(\mathbf{R})$</strong>: Unconditional entropy of the model's true rigor (the initial uncertainty of whether the math is correct).</p>
+                            <p class="mb-2"><strong>$H(\mathbf{R} \mid \mathbf{S}_R)$</strong>: Residual uncertainty of rigor after observing the signal.</p>
+                            <p class="mb-2"><strong>$I(\mathbf{R}; \mathbf{S}_R)$</strong>: Mutual information (knowledge extracted about rigor from the signal).</p>
+                        </div>
+                        <div>
+                            <p class="mb-2"><strong>$\lambda$</strong>: Epistemic Scrutiny Parameter (evaluator's cognitive effort weight, $\lambda \in [0, 1]$).</p>
+                            <p class="mb-2"><strong>$f(\mathbf{S}_R)$</strong>: System 2 logical reconstruction mapping of the rigor signal.</p>
+                            <p class="mb-2"><strong>$h(\mathbf{S}_P)$</strong>: System 1 aesthetic projection mapping of the presentation signal.</p>
+                            <p class="mb-2"><strong>$\gamma$</strong>: Organizational Impatience Coefficient (decay rate of delayed projects).</p>
+                            <p class="mb-2"><strong>$T_{\text{benchmark}}$</strong>: Commoditized Release Horizon (timeline of low-rigor teams).</p>
+                        </div>
+                    </div>
+                </div>
                 
                 <h3 class="text-lg font-semibold text-stone-800 mt-8 mb-4 ui-text">3.1 Cognitive Physics: Shannon Entropy and the Scrutiny Asymmetry</h3>
                 <p class="mb-6">
-                    To understand how this decoupling translates into executive approval, we must model the evaluator as a communications channel with a finite cognitive information-processing capacity, $C_{\text{eval}}$, measured in bits per second. When presented with an advanced analytics application, the evaluator faces a high-entropy search space. The actual structural soundness of the model, $\mathbf{R}$, is highly complex; verifying it requires analyzing database schemas, checking equation derivations, and auditing model logic. Thus, the conditional entropy of rigor, $H(\mathbf{R} \mid \mathbf{S}_R)$, is extremely high.
+                    To understand how the visual and conversational polish of an application bypasses institutional verification, we must model the human evaluator as a communication channel with a finite cognitive information-processing capacity, $C_{\text{eval}}$, measured in bits per second. 
                 </p>
                 <p class="mb-6">
-                    Conversely, the visual and linguistic signals of presentation, $\mathbf{S}_P$, require very little cognitive bandwidth to process. The user interface is pre-digested, conversational, and direct; the conditional entropy of presentation, $H(\mathbf{P} \mid \mathbf{S}_P)$, is exceptionally low.
+                    When presented with a complex, advanced analytics system, the evaluator faces a high-entropy state. The actual mathematical and scientific rigor of the underlying model, $\mathbf{R}$, is latent and complex; verifying its correctness requires examining database schemas, inspecting out-of-distribution validation logs, and auditing equation derivations. Thus, the prior uncertainty regarding the model's validity—the unconditional entropy $H(\mathbf{R})$—is extremely high.
                 </p>
                 <p class="mb-6">
-                    If the evaluator allocates a time window $\tau_R$ to audit the core logic of the model, the residual uncertainty of rigor after scrutiny is:
-                    $$ H_{\text{residual}}(\mathbf{R}) = H(\mathbf{R}) - C_{\text{eval}} \cdot \tau_R $$
+                    To reduce this uncertainty, the evaluator must observe the rigor signal, $\mathbf{S}_R$, over an allocated audit time, $\tau_R$. In information theory, the reduction in uncertainty is quantified by the <strong>mutual information</strong>, $I(\mathbf{R}; \mathbf{S}_R)$, which represents the actual knowledge extracted about the model's rigor from the observed signal. Because the human brain acts as a bandlimited channel, the total information it can transmit and process in the time window $\tau_R$ is bounded by the capacity-time product:
+                    $$ I(\mathbf{R}; \mathbf{S}_R) \le C_{\text{eval}} \cdot \tau_R $$
                 </p>
                 <p class="mb-6">
-                    Under tight corporate schedules and rapid demo cycles, the time allocated for structural auditing shrinks to zero ($\tau_R \to 0$). Under these conditions, the evaluator's uncertainty remains at its maximum:
-                    $$ \lim_{\tau_R \to 0} H_{\text{residual}}(\mathbf{R}) = H(\mathbf{R}) $$
-                    Because the evaluator lacks the bandwidth to reduce the entropy of the actual model, they are mathematically blocked from verifying its truth. They must either reject the application or substitute their assessment with a lower-cost heuristic.
+                    The evaluator's residual uncertainty about the model's true rigor after scrutiny, $H(\mathbf{R} \mid \mathbf{S}_R)$, is the prior uncertainty minus the extracted mutual information:
+                    $$ H(\mathbf{R} \mid \mathbf{S}_R) = H(\mathbf{R}) - I(\mathbf{R}; \mathbf{S}_R) $$
+                    Substituting the capacity bound into this equation yields the fundamental information-theoretic inequality of auditing:
+                    $$ H(\mathbf{R} \mid \mathbf{S}_R) \ge H(\mathbf{R}) - C_{\text{eval}} \cdot \tau_R $$
+                </p>
+                <p class="mb-6">
+                    In rapid corporate demo cycles, the time window allocated for active logical auditing shrinks to zero ($\tau_R \to 0$). Under this limit, the channel capacity inequality forces the residual uncertainty to its maximum:
+                    $$ \lim_{\tau_R \to 0} H(\mathbf{R} \mid \mathbf{S}_R) \ge H(\mathbf{R}) $$
+                    Because the evaluator's brain lacks the time to transmit the necessary bits to reduce the entropy of the actual model, they are mathematically blocked from verifying its truth. They must either reject the application or substitute their assessment with a lower-cost heuristic.
                 </p>
 
                 <h3 class="text-lg font-semibold text-stone-800 mt-8 mb-4 ui-text">3.2 Heuristic Substitution: The Epistemic Scrutiny Parameter</h3>
                 <p class="mb-6">
-                    To bypass this cognitive block, the human brain relies on System 1 thinking—substituting a complex, resource-intensive question ("Is the underlying math statistically valid?") with a simple, immediate one ("Does the conversational demo look and feel professional?"). 
+                    To resolve this cognitive block, the human brain substitutes a complex, resource-intensive question (<em>"Is the underlying statistical model valid?"</em>) with a simple, immediate one (<em>"Does the conversational interface look and feel professional?"</em>). 
                 </p>
                 <p class="mb-6">
-                    We model this heuristic substitution by introducing the <strong>Epistemic Scrutiny Parameter ($\lambda \in [0, 1]$)</strong>. The evaluator's estimate of perceived rigor, $\hat{R}$, is formed as a convex combination of the observed rigor signal ($\mathbf{S}_R$) and the presentation signal ($\mathbf{S}_P$):
+                    We model this heuristic substitution by introducing the <strong>Epistemic Scrutiny Parameter ($\lambda \in [0, 1]$)</strong>, which represents the evaluator's active cognitive effort weight. The evaluator's perceived estimate of rigor, $\hat{R}$, is formed as a convex combination of two distinct cognitive mappings:
                     $$ \hat{R} = \lambda \cdot f(\mathbf{S}_R) + (1 - \lambda) \cdot h(\mathbf{S}_P) $$
                 </p>
                 <p class="mb-6">
-                    Here, the parameter $\lambda$ represents the evaluator's capacity and willingness to engage in System 2 auditing. In a peer-reviewed scientific environment where auditors have time and domain expertise, $\lambda \to 1$, making perceived rigor dependent purely on structural checks. 
+                    Where:
+                    <ul class="list-disc pl-8 mb-6 space-y-2 text-base">
+                        <li><strong>$f(\mathbf{S}_R)$ (Logical Reconstruction Mapping):</strong> A System 2 cognitive function that maps logical signals (detailed code architectures, empirical test logs, mathematical proofs) into a rigor score. This mapping is highly accurate but requires significant cognitive bandwidth.</li>
+                        <li><strong>$h(\mathbf{S}_P)$ (Aesthetic Projection Mapping):</strong> A System 1 cognitive function that projects rigor based on superficial signals (conversational fluency, visual layout quality, responsiveness). This mapping requires zero cognitive effort, relying on the assumption that a clean form implies a clean substance.</li>
+                    </ul>
                 </p>
                 <p class="mb-6">
-                    However, behind the closed doors of a large enterprise under timeline pressure, cognitive fatigue and lack of deep domain expertise drive the scrutiny parameter to zero ($\lambda \to 0$). The equation collapses:
+                    The weight $\lambda$ is determined by the evaluator's domain competence, available time, and organizational mandate. In a peer-reviewed scientific environment, $\lambda \to 1$, ensuring that perceived rigor depends strictly on logical reconstruction. 
+                </p>
+                <p class="mb-6">
+                    However, behind the closed doors of a hurried enterprise, cognitive fatigue and compressed timelines force the evaluator into a state of <strong>cognitive abdication</strong> ($\lambda \to 0$). Under this limit, the equation collapses:
                     $$ \lim_{\lambda \to 0} \hat{R} = h(\mathbf{S}_P) $$
-                    This is the mathematical capture of the <strong>Semiotic Trap</strong>. When scrutiny falls, perceived rigor ($\hat{R}$) ceases to be an estimate of mathematical validity and becomes a pure projection of visual and linguistic polish.
+                    This is the mathematical representation of the <strong>Semiotic Trap</strong>. When scrutiny falls, perceived rigor ($\hat{R}$) ceases to represent mathematical validity and becomes a pure projection of visual and conversational polish.
                 </p>
 
                 <h3 class="text-lg font-semibold text-stone-800 mt-8 mb-4 ui-text">3.3 The Temporal Obsolescence Penalty: The Impatience Decay</h3>
                 <p class="mb-6">
-                    This cognitive bypass is reinforced by a structural inversion in how time is perceived within organizations. In the Pre-GenAI era, development duration ($T$) functioned as a positive signal of craftsmanship. Evaluators assumed a long timeline was proportional to the care spent on mathematical and data auditing: $\hat{R} \propto T$.
+                    This cognitive bypass is reinforced by a structural inversion of time within organizations. In the Pre-GenAI era, development duration ($T$) functioned as a positive signal of craftsmanship. Evaluators assumed a long timeline was proportional to the care spent on mathematical and data auditing: $\hat{R} \propto T$.
                 </p>
                 <p class="mb-6">
-                    Today, hyper-acceleration has commoditized speed. Adjacent teams deploying unverified GenAI wrappers set a low timeline benchmark, $T_{\text{benchmark}} \approx 0$. If a team attempts to build true mathematical rigor, they must allocate time for validation, which pushes their delivery timeline ($T$) far past the benchmark. 
+                    Today, hyper-acceleration has commoditized speed. Adjacent teams deploying unverified GenAI wrappers set a low timeline benchmark, $T_{\text{benchmark}} \approx 0$, which we define as the <strong>Commoditized Release Horizon</strong>. If a team attempts to build true mathematical rigor, they must allocate time for validation, which pushes their delivery timeline ($T$) far past the benchmark. 
                 </p>
                 <p class="mb-6">
-                    Instead of interpreting this delay as a sign of rigor, the executive team updates their prior belief toward organizational obsolescence or technical incompetence. We model this as a <strong>Temporal Discount Function ($d(T)$)</strong>:
+                    Instead of interpreting this delay as a sign of rigor, the executive team updates their prior belief toward organizational obsolescence. We model this as a <strong>Temporal Discount Function ($d(T)$)</strong>:
                     $$ d(T) = \exp\left( -\gamma \max(0, \; T - T_{\text{benchmark}}) \right) $$
                 </p>
                 <p class="mb-6">
-                    The overall perceived utility of the application is discounted by this factor:
+                    Where the parameter $\gamma > 0$ represents the <strong>Organizational Impatience Coefficient</strong>, which dictates how aggressively leadership penalizes delays. The term $\max(0, T - T_{\text{benchmark}})$ represents the <strong>timeline overrun</strong>. If a project is delivered within the commoditized horizon ($T \le T_{\text{benchmark}}$), there is no penalty ($d(T) = 1$). If it overruns ($T > T_{\text{benchmark}}$), the perceived utility of the project, $\hat{U}_{\text{discounted}}$, is discounted exponentially:
                     $$ \hat{U}_{\text{discounted}} = \hat{U} \cdot d(T) $$
                 </p>
                 <p class="mb-6">
