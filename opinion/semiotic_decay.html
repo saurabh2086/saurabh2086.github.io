@@ -294,7 +294,17 @@ Since developers face severe professional penalties for late delivery, they make
                 <p class="mb-6">
                     To solve this optimization, we expand the mutual information in terms of differential entropy:
                     $$ I(R_i; \hat{R}_i) = h(R_i) - h(R_i \mid \hat{R}_i) $$
-                    Substituting our Gaussian prior entropy $h(R_i) = \frac{1}{2}\log_2(2\pi e \sigma_0^2)$ gives:
+                </p>
+                <p class="mb-6">
+                    To simplify the conditional entropy term $h(R_i \mid \hat{R}_i)$, we utilize the translation-invariance property of differential entropy. For any random variable $X$ and any variable $Y$ upon which we condition, subtracting a deterministic function of $Y$ from $X$ does not alter its entropy because translation by a constant does not change the shape or spread of its probability density function:
+                    $$ h(X \mid Y = y) = h(X - f(y) \mid Y = y) $$
+                    Taking the expectation over all $Y$ yields:
+                    $$ h(X \mid Y) = h(X - f(Y) \mid Y) $$
+                    In our context, the target source variable is $R_i$ and the conditioning variable is its estimate $\hat{R}_i$. Letting $f(\hat{R}_i) = \hat{R}_i$ be the identity function, we rewrite the conditional entropy of rigor given its estimate as the conditional entropy of the estimation error:
+                    $$ h(R_i \mid \hat{R}_i) = h(R_i - \hat{R}_i \mid \hat{R}_i) $$
+                </p>
+                <p class="mb-6">
+                    Substituting our Gaussian prior entropy $h(R_i) = \frac{1}{2}\log_2(2\pi e \sigma_0^2)$ and this translation identity back into the mutual information equation gives:
                     $$ I(R_i; \hat{R}_i) = \frac{1}{2}\log_2(2\pi e \sigma_0^2) - h(R_i - \hat{R}_i \mid \hat{R}_i) $$
                 </p>
                 <p class="mb-6">
