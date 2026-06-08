@@ -295,29 +295,74 @@ Since developers face severe professional penalties for late delivery, they make
                 
                 <h3 class="text-lg font-semibold text-stone-800 mt-8 mb-4 ui-text">3.1 Cognitive Physics: Rate-Distortion Limits and the Scrutiny Asymmetry</h3>
                 <p class="mb-6">
-                    To understand how the visual and conversational polish of an application bypasses institutional verification, we must model the human evaluator as a communication channel with a finite cognitive information-processing capacity, $C_{\text{eval}}$, measured in bits per second. Rather than treating uncertainty in abstract bits, we model the problem using Shannon's **rate-distortion theory**, which defines the minimum information rate required to reconstruct a continuous source with a given level of average distortion (estimation error).
+                    To understand how the visual and conversational polish of an application bypasses institutional verification, we must model the human evaluator as a communication channel with a finite cognitive information-processing capacity, $C_{\text{eval}}$, measured in bits per second. Rather than treating uncertainty in abstract metaphorical terms, we model this process using Shannon's <strong>rate-distortion theory</strong>. This branch of information theory defines the minimum transmission rate required to reconstruct a continuous source with an average level of distortion (reconstruction error). By tracing the derivation from first principles, we show why evaluating complex mathematical models under timeline constraints is physically bound to fail.
                 </p>
                 <p class="mb-6">
-                    Let the true mathematical and scientific rigor vector be a continuous source, $\mathbf{R} \in \mathbb{R}^d$, with prior variance $\sigma_0^2$ per dimension. The evaluator seeks to form an estimate, $\hat{\mathbf{R}}$, which carries an average mean squared error distortion per dimension:
-                    $$ D = \frac{1}{d} \mathbb{E}[\|\mathbf{R} - \hat{\mathbf{R}}\|^2] $$
-                    where $D \in (0, \sigma_0^2]$. The minimum information rate $R_d(D)$ (in bits per dimension) required to achieve this distortion is bounded by the rate-distortion function:
-                    $$ R_d(D) = \frac{1}{2} \log_2\left(\frac{\sigma_0^2}{D}\right) $$
+                    Let the true mathematical and scientific rigor of the model be represented as a continuous $d$-dimensional random vector, $\mathbf{R} \in \mathbb{R}^d$. We assume the components of the rigor vector, $R_i$, are independent and identically distributed (i.i.d.) Gaussian random variables with zero mean and prior variance $\sigma_0^2$. Formally, $\mathbf{R} \sim \mathcal{N}(0, \sigma_0^2 \mathbf{I})$. From an information-theoretic standpoint, the Gaussian prior represents a conservative modeling choice: it maximizes the differential entropy for a given variance, representing the state of maximum prior uncertainty. The differential entropy of the source vector per dimension is:
+                    $$ h(R_i) = \frac{1}{2} \log_2(2\pi e \sigma_0^2) \quad \text{bits} $$
                 </p>
                 <p class="mb-6">
-                    The total information capacity transmitted through the evaluator's cognitive channel over an allocated audit time, $\tau_R$, is bounded by the channel capacity:
-                    $$ d \cdot R_d(D) \le C_{\text{eval}} \cdot \tau_R $$
+                    The evaluator cannot inspect the latent vector $\mathbf{R}$ directly. Instead, they observe signals and reconstruct an estimate, $\hat{\mathbf{R}}$. The quality of this reconstruction is measured by the average mean squared error (MSE) distortion per dimension, $D$:
+                    $$ D = \frac{1}{d} \mathbb{E}[\|\mathbf{R} - \hat{\mathbf{R}}\|^2] = \frac{1}{d} \sum_{i=1}^d \mathbb{E}[(R_i - \hat{R}_i)^2] $$
+                    where $D \in (0, \sigma_0^2]$. If the evaluator makes no observation and simply estimates the prior mean ($\hat{\mathbf{R}} = 0$), they incur the maximum distortion $D = \sigma_0^2$. Our goal is to derive the minimum information rate (in bits per dimension) that the evaluator must extract from the model's documentation and code to reduce this distortion below $\sigma_0^2$.
                 </p>
                 <p class="mb-6">
-                    Substituting the rate-distortion function and solving for $D$ yields the absolute lower bound on the average estimation error as a function of scrutiny time:
-                    $$ D(\tau_R) \ge \sigma_0^2 \cdot 2^{-\frac{2 C_{\text{eval}} \cdot \tau_R}{d}} $$
+                    The rate-distortion function $R_d(D)$ is defined as the infimum of the mutual information $I(R_i; \hat{R}_i)$ over all conditional probability distributions $p(\hat{R}_i \mid R_i)$ that satisfy the distortion constraint $\mathbb{E}[(R_i - \hat{R}_i)^2] \le D$:
+                    $$ R_d(D) = \inf_{p(\hat{R}_i \mid R_i): \mathbb{E}[(R_i - \hat{R}_i)^2] \le D} I(R_i; \hat{R}_i) $$
                 </p>
                 <p class="mb-6">
-                    This inequality models the **scrutiny asymmetry**. The unavoidable error in the evaluator's estimate of rigor decays exponentially with audit time $\tau_R$ and channel capacity $C_{\text{eval}}$, but scales directly with the mathematical dimensionality (complexity) of the model, $d$. 
+                    To solve this optimization, we expand the mutual information in terms of differential entropy:
+                    $$ I(R_i; \hat{R}_i) = h(R_i) - h(R_i \mid \hat{R}_i) $$
+                    Substituting our Gaussian prior entropy $h(R_i) = \frac{1}{2}\log_2(2\pi e \sigma_0^2)$ gives:
+                    $$ I(R_i; \hat{R}_i) = \frac{1}{2}\log_2(2\pi e \sigma_0^2) - h(R_i - \hat{R}_i \mid \hat{R}_i) $$
                 </p>
                 <p class="mb-6">
-                    Under corporate acceleration, timeline pressures compress the audit time close to zero, $\tau_R \to \delta_t \approx 0$. In this limit of time compression, the lower bound on distortion approaches its maximum prior variance:
-                    $$ \lim_{\tau_R \to 0} D(\tau_R) \ge \sigma_0^2 $$
-                    The evaluator is mathematically blocked from reducing their estimation error; they have extracted zero bits of information about the model's actual rigor.
+                    We can bound the conditional entropy term $h(R_i - \hat{R}_i \mid \hat{R}_i)$. Because conditioning cannot increase entropy, and because the variance of the estimation error $(R_i - \hat{R}_i)$ is constrained by $D$, we write:
+                    $$ h(R_i - \hat{R}_i \mid \hat{R}_i) \le h(R_i - \hat{R}_i) \le \frac{1}{2} \log_2\left( 2\pi e \mathbb{E}[(R_i - \hat{R}_i)^2] \right) \le \frac{1}{2} \log_2(2\pi e D) $$
+                    where the second inequality follows from the fact that the Gaussian distribution maximizes entropy for a given variance.
+                </p>
+                <p class="mb-6">
+                    Substituting this upper bound back into our mutual information equation yields the lower bound:
+                    $$ I(R_i; \hat{R}_i) \ge \frac{1}{2}\log_2(2\pi e \sigma_0^2) - \frac{1}{2}\log_2(2\pi e D) = \frac{1}{2} \log_2\left(\frac{\sigma_0^2}{D}\right) $$
+                    This lower bound is tight and is achieved when the estimation error $(R_i - \hat{R}_i)$ is a zero-mean Gaussian variable with variance $D$, independent of the estimate $\hat{R}_i$. Thus, the rate-distortion function per dimension for a Gaussian source is:
+                    $$ R_d(D) = \frac{1}{2} \log_2\left(\frac{\sigma_0^2}{D}\right) \quad \text{bits per dimension} $$
+                </p>
+                <p class="mb-6">
+                    For a $d$-dimensional vector of independent components, the total information rate $R_{\text{total}}(D)$ (in bits) required to achieve an average distortion $D$ across all dimensions is:
+                    $$ R_{\text{total}}(D) = d \cdot R_d(D) = \frac{d}{2} \log_2\left(\frac{\sigma_0^2}{D}\right) \quad \text{bits} $$
+                </p>
+                <p class="mb-6">
+                    Now, we model the evaluator as a cognitive channel. The evaluator has a maximum information-processing capacity $C_{\text{eval}}$ (bits/second). If they spend a time duration $\tau_R$ (seconds) auditing the system's mathematical rigor, the total information transmitted through their channel cannot exceed $C_{\text{eval}} \cdot \tau_R$. By Shannon's source-channel coding theorem, the required transmission rate for distortion $D$ cannot exceed this capacity:
+                    $$ R_{\text{total}}(D) \le C_{\text{eval}} \cdot \tau_R $$
+                </p>
+                <p class="mb-6">
+                    Substituting our expression for $R_{\text{total}}(D)$ into this inequality yields:
+                    $$ \frac{d}{2} \log_2\left(\frac{\sigma_0^2}{D}\right) \le C_{\text{eval}} \cdot \tau_R $$
+                </p>
+                <p class="mb-6">
+                    To isolate the average distortion $D$ and understand how it scales with audit time, we solve this inequality step-by-step:
+                    <ol class="list-decimal pl-8 mb-6 space-y-2 text-base">
+                        <li>Divide both sides of the inequality by $\frac{d}{2}$:
+                            $$ \log_2\left(\frac{\sigma_0^2}{D}\right) \le \frac{2 C_{\text{eval}} \cdot \tau_R}{d} $$
+                        </li>
+                        <li>Exponentiate both sides with base 2 (since $2^x$ is a monotonically increasing function, this preserves the direction of the inequality):
+                            $$ \frac{\sigma_0^2}{D} \le 2^{\frac{2 C_{\text{eval}} \cdot \tau_R}{d}} $$
+                        </li>
+                        <li>Take the reciprocal of both sides (reversing the inequality sign):
+                            $$ \frac{D}{\sigma_0^2} \ge 2^{-\frac{2 C_{\text{eval}} \cdot \tau_R}{d}} $$
+                        </li>
+                        <li>Multiply by the prior variance $\sigma_0^2$ to solve for the lower bound of distortion:
+                            $$ D(\tau_R) \ge \sigma_0^2 \cdot 2^{-\frac{2 C_{\text{eval}} \cdot \tau_R}{d}} $$
+                        </li>
+                    </ol>
+                </p>
+                <p class="mb-6">
+                    This inequality reveals the physical limit of the <strong>scrutiny asymmetry</strong>. The estimation distortion $D(\tau_R)$ decays exponentially with the time spent auditing $\tau_R$ and the evaluator's cognitive capacity $C_{\text{eval}}$, but is constrained by the dimensionality (complexity) of the model, $d$. 
+                </p>
+                <p class="mb-6">
+                    Under organizational pressure, delivery cycles are compressed. When the evaluator is forced to make a decision under extreme time pressure, the time allocated to audit rigor approaches zero: $\tau_R \to \delta_t \approx 0$. Taking the limit of our lower bound:
+                    $$ \lim_{\tau_R \to 0} D(\tau_R) \ge \sigma_0^2 \cdot 2^0 = \sigma_0^2 $$
+                    In this limit, the evaluator's estimation distortion is forced to its absolute maximum: the prior variance $\sigma_0^2$. The evaluator has processed zero bits of information about the model's actual mathematical core, rendering them completely blind to its validity.
                 </p>
 
                 <h3 class="text-lg font-semibold text-stone-800 mt-8 mb-4 ui-text">3.2 Heuristic Substitution: The Epistemic Scrutiny Parameter</h3>
