@@ -363,7 +363,7 @@ Since developers face severe professional penalties for late delivery, they make
                     where $D \in (0, \sigma_0^2]$. If the evaluator makes no observation and simply estimates the prior mean ($\hat{\mathbf{R}} = 0$), they incur the maximum distortion $D = \sigma_0^2$. Our goal is to derive the minimum information rate (in bits per dimension) that the evaluator must extract from the model's documentation and code to reduce this distortion below $\sigma_0^2$.
                 </p>
                 <p class="mb-6">
-                    The rate-distortion function $R_d(D)$ is defined as the infimum of the mutual information $I(R_i; \hat{R}_i)$ over all conditional probability distributions $p(\hat{R}_i \mid R_i)$ that satisfy the distortion constraint $\mathbb{E}[(R_i - \hat{R}_i)^2] \le D$:
+                    The rate-distortion function $R_d(D)$ is defined as the infimum—the greatest lower bound, which generalizes the notion of a minimum to sets or intervals that may not contain their boundary value—of the mutual information $I(R_i; \hat{R}_i)$ over all conditional probability distributions $p(\hat{R}_i \mid R_i)$ that satisfy the distortion constraint $\mathbb{E}[(R_i - \hat{R}_i)^2] \le D$:
                     $$ R_d(D) = \inf_{p(\hat{R}_i \mid R_i): \mathbb{E}[(R_i - \hat{R}_i)^2] \le D} I(R_i; \hat{R}_i) $$
                 </p>
                 <p class="mb-6">
