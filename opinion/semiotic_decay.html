@@ -357,10 +357,24 @@ Since developers face severe professional penalties for late delivery, they make
                     $$ I(R_i; \hat{R}_i) = h(R_i) - h(R_i \mid \hat{R}_i) $$
                 </p>
                 <p class="mb-6">
-                    To simplify the conditional entropy term $h(R_i \mid \hat{R}_i)$, we utilize the translation-invariance property of differential entropy. For any random variable $X$ and any variable $Y$ upon which we condition, subtracting a deterministic function of $Y$ from $X$ does not alter its entropy because translation by a constant does not change the shape or spread of its probability density function:
-                    $$ h(X \mid Y = y) = h(X - f(y) \mid Y = y) $$
-                    Taking the expectation over all $Y$ yields:
+                    To simplify the conditional entropy term $h(R_i \mid \hat{R}_i)$, we utilize the translation-invariance property of differential entropy. For any random variable $X$ and any variable $Y$ upon which we condition, subtracting a deterministic function of $Y$ from $X$ does not alter its entropy because translation by a constant does not change the shape or spread of its probability density function. 
+                </p>
+                <p class="mb-6">
+                    Specifically, for any fixed realization $Y = y$, the function value $f(y)$ is a constant scalar. By letting $z = x - f(y)$, the Jacobian of this transformation is $dz/dx = 1$, meaning $dx = dz$. The conditional differential entropy of $X$ given $Y=y$ is:
+                    $$ h(X \mid Y = y) = -\int_{\mathcal{X}} p_{X \mid Y}(x \mid y) \log_2 p_{X \mid Y}(x \mid y) \, dx $$
+                    Substituting $x = z + f(y)$ and $dx = dz$ yields:
+                    $$ h(X \mid Y = y) = -\int_{\mathcal{Z}} p_{X \mid Y}(z + f(y) \mid y) \log_2 p_{X \mid Y}(z + f(y) \mid y) \, dz $$
+                    Since $p_{X \mid Y}(z + f(y) \mid y) = p_{Z \mid Y}(z \mid y)$ where $Z = X - f(Y)$, this integral is precisely the entropy of the translated variable:
+                    $$ h(X \mid Y = y) = -\int_{\mathcal{Z}} p_{Z \mid Y}(z \mid y) \log_2 p_{Z \mid Y}(z \mid y) \, dz = h(X - f(y) \mid Y = y) $$
+                </p>
+                <p class="mb-6">
+                    Now, we take the expectation of both sides of this equality over the entire probability space $\mathcal{Y}$ of the conditioning variable $Y$. We multiply by the marginal probability density $p_Y(y)$ and integrate over all $y \in \mathcal{Y}$:
+                    $$ \int_{\mathcal{Y}} p_Y(y) h(X \mid Y = y) \, dy = \int_{\mathcal{Y}} p_Y(y) h(X - f(y) \mid Y = y) \, dy $$
+                    By the definition of conditional differential entropy as the expected value of conditional entropies across the realizations of the conditioning variable:
+                    $$ \mathbb{E}_Y [ h(X \mid Y = y) ] = \mathbb{E}_Y [ h(X - f(Y) \mid Y = y) ] $$
                     $$ h(X \mid Y) = h(X - f(Y) \mid Y) $$
+                </p>
+                <p class="mb-6">
                     In our context, the target source variable is $R_i$ and the conditioning variable is its estimate $\hat{R}_i$. Letting $f(\hat{R}_i) = \hat{R}_i$ be the identity function, we rewrite the conditional entropy of rigor given its estimate as the conditional entropy of the estimation error:
                     $$ h(R_i \mid \hat{R}_i) = h(R_i - \hat{R}_i \mid \hat{R}_i) $$
                 </p>
