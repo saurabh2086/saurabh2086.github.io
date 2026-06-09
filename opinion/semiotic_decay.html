@@ -305,8 +305,37 @@ Since developers face severe professional penalties for late delivery, they make
                     To understand how the visual and conversational polish of an application bypasses institutional verification, we must model the human evaluator as a communication channel with a finite cognitive information-processing capacity, $C_{\text{eval}}$, measured in bits per second. Rather than treating uncertainty in abstract metaphorical terms, we model this process using Shannon's <strong>rate-distortion theory</strong>. This branch of information theory defines the minimum transmission rate required to reconstruct a continuous source with an average level of distortion (reconstruction error). By tracing the derivation from first principles, we show why evaluating complex mathematical models under timeline constraints is physically bound to fail.
                 </p>
                 <p class="mb-6">
-                    Let the true mathematical and scientific rigor of the model be represented as a continuous $d$-dimensional random vector, $\mathbf{R} \in \mathbb{R}^d$. We assume the components of the rigor vector, $R_i$, are independent and identically distributed (i.i.d.) Gaussian random variables with zero mean and prior variance $\sigma_0^2$. Formally, $\mathbf{R} \sim \mathcal{N}(0, \sigma_0^2 \mathbf{I})$. From an information-theoretic standpoint, the Gaussian prior represents a conservative modeling choice: it maximizes the differential entropy for a given variance, representing the state of maximum prior uncertainty. The differential entropy of the source vector per dimension is:
-                    $$ h(R_i) = \frac{1}{2} \log_2(2\pi e \sigma_0^2) \quad \text{bits} $$
+                    Let the true mathematical and scientific rigor of the model be represented as a continuous $d$-dimensional random vector, $\mathbf{R} \in \mathbb{R}^d$. We assume the components of the rigor vector, $R_i$, are independent and identically distributed (i.i.d.) Gaussian random variables with zero mean and prior variance $\sigma_0^2$. Formally, $\mathbf{R} \sim \mathcal{N}(0, \sigma_0^2 \mathbf{I})$. From an information-theoretic standpoint, the Gaussian prior represents a conservative modeling choice: it maximizes the differential entropy for a given variance, representing the state of maximum prior uncertainty.
+                </p>
+                <p class="mb-6">
+                    To understand the starting baseline of the evaluator's uncertainty, we compute the <strong>differential entropy</strong> $h(R_i)$ of each independent dimension. Unlike discrete Shannon entropy, which measures the surprise of a countable set of events and is always non-negative, differential entropy measures the logarithmic volume of the probability density's support. By definition:
+                    $$ h(R_i) = -\int_{-\infty}^{\infty} f(r) \log_2 f(r) \, dr $$
+                    where $f(r) = \frac{1}{\sqrt{2\pi\sigma_0^2}} \exp\left( -\frac{r^2}{2\sigma_0^2} \right)$ is the probability density function of $R_i \sim \mathcal{N}(0, \sigma_0^2)$. 
+                </p>
+                <p class="mb-6">
+                    To derive the formula step-by-step, we first take the natural logarithm of the Gaussian density:
+                    $$ \ln f(r) = \ln \left( \frac{1}{\sqrt{2\pi\sigma_0^2}} \right) - \frac{r^2}{2\sigma_0^2} = -\frac{1}{2}\ln(2\pi\sigma_0^2) - \frac{r^2}{2\sigma_0^2} $$
+                    Converting to base-2 logarithm ($\log_2 f(r) = \log_2(e) \cdot \ln f(r)$):
+                    $$ \log_2 f(r) = -\frac{1}{2}\log_2(2\pi\sigma_0^2) - \frac{r^2}{2\sigma_0^2}\log_2 e $$
+                </p>
+                <p class="mb-6">
+                    Plugging this logarithm back into the integral definition of differential entropy:
+                    $$ h(R_i) = -\int_{-\infty}^{\infty} f(r) \left[ -\frac{1}{2}\log_2(2\pi\sigma_0^2) - \frac{r^2}{2\sigma_0^2}\log_2 e \right] \, dr $$
+                    $$ h(R_i) = \frac{1}{2}\log_2(2\pi\sigma_0^2) \int_{-\infty}^{\infty} f(r) \, dr + \frac{\log_2 e}{2\sigma_0^2} \int_{-\infty}^{\infty} r^2 f(r) \, dr $$
+                </p>
+                <p class="mb-6">
+                    We evaluate the two integrals using fundamental properties of probability densities:
+                    <ul class="list-disc pl-8 mb-6 space-y-2 text-base">
+                        <li>The integral of any probability density function over its support is exactly 1: $\int_{-\infty}^{\infty} f(r) \, dr = 1$.</li>
+                        <li>Since $R_i$ has zero mean, the second integral is the expectation $\mathbb{E}[R_i^2]$, which is by definition its variance: $\int_{-\infty}^{\infty} r^2 f(r) \, dr = \sigma_0^2$.</li>
+                    </ul>
+                </p>
+                <p class="mb-6">
+                    Substituting these values back into the expression:
+                    $$ h(R_i) = \frac{1}{2}\log_2(2\pi\sigma_0^2) \cdot (1) + \frac{\log_2 e}{2\sigma_0^2} \cdot (\sigma_0^2) = \frac{1}{2}\log_2(2\pi\sigma_0^2) + \frac{1}{2}\log_2 e $$
+                    Combining the logarithms yields the final expression for Gaussian differential entropy:
+                    $$ h(R_i) = \frac{1}{2}\log_2(2\pi e\sigma_0^2) \quad \text{bits} $$
+                    This logarithmic relationship highlights that the evaluator's initial uncertainty scales with the variance of the model's errors. Each doubling of variance $\sigma_0^2$ increases the prior entropy by exactly $0.5$ bits, representing the absolute baseline of information that any audit must recover to establish validity.
                 </p>
                 <p class="mb-6">
                     The evaluator cannot inspect the latent vector $\mathbf{R}$ directly. Instead, they observe signals and reconstruct an estimate, $\hat{\mathbf{R}}$. The quality of this reconstruction is measured by the average mean squared error (MSE) distortion per dimension, $D$:
