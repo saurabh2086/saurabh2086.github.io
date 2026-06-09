@@ -230,12 +230,30 @@
                     $$ \hat{R} = \mathbb{E}[\mathbf{R} \mid \mathbf{S}_R, \; \mathbf{S}_P] $$
                 </p>
                 <p class="mb-6">
-                    To solve this posterior expectation, we model the evaluator's prior belief. In the historical corporate baseline, visual polish was strongly correlated with technical rigor. The evaluator therefore assumes a prior model: $\mathbf{R} = \beta_{\text{halo}} \mathbf{S}_P + \boldsymbol{\eta}$, where $\boldsymbol{\eta} \sim \mathcal{N}(0, \sigma_0^2 \mathbf{I})$ represents the residual uncertainty. Under this Gaussian linear model, the Bayesian update yields a weighted linear combination of the observed rigor signal and the presentation-derived prior:
-                    $$ \hat{R} = \lambda \mathbf{S}_R + (1 - \lambda) \beta_{\text{halo}} \mathbf{S}_P $$
+                    To derive this posterior expectation from first principles, we model the evaluator's prior belief of rigor based on the observed presentation signal $\mathbf{S}_P$. In the historical corporate baseline, visual polish was strongly correlated with technical rigor. The evaluator therefore forms a prior model of $\mathbf{R}$ conditional on $\mathbf{S}_P$ as a Gaussian distribution:
+                    $$ \mathbf{R} \mid \mathbf{S}_P \sim \mathcal{N}(\boldsymbol{\mu}_0, \; \boldsymbol{\Sigma}_0) \quad \text{where } \boldsymbol{\mu}_0 = \beta_{\text{halo}} \mathbf{S}_P \text{ and } \boldsymbol{\Sigma}_0 = \sigma_0^2 \mathbf{I} $$
+                    where $\beta_{\text{halo}}$ is the prior correlation scaling coefficient and $\sigma_0^2 \mathbf{I}$ represents the isotropic prior uncertainty covariance.
                 </p>
                 <p class="mb-6">
-                    Where the **relative precision (scrutiny parameter)** $\lambda \in [0, 1]$ is derived directly from the noise variances of the observation channels:
+                    The evaluator then spends time auditing the system's math, yielding the audited rigor signal $\mathbf{S}_R$. The observation model (likelihood) is:
+                    $$ \mathbf{S}_R \mid \mathbf{R} \sim \mathcal{N}(\mathbf{R}, \; \boldsymbol{\Sigma}_{\text{obs}}) \quad \text{where } \boldsymbol{\Sigma}_{\text{obs}} = \sigma_R^2 \mathbf{I} $$
+                    where $\sigma_R^2$ is the noise variance of the audit channel. Since both the prior and likelihood are Gaussian, the posterior distribution $p(\mathbf{R} \mid \mathbf{S}_R, \mathbf{S}_P) \sim \mathcal{N}(\boldsymbol{\mu}_{\text{post}}, \boldsymbol{\Sigma}_{\text{post}})$ is also Gaussian, and its parameters are determined by the standard conjugate update equations:
+                    $$ \boldsymbol{\Sigma}_{\text{post}}^{-1} = \boldsymbol{\Sigma}_0^{-1} + \boldsymbol{\Sigma}_{\text{obs}}^{-1} = \left( \frac{1}{\sigma_0^2} + \frac{1}{\sigma_R^2} \right) \mathbf{I} \quad \implies \quad \boldsymbol{\Sigma}_{\text{post}} = \frac{\sigma_0^2 \sigma_R^2}{\sigma_0^2 + \sigma_R^2} \mathbf{I} $$
+                    $$ \boldsymbol{\mu}_{\text{post}} = \boldsymbol{\Sigma}_{\text{post}} \left( \boldsymbol{\Sigma}_0^{-1} \boldsymbol{\mu}_0 + \boldsymbol{\Sigma}_{\text{obs}}^{-1} \mathbf{S}_R \right) $$
+                </p>
+                <p class="mb-6">
+                    Substituting our expressions for $\boldsymbol{\mu}_0$, $\boldsymbol{\Sigma}_0$, and $\boldsymbol{\Sigma}_{\text{obs}}$ into the posterior mean:
+                    $$ \boldsymbol{\mu}_{\text{post}} = \left( \frac{\sigma_0^2 \sigma_R^2}{\sigma_0^2 + \sigma_R^2} \mathbf{I} \right) \left( \frac{1}{\sigma_0^2} \mathbf{I} (\beta_{\text{halo}} \mathbf{S}_P) + \frac{1}{\sigma_R^2} \mathbf{I} \mathbf{S}_R \right) $$
+                    Distributing the covariance term yields:
+                    $$ \boldsymbol{\mu}_{\text{post}} = \left( \frac{\sigma_R^2}{\sigma_0^2 + \sigma_R^2} \right) \beta_{\text{halo}} \mathbf{S}_P + \left( \frac{\sigma_0^2}{\sigma_0^2 + \sigma_R^2} \right) \mathbf{S}_R $$
+                </p>
+                <p class="mb-6">
+                    We now define the **Epistemic Scrutiny Parameter ($\lambda$)** as the relative precision weight of the audited signal:
                     $$ \lambda = \frac{\sigma_0^2}{\sigma_0^2 + \sigma_R^2} $$
+                    It follows directly that the remaining weight is:
+                    $$ 1 - \lambda = \frac{\sigma_R^2}{\sigma_0^2 + \sigma_R^2} $$
+                    Substituting these weights back into the posterior expectation $\hat{R} = \mathbb{E}[\mathbf{R} \mid \mathbf{S}_R, \mathbf{S}_P] = \boldsymbol{\mu}_{\text{post}}$, we obtain the final weighted combination:
+                    $$ \hat{R} = \lambda \mathbf{S}_R + (1 - \lambda) \beta_{\text{halo}} \mathbf{S}_P $$
                 </p>
                 <p class="mb-6">
                     This formulation unifies the cognitive and mathematical dynamics of evaluation. In cognitive science, this substitution of signals is known as **attribute substitution** (Kahneman & Frederick, 2002), where a subject replaces a complex, high-effort question ("Is the statistical logic sound?") with an easy, low-effort proxy ("Is the interface beautiful?"). The partial derivative of perceived rigor with respect to presentation reveals this Halo Effect:
