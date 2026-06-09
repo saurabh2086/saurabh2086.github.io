@@ -321,9 +321,16 @@ Since developers face severe professional penalties for late delivery, they make
                     Third, under Jaynes' Principle of Maximum Entropy, if we only constrain the scale of potential rigor via its variance $\sigma_0^2$, the Gaussian distribution is the unique, mathematically honest distribution that assumes no hidden structure or prior knowledge, maximizing this initial uncertainty.
                 </p>
                 <p class="mb-6">
-                    To establish this baseline, we compute the <strong>differential entropy</strong> $h(R_i)$ of each independent dimension. Unlike discrete Shannon entropy, which measures the surprise of a countable set of events and is always non-negative, differential entropy measures the logarithmic volume of the probability density's support. By definition:
+                    To establish this baseline, we compute the <strong>differential entropy</strong> $h(R_i)$ of each independent dimension. 
+                    What is differential entropy, and how does it differ from discrete Shannon entropy?
+                    Discrete Shannon entropy, $H(X) = -\sum P(x_i) \log_2 P(x_i)$, measures the absolute uncertainty of a discrete set of events and is always non-negative. It tells us the minimum average number of bits required to uniquely encode and identify an outcome. 
+                    However, continuous variables can take on an infinite, uncountable number of possible values. Specifying a continuous point with infinite precision would require an infinite number of bits. 
+                    Differential entropy, defined by the continuous integral:
                     $$ h(R_i) = -\int_{-\infty}^{\infty} f(r) \log_2 f(r) \, dr $$
-                    where $f(r) = \frac{1}{\sqrt{2\pi\sigma_0^2}} \exp\left( -\frac{r^2}{2\sigma_0^2} \right)$ is the probability density function of $R_i \sim \mathcal{N}(0, \sigma_0^2)$. 
+                    where $f(r) = \frac{1}{\sqrt{2\pi\sigma_0^2}} \exp\left( -\frac{r^2}{2\sigma_0^2} \right)$ is the probability density function of $R_i \sim \mathcal{N}(0, \sigma_0^2)$, resolves this by measuring the <strong>logarithmic volume</strong> of the probability density's support. 
+                    If we slice the continuous variable into discrete bins of width $\Delta r$, the discrete entropy of the quantized variable scales as $H(R_i^{\Delta r}) \approx h(R_i) - \log_2(\Delta r)$ as $\Delta r \to 0$. 
+                    As the bin width shrinks to zero, the discrete entropy diverges to infinity, but the differential entropy $h(R_i)$ remains as the finite, shape-dependent residual. 
+                    Because it represents a relative measure of volume rather than an absolute count of bits, differential entropy can be negative (for instance, when the probability density is concentrated on a support volume of less than 1). It acts as a relative measure of uncertainty under continuous scaling.
                 </p>
                 <p class="mb-6">
                     To derive the formula step-by-step, we first take the natural logarithm of the Gaussian density:
