@@ -618,19 +618,30 @@ Since developers face severe professional penalties for late delivery, they make
                     To understand why analytical decay propagates through an organization, we must analyze the developer's strategy using the economics of asymmetric information, specifically the frameworks of <strong>Spence's signaling theory (1973)</strong> and <strong>Akerlof's lemons market (1970)</strong>. In any corporate enterprise, the true rigor of an analytical model is a latent quality, unobservable to executive leadership without costly and slow technical auditing. The developer must therefore emit observable signals of competence. Let the visual presentation and conversational fluency of the interface represent the presentation signal, $\mathbf{S}_P$, and the documented mathematical validation represent the rigor signal, $\mathbf{S}_R$.
                 </p>
                 <p class="mb-6">
-                    In the Pre-Generative AI era, visual presentation polish was a separating signal. Constructing custom interfaces, designing stable data visualizations, and formatting clean dashboards required significant engineering capital, deep coding skills, and weeks of manual labor. This presentation cost can be modeled as satisfying the <strong>Spence single-crossing condition</strong>: the marginal cost of creating polished presentations was significantly lower for a high-quality developer (who possesses the technical capability and system design expertise to write clean code on both sides of the system) than for a low-quality developer (who would have to expend massive cognitive effort to simulate UI competence on top of a broken or copy-pasted backend):
+                    In the Pre-Generative AI era, visual presentation polish was a separating signal. To model this formally, let $K_P \ge 0$ denote the developer's presentational effort (or level of visual polish), and let $C_P(K_P \mid \mathbf{R})$ represent the cost function for achieving that level of polish, conditional on the developer's true analytical rigor vector $\mathbf{R}$. We denote a high-rigor developer as having vector $\mathbf{R}_{\text{high}}$ and a low-rigor developer as having vector $\mathbf{R}_{\text{low}}$.
+                </p>
+                <p class="mb-6">
+                    Constructing custom interfaces, designing stable data visualizations, and formatting clean dashboards required significant engineering capital, deep coding skills, and weeks of manual labor. This presentation cost satisfied the <strong>Spence single-crossing condition</strong>. Philosophically, a high-rigor developer ($\mathbf{R}_{\text{high}}$)—who has built a clean, modular database schema and robust API endpoints—can expose this backend into a clean dashboard with low incremental effort. Conversely, a low-rigor developer ($\mathbf{R}_{\text{low}}$)—whose backend is a fragile, copy-pasted script—must expend massive cognitive energy to write custom hacks to mask backend instability, manually format noise, and patch interface breakage. Thus, the marginal cost of presentational polish was strictly lower for high-rigor developers:
                 </p>
                 <p class="mb-6">
                     $$ \frac{\partial C_P(K_P \mid \mathbf{R}_{\text{high}})}{\partial K_P} < \frac{\partial C_P(K_P \mid \mathbf{R}_{\text{low}})}{\partial K_P} $$
                 </p>
                 <p class="mb-6">
-                    This cost asymmetry allowed a <strong>separating equilibrium</strong> to emerge. High-quality developers chose high presentation polish, while low-quality developers chose simple, unadorned layouts. Evaluators could rely on visual polish as a reliable index of underlying mathematical rigor.
+                    This cost asymmetry allowed a stable <strong>separating equilibrium</strong> to emerge. High-quality developers chose to invest in high presentation polish because their signaling cost was low, while low-quality developers chose simple, unadorned layouts. Evaluators could therefore rely on visual polish as a reliable index of underlying mathematical rigor.
                 </p>
                 <p class="mb-6">
                     Generative AI destroys this separating signal by collapsing the marginal cost of presentation to zero for all types:
                     $$ \lim_{\text{GenAI}} C_P(K_P \mid \mathbf{R}) \to 0 \quad \forall \mathbf{R} $$
                     With $\alpha \to 0$, the single-crossing condition fails completely. Any developer, regardless of their model's backend quality, can generate visual polish and fluent copy instantly. The signaling channel collapses, and the system enters an <strong>Akerlof lemons market (1970)</strong>. Because the evaluator cannot distinguish between a zero-rigor wrapper and a mathematically rigorous model based on the visual interface, and because auditing rigor is cognitively expensive ($\lambda \to 0$ under time constraints), the evaluator's expectation of quality collapses to the average of the pool. High-rigor developers, who must still pay the high convex cost of mathematical auditing ($\beta K_R^2$), are unable to signal their quality and are driven out of the market by cheap, beautiful wrappers. The market collapses into a <strong>Mimetic Pooling Equilibrium</strong> where all developers output zero rigor.
                 </p>
+                <aside class="review-note">
+                    <span class="rn-label">Review · Information economist · §4.1 — single-crossing mechanism</span>
+                    Single-crossing failure is mis-attributed to $\alpha\to0$. It fails because $C_P$ loses its <strong>type-dependence</strong> — both types now pay the same marginal cost — not because $\alpha$ is small. But §4.2 then defines $C_P(K_P)=\alpha K_P$ with <em>no</em> $\mathbf{R}$-dependence at all, so it can't generate the separating equilibrium §4.1 describes in the first place. Fix: write the cost as $C_P(K_P\mid\mathbf{R})$ in §4.2, and frame the collapse as $\partial C_P/\partial K_P$ becoming equal across types.
+                </aside>
+                <aside class="review-note">
+                    <span class="rn-label">Review · Information economist · §4.1 — lemons vs. pooling</span>
+                    "Driven out of the market" contradicts "pooling equilibrium where all developers output zero rigor." Exit/unraveling (good types <em>leave</em>) and pooling (good types <em>stay but emit the low signal</em>) are different outcomes. Your mechanism is pooling: high-rigor developers don't exit — they rationally stop paying for rigor and pool with the wrappers. Change "driven out of the market" to <strong>"driven to abandon rigor"</strong> so the lemons dynamic and the pooling conclusion agree.
+                </aside>
 
                 <h3 class="text-lg font-semibold text-stone-800 mt-8 mb-4 ui-text">4.2 The Developer's Payoff and Ruin Constraints</h3>
                 <p class="mb-6">
@@ -640,6 +651,10 @@ Since developers face severe professional penalties for late delivery, they make
                 <p class="mb-6">
                     The private cost of rigor is quadratic and convex: $C_R(K_{R,i}) = \beta K_{R,i}^2$ ($\beta \gg 1$), representing the escalating difficulty of verification, whereas presentation is linear: $C_P(K_{P,i}) = \alpha K_{P,i}$ (with $\alpha \to 0$ post-GenAI).
                 </p>
+                <aside class="review-note">
+                    <span class="rn-label">Review · Technical-math editor · §4.1–4.2 — notation hygiene</span>
+                    Three cleanups: (1) $\alpha$ is used in §4.1's single-crossing equation but only defined here in §4.2 — define on first use or forward-reference. (2) The expectation subscript $\mathbb{E}_{T_{\text{benchmark}}(\mathcal{C})}$ (§4.2, §4.3) uses a calligraphic $\mathcal{C}$ that is never defined — define it or drop it. (3) The cost limit written $\lim_{\text{GenAI}}$ is an informal subscript; replace with a clean "as $\alpha\to0$."
+                </aside>
                 <p class="mb-6">
                     The developer's payoff is influenced by the organizational risk. If the model fails in production, it can trigger organizational ruin, which we define as the event where tail-risk losses exceed the firm's reserve: $L(X) > S$. Ruin leads to utility collapse for the team, modeled by a penalty $w_L \cdot P(\text{Ruin})$.
                 </p>
@@ -669,6 +684,10 @@ Since developers face severe professional penalties for late delivery, they make
                     $$ \left. \frac{\partial U_{\text{dev},i}}{\partial K_{R,i}} \right|_{K_{R,i}=0} = w_u \left( \Delta_{\hat{U}} - \gamma \theta \hat{U}_0 \right) + w_{r,i} + \alpha $$
                     where $\hat{U}_0 = \left[ (1-\lambda)\mathbf{w}_{\hat{r}}^T \mathbf{B}_{\text{halo}} \mathbf{1}_3 + \mathbf{w}_{\hat{p}}^T \mathbf{1}_3 \right] K$ is the perceived utility of the wrapper at zero rigor, and $\Delta_{\hat{U}} \equiv \left. \frac{\partial \hat{U}_i}{\partial K_{R,i}} \right|_{0} = \lambda \mathbf{w}_{\hat{r}}^T \mathbf{1}_4 - (1-\lambda)\mathbf{w}_{\hat{r}}^T \mathbf{B}_{\text{halo}} \mathbf{1}_3 - \mathbf{w}_{\hat{p}}^T \mathbf{1}_3$. Here, the vectors of ones $\mathbf{1}_4 \in \mathbb{R}^4$ and $\mathbf{1}_3 \in \mathbb{R}^3$ map the developer's scalar efforts $K_{R,i}$ and $K_{P,i}$ onto the vector dimensions of rigor and presentation.
                 </p>
+                <aside class="review-note">
+                    <span class="rn-label">Review · Optimization specialist · §4.3 — state the binding constraint</span>
+                    The algebra checks out — I verified $\Delta_{\hat U}$ and the collapse to $w_{r,i}-w_u(\mathbf{w}_{\hat r}^T\mathbf{B}_{\text{halo}}\mathbf{1}_3+\mathbf{w}_{\hat p}^T\mathbf{1}_3)(1+\gamma\theta K)$, and strictly-concave $\Rightarrow$ corner-at-zero is valid. But the negative terms in $\Delta_{\hat U}$ arise <em>only because the budget constraint binds</em>: $K_P=K-K_{R}$, so $\partial\mathbf{S}_P/\partial K_R=-\mathbf{1}_3$. State $K_P=K-K_R$ explicitly before differentiating — it's doing real work and is currently implicit. Also flag that $\mathbf{1}_3,\mathbf{1}_4$ assume effort spreads <em>equally</em> across all dimensions.
+                </aside>
                 <p class="mb-6">
                     Under corporate timeline compression, evaluators substitute visual polish for mathematical rigor, causing the scrutiny parameter to collapse ($\lambda \to 0$), and presentation is cheap ($\alpha \to 0$):
                     $$ \Delta_{\hat{U}} \approx -\mathbf{w}_{\hat{r}}^T \mathbf{B}_{\text{halo}} \mathbf{1}_3 - \mathbf{w}_{\hat{p}}^T \mathbf{1}_3 < 0 $$
@@ -691,6 +710,10 @@ Since developers face severe professional penalties for late delivery, they make
                 <p class="mb-6">
                     Since this best response is symmetric and holds for all developers in the attracted cluster, the strategy profile $K_{R,i}^* = 0$ for all $i$ is a mutual best response, constituting a stable <strong>Nash Fixed Point of the Mean-Field Game</strong>. This mimetic locking mechanism shows why individual intentions are powerless. Deviating from the benchmark penalizes the developer's career, forcing them to conform to the zero-rigor norm. The pooling equilibrium is self-reinforcing and stable, hiding systemic fragility beneath a facade of uniform aesthetic excellence.
                 </p>
+                <aside class="review-note">
+                    <span class="rn-label">Review · Game theorist · §4.4 — scope the Nash claim</span>
+                    "$K_{R,i}^*=0$ for all $i$" overreaches: §4.3 gives the corner solution only for developers whose pride $w_{r,i}$ is <em>below</em> $w_{\text{pride-threshold}}$. The high-pride minority would choose $K_R>0$ and deviate, so the all-zero profile isn't a <em>global</em> equilibrium. Make the "attracted cluster" framing consistent — scope the claim to the below-threshold sub-population (or argue the high-pride mass is negligible). Also: you never address <strong>uniqueness</strong> — a rigor-positive equilibrium may coexist, yet "self-reinforcing and stable" implies you've ruled that out. Add one sentence on multiplicity. (Minor: with finite $N$ and $1/(N-1)$ averaging this is an aggregative game; "mean-field" properly means the $N\to\infty$ continuum.)
+                </aside>
             </section>
 
             <!-- Section 5: The Ontological Shock: When the Simulation Collapses -->
