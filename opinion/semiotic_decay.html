@@ -396,6 +396,40 @@ Since developers face severe professional penalties for late delivery, they make
                 </p>
 
                 <details class="proof-details mb-6">
+                    <summary>Show Derivation: Linking Discrete Shannon Entropy to Continuous Differential Entropy</summary>
+                    <div class="mt-4 space-y-4">
+                        <p>
+                            To formalize how continuous differential entropy relates to discrete Shannon entropy, we partition a continuous random variable $R$ into discrete bins of width $\Delta r$. By the Mean Value Theorem, the probability of landing in the $i$-th bin $[i\Delta r, (i+1)\Delta r]$ is:
+                            $$ P_i = \int_{i\Delta r}^{(i+1)\Delta r} f(r) \, dr = f(r_i) \Delta r $$
+                            where $r_i$ is a value in the $i$-th bin. The discrete Shannon entropy of this quantized variable $R^{\Delta r}$ is:
+                            $$ H(R^{\Delta r}) = -\sum_{i=-\infty}^{\infty} P_i \log_2 P_i = -\sum_{i=-\infty}^{\infty} f(r_i) \Delta r \log_2 \left( f(r_i) \Delta r \right) $$
+                        </p>
+                        <p>
+                            Expanding the logarithm inside the summation:
+                            $$ H(R^{\Delta r}) = -\sum_{i=-\infty}^{\infty} f(r_i) \log_2 f(r_i) \Delta r - \sum_{i=-\infty}^{\infty} f(r_i) \Delta r \log_2(\Delta r) $$
+                            Since $\log_2(\Delta r)$ does not depend on the index $i$, we factor it out of the second sum:
+                            $$ H(R^{\Delta r}) = -\sum_{i=-\infty}^{\infty} f(r_i) \log_2 f(r_i) \Delta r - \log_2(\Delta r) \sum_{i=-\infty}^{\infty} f(r_i) \Delta r $$
+                        </p>
+                        <p>
+                            Taking the limit as the bin width approaches zero ($\Delta r \to 0$):
+                            <ul class="list-disc pl-8 space-y-2 text-base">
+                                <li>The first sum converges to the Riemann integral defining continuous differential entropy:
+                                    $$ \lim_{\Delta r \to 0} -\sum_{i=-\infty}^{\infty} f(r_i) \log_2 f(r_i) \Delta r = -\int_{-\infty}^{\infty} f(r) \log_2 f(r) \, dr = h(R) $$
+                                </li>
+                                <li>The second sum converges to the integral of the probability density function over its entire support, which is exactly 1:
+                                    $$ \lim_{\Delta r \to 0} \sum_{i=-\infty}^{\infty} f(r_i) \Delta r = \int_{-\infty}^{\infty} f(r) \, dr = 1 $$
+                                </li>
+                            </ul>
+                        </p>
+                        <p>
+                            Therefore, in the limit as $\Delta r \to 0$, the quantized discrete entropy scales as:
+                            $$ H(R^{\Delta r}) \approx h(R) - \log_2(\Delta r) $$
+                            This shows that the discrete entropy of a continuous variable diverges to infinity as we resolve it to infinite precision, leaving the continuous differential entropy $h(R)$ as the finite, relative volume index.
+                        </p>
+                    </div>
+                </details>
+
+                <details class="proof-details mb-6">
                     <summary>Show Proof: Step-by-Step Derivation of Gaussian Differential Entropy</summary>
                     <div class="mt-4 space-y-4">
                         <p>
