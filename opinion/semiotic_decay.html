@@ -96,6 +96,34 @@
         }
         .review-note strong { color: #7f1d1d; }
         @media print { .review-note { display: none; } }
+
+        /* Premium Collapsible Proof Container */
+        details.proof-details {
+            background-color: #f5f5f4; /* stone-100 */
+            border: 1px solid #e7e5e4; /* stone-200 */
+            border-radius: 0.5rem;
+            padding: 1.25rem;
+            margin: 1.5rem 0;
+            font-size: 1.125rem;
+            line-height: 1.6;
+            transition: all 0.2s ease;
+        }
+        details.proof-details summary {
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            color: #b45309; /* burntOrange */
+            cursor: pointer;
+            outline: none;
+            user-select: none;
+            display: list-item;
+        }
+        details.proof-details summary:hover {
+            color: #92400e;
+        }
+        details.proof-details[open] {
+            border-color: #d6d3d1; /* stone-300 */
+            background-color: #fafaf9; /* stone-50 */
+        }
     </style>
 </head>
 <body class="antialiased selection:bg-amber-100">
@@ -343,14 +371,14 @@ Since developers face severe professional penalties for late delivery, they make
                     Shannon's rate-distortion theory is the exact mathematical framework created to describe this trade-off. It defines the minimum information rate (in bits) that a channel must transmit to reconstruct a continuous source with an average distortion no greater than $D$. By introducing this theory, we shift the analysis of organizational failure from a subjective moral critique ("lazy managers") to a hard physical boundary. The human evaluator is a physical channel; they cannot extract more information than their cognitive bandwidth and time constraints allow. The rate-distortion function mathematically shapes the limits of this cognitive compression, showing why evaluating complex mathematical models under timeline pressures is physically bound to fail and force heuristic substitution.
                 </p>
                 <p class="mb-6">
-                    Let the true mathematical and scientific rigor of the model be represented as a continuous $d$-dimensional random vector, $\mathbf{R} \in \mathbb{R}^d$. We assume the components of the rigor vector, $R_i$, are independent and identically distributed (i.i.d.) Gaussian random variables with zero mean and prior variance $\sigma_0^2$. Formally, $\mathbf{R} \sim \mathcal{N}(0, \sigma_0^2 \mathbf{I})$. From an information-theoretic standpoint, the Gaussian prior represents a conservative modeling choice: it maximizes the differential entropy for a given variance, representing the state of maximum prior uncertainty.
+                    Let the true mathematical and scientific rigor of the model be represented as a continuous $d$-dimensional random vector, $\mathbf{R} \in \mathbb{R}^d$. To isolate the audit channel's physical limits, we assume the evaluator has not yet observed any presentation signals (effectively setting $\mathbf{S}_P = \mathbf{0}$), which collapses the halo-shifted prior mean from Section II ($\boldsymbol{\mu}_0 = \mathbf{B}_{\text{halo}} \mathbf{S}_P$) to a zero-mean vector. We assume the components of the rigor vector, $R_i$, are independent and identically distributed (i.i.d.) Gaussian random variables with zero mean and variance $\sigma_r^2$. Formally, $\mathbf{R} \sim \mathcal{N}(\mathbf{0}, \sigma_r^2 \mathbf{I})$. From an information-theoretic standpoint, the Gaussian prior represents a conservative modeling choice: it maximizes the differential entropy for a given variance, representing the state of maximum prior uncertainty.
                 </p>
                 <p class="mb-6">
                     Why must we calculate the prior differential entropy $h(R_i)$ of this source to understand the evaluator's starting baseline? 
                     First, information is mathematically defined as the resolution of uncertainty; to measure how much uncertainty is cleared by an audit, we must first establish a quantitative measure of the initial "information deficit"—the absolute volume of missing information.
                     Second, and more importantly, in rate-distortion theory, the evaluator's residual uncertainty after observing the developer's signal $\hat{R}_i$ is defined by the conditional differential entropy $h(R_i \mid \hat{R}_i)$. By definition of mutual information, this residual uncertainty is calculated as $h(R_i \mid \hat{R}_i) = h(R_i) - I(R_i; \hat{R}_i)$. 
                     Without establishing the prior entropy $h(R_i)$ as a subtraction anchor, we cannot quantify the evaluator's posterior uncertainty or link it to the rate-distortion bounds. 
-                    Third, under Jaynes' Principle of Maximum Entropy, if we only constrain the scale of potential rigor via its variance $\sigma_0^2$, the Gaussian distribution is the unique, mathematically honest distribution that assumes no hidden structure or prior knowledge, maximizing this initial uncertainty.
+                    Third, under Jaynes' Principle of Maximum Entropy, if we only constrain the scale of potential rigor via its variance $\sigma_r^2$, the Gaussian distribution is the unique, mathematically honest distribution that assumes no hidden structure or prior knowledge, maximizing this initial uncertainty.
                 </p>
                 <p class="mb-6">
                     To establish this baseline, we compute the <strong>differential entropy</strong> $h(R_i)$ of each independent dimension. 
@@ -359,113 +387,124 @@ Since developers face severe professional penalties for late delivery, they make
                     However, continuous variables can take on an infinite, uncountable number of possible values. Specifying a continuous point with infinite precision would require an infinite number of bits. 
                     Differential entropy, defined by the continuous integral:
                     $$ h(R_i) = -\int_{-\infty}^{\infty} f(r) \log_2 f(r) \, dr $$
-                    where $f(r) = \frac{1}{\sqrt{2\pi\sigma_0^2}} \exp\left( -\frac{r^2}{2\sigma_0^2} \right)$ is the probability density function of $R_i \sim \mathcal{N}(0, \sigma_0^2)$, resolves this by measuring the <strong>logarithmic volume</strong> of the probability density's support. 
+                    where $f(r) = \frac{1}{\sqrt{2\pi\sigma_r^2}} \exp\left( -\frac{r^2}{2\sigma_r^2} \right)$ is the probability density function of $R_i \sim \mathcal{N}(0, \sigma_r^2)$, resolves this by measuring the <strong>logarithmic volume</strong> of the probability density's support. 
                     If we slice the continuous variable into discrete bins of width $\Delta r$, the discrete entropy of the quantized variable scales as $H(R_i^{\Delta r}) \approx h(R_i) - \log_2(\Delta r)$ as $\Delta r \to 0$. 
                     As the bin width shrinks to zero, the discrete entropy diverges to infinity, but the differential entropy $h(R_i)$ remains as the finite, shape-dependent residual. 
-                    Because it represents a relative measure of volume rather than an absolute count of bits, differential entropy can be negative (for instance, when the probability density is concentrated on a support volume of less than 1). It acts as a relative measure of uncertainty under continuous scaling.
+                    Because it represents a relative measure of volume rather than an absolute count of bits, differential entropy can be negative (for instance, when the probability density is concentrated on a support volume of less than 1). It acts as a relative measure of uncertainty under continuous scaling. For our Gaussian source, this differential entropy simplifies to:
+                    $$ h(R_i) = \frac{1}{2}\log_2(2\pi e\sigma_r^2) \quad \text{bits} $$
+                    This logarithmic relationship highlights that the evaluator's initial uncertainty scales with the variance of rigor. Each doubling of variance $\sigma_r^2$ increases the prior entropy by exactly $0.5$ bits, representing the absolute baseline of information that any audit must recover to establish validity.
                 </p>
-                <p class="mb-6">
-                    To derive the formula step-by-step, we first take the natural logarithm of the Gaussian density:
-                    $$ \ln f(r) = \ln \left( \frac{1}{\sqrt{2\pi\sigma_0^2}} \right) - \frac{r^2}{2\sigma_0^2} = -\frac{1}{2}\ln(2\pi\sigma_0^2) - \frac{r^2}{2\sigma_0^2} $$
-                    Converting to base-2 logarithm ($\log_2 f(r) = \log_2(e) \cdot \ln f(r)$):
-                    $$ \log_2 f(r) = -\frac{1}{2}\log_2(2\pi\sigma_0^2) - \frac{r^2}{2\sigma_0^2}\log_2 e $$
-                </p>
-                <p class="mb-6">
-                    Plugging this logarithm back into the integral definition of differential entropy:
-                    $$ h(R_i) = -\int_{-\infty}^{\infty} f(r) \left[ -\frac{1}{2}\log_2(2\pi\sigma_0^2) - \frac{r^2}{2\sigma_0^2}\log_2 e \right] \, dr $$
-                    $$ h(R_i) = \frac{1}{2}\log_2(2\pi\sigma_0^2) \int_{-\infty}^{\infty} f(r) \, dr + \frac{\log_2 e}{2\sigma_0^2} \int_{-\infty}^{\infty} r^2 f(r) \, dr $$
-                </p>
-                <p class="mb-6">
-                    We evaluate the two integrals using fundamental properties of probability densities:
-                    <ul class="list-disc pl-8 mb-6 space-y-2 text-base">
-                        <li>The integral of any probability density function over its support is exactly 1: $\int_{-\infty}^{\infty} f(r) \, dr = 1$.</li>
-                        <li>Since $R_i$ has zero mean, the second integral is the expectation $\mathbb{E}[R_i^2]$, which is by definition its variance: $\int_{-\infty}^{\infty} r^2 f(r) \, dr = \sigma_0^2$.</li>
-                    </ul>
-                </p>
-                <p class="mb-6">
-                    Substituting these values back into the expression:
-                    $$ h(R_i) = \frac{1}{2}\log_2(2\pi\sigma_0^2) \cdot (1) + \frac{\log_2 e}{2\sigma_0^2} \cdot (\sigma_0^2) = \frac{1}{2}\log_2(2\pi\sigma_0^2) + \frac{1}{2}\log_2 e $$
-                    Combining the logarithms yields the final expression for Gaussian differential entropy:
-                    $$ h(R_i) = \frac{1}{2}\log_2(2\pi e\sigma_0^2) \quad \text{bits} $$
-                    This logarithmic relationship highlights that the evaluator's initial uncertainty scales with the variance of the model's errors. Each doubling of variance $\sigma_0^2$ increases the prior entropy by exactly $0.5$ bits, representing the absolute baseline of information that any audit must recover to establish validity.
-                </p>
+
+                <details class="proof-details mb-6">
+                    <summary>Show Proof: Step-by-Step Derivation of Gaussian Differential Entropy</summary>
+                    <div class="mt-4 space-y-4">
+                        <p>
+                            To derive the formula step-by-step, we first take the natural logarithm of the Gaussian density:
+                            $$ \ln f(r) = \ln \left( \frac{1}{\sqrt{2\pi\sigma_r^2}} \right) - \frac{r^2}{2\sigma_r^2} = -\frac{1}{2}\ln(2\pi\sigma_r^2) - \frac{r^2}{2\sigma_r^2} $$
+                            Converting to base-2 logarithm ($\log_2 f(r) = \log_2(e) \cdot \ln f(r)$):
+                            $$ \log_2 f(r) = -\frac{1}{2}\log_2(2\pi\sigma_r^2) - \frac{r^2}{2\sigma_r^2}\log_2 e $$
+                        </p>
+                        <p>
+                            Plugging this logarithm back into the integral definition of differential entropy:
+                            $$ h(R_i) = -\int_{-\infty}^{\infty} f(r) \left[ -\frac{1}{2}\log_2(2\pi\sigma_r^2) - \frac{r^2}{2\sigma_r^2}\log_2 e \right] \, dr $$
+                            $$ h(R_i) = \frac{1}{2}\log_2(2\pi\sigma_r^2) \int_{-\infty}^{\infty} f(r) \, dr + \frac{\log_2 e}{2\sigma_r^2} \int_{-\infty}^{\infty} r^2 f(r) \, dr $$
+                        </p>
+                        <p>
+                            We evaluate the two integrals using fundamental properties of probability densities:
+                            <ul class="list-disc pl-8 space-y-2 text-base">
+                                <li>The integral of any probability density function over its support is exactly 1: $\int_{-\infty}^{\infty} f(r) \, dr = 1$.</li>
+                                <li>Since $R_i$ has zero mean, the second integral is the expectation $\mathbb{E}[R_i^2]$, which is by definition its variance: $\int_{-\infty}^{\infty} r^2 f(r) \, dr = \sigma_r^2$.</li>
+                            </ul>
+                        </p>
+                        <p>
+                            Substituting these values back into the expression:
+                            $$ h(R_i) = \frac{1}{2}\log_2(2\pi\sigma_r^2) \cdot (1) + \frac{\log_2 e}{2\sigma_r^2} \cdot (\sigma_r^2) = \frac{1}{2}\log_2(2\pi\sigma_r^2) + \frac{1}{2}\log_2 e $$
+                            Combining the logarithms yields the final expression:
+                            $$ h(R_i) = \frac{1}{2}\log_2(2\pi e\sigma_r^2) \quad \text{bits} $$
+                        </p>
+                    </div>
+                </details>
+
                 <p class="mb-6">
                     The evaluator cannot inspect the latent vector $\mathbf{R}$ directly. Instead, they observe signals and reconstruct an estimate, $\hat{\mathbf{R}}$. The quality of this reconstruction is measured by the average mean squared error (MSE) distortion per dimension, $D$:
                     $$ D = \frac{1}{d} \mathbb{E}[\|\mathbf{R} - \hat{\mathbf{R}}\|^2] = \frac{1}{d} \sum_{i=1}^d \mathbb{E}[(R_i - \hat{R}_i)^2] $$
-                    where $D \in (0, \sigma_0^2]$. If the evaluator makes no observation and simply estimates the prior mean ($\hat{\mathbf{R}} = 0$), they incur the maximum distortion $D = \sigma_0^2$. Our goal is to derive the minimum information rate (in bits per dimension) that the evaluator must extract from the model's documentation and code to reduce this distortion below $\sigma_0^2$.
+                    where $D \in (0, \sigma_r^2]$. If the evaluator makes no observation and simply estimates the prior mean ($\hat{\mathbf{R}} = \mathbf{0}$), they incur the maximum distortion $D = \sigma_r^2$. Our goal is to derive the minimum information rate (in bits per dimension) that the evaluator must extract from the model's documentation and code to reduce this distortion below $\sigma_r^2$.
                 </p>
                 <p class="mb-6">
                     Philosophically, when we seek the absolute limit of cognitive compression, we are not looking for a single concrete "optimal strategy" that we can point to and execute. In the real world, an evaluator can design infinitely many approximation strategies, getting closer and closer to an ideal threshold of efficiency without ever perfectly instantiating a "minimum" strategy. This is reminiscent of a Platonic Ideal: a perfect limit that can be asymptotically approached but never fully realized in a concrete form. 
                     Mathematically, this concept of an unattainable limit is captured by the <strong>infimum</strong>—the greatest lower bound. Unlike a minimum, which must belong to the set of viable strategies, the infimum represents the absolute theoretical boundary of what is possible. By using the infimum, we define the rate-distortion function $R_d(D)$ not by a specific, achievable distribution, but by the absolute physical frontier of mutual information $I(R_i; \hat{R}_i)$ over all conditional probability distributions $p(\hat{R}_i \mid R_i)$ satisfying the distortion constraint $\mathbb{E}[(R_i - \hat{R}_i)^2] \le D$:
                     $$ R_d(D) = \inf_{p(\hat{R}_i \mid R_i): \mathbb{E}[(R_i - \hat{R}_i)^2] \le D} I(R_i; \hat{R}_i) $$
-                </p>
-                <p class="mb-6">
-                    To solve this optimization, we expand the mutual information in terms of differential entropy:
-                    $$ I(R_i; \hat{R}_i) = h(R_i) - h(R_i \mid \hat{R}_i) $$
-                </p>
-                <p class="mb-6">
-                    To simplify the conditional entropy term $h(R_i \mid \hat{R}_i)$, we utilize the translation-invariance property of differential entropy. For any random variable $X$ and any variable $Y$ upon which we condition, subtracting a deterministic function of $Y$ from $X$ does not alter its entropy because translation by a constant does not change the shape or spread of its probability density function. 
-                </p>
-                <p class="mb-6">
-                    Specifically, for any fixed realization $Y = y$, the function value $f(y)$ is a constant scalar. By letting $z = x - f(y)$, the Jacobian of this transformation is $dz/dx = 1$, meaning $dx = dz$. The conditional differential entropy of $X$ given $Y=y$ is:
-                    $$ h(X \mid Y = y) = -\int_{\mathcal{X}} p_{X \mid Y}(x \mid y) \log_2 p_{X \mid Y}(x \mid y) \, dx $$
-                    Substituting $x = z + f(y)$ and $dx = dz$ yields:
-                    $$ h(X \mid Y = y) = -\int_{\mathcal{Z}} p_{X \mid Y}(z + f(y) \mid y) \log_2 p_{X \mid Y}(z + f(y) \mid y) \, dz $$
-                    Since $p_{X \mid Y}(z + f(y) \mid y) = p_{Z \mid Y}(z \mid y)$ where $Z = X - f(Y)$, this integral is precisely the entropy of the translated variable:
-                    $$ h(X \mid Y = y) = -\int_{\mathcal{Z}} p_{Z \mid Y}(z \mid y) \log_2 p_{Z \mid Y}(z \mid y) \, dz = h(X - f(y) \mid Y = y) $$
-                </p>
-                <p class="mb-6">
-                    Now, we take the expectation of both sides of this equality over the entire probability space $\mathcal{Y}$ of the conditioning variable $Y$. We multiply by the marginal probability density $p_Y(y)$ and integrate over all $y \in \mathcal{Y}$:
-                    $$ \int_{\mathcal{Y}} p_Y(y) h(X \mid Y = y) \, dy = \int_{\mathcal{Y}} p_Y(y) h(X - f(y) \mid Y = y) \, dy $$
-                    By the definition of conditional differential entropy as the expected value of conditional entropies across the realizations of the conditioning variable:
-                    $$ \mathbb{E}_Y [ h(X \mid Y = y) ] = \mathbb{E}_Y [ h(X - f(Y) \mid Y = y) ] $$
-                    $$ h(X \mid Y) = h(X - f(Y) \mid Y) $$
-                </p>
-                <p class="mb-6">
-                    In our context, the target source variable is $R_i$ and the conditioning variable is its estimate $\hat{R}_i$. Letting $f(\hat{R}_i) = \hat{R}_i$ be the identity function, we rewrite the conditional entropy of rigor given its estimate as the conditional entropy of the estimation error:
-                    $$ h(R_i \mid \hat{R}_i) = h(R_i - \hat{R}_i \mid \hat{R}_i) $$
-                </p>
-                <p class="mb-6">
-                    Substituting our Gaussian prior entropy $h(R_i) = \frac{1}{2}\log_2(2\pi e \sigma_0^2)$ and this translation identity back into the mutual information equation gives:
-                    $$ I(R_i; \hat{R}_i) = \frac{1}{2}\log_2(2\pi e \sigma_0^2) - h(R_i - \hat{R}_i \mid \hat{R}_i) $$
-                </p>
-                <p class="mb-6">
-                    We can bound the conditional entropy term $h(R_i - \hat{R}_i \mid \hat{R}_i)$. Because conditioning cannot increase entropy, and because the variance of the estimation error $(R_i - \hat{R}_i)$ is constrained by $D$, we write:
-                    $$ h(R_i - \hat{R}_i \mid \hat{R}_i) \le h(R_i - \hat{R}_i) \le \frac{1}{2} \log_2\left( 2\pi e \mathbb{E}[(R_i - \hat{R}_i)^2] \right) \le \frac{1}{2} \log_2(2\pi e D) $$
-                    where the second inequality follows from the fact that the Gaussian distribution maximizes entropy for a given variance.
-                </p>
-                <p class="mb-6">
-                    Substituting this upper bound back into our mutual information equation yields the lower bound:
-                    $$ I(R_i; \hat{R}_i) \ge \frac{1}{2}\log_2(2\pi e \sigma_0^2) - \frac{1}{2}\log_2(2\pi e D) = \frac{1}{2} \log_2\left(\frac{\sigma_0^2}{D}\right) $$
-                    This lower bound is tight and is achieved when the estimation error $(R_i - \hat{R}_i)$ is a zero-mean Gaussian variable with variance $D$, independent of the estimate $\hat{R}_i$. Thus, the rate-distortion function per dimension for a Gaussian source is:
-                    $$ R_d(D) = \frac{1}{2} \log_2\left(\frac{\sigma_0^2}{D}\right) \quad \text{bits per dimension} $$
-                </p>
-                <p class="mb-6">
+                    For our Gaussian source under MSE distortion, this rate-distortion function per dimension simplifies to:
+                    $$ R_d(D) = \frac{1}{2} \log_2\left(\frac{\sigma_r^2}{D}\right) \quad \text{bits per dimension} $$
                     For a $d$-dimensional vector of independent components, the total information rate $R_{\text{total}}(D)$ (in bits) required to achieve an average distortion $D$ across all dimensions is:
-                    $$ R_{\text{total}}(D) = d \cdot R_d(D) = \frac{d}{2} \log_2\left(\frac{\sigma_0^2}{D}\right) \quad \text{bits} $$
+                    $$ R_{\text{total}}(D) = d \cdot R_d(D) = \frac{d}{2} \log_2\left(\frac{\sigma_r^2}{D}\right) \quad \text{bits} $$
                 </p>
+
+                <details class="proof-details mb-6">
+                    <summary>Show Proof: Step-by-Step Optimization of Gaussian Rate-Distortion Bound</summary>
+                    <div class="mt-4 space-y-4">
+                        <p>
+                            To solve this optimization, we expand the mutual information in terms of differential entropy:
+                            $$ I(R_i; \hat{R}_i) = h(R_i) - h(R_i \mid \hat{R}_i) $$
+                        </p>
+                        <p>
+                            To simplify the conditional entropy term $h(R_i \mid \hat{R}_i)$, we utilize the translation-invariance property of differential entropy. For any random variable $X$ and any variable $Y$ upon which we condition, subtracting a deterministic function of $Y$ from $X$ does not alter its entropy because translation by a constant does not change the shape or spread of its probability density function. 
+                        </p>
+                        <p>
+                            Specifically, for any fixed realization $Y = y$, the function value $f(y)$ is a constant scalar. By letting $z = x - f(y)$, the Jacobian of this transformation is $dz/dx = 1$, meaning $dx = dz$. The conditional differential entropy of $X$ given $Y=y$ is:
+                            $$ h(X \mid Y = y) = -\int_{\mathcal{X}} p_{X \mid Y}(x \mid y) \log_2 p_{X \mid Y}(x \mid y) \, dx $$
+                            Substituting $x = z + f(y)$ and $dx = dz$ yields:
+                            $$ h(X \mid Y = y) = -\int_{\mathcal{Z}} p_{X \mid Y}(z + f(y) \mid y) \log_2 p_{X \mid Y}(z + f(y) \mid y) \, dz $$
+                            Since $p_{X \mid Y}(z + f(y) \mid y) = p_{Z \mid Y}(z \mid y)$ where $Z = X - f(Y)$, this integral is precisely the entropy of the translated variable:
+                            $$ h(X \mid Y = y) = -\int_{\mathcal{Z}} p_{Z \mid Y}(z \mid y) \log_2 p_{Z \mid Y}(z \mid y) \, dz = h(X - f(y) \mid Y = y) $$
+                        </p>
+                        <p>
+                            Now, we take the expectation of both sides of this equality over the entire probability space $\mathcal{Y}$ of the conditioning variable $Y$. We multiply by the marginal probability density $p_Y(y)$ and integrate over all $y \in \mathcal{Y}$:
+                            $$ \int_{\mathcal{Y}} p_Y(y) h(X \mid Y = y) \, dy = \int_{\mathcal{Y}} p_Y(y) h(X - f(y) \mid Y = y) \, dy $$
+                            By the definition of conditional differential entropy as the expected value of conditional entropies across the realizations of the conditioning variable:
+                            $$ \mathbb{E}_Y [ h(X \mid Y = y) ] = \mathbb{E}_Y [ h(X - f(Y) \mid Y = y) ] $$
+                            $$ h(X \mid Y) = h(X - f(Y) \mid Y) $$
+                        </p>
+                        <p>
+                            In our context, the target source variable is $R_i$ and the conditioning variable is its estimate $\hat{R}_i$. Letting $f(\hat{R}_i) = \hat{R}_i$ be the identity function, we rewrite the conditional entropy of rigor given its estimate as the conditional entropy of the estimation error:
+                            $$ h(R_i \mid \hat{R}_i) = h(R_i - \hat{R}_i \mid \hat{R}_i) $$
+                        </p>
+                        <p>
+                            Substituting our Gaussian prior entropy $h(R_i) = \frac{1}{2}\log_2(2\pi e \sigma_r^2)$ and this translation identity back into the mutual information equation gives:
+                            $$ I(R_i; \hat{R}_i) = \frac{1}{2}\log_2(2\pi e \sigma_r^2) - h(R_i - \hat{R}_i \mid \hat{R}_i) $$
+                        </p>
+                        <p>
+                            We can bound the conditional entropy term $h(R_i - \hat{R}_i \mid \hat{R}_i)$. Because conditioning cannot increase entropy, and because the variance of the estimation error $(R_i - \hat{R}_i)$ is constrained by $D$, we write:
+                            $$ h(R_i - \hat{R}_i \mid \hat{R}_i) \le h(R_i - \hat{R}_i) \le \frac{1}{2} \log_2\left( 2\pi e \mathbb{E}[(R_i - \hat{R}_i)^2] \right) \le \frac{1}{2} \log_2(2\pi e D) $$
+                            where the second inequality follows from the fact that the Gaussian distribution maximizes entropy for a given variance.
+                        </p>
+                        <p>
+                            Substituting this upper bound back into our mutual information equation yields the lower bound:
+                            $$ I(R_i; \hat{R}_i) \ge \frac{1}{2}\log_2(2\pi e \sigma_r^2) - \frac{1}{2}\log_2(2\pi e D) = \frac{1}{2} \log_2\left(\frac{\sigma_r^2}{D}\right) $$
+                            This lower bound is tight and is achieved when the estimation error $(R_i - \hat{R}_i)$ is a zero-mean Gaussian variable with variance $D$, independent of the estimate $\hat{R}_i$. Thus, the rate-distortion function per dimension for a Gaussian source is:
+                            $$ R_d(D) = \frac{1}{2} \log_2\left(\frac{\sigma_r^2}{D}\right) \quad \text{bits per dimension} $$
+                        </p>
+                    </div>
+                </details>
+
                 <p class="mb-6">
-                    Now, we model the evaluator as a cognitive channel. The evaluator has a maximum information-processing capacity $C_{\text{eval}}$ (bits/second). If they spend a time duration $\tau_R$ (seconds) auditing the system's mathematical rigor, the total information transmitted through their channel cannot exceed $C_{\text{eval}} \cdot \tau_R$. By Shannon's source-channel coding theorem, the required transmission rate for distortion $D$ cannot exceed this capacity:
+                    Now, we model the evaluator as a cognitive channel. The evaluator has a maximum information-processing capacity $C_{\text{eval}}$ (bits/second). If they spend a time duration $\tau_R$ (seconds) auditing the system's mathematical rigor, the total information transmitted through their channel cannot exceed $C_{\text{eval}} \cdot \tau_R$. By Shannon's lossy source–channel separation / information-transmission theorem, the required transmission rate for distortion $D$ cannot exceed this capacity:
                     $$ R_{\text{total}}(D) \le C_{\text{eval}} \cdot \tau_R $$
-                </p>
-                <p class="mb-6">
-                    Substituting our expression for $R_{\text{total}}(D)$ into this inequality yields:
-                    $$ \frac{d}{2} \log_2\left(\frac{\sigma_0^2}{D}\right) \le C_{\text{eval}} \cdot \tau_R $$
                 </p>
                 <p class="mb-6">
                     To isolate the average distortion $D$ and understand how it scales with audit time, we solve this inequality step-by-step:
                     <ol class="list-decimal pl-8 mb-6 space-y-2 text-base">
                         <li>Divide both sides of the inequality by $\frac{d}{2}$:
-                            $$ \log_2\left(\frac{\sigma_0^2}{D}\right) \le \frac{2 C_{\text{eval}} \cdot \tau_R}{d} $$
+                            $$ \log_2\left(\frac{\sigma_r^2}{D}\right) \le \frac{2 C_{\text{eval}} \cdot \tau_R}{d} $$
                         </li>
                         <li>Exponentiate both sides with base 2 (since $2^x$ is a monotonically increasing function, this preserves the direction of the inequality):
-                            $$ \frac{\sigma_0^2}{D} \le 2^{\frac{2 C_{\text{eval}} \cdot \tau_R}{d}} $$
+                            $$ \frac{\sigma_r^2}{D} \le 2^{\frac{2 C_{\text{eval}} \cdot \tau_R}{d}} $$
                         </li>
                         <li>Take the reciprocal of both sides (reversing the inequality sign):
-                            $$ \frac{D}{\sigma_0^2} \ge 2^{-\frac{2 C_{\text{eval}} \cdot \tau_R}{d}} $$
+                            $$ \frac{D}{\sigma_r^2} \ge 2^{-\frac{2 C_{\text{eval}} \cdot \tau_R}{d}} $$
                         </li>
-                        <li>Multiply by the prior variance $\sigma_0^2$ to solve for the lower bound of distortion:
-                            $$ D(\tau_R) \ge \sigma_0^2 \cdot 2^{-\frac{2 C_{\text{eval}} \cdot \tau_R}{d}} $$
+                        <li>Multiply by the prior variance $\sigma_r^2$ to solve for the lower bound of distortion:
+                            $$ D(\tau_R) \ge \sigma_r^2 \cdot 2^{-\frac{2 C_{\text{eval}} \cdot \tau_R}{d}} $$
                         </li>
                     </ol>
                 </p>
@@ -474,16 +513,16 @@ Since developers face severe professional penalties for late delivery, they make
                 </p>
                 <p class="mb-6">
                     Under organizational pressure, delivery cycles are compressed. When the evaluator is forced to make a decision under extreme time pressure, the time allocated to audit rigor approaches zero: $\tau_R \to \delta_t \approx 0$. Taking the limit of our lower bound:
-                    $$ \lim_{\tau_R \to 0} D(\tau_R) \ge \sigma_0^2 \cdot 2^0 = \sigma_0^2 $$
-                    In this limit, the evaluator's estimation distortion is forced to its absolute maximum: the prior variance $\sigma_0^2$. The evaluator has processed zero bits of information about the model's actual mathematical core, rendering them completely blind to its validity.
+                    $$ \lim_{\tau_R \to 0} D(\tau_R) \ge \sigma_r^2 \cdot 2^0 = \sigma_r^2 $$
+                    In this limit, the evaluator's estimation distortion is forced to its absolute maximum: the prior variance $\sigma_r^2$. The evaluator has processed zero bits of information about the model's actual mathematical core, rendering them completely blind to its validity.
                 </p>
 
                 <h3 class="text-lg font-semibold text-stone-800 mt-8 mb-4 ui-text">3.2 Heuristic Substitution: The Epistemic Scrutiny Parameter</h3>
                 <p class="mb-6">
-                    To bypass this high estimation distortion, the human brain relies on System 1 dual-process heuristics (Stanovich & West, 2000; Kahneman, 2011). Under time compression, the evaluator's cognitive bypass replaces the complex, high-distortion question (<em>"Is the underlying model mathematically sound?"</em>) with a low-distortion, easily observable proxy (<em>"Does the conversational interface look professional?"</em>). This is a classic case of **attribute substitution** (Kahneman & Frederick, 2002).
+                    To bypass this high estimation distortion, the human brain relies on System 1 dual-process heuristics (Stanovich & West, 2000; Kahneman, 2011). Under time compression, the evaluator's cognitive bypass replaces the complex, high-distortion question (<em>"Is the underlying model mathematically sound?"</em>) with a low-distortion, easily observable proxy (<em>"Does the conversational interface look professional?"</em>). This is a classic case of <strong>attribute substitution</strong> (Kahneman & Frederick, 2002).
                 </p>
                 <p class="mb-6">
-                    We model this behavioral bypass by defining the **Epistemic Scrutiny Parameter ($\lambda$)** as the relative signal precision weight derived from the audit time:
+                    We model this behavioral bypass by defining the <strong>Epistemic Scrutiny Parameter ($\lambda$)</strong> as the relative signal precision weight derived from the audit time:
                     $$ \lambda(\tau_R) = \frac{\sigma_0^2}{\sigma_0^2 + \sigma_R^2(\tau_R)} $$
                     where the noise variance of the audited rigor signal is inversely proportional to time spent: $\sigma_R^2(\tau_R) \propto 1/\tau_R$. Across the population of evaluators, this scrutiny parameter is distributed according to cognitive budgets and individual diligence:
                     $$ \lambda \sim \text{Beta}(a, \; b), \quad \text{where } \lambda \in [0, 1] $$
@@ -493,16 +532,16 @@ Since developers face severe professional penalties for late delivery, they make
                     $$ \hat{R} = \lambda \cdot f(\mathbf{S}_R) + (1 - \lambda) \cdot h(\mathbf{S}_P) $$
                 </p>
                 <p class="mb-6">
-                    In a rigorous peer-reviewed environment, hyperparameters are skewed to the right ($a > 1 > b$), concentrating the probability density near $\lambda \approx 1$.
+                    In a rigorous peer-reviewed environment, hyperparameters are set such that $a > 1 > b$, concentrating the probability density near $\lambda \approx 1$.
                 </p>
                 <p class="mb-6">
-                    However, behind the closed doors of a hurried enterprise, timeline compression causes the audit channel noise to diverge ($\sigma_R^2 \to \infty$), forcing the scrutiny parameter to collapse. The hyperparameters shift to a left-skewed regime ($a < 1 < b$), concentrating the probability density near the lower boundary:
+                    However, behind the closed doors of a hurried enterprise, timeline compression causes the audit channel noise to diverge ($\sigma_R^2 \to \infty$), forcing the scrutiny parameter to collapse. The hyperparameters shift to a regime where $a < 1 < b$, concentrating the probability density near the lower boundary ($\lambda \approx 0$):
                     $$ \lim_{\tau_R \to 0} \lambda = 0 \quad \implies \quad p(\lambda) \to \text{Beta}(a < 1 < b) $$
                 </p>
                 <p class="mb-6">
                     In this state of cognitive abdication, the expectation of perceived rigor collapses entirely into the aesthetic projection:
                     $$ \mathbb{E}[\hat{R}] \approx \mathbb{E}[h(\mathbf{S}_P)] $$
-                    This is the mathematical representation of the **Semiotic Trap**. When time pressure is high, perceived rigor ($\hat{R}$) ceases to represent mathematical validity and becomes a pure projection of visual and conversational polish.
+                    This is the mathematical representation of the <strong>Semiotic Trap</strong>. When time pressure is high, perceived rigor ($\hat{R}$) ceases to represent mathematical validity and becomes a pure projection of visual and conversational polish.
                 </p>
 
                 <h3 class="text-lg font-semibold text-stone-800 mt-8 mb-4 ui-text">3.3 The Temporal Obsolescence Penalty: The Impatience Decay</h3>
@@ -514,14 +553,15 @@ Since developers face severe professional penalties for late delivery, they make
                 </p>
                 <p class="mb-6">
                     Instead of interpreting this delay as a sign of rigor, the executive team updates their prior belief toward organizational obsolescence. We model this as a <strong>Temporal Discount Function ($d(T)$)</strong>:
-                    $$ d(T) = \exp\left( -\gamma \max(0, \; T - T_{\text{benchmark}}) \right) $$
+                    $$ d(T) = \epsilon_d + (1 - \epsilon_d) \exp\left( -\gamma \max(0, \; T - T_{\text{benchmark}}) \right) $$
                 </p>
                 <p class="mb-6">
-                    Where the parameter $\gamma > 0$ represents the <strong>Organizational Impatience Coefficient</strong>, which dictates how aggressively leadership penalizes delays. The term $\max(0, T - T_{\text{benchmark}})$ represents the <strong>timeline overrun</strong>. If a project is delivered within the commoditized horizon ($T \le T_{\text{benchmark}}$), there is no penalty ($d(T) = 1$). If it overruns ($T > T_{\text{benchmark}}$), the perceived utility of the project, $\hat{U}_{\text{discounted}}$, is discounted exponentially:
+                    Where the parameter $\gamma > 0$ represents the <strong>Organizational Impatience Coefficient</strong>, which dictates how aggressively leadership penalizes delays. The term $\max(0, T - T_{\text{benchmark}})$ represents the <strong>timeline overrun</strong>, and $\epsilon_d \in [0, 1)$ represents the vestigial value floor. If a project is delivered within the commoditized horizon ($T \le T_{\text{benchmark}}$), there is no penalty ($d(T) = 1$). If it overruns ($T > T_{\text{benchmark}}$), the perceived utility of the project, $\hat{U}_{\text{discounted}}$, is discounted:
                     $$ \hat{U}_{\text{discounted}} = \hat{U} \cdot d(T) $$
+                </p>
                 <p class="mb-6">
-                    If a team spends the time required to construct a rigorous model, such that $T \gg T_{\text{benchmark}}$, the temporal discount factor decays asymptotically toward an absolute floor, reflecting that while the project is heavily penalized, it retains a tiny vestigial value in the organization's portfolio:
-                    $$ \lim_{T \gg T_{\text{benchmark}}} d(T) = \epsilon_d \ge 0 \quad \implies \quad \hat{U}_{\text{discounted}} \approx \hat{U} \cdot \epsilon_d $$
+                    If a team spends the time required to construct a rigorous model, such that $T \gg T_{\text{benchmark}}$, the temporal discount factor decays asymptotically toward the absolute floor $\epsilon_d$, reflecting that while the project is heavily penalized, it retains a tiny vestigial value in the organization's portfolio. (For the game-theoretic developer models in Section IV, we assume the limit case $\epsilon_d = 0$ for simplicity). The asymptotic limit is:
+                    $$ \lim_{T \to \infty} d(T) = \epsilon_d \quad \implies \quad \hat{U}_{\text{discounted}} \approx \hat{U} \cdot \epsilon_d $$
                     This reveals a devastating paradox in modern enterprise decision-making: <strong>taking the necessary time to ensure mathematical correctness ($\mathbf{R}$) asymptotically discounts the project's perceived value toward a negligible floor before it is ever deployed.</strong> The system structurally selects for speed and flash, actively punishing the contemplative time required for scientific truth.
                 </p>
             </section>
