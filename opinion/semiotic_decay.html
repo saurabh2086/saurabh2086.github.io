@@ -274,13 +274,13 @@
                 <h3 class="text-lg font-semibold text-stone-800 mt-8 mb-4 ui-text">2.3 The Signal Channel: From Latent Qualities to Observable Signals</h3>
                 <p class="mb-6">
                     Because the evaluator cannot directly peer into the codebase or the developer's cognitive process, they must rely on the observable signals emitted by the application through the noise of the organizational communication channel. Borrowing the concepts of affordances (Gibson, 1979; Norman, 1988), the presentation layer acts as a visual signpost, communicating latent competence. We define the observed signal vectors $\mathbf{S}_R$ and $\mathbf{S}_P$ as:
-                    $$ \mathbf{S}_R = \mathbf{R} + \boldsymbol{\epsilon}_R \quad \text{where } \boldsymbol{\epsilon}_R \sim \mathcal{N}(0, \sigma_R^2 \mathbf{I}) $$
+                    $$ \mathbf{S}_R = \mathbf{R} + \boldsymbol{\epsilon}_R \quad \text{where } \boldsymbol{\epsilon}_R \sim \mathcal{N}(0, \sigma_A^2 \mathbf{I}) $$
                     $$ \mathbf{S}_P = \mathbf{P} + \boldsymbol{\epsilon}_P \quad \text{where } \boldsymbol{\epsilon}_P \sim \mathcal{N}(0, \sigma_P^2 \mathbf{I}) $$
                 </p>
                 <p class="mb-6">
                     Where:
                     <ul class="list-disc pl-8 mb-6 space-y-2 text-base">
-                        <li><strong>$\mathbf{S}_R$ (Signal of Rigor):</strong> The visible traces of mathematical validation—such as detailed methodology documentation, code repositories, error rate distributions, and model audits. The audit noise variance $\sigma_R^2$ is extremely high due to the high cognitive cost of auditing logic.</li>
+                        <li><strong>$\mathbf{S}_R$ (Signal of Rigor):</strong> The visible traces of mathematical validation—such as detailed methodology documentation, code repositories, error rate distributions, and model audits. The audit-channel noise variance $\sigma_A^2$ is extremely high due to the high cognitive cost of auditing logic.</li>
                         <li><strong>$\mathbf{S}_P$ (Signal of Flash):</strong> The immediate visual and conversational feedback observed during a live demo or a pitch slide deck. The presentation noise variance $\sigma_P^2$ is very low because visual form is directly and immediately consumable.</li>
                     </ul>
                 </p>
@@ -300,22 +300,22 @@
                 </p>
                 <p class="mb-6">
                     The evaluator then spends time auditing the system's math, yielding the audited rigor signal $\mathbf{S}_R$. The observation model (likelihood) is:
-                    $$ \mathbf{S}_R \mid \mathbf{R} \sim \mathcal{N}(\mathbf{R}, \; \boldsymbol{\Sigma}_{\text{obs}}) \quad \text{where } \boldsymbol{\Sigma}_{\text{obs}} = \sigma_R^2 \mathbf{I} $$
-                    where $\sigma_R^2$ is the noise variance of the audit channel. Since both the prior and likelihood are Gaussian, the posterior distribution $p(\mathbf{R} \mid \mathbf{S}_R, \mathbf{S}_P) \sim \mathcal{N}(\boldsymbol{\mu}_{\text{post}}, \boldsymbol{\Sigma}_{\text{post}})$ is also Gaussian, and its parameters are determined by the standard conjugate update equations:
-                    $$ \boldsymbol{\Sigma}_{\text{post}}^{-1} = \boldsymbol{\Sigma}_0^{-1} + \boldsymbol{\Sigma}_{\text{obs}}^{-1} = \left( \frac{1}{\sigma_0^2} + \frac{1}{\sigma_R^2} \right) \mathbf{I} \quad \implies \quad \boldsymbol{\Sigma}_{\text{post}} = \frac{\sigma_0^2 \sigma_R^2}{\sigma_0^2 + \sigma_R^2} \mathbf{I} $$
+                    $$ \mathbf{S}_R \mid \mathbf{R} \sim \mathcal{N}(\mathbf{R}, \; \boldsymbol{\Sigma}_{\text{obs}}) \quad \text{where } \boldsymbol{\Sigma}_{\text{obs}} = \sigma_A^2 \mathbf{I} $$
+                    where $\sigma_A^2$ is the noise variance of the audit channel. Since both the prior and likelihood are Gaussian, the posterior distribution $p(\mathbf{R} \mid \mathbf{S}_R, \mathbf{S}_P) \sim \mathcal{N}(\boldsymbol{\mu}_{\text{post}}, \boldsymbol{\Sigma}_{\text{post}})$ is also Gaussian, and its parameters are determined by the standard conjugate update equations:
+                    $$ \boldsymbol{\Sigma}_{\text{post}}^{-1} = \boldsymbol{\Sigma}_0^{-1} + \boldsymbol{\Sigma}_{\text{obs}}^{-1} = \left( \frac{1}{\sigma_0^2} + \frac{1}{\sigma_A^2} \right) \mathbf{I} \quad \implies \quad \boldsymbol{\Sigma}_{\text{post}} = \frac{\sigma_0^2 \sigma_A^2}{\sigma_0^2 + \sigma_A^2} \mathbf{I} $$
                     $$ \boldsymbol{\mu}_{\text{post}} = \boldsymbol{\Sigma}_{\text{post}} \left( \boldsymbol{\Sigma}_0^{-1} \boldsymbol{\mu}_0 + \boldsymbol{\Sigma}_{\text{obs}}^{-1} \mathbf{S}_R \right) $$
                 </p>
                 <p class="mb-6">
                     Substituting our expressions for $\boldsymbol{\mu}_0$, $\boldsymbol{\Sigma}_0$, and $\boldsymbol{\Sigma}_{\text{obs}}$ into the posterior mean:
-                    $$ \boldsymbol{\mu}_{\text{post}} = \left( \frac{\sigma_0^2 \sigma_R^2}{\sigma_0^2 + \sigma_R^2} \mathbf{I} \right) \left( \frac{1}{\sigma_0^2} \mathbf{I} (\mathbf{B}_{\text{halo}} \mathbf{S}_P) + \frac{1}{\sigma_R^2} \mathbf{I} \mathbf{S}_R \right) $$
+                    $$ \boldsymbol{\mu}_{\text{post}} = \left( \frac{\sigma_0^2 \sigma_A^2}{\sigma_0^2 + \sigma_A^2} \mathbf{I} \right) \left( \frac{1}{\sigma_0^2} \mathbf{I} (\mathbf{B}_{\text{halo}} \mathbf{S}_P) + \frac{1}{\sigma_A^2} \mathbf{I} \mathbf{S}_R \right) $$
                     Distributing the covariance term yields:
-                    $$ \boldsymbol{\mu}_{\text{post}} = \left( \frac{\sigma_R^2}{\sigma_0^2 + \sigma_R^2} \right) \mathbf{B}_{\text{halo}} \mathbf{S}_P + \left( \frac{\sigma_0^2}{\sigma_0^2 + \sigma_R^2} \right) \mathbf{S}_R $$
+                    $$ \boldsymbol{\mu}_{\text{post}} = \left( \frac{\sigma_A^2}{\sigma_0^2 + \sigma_A^2} \right) \mathbf{B}_{\text{halo}} \mathbf{S}_P + \left( \frac{\sigma_0^2}{\sigma_0^2 + \sigma_A^2} \right) \mathbf{S}_R $$
                 </p>
                 <p class="mb-6">
                     We now define the <strong>Epistemic Scrutiny Parameter ($\lambda$)</strong> as the relative precision weight of the audited signal:
-                    $$ \lambda = \frac{\sigma_0^2}{\sigma_0^2 + \sigma_R^2} $$
+                    $$ \lambda = \frac{\sigma_0^2}{\sigma_0^2 + \sigma_A^2} $$
                     It follows directly that the remaining weight is:
-                    $$ 1 - \lambda = \frac{\sigma_R^2}{\sigma_0^2 + \sigma_R^2} $$
+                    $$ 1 - \lambda = \frac{\sigma_A^2}{\sigma_0^2 + \sigma_A^2} $$
                     Substituting these weights back into the posterior expectation $\hat{R} = \mathbb{E}[\mathbf{R} \mid \mathbf{S}_R, \mathbf{S}_P] = \boldsymbol{\mu}_{\text{post}}$, we obtain the final weighted combination:
                     $$ \hat{R} = \lambda \mathbf{S}_R + (1 - \lambda) \mathbf{B}_{\text{halo}} \mathbf{S}_P $$
                 </p>
@@ -324,7 +324,7 @@
                     $$ \frac{\partial \hat{R}}{\partial \mathbf{S}_P} = (1 - \lambda) \mathbf{B}_{\text{halo}} $$
                 </p>
                 <p class="mb-6">
-                    Since the prior cross-loading coefficients in $\mathbf{B}_{\text{halo}}$ are positive, a highly polished presentation systematically inflates the evaluator's estimate of rigor. If the evaluator is constrained by time or cognitive energy, the noise in the audit channel diverges ($\sigma_R^2 \to \infty$), causing the scrutiny parameter to collapse to zero ($\lambda \to 0$). Under this cognitive bypass, the evaluator completely ignores the mathematical signal and estimates rigor purely from the visual wrapper: $\lim_{\lambda \to 0} \hat{R} = \mathbf{B}_{\text{halo}} \mathbf{S}_P$.
+                    Since the prior cross-loading coefficients in $\mathbf{B}_{\text{halo}}$ are positive, a highly polished presentation systematically inflates the evaluator's estimate of rigor. If the evaluator is constrained by time or cognitive energy, the noise in the audit channel diverges ($\sigma_A^2 \to \infty$), causing the scrutiny parameter to collapse to zero ($\lambda \to 0$). Under this cognitive bypass, the evaluator completely ignores the mathematical signal and estimates rigor purely from the visual wrapper: $\lim_{\lambda \to 0} \hat{R} = \mathbf{B}_{\text{halo}} \mathbf{S}_P$.
                 </p>
                 <p class="mb-6">
                     Once these estimates are formed, the evaluator synthesizes the application's <strong>Perceived Utility ($\hat{U}$)</strong> as a weighted combination of these perceptions:
@@ -562,8 +562,8 @@ Since developers face severe professional penalties for late delivery, they make
                 </p>
                 <p class="mb-6">
                     We model this behavioral bypass by defining the <strong>Epistemic Scrutiny Parameter ($\lambda$)</strong> as the relative signal precision weight derived from the audit time:
-                    $$ \lambda(\tau_R) = \frac{\sigma_r^2}{\sigma_r^2 + \sigma_R^2(\tau_R)} $$
-                    where the noise variance of the audited rigor signal is inversely proportional to time spent: $\sigma_R^2(\tau_R) \propto 1/\tau_R$, where $\sigma_r^2$ is the physical rigor variance from Section 3.1. Across the population of evaluators, this scrutiny parameter is distributed according to cognitive budgets and individual diligence:
+                    $$ \lambda(\tau_R) = \frac{\sigma_r^2}{\sigma_r^2 + \sigma_A^2(\tau_R)} $$
+                    where the noise variance of the audited rigor signal is inversely proportional to time spent: $\sigma_A^2(\tau_R) \propto 1/\tau_R$, where $\sigma_r^2$ is the physical rigor variance from Section 3.1. Variation in $\tau_R$ and $C_{\text{eval}}$ across evaluators induces the Beta distribution on $\lambda$:
                     $$ \lambda \sim \text{Beta}(a, \; b), \quad \text{where } \lambda \in [0, 1] $$
                 </p>
                 <p class="mb-6">
@@ -574,7 +574,7 @@ Since developers face severe professional penalties for late delivery, they make
                     In a rigorous peer-reviewed environment, hyperparameters are set such that $a > 1 > b$, concentrating the probability density near $\lambda \approx 1$.
                 </p>
                 <p class="mb-6">
-                    However, behind the closed doors of a hurried enterprise, timeline compression causes the audit channel noise to diverge ($\sigma_R^2 \to \infty$), forcing the scrutiny parameter to collapse. The hyperparameters shift to a regime where $a < 1 < b$, concentrating the probability density near the lower boundary ($\lambda \approx 0$):
+                    However, behind the closed doors of a hurried enterprise, timeline compression causes the audit channel noise to diverge ($\sigma_A^2 \to \infty$), forcing the scrutiny parameter to collapse. The hyperparameters shift to a regime where $a < 1 < b$, concentrating the probability density near the lower boundary ($\lambda \approx 0$):
                     $$ \lim_{\tau_R \to 0} \lambda = 0 \quad \implies \quad p(\lambda) \to \text{Beta}(a < 1 < b) $$
                 </p>
                 <p class="mb-6">
