@@ -618,30 +618,31 @@ Since developers face severe professional penalties for late delivery, they make
                     To understand why analytical decay propagates through an organization, we must analyze the developer's strategy using the economics of asymmetric information, specifically the frameworks of <strong>Spence's signaling theory (1973)</strong> and <strong>Akerlof's lemons market (1970)</strong>. In any corporate enterprise, the true rigor of an analytical model is a latent quality, unobservable to executive leadership without costly and slow technical auditing. The developer must therefore emit observable signals of competence. Let the visual presentation and conversational fluency of the interface represent the presentation signal, $\mathbf{S}_P$, and the documented mathematical validation represent the rigor signal, $\mathbf{S}_R$.
                 </p>
                 <p class="mb-6">
-                    In the Pre-Generative AI era, visual presentation polish was a separating signal. To model this formally, let $K_P \ge 0$ denote the developer's presentational effort (or level of visual polish), and let $C_P(K_P \mid \mathbf{R})$ represent the cost function for achieving that level of polish, conditional on the developer's true analytical rigor vector $\mathbf{R}$. We denote a high-rigor developer as having vector $\mathbf{R}_{\text{high}}$ and a low-rigor developer as having vector $\mathbf{R}_{\text{low}}$.
-                </p>
-                <p class="mb-6">
-                    Constructing custom interfaces, designing stable data visualizations, and formatting clean dashboards required significant engineering capital, deep coding skills, and weeks of manual labor. This presentation cost satisfied the <strong>Spence single-crossing condition</strong>. Philosophically, a high-rigor developer ($\mathbf{R}_{\text{high}}$)—who has built a clean, modular database schema and robust API endpoints—can expose this backend into a clean dashboard with low incremental effort. Conversely, a low-rigor developer ($\mathbf{R}_{\text{low}}$)—whose backend is a fragile, copy-pasted script—must expend massive cognitive energy to write custom hacks to mask backend instability, manually format noise, and patch interface breakage. Thus, the marginal cost of presentational polish was strictly lower for high-rigor developers:
+                    In the Pre-Generative AI era, visual presentation polish was a separating signal. To model this formally, let $K_P \ge 0$ denote the developer's presentational effort (or level of visual polish), and let $C_P(K_P \mid \mathbf{R})$ represent the cost function for achieving that level of polish, conditional on the developer's true analytical rigor vector $\mathbf{R}$. We denote a high-rigor developer as having vector $\mathbf{R}_{\text{high}}$ and a low-rigor developer as having vector $\mathbf{R}_{\text{low}}$. 
+                    Specifically, the partial derivative $\frac{\partial C_P(K_P \mid \mathbf{R})}{\partial K_P}$ represents the <strong>marginal cost</strong> of presentational polish—the incremental budget (in time, focus, or cognitive energy) required to increase visual polish by a single unit. Under Spence's framework, a credible signaling channel requires that this marginal cost is lower for high-quality types than for low-quality types, establishing the <strong>Spence single-crossing condition</strong>:
                 </p>
                 <p class="mb-6">
                     $$ \frac{\partial C_P(K_P \mid \mathbf{R}_{\text{high}})}{\partial K_P} < \frac{\partial C_P(K_P \mid \mathbf{R}_{\text{low}})}{\partial K_P} $$
                 </p>
                 <p class="mb-6">
+                    Philosophically, a high-rigor developer ($\mathbf{R}_{\text{high}}$)—who has built a clean, modular database schema and robust API endpoints—can expose this backend into a clean dashboard with low incremental effort. Conversely, a low-rigor developer ($\mathbf{R}_{\text{low}}$)—whose backend is a fragile, copy-pasted script—must expend massive cognitive energy to write custom hacks to mask backend instability, manually format noise, and patch interface breakage.
+                </p>
+                <p class="mb-6">
                     This cost asymmetry allowed a stable <strong>separating equilibrium</strong> to emerge. High-quality developers chose to invest in high presentation polish because their signaling cost was low, while low-quality developers chose simple, unadorned layouts. Evaluators could therefore rely on visual polish as a reliable index of underlying mathematical rigor.
                 </p>
                 <p class="mb-6">
-                    Generative AI destroys this separating signal by collapsing the marginal cost of presentation to zero for all types:
-                    $$ \lim_{\text{GenAI}} C_P(K_P \mid \mathbf{R}) \to 0 \quad \forall \mathbf{R} $$
-                    With $\alpha \to 0$, the single-crossing condition fails completely. Any developer, regardless of their model's backend quality, can generate visual polish and fluent copy instantly. The signaling channel collapses, and the system enters an <strong>Akerlof lemons market (1970)</strong>. Because the evaluator cannot distinguish between a zero-rigor wrapper and a mathematically rigorous model based on the visual interface, and because auditing rigor is cognitively expensive ($\lambda \to 0$ under time constraints), the evaluator's expectation of quality collapses to the average of the pool. High-rigor developers, who must still pay the high convex cost of mathematical auditing ($\beta K_R^2$), are unable to signal their quality and are driven out of the market by cheap, beautiful wrappers. The market collapses into a <strong>Mimetic Pooling Equilibrium</strong> where all developers output zero rigor.
+                    Generative AI destroys this separating signal by collapsing the marginal cost of presentation for all types. Let the presentation cost function be modeled as:
+                    $$ C_P(K_P \mid \mathbf{R}) = \alpha(\mathbf{R}) K_P $$
+                    where the parameter $\alpha(\mathbf{R}) > 0$ governs the marginal signaling cost. In the Pre-Generative AI era, the marginal cost of presentation was type-dependent, with $\alpha(\mathbf{R}_{\text{high}}) = \alpha_{\text{high}} < \alpha_{\text{low}} = \alpha(\mathbf{R}_{\text{low}})$. 
+                    Post-Generative AI, the widespread accessibility of automated UI generators collapses the marginal cost for both types to a uniform, negligible baseline:
+                    $$ \alpha_{\text{high}} \approx \alpha_{\text{low}} \to \alpha_0 \approx 0 $$
+                    As a result, the marginal cost of presentation becomes equal across types:
+                    $$ \frac{\partial C_P(K_P \mid \mathbf{R}_{\text{high}})}{\partial K_P} \approx \frac{\partial C_P(K_P \mid \mathbf{R}_{\text{low}})}{\partial K_P} \approx \alpha_0 \to 0 $$
+                    With this loss of type-dependence, the single-crossing condition fails completely. Any developer, regardless of their model's backend quality, can generate visual polish and fluent copy instantly.
                 </p>
-                <aside class="review-note">
-                    <span class="rn-label">Review · Information economist · §4.1 — single-crossing mechanism</span>
-                    Single-crossing failure is mis-attributed to $\alpha\to0$. It fails because $C_P$ loses its <strong>type-dependence</strong> — both types now pay the same marginal cost — not because $\alpha$ is small. But §4.2 then defines $C_P(K_P)=\alpha K_P$ with <em>no</em> $\mathbf{R}$-dependence at all, so it can't generate the separating equilibrium §4.1 describes in the first place. Fix: write the cost as $C_P(K_P\mid\mathbf{R})$ in §4.2, and frame the collapse as $\partial C_P/\partial K_P$ becoming equal across types.
-                </aside>
-                <aside class="review-note">
-                    <span class="rn-label">Review · Information economist · §4.1 — lemons vs. pooling</span>
-                    "Driven out of the market" contradicts "pooling equilibrium where all developers output zero rigor." Exit/unraveling (good types <em>leave</em>) and pooling (good types <em>stay but emit the low signal</em>) are different outcomes. Your mechanism is pooling: high-rigor developers don't exit — they rationally stop paying for rigor and pool with the wrappers. Change "driven out of the market" to <strong>"driven to abandon rigor"</strong> so the lemons dynamic and the pooling conclusion agree.
-                </aside>
+                <p class="mb-6">
+                    The signaling channel collapses, and the system enters an <strong>Akerlof lemons market (1970)</strong>. Because the evaluator cannot distinguish between a zero-rigor wrapper and a mathematically rigorous model based on the visual interface, and because auditing rigor is cognitively expensive ($\lambda \to 0$ under time constraints), the evaluator's expectation of quality collapses to the average of the pool. High-rigor developers, who must still pay the high convex cost of mathematical auditing ($\beta K_R^2$), are unable to signal their quality and are driven to abandon rigor to pool with the wrappers. The market collapses into a <strong>Mimetic Pooling Equilibrium</strong> where all developers output zero rigor.
+                </p>
 
                 <h3 class="text-lg font-semibold text-stone-800 mt-8 mb-4 ui-text">4.2 The Developer's Payoff and Ruin Constraints</h3>
                 <p class="mb-6">
@@ -649,47 +650,51 @@ Since developers face severe professional penalties for late delivery, they make
                     $$ K_{R,i} + K_{P,i} \le K $$
                 </p>
                 <p class="mb-6">
-                    The private cost of rigor is quadratic and convex: $C_R(K_{R,i}) = \beta K_{R,i}^2$ ($\beta \gg 1$), representing the escalating difficulty of verification, whereas presentation is linear: $C_P(K_{P,i}) = \alpha K_{P,i}$ (with $\alpha \to 0$ post-GenAI).
+                    The private cost of rigor is quadratic and convex: $C_R(K_{R,i}) = \beta K_{R,i}^2$ ($\beta \gg 1$), representing the escalating difficulty of verification, whereas the cost of presentation is linear and type-dependent: $C_P(K_{P,i} \mid \mathbf{R}_i) = \alpha(\mathbf{R}_i) K_{P,i}$ (with $\alpha(\mathbf{R}_i) \to \alpha_0 \approx 0$ post-GenAI for all types).
                 </p>
-                <aside class="review-note">
-                    <span class="rn-label">Review · Technical-math editor · §4.1–4.2 — notation hygiene</span>
-                    Three cleanups: (1) $\alpha$ is used in §4.1's single-crossing equation but only defined here in §4.2 — define on first use or forward-reference. (2) The expectation subscript $\mathbb{E}_{T_{\text{benchmark}}(\mathcal{C})}$ (§4.2, §4.3) uses a calligraphic $\mathcal{C}$ that is never defined — define it or drop it. (3) The cost limit written $\lim_{\text{GenAI}}$ is an informal subscript; replace with a clean "as $\alpha\to0$."
-                </aside>
                 <p class="mb-6">
                     The developer's payoff is influenced by the organizational risk. If the model fails in production, it can trigger organizational ruin, which we define as the event where tail-risk losses exceed the firm's reserve: $L(X) > S$. Ruin leads to utility collapse for the team, modeled by a penalty $w_L \cdot P(\text{Ruin})$.
                 </p>
                 <p class="mb-6">
                     The developer's private utility function is:
-                    $$ U_{\text{dev},i}(K_{R,i}, K_{P,i}) = w_u \cdot \mathbb{E}_{T_{\text{benchmark}}(\mathcal{C})} \left[ \hat{U}_{\text{discounted}, i} \right] + w_r K_{R,i} - C_R(K_{R,i}) - C_P(K_{P,i}) - w_L \cdot P(\text{Ruin}) $$
+                    $$ U_{\text{dev},i}(K_{R,i}, K_{P,i}) = w_u \cdot \mathbb{E}_{T_{\text{benchmark}}} \left[ \hat{U}_{\text{discounted}, i} \right] + w_r K_{R,i} - C_R(K_{R,i}) - C_P(K_{P,i} \mid \mathbf{R}_i) - w_L \cdot P(\text{Ruin}) $$
                 </p>
                 <p class="mb-6">
                     In standard corporate hierarchies, however, the developer enjoys <strong>limited liability</strong>. Because the consequences of systemic failure are absorbed by the firm's balance sheet rather than the developer's compensation, the personal liability weight is negligible: $w_L \approx 0$. Thus, the developer ignores the ruin risk in their private optimization:
-                    $$ U_{\text{dev},i}(K_{R,i}, K_{P,i}) \approx w_u \hat{U}_i \cdot \mathbb{E}_{T_{\text{benchmark}}(\mathcal{C})} [d(T_i)] + w_r K_{R,i} - \beta K_{R,i}^2 - \alpha K_{P,i} $$
+                    $$ U_{\text{dev},i}(K_{R,i}, K_{P,i}) \approx w_u \hat{U}_i \cdot \mathbb{E}_{T_{\text{benchmark}}} [d(T_i)] + w_r K_{R,i} - \beta K_{R,i}^2 - \alpha(\mathbf{R}_i) K_{P,i} $$
                     where $T_i = T_0 + \theta K_{R,i}$ is the build timeline, $T_0$ is the wrapper baseline, and $\theta > 0$ is the time multiplier of rigor.
                 </p>
 
                 <h3 class="text-lg font-semibold text-stone-800 mt-8 mb-4 ui-text">4.3 The First-Order Condition and the Corner Solution</h3>
                 <p class="mb-6">
-                    To find Developer $i$'s optimal allocation, we take the first-order condition (FOC) with respect to $K_{R,i}$. Let the benchmark timeline distribution be compressed near $T_{\text{benchmark}}$. The expected temporal discount factor is $\bar{d}(K_{R,i}) = \mathbb{E}[d(T_i)] \approx \exp(-\gamma \max(0, T_i - T_{\text{benchmark}}))$. If the developer overruns the benchmark ($T_i > T_{\text{benchmark}}$), the expected discount decays exponentially: $\bar{d}(K_{R,i}) \approx \exp(-\gamma \theta K_{R,i})$.
+                    To find Developer $i$'s optimal allocation, we take the first-order condition (FOC) with respect to $K_{R,i}$. We assume the resource budget constraint is fully binding, meaning the developer allocates all available resources: $K_{R,i} + K_{P,i} = K \implies K_{P,i} = K - K_{R,i}$. This binding constraint is a critical game-theoretic driver: investing in backend rigor directly takes resources away from presentational polish.
                 </p>
                 <p class="mb-6">
-                    Taking the derivative of the developer utility with respect to $K_{R,i}$:
-                    $$ \frac{\partial U_{\text{dev},i}}{\partial K_{R,i}} = w_u \left( \frac{\partial \hat{U}_i}{\partial K_{R,i}} \bar{d}(K_{R,i}) + \hat{U}_i(K_{R,i}) \frac{\partial \bar{d}}{\partial K_{R,i}} \right) + w_{r,i} - 2\beta K_{R,i} + \alpha = 0 $$
+                    To map these scalar allocations to the multi-dimensional vectors from Section II, we assume for simplicity that effort is distributed equally across all dimensions: the presentation effort vector is $\mathbf{K}_{P,i} = K_{P,i} \mathbf{1}_3$ and the rigor effort vector is $\mathbf{K}_{R,i} = K_{R,i} \mathbf{1}_4$, where the vectors of ones $\mathbf{1}_3 \in \mathbb{R}^3$ and $\mathbf{1}_4 \in \mathbb{R}^4$ reflect this uniform scaling. Substituting the binding constraint yields the observable signal vectors:
+                    $$ \mathbf{S}_R = K_{R,i} \mathbf{1}_4 + \boldsymbol{\epsilon}_R $$
+                    $$ \mathbf{S}_P = (K - K_{R,i}) \mathbf{1}_3 + \boldsymbol{\epsilon}_P $$
+                    Taking the derivative of the presentation signal vector with respect to rigor effort yields:
+                    $$ \frac{\partial \mathbf{S}_P}{\partial K_{R,i}} = -\mathbf{1}_3 $$
+                </p>
+                <p class="mb-6">
+                    Let the benchmark timeline distribution be compressed near $T_{\text{benchmark}}$. The expected temporal discount factor is $\bar{d}(K_{R,i}) = \mathbb{E}[d(T_i)] \approx \exp(-\gamma \max(0, T_i - T_{\text{benchmark}}))$. If the developer overruns the benchmark ($T_i > T_{\text{benchmark}}$), the expected discount decays exponentially: $\bar{d}(K_{R,i}) \approx \exp(-\gamma \theta K_{R,i})$.
+                </p>
+                <p class="mb-6">
+                    Taking the derivative of the developer utility with respect to $K_{R,i}$ under the binding budget constraint:
+                    $$ \frac{\partial U_{\text{dev},i}}{\partial K_{R,i}} = w_u \left( \frac{\partial \hat{U}_i}{\partial K_{R,i}} \bar{d}(K_{R,i}) + \hat{U}_i(K_{R,i}) \frac{\partial \bar{d}}{\partial K_{R,i}} \right) + w_{r,i} - 2\beta K_{R,i} + \alpha(\mathbf{R}_i) = 0 $$
                 </p>
                 <p class="mb-6">
                     Crucially, dropping the derivative of the discount term is mathematically invalid and obscures the true game-theoretic driver. The derivative of the expected discount is $\frac{\partial \bar{d}}{\partial K_{R,i}} = -\gamma \theta \exp(-\gamma \theta K_{R,i})$.
                 </p>
                 <p class="mb-6">
                     Let us evaluate the derivative at the boundary $K_{R,i} = 0$:
-                    $$ \left. \frac{\partial U_{\text{dev},i}}{\partial K_{R,i}} \right|_{K_{R,i}=0} = w_u \left( \Delta_{\hat{U}} - \gamma \theta \hat{U}_0 \right) + w_{r,i} + \alpha $$
-                    where $\hat{U}_0 = \left[ (1-\lambda)\mathbf{w}_{\hat{r}}^T \mathbf{B}_{\text{halo}} \mathbf{1}_3 + \mathbf{w}_{\hat{p}}^T \mathbf{1}_3 \right] K$ is the perceived utility of the wrapper at zero rigor, and $\Delta_{\hat{U}} \equiv \left. \frac{\partial \hat{U}_i}{\partial K_{R,i}} \right|_{0} = \lambda \mathbf{w}_{\hat{r}}^T \mathbf{1}_4 - (1-\lambda)\mathbf{w}_{\hat{r}}^T \mathbf{B}_{\text{halo}} \mathbf{1}_3 - \mathbf{w}_{\hat{p}}^T \mathbf{1}_3$. Here, the vectors of ones $\mathbf{1}_4 \in \mathbb{R}^4$ and $\mathbf{1}_3 \in \mathbb{R}^3$ map the developer's scalar efforts $K_{R,i}$ and $K_{P,i}$ onto the vector dimensions of rigor and presentation.
+                    $$ \left. \frac{\partial U_{\text{dev},i}}{\partial K_{R,i}} \right|_{K_{R,i}=0} = w_u \left( \Delta_{\hat{U}} - \gamma \theta \hat{U}_0 \right) + w_{r,i} + \alpha(\mathbf{R}_i) $$
+                    where $\hat{U}_0 = \left[ (1-\lambda)\mathbf{w}_{\hat{r}}^T \mathbf{B}_{\text{halo}} \mathbf{1}_3 + \mathbf{w}_{\hat{p}}^T \mathbf{1}_3 \right] K$ is the perceived utility of the wrapper at zero rigor. Using our presentation signal derivative, the marginal change in perceived utility is:
+                    $$ \Delta_{\hat{U}} \equiv \left. \frac{\partial \hat{U}_i}{\partial K_{R,i}} \right|_{0} = \lambda \mathbf{w}_{\hat{r}}^T \mathbf{1}_4 - (1-\lambda)\mathbf{w}_{\hat{r}}^T \mathbf{B}_{\text{halo}} \mathbf{1}_3 - \mathbf{w}_{\hat{p}}^T \mathbf{1}_3 $$
+                    Here, the negative terms in $\Delta_{\hat{U}}$ arise directly because the budget constraint binds, meaning that choosing to invest in rigor causes an immediate, physical withdrawal of presentational effort.
                 </p>
-                <aside class="review-note">
-                    <span class="rn-label">Review · Optimization specialist · §4.3 — state the binding constraint</span>
-                    The algebra checks out — I verified $\Delta_{\hat U}$ and the collapse to $w_{r,i}-w_u(\mathbf{w}_{\hat r}^T\mathbf{B}_{\text{halo}}\mathbf{1}_3+\mathbf{w}_{\hat p}^T\mathbf{1}_3)(1+\gamma\theta K)$, and strictly-concave $\Rightarrow$ corner-at-zero is valid. But the negative terms in $\Delta_{\hat U}$ arise <em>only because the budget constraint binds</em>: $K_P=K-K_{R}$, so $\partial\mathbf{S}_P/\partial K_R=-\mathbf{1}_3$. State $K_P=K-K_R$ explicitly before differentiating — it's doing real work and is currently implicit. Also flag that $\mathbf{1}_3,\mathbf{1}_4$ assume effort spreads <em>equally</em> across all dimensions.
-                </aside>
                 <p class="mb-6">
-                    Under corporate timeline compression, evaluators substitute visual polish for mathematical rigor, causing the scrutiny parameter to collapse ($\lambda \to 0$), and presentation is cheap ($\alpha \to 0$):
+                    Under corporate timeline compression, evaluators substitute visual polish for mathematical rigor, causing the scrutiny parameter to collapse ($\lambda \to 0$), and presentation is cheap ($\alpha(\mathbf{R}_i) \to \alpha_0 \approx 0$):
                     $$ \Delta_{\hat{U}} \approx -\mathbf{w}_{\hat{r}}^T \mathbf{B}_{\text{halo}} \mathbf{1}_3 - \mathbf{w}_{\hat{p}}^T \mathbf{1}_3 < 0 $$
                     $$ \left. \frac{\partial U_{\text{dev},i}}{\partial K_{R,i}} \right|_{K_{R,i}=0} \approx w_{r,i} - w_u \left( \mathbf{w}_{\hat{r}}^T \mathbf{B}_{\text{halo}} \mathbf{1}_3 + \mathbf{w}_{\hat{p}}^T \mathbf{1}_3 \right)(1 + \gamma \theta K) $$
                 </p>
@@ -699,21 +704,22 @@ Since developers face severe professional penalties for late delivery, they make
 
                 <h3 class="text-lg font-semibold text-stone-800 mt-8 mb-4 ui-text">4.4 Mean-Field Nash Equilibrium of Fragility</h3>
                 <p class="mb-6">
-                    To establish this behavior as a <strong>Nash Equilibrium</strong>, we must prove that the strategy profile where all developers choose zero rigor ($K_{R,j}^* = 0$ for all $j$) is a fixed point of mutual best responses in a mean-field game.
+                    To establish this behavior as a stable equilibrium, we must prove that the strategy profile where all developers in the low-pride cluster choose zero rigor is a fixed point of mutual best responses. Let the population of developers be partitioned into two groups based on their intrinsic technical pride $w_{r,i}$. We assume the vast majority of developers have intrinsic pride below the critical threshold ($w_{r,i} < w_{\text{pride-threshold}}$) and constitute the "attracted cluster" (sub-population $\mathcal{N}_{\text{low-pride}}$). A small, negligible minority of developers possess high intrinsic pride ($w_{r,i} \ge w_{\text{pride-threshold}}$) and will choose to allocate non-zero effort to rigor regardless of timeline compression.
                 </p>
                 <p class="mb-6">
-                    Let the peer benchmark timeline for Developer $i$ be the average of their peers' completion times: $T_{\text{benchmark}, i} = T_0 + \frac{\theta}{N-1} \sum_{j \neq i} K_{R,j}$. If all other developers choose zero rigor, they deliver their projects at the wrapper speed: $K_{R,j}^* = 0 \implies T_j = T_0$ for all $j \neq i$. The peer timeline benchmark for Developer $i$ collapses to $T_0$.
+                    Let $N$ denote the total number of developers. For a finite population $N$, the game is modeled as a symmetric aggregative game, where each developer's temporal discount factor depends on the peer-average completion time:
+                    $$ T_{\text{benchmark}, i} = T_0 + \frac{\theta}{N-1} \sum_{j \neq i} K_{R,j} $$
+                    In the continuum limit as $N \to \infty$, this game converges to a Mean-Field Nash Equilibrium, where individual deviations have an infinitesimal impact on the average population timeline benchmark.
                 </p>
                 <p class="mb-6">
-                    If Developer $i$ attempts to deviate from the pool by choosing $K_{R,i} > 0$, their completion time overruns the benchmark: $T_i = T_0 + \theta K_{R,i} > T_0$. This triggers the exponential discount penalty. As derived in the FOC, since the developer's intrinsic pride $w_{r,i}$ for the majority of the population lies below the threshold $w_{\text{pride-threshold}}$, the marginal utility of adding rigor at this boundary is negative. Developer $i$'s best response is to choose $K_{R,i}^* = 0$.
+                    If all other developers in the low-pride cluster choose zero rigor, and because the high-pride minority is negligibly small, the average peer completion time is driven down to the wrapper speed: $\lim_{N \to \infty} T_{\text{benchmark}, i} \approx T_0$. If Developer $i$ in the low-pride cluster attempts to deviate from the pool by choosing $K_{R,i} > 0$, their completion time overruns the benchmark ($T_i = T_0 + \theta K_{R,i} > T_0$), triggering the exponential discount penalty. Since $w_{r,i} < w_{\text{pride-threshold}}$, the marginal utility of adding rigor at this boundary is strictly negative, meaning their optimal best response remains $K_{R,i}^* = 0$.
                 </p>
                 <p class="mb-6">
-                    Since this best response is symmetric and holds for all developers in the attracted cluster, the strategy profile $K_{R,i}^* = 0$ for all $i$ is a mutual best response, constituting a stable <strong>Nash Fixed Point of the Mean-Field Game</strong>. This mimetic locking mechanism shows why individual intentions are powerless. Deviating from the benchmark penalizes the developer's career, forcing them to conform to the zero-rigor norm. The pooling equilibrium is self-reinforcing and stable, hiding systemic fragility beneath a facade of uniform aesthetic excellence.
+                    Since this best response is symmetric and holds for all developers in the attracted cluster, the strategy profile $K_{R,i}^* = 0$ for all $i \in \mathcal{N}_{\text{low-pride}}$ is a mutual best response, constituting a stable <strong>Nash Fixed Point of the Mean-Field Game</strong>. This mimetic locking mechanism shows why individual intentions are powerless. Deviating from the benchmark penalizes the developer's career, forcing them to conform to the zero-rigor norm. The pooling equilibrium is self-reinforcing and stable, hiding systemic fragility beneath a facade of uniform aesthetic excellence.
                 </p>
-                <aside class="review-note">
-                    <span class="rn-label">Review · Game theorist · §4.4 — scope the Nash claim</span>
-                    "$K_{R,i}^*=0$ for all $i$" overreaches: §4.3 gives the corner solution only for developers whose pride $w_{r,i}$ is <em>below</em> $w_{\text{pride-threshold}}$. The high-pride minority would choose $K_R>0$ and deviate, so the all-zero profile isn't a <em>global</em> equilibrium. Make the "attracted cluster" framing consistent — scope the claim to the below-threshold sub-population (or argue the high-pride mass is negligible). Also: you never address <strong>uniqueness</strong> — a rigor-positive equilibrium may coexist, yet "self-reinforcing and stable" implies you've ruled that out. Add one sentence on multiplicity. (Minor: with finite $N$ and $1/(N-1)$ averaging this is an aggregative game; "mean-field" properly means the $N\to\infty$ continuum.)
-                </aside>
+                <p class="mb-6">
+                    We note that this zero-rigor pooling equilibrium is not necessarily unique. Depending on the joint distribution of pride parameters $w_{r,i}$ and the organization's initial priors, other equilibria may coexist. For example, if the organization starts with an extremely high epistemic scrutiny parameter ($\lambda \to 1$), a high-rigor separating equilibrium could theoretically be sustained. However, once corporate timelines compress and evaluators adopt the Halo prior ($\lambda \to 0$), the zero-rigor profile becomes the unique stable equilibrium within this basin of attraction. The system's path-dependency traps the organization in this coordination failure, locking developers into the pooling equilibrium of fragility.
+                </p>
             </section>
 
             <!-- Section 5: The Ontological Shock: When the Simulation Collapses -->
@@ -743,6 +749,19 @@ Since developers face severe professional penalties for late delivery, they make
                 <p class="mb-6">
                     However, the open-loop Arena respects no corporate benchmarks. Once deployed, the system's real-world operational value—the <strong>Real Utility ($U$)</strong>—is indifferent to the presentation vector: $U = g(\mathbf{R})$. Because the mathematical core is unverified ($\mathbf{R} \approx \mathbf{R}_{\text{min}}$), the real-world utility remains at the floor: $U \approx \epsilon_u$. The sanctuary has validated a simulation of competence, decoupling the internal signifier of success from the external real.
                 </p>
+
+                <div class="review-note">
+                    <span class="rn-label">Editorial Review — Expert Panel on §5.1 (remove before publishing)</span>
+                    <p style="margin:0 0 0.75rem 0;">Four reviewers were convened to match this section's load-bearing claims: <strong>Prof. H. Restrepo</strong> (control &amp; feedback systems), <strong>Dr. M. Álvarez</strong> (information economics / mechanism design), <strong>Dr. J. Okonkwo</strong> (ML evaluation / LLM-as-judge), and <strong>Prof. S. Lindqvist</strong> (organizational sociology).</p>
+
+                    <p style="margin:0 0 0.75rem 0;"><strong>Restrepo (control theory):</strong> The central metaphor is inverted relative to its own discipline. In control engineering a <em>closed loop</em> is precisely the system that receives feedback from reality and corrects against it; an <em>open loop</em> acts on a fixed reference with no corrective signal. The Arena, which feeds real outcomes back into utility, is the closed-loop system; the Sanctuary, which runs on a fixed internal reference ($\mathbf{V}_{\text{threshold}}$) and never measures the controlled variable, is the open-loop one — your labels are backwards. The precise pathology: the Sanctuary <em>closes a loop around a proxy sensor</em> ($\mathbf{V}_{\text{sim}}$) instead of the true plant output ($U$), a textbook case of controlling to the wrong observable, which guarantees steady-state error however tight the internal loop. Rename, or state you mean "closed" in the colloquial "closed-door" sense.</p>
+
+                    <p style="margin:0 0 0.75rem 0;"><strong>Álvarez (mechanism design):</strong> Two structural problems with the $\mathbf{V}_{\text{sim}}$ equation. (1) <em>Dimensional mismatch</em>: per §2.1–2.2, $\mathbf{S}_P \in \mathbb{R}^3$ and $\mathbf{R} \in \mathbb{R}^4$, so $\mu\,\mathbf{S}_P + (1-\mu)\,\mathbf{R}$ is not a defined sum — introduce a loading matrix $\mathbf{A}\in\mathbb{R}^{4\times3}$, or project both to a scalar score first. (2) <em>$\mu$ is exogenous</em>, the weakest link: a principal who knew $\mu \to 1$ would not adopt that validator. The fix is endogenous and strengthens the thesis — the principal cannot cheaply observe $\mu$ (validating the validator costs as much as the original audit), and a high-$\mu$ eval is itself cheaper and more "fluent" to present upward, so the same affordance bias from §2.4 selects the validation instrument, not just the model. This is a recursion of your own halo effect. Underneath it is Goodhart's law / Holmström multitask measurement; cite both.</p>
+
+                    <p style="margin:0 0 0.75rem 0;"><strong>Okonkwo (ML evaluation):</strong> The mechanism is real and documented — LLM judges show verbosity bias, self-preference, and style-over-substance preference, so a large $\mu$ is defensible; cite that literature to convert assertion into finding. But $\mu \to 1$ is too strong as a blanket claim. Your taxonomy lumps three instruments under one $\mu$: LLM evals (high $\mu$), similarity benchmarks (moderate), and execution-based test suites that run against ground truth (largely presentation-<em>insensitive</em>, low $\mu$). Collapsing them hands a critic an easy counterexample. The sharper claim: the <em>marginal</em> validation dollar flows to high-$\mu$ instruments because they are cheap and demo well, so the <em>effective</em> $\mu$ of the portfolio rises — which also sets up §6.3's conformal reject-option as the deliberately low-$\mu$ remedy. Also: $\boldsymbol{\epsilon}_{\text{sim}}$ is almost certainly correlated with $\mathbf{S}_P$ (a fluent system games the judge consistently, not noisily), so the additive-i.i.d.-noise assumption understates the tail risk of a false pass.</p>
+
+                    <p style="margin:0;"><strong>Lindqvist (organizational sociology):</strong> You are independently rediscovering <em>institutional decoupling</em> (Meyer &amp; Rowan, 1977; Bromley &amp; Powell, 2012): organizations adopt legitimated structures — the eval suite as ceremonial inspection — and decouple them from technical activity to secure legitimacy. Citing this gives §5.1 a 40-year empirical lineage and pre-empts the "just a metaphor" objection. Two cautions: (1) decoupling is often <em>stabilizing and adaptive</em>, not merely pathological — your every-decoupling-is-ruin reading is the special case of high-stakes, fat-tailed deployments (§2.5); state that scope condition or a reviewer will offer benign counterexamples. (2) The clean Sanctuary/Arena binary overstates the duality — real firms have graduated exposure (staged rollouts, canaries, pilots) that partially re-couples proxy to reality. A continuum parameter (fraction of true Arena feedback admitted) would make the model more realistic and more falsifiable, and dovetails with Restrepo's "wrong observable" point.</p>
+                </div>
 
                 <h3 class="text-lg font-semibold text-stone-800 mt-8 mb-4 ui-text">5.2 Ruin Probability Under Fat-Tailed Exposure</h3>
                 <p class="mb-6">
