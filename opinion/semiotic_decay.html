@@ -562,8 +562,8 @@ Since developers face severe professional penalties for late delivery, they make
                 </p>
                 <p class="mb-6">
                     We model this behavioral bypass by defining the <strong>Epistemic Scrutiny Parameter ($\lambda$)</strong> as the relative signal precision weight derived from the audit time:
-                    $$ \lambda(\tau_R) = \frac{\sigma_0^2}{\sigma_0^2 + \sigma_R^2(\tau_R)} $$
-                    where the noise variance of the audited rigor signal is inversely proportional to time spent: $\sigma_R^2(\tau_R) \propto 1/\tau_R$. Note that the prior uncertainty covariance scale $\sigma_0^2$ matches the physical rigor variance $\sigma_r^2$ from Section 3.1 exactly ($\sigma_0^2 \equiv \sigma_r^2$), as conditioning on presentation signals shifts only the prior mean vector but leaves the covariance structure invariant. Across the population of evaluators, this scrutiny parameter is distributed according to cognitive budgets and individual diligence:
+                    $$ \lambda(\tau_R) = \frac{\sigma_r^2}{\sigma_r^2 + \sigma_R^2(\tau_R)} $$
+                    where the noise variance of the audited rigor signal is inversely proportional to time spent: $\sigma_R^2(\tau_R) \propto 1/\tau_R$, where $\sigma_r^2$ is the physical rigor variance from Section 3.1. Across the population of evaluators, this scrutiny parameter is distributed according to cognitive budgets and individual diligence:
                     $$ \lambda \sim \text{Beta}(a, \; b), \quad \text{where } \lambda \in [0, 1] $$
                 </p>
                 <p class="mb-6">
