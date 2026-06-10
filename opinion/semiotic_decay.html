@@ -295,8 +295,8 @@
                 </p>
                 <p class="mb-6">
                     Once these estimates are formed, the evaluator synthesizes the application's <strong>Perceived Utility ($\hat{U}$)</strong> as a weighted combination of these perceptions:
-                    $$ \hat{U} = w_{\hat{r}}\hat{R} + w_{\hat{p}}\hat{P} $$
-                    Note that this linear additive model is a standard simplifying assumption; it rules out potential interaction effects where visual polish might amplify or modulate the subjective weight assigned to mathematical rigor.
+                    $$ \hat{U} = \mathbf{w}_{\hat{r}}^T \hat{R} + \mathbf{w}_{\hat{p}}^T \hat{P} $$
+                    where $\mathbf{w}_{\hat{r}} \in \mathbb{R}^4$ is the vector of cognitive weights assigned to each dimension of perceived rigor, and $\mathbf{w}_{\hat{p}} \in \mathbb{R}^3$ is the vector of cognitive weights assigned to each dimension of perceived presentation. Note that this linear additive model is a standard simplifying assumption; it rules out potential interaction effects where visual polish might amplify or modulate the subjective weight assigned to mathematical rigor.
                 </p>
 
                 <h3 class="text-lg font-semibold text-stone-800 mt-8 mb-4 ui-text">2.5 The Epistemic Disconnection: $U$ vs. $\hat{U}$ in Advanced Analytics</h3>
@@ -588,15 +588,15 @@ Since developers face severe professional penalties for late delivery, they make
                 <p class="mb-6">
                     Let us evaluate the derivative at the boundary $K_{R,i} = 0$:
                     $$ \left. \frac{\partial U_{\text{dev},i}}{\partial K_{R,i}} \right|_{K_{R,i}=0} = w_u \left( \Delta_{\hat{U}} - \gamma \theta \hat{U}_0 \right) + w_{r,i} + \alpha $$
-                    where $\hat{U}_0 = [w_{\hat{r}}(1-\lambda)\beta_{\text{halo}} + w_{\hat{p}}] K$ is the perceived utility of the wrapper at zero rigor, and $\Delta_{\hat{U}} \equiv \left. \frac{\partial \hat{U}_i}{\partial K_{R,i}} \right|_{0} = w_{\hat{r}}(\lambda - (1-\lambda)\beta_{\text{halo}}) - w_{\hat{p}}$.
+                    where $\hat{U}_0 = \left[ (1-\lambda)\mathbf{w}_{\hat{r}}^T \mathbf{B}_{\text{halo}} \mathbf{1}_3 + \mathbf{w}_{\hat{p}}^T \mathbf{1}_3 \right] K$ is the perceived utility of the wrapper at zero rigor, and $\Delta_{\hat{U}} \equiv \left. \frac{\partial \hat{U}_i}{\partial K_{R,i}} \right|_{0} = \lambda \mathbf{w}_{\hat{r}}^T \mathbf{1}_4 - (1-\lambda)\mathbf{w}_{\hat{r}}^T \mathbf{B}_{\text{halo}} \mathbf{1}_3 - \mathbf{w}_{\hat{p}}^T \mathbf{1}_3$. Here, the vectors of ones $\mathbf{1}_4 \in \mathbb{R}^4$ and $\mathbf{1}_3 \in \mathbb{R}^3$ map the developer's scalar efforts $K_{R,i}$ and $K_{P,i}$ onto the vector dimensions of rigor and presentation.
                 </p>
                 <p class="mb-6">
                     Under corporate timeline compression, evaluators substitute visual polish for mathematical rigor, causing the scrutiny parameter to collapse ($\lambda \to 0$), and presentation is cheap ($\alpha \to 0$):
-                    $$ \Delta_{\hat{U}} \approx -w_{\hat{r}}\beta_{\text{halo}} - w_{\hat{p}} < 0 $$
-                    $$ \left. \frac{\partial U_{\text{dev},i}}{\partial K_{R,i}} \right|_{K_{R,i}=0} \approx w_{r,i} - w_u (w_{\hat{r}}\beta_{\text{halo}} + w_{\hat{p}})(1 + \gamma \theta K) $$
+                    $$ \Delta_{\hat{U}} \approx -\mathbf{w}_{\hat{r}}^T \mathbf{B}_{\text{halo}} \mathbf{1}_3 - \mathbf{w}_{\hat{p}}^T \mathbf{1}_3 < 0 $$
+                    $$ \left. \frac{\partial U_{\text{dev},i}}{\partial K_{R,i}} \right|_{K_{R,i}=0} \approx w_{r,i} - w_u \left( \mathbf{w}_{\hat{r}}^T \mathbf{B}_{\text{halo}} \mathbf{1}_3 + \mathbf{w}_{\hat{p}}^T \mathbf{1}_3 \right)(1 + \gamma \theta K) $$
                 </p>
                 <p class="mb-6">
-                    The second term is a negative force combining the loss of perceived utility from diverting resources away from presentation, and the temporal discount penalty ($\gamma \theta K$). If the developer's intrinsic technical pride $w_{r,i}$ is below the critical threshold $w_{\text{pride-threshold}} \equiv w_u(w_{\hat{r}}\beta_{\text{halo}} + w_{\hat{p}})(1+\gamma\theta K)$, the marginal utility at $K_{R,i} = 0$ is strictly negative. Since the utility function is strictly concave, the optimal strategy is a <strong>corner solution</strong>: $K_{R,i}^* = 0$. This derivation shows that high organizational impatience ($\gamma$) or a large corporate validation weight ($w_u$) actively drives the optimal rigor effort to the absolute boundary of zero.
+                    The second term is a negative force combining the loss of perceived utility from diverting resources away from presentation, and the temporal discount penalty ($\gamma \theta K$). If the developer's intrinsic technical pride $w_{r,i}$ is below the critical threshold $w_{\text{pride-threshold}} \equiv w_u\left( \mathbf{w}_{\hat{r}}^T \mathbf{B}_{\text{halo}} \mathbf{1}_3 + \mathbf{w}_{\hat{p}}^T \mathbf{1}_3 \right)(1+\gamma\theta K)$, the marginal utility at $K_{R,i} = 0$ is strictly negative. Since the utility function is strictly concave, the optimal strategy is a <strong>corner solution</strong>: $K_{R,i}^* = 0$. This derivation shows that high organizational impatience ($\gamma$) or a large corporate validation weight ($w_u$) actively drives the optimal rigor effort to the absolute boundary of zero.
                 </p>
 
                 <h3 class="text-lg font-semibold text-stone-800 mt-8 mb-4 ui-text">4.4 Mean-Field Nash Equilibrium of Fragility</h3>
