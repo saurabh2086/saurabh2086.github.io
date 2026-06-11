@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Example: parallel experiments in eight schools</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400;1,6..72,600&display=swap"
+        rel="stylesheet">
+
+    <!-- MathJax for LaTeX rendering -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bayesian: {
+                            bg: '#f7f9fb',
+                            text: '#191c1e',
+                            navy: '#131b2e',
+                            blue: '#0051d5',
+                            slate: '#75859d',
+                            surface: '#ffffff',
+                            surfaceAlt: '#f8fafc',
+                            border: '#e2e8f0'
+                        }
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 12px rgba(15, 23, 42, 0.05)',
+                        'premium': '0 12px 30px rgba(19, 27, 46, 0.08)'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Newsreader', serif;
+            background-color: #f7f9fb;
+            color: #191c1e;
+            font-size: 1.25rem;
+            line-height: 1.7;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        .ui-text {
+            font-family: 'Inter', sans-serif;
+            color: #131b2e;
+        }
+
+        .math-inline {
+            font-family: 'Newsreader', serif;
+            font-size: 1.3rem;
+        }
+
+        .theorem-block {
+            background-color: #f8fafc;
+            border-left: 2px solid #0051d5;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .academic-card {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .academic-card:hover {
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+
+<body class="antialiased">
+
+    <!-- Main Container -->
+    <div class="max-w-[880px] mx-auto px-4 py-16">
+
+        <!-- Navigation -->
+        <nav class="mb-8 flex items-center gap-6">
+            <a href="../../index.html"
+                class="inline-flex items-center text-sm font-semibold text-bayesian-slate hover:text-bayesian-navy transition-colors ui-text">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                Back to Index
+            </a>
+            <span class="text-bayesian-border">|</span>
+            <a href="../../index.html"
+                class="inline-flex items-center text-sm font-semibold text-bayesian-slate hover:text-bayesian-navy transition-colors ui-text">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                </svg>
+                Home
+            </a>
+        </nav>
+
+        <!-- Header -->
+        <header class="mb-16">
+            <div
+                class="inline-block px-3 py-1 bg-bayesian-surfaceAlt border border-bayesian-border text-bayesian-slate rounded text-xs font-semibold tracking-wide mb-6 uppercase ui-text">
+                Bayesian Data Analysis &bull; Hierarchical Models
+            </div>
+            <h1 class="text-4xl font-bold mb-6 tracking-tight leading-tight ui-text">
+                5.5 Example: Parallel Experiments in Eight Schools
+            </h1>
+            <p class="text-xl text-bayesian-slate leading-relaxed">
+                Illustrating the hierarchical normal model with a study of coaching program effects on test scores across eight high schools.
+            </p>
+        </header>
+
+        <!-- Introduction Content -->
+        <section class="mb-16">
+            <div class="prose max-w-none text-bayesian-text mb-6">
+                <p class="mb-6">
+                    We illustrate the hierarchical normal model with a problem in which the Bayesian analysis gives conclusions that differ in important respects from other methods.
+                </p>
+                <p class="mb-6">
+                    A study was performed for the Educational Testing Service to analyze the effects of special coaching programs on test scores. Separate randomized experiments were performed to estimate the effects of coaching programs for the SAT-V (Scholastic Aptitude Test-Verbal) in each of eight high schools. The outcome variable in each study was the score on a special administration of the SAT-V, a standardized multiple choice test administered by the Educational Testing Service and used to help colleges make admissions decisions.
+                </p>
+            </div>
+        </section>
+
+        <!-- References & Study Disclaimer -->
+        <section class="mt-20 pt-8 border-t border-bayesian-border">
+            <div class="p-6 bg-bayesian-surfaceAlt border border-bayesian-border rounded-lg text-sm text-bayesian-text leading-relaxed">
+                <h4 class="font-bold text-bayesian-navy text-base mb-3 ui-text">References & Study Disclaimer</h4>
+                <p class="mb-4">
+                    This page represents personal study notes and derivations written to clarify my own understanding of hierarchical Bayesian models. The content is based on:
+                </p>
+                <blockquote class="pl-4 border-l-2 border-bayesian-slate italic mb-4 text-bayesian-slate">
+                    Gelman, A., Carlin, J. B., Stern, H. S., Dunson, D. B., Vehtari, A., & Rubin, D. B. (2013). <em>Bayesian Data Analysis</em> (3rd ed.). CRC Press.
+                </blockquote>
+                <p class="mb-0">
+                    For official materials, including a copy of the textbook PDF for non-commercial use, please visit the official <a href="http://www.stat.columbia.edu/~gelman/book/" target="_blank" rel="noopener noreferrer" class="text-bayesian-blue hover:underline">Columbia University BDA Page</a> or explore Aki Vehtari's <a href="https://avehtari.github.io/BDA_course_Aalto/" target="_blank" rel="noopener noreferrer" class="text-bayesian-blue hover:underline">Aalto BDA Course Portal</a>. Any typos or mathematical errors on this page are my own.
+                </p>
+            </div>
+        </section>
+
+    </div>
+
+</body>
+
+</html>
