@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Semiotic Decay of AI Analytics: A Causal and Epistemological Autopsy</title>
+    <title>Beautiful and Wrong: The Semiotic Decay of AI Analytics</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -72,32 +72,6 @@
             font-weight: 700;
         }
 
-        /* === EDITORIAL REVIEW NOTES (Section I expert panel) — remove before publishing === */
-        .review-note {
-            font-family: 'Inter', sans-serif;
-            font-size: 0.9rem;
-            line-height: 1.6;
-            background: #fef2f2;
-            border: 1px solid #fecaca;
-            border-left: 4px solid #dc2626;
-            border-radius: 0.4rem;
-            padding: 0.85rem 1rem;
-            margin: 1.25rem 0;
-            color: #7f1d1d;
-        }
-        .review-note .rn-label {
-            display: block;
-            font-size: 0.68rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            color: #dc2626;
-            margin-bottom: 0.35rem;
-        }
-        .review-note strong { color: #7f1d1d; }
-        @media print { .review-note { display: none; } }
-
-        /* Premium Collapsible Proof Container */
         /* Premium Collapsible Proof Container */
         .proof-details {
             background-color: #f5f5f4; /* stone-100 */
@@ -156,7 +130,7 @@
                 Opinion Piece &bull; Technology & Epistemology
             </div>
             <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight leading-tight text-stone-900 mb-6 font-sans">
-                The Semiotic Decay of AI Analytics: A Causal and Epistemological Autopsy
+                Beautiful and Wrong: The Semiotic Decay of AI Analytics
             </h1>
             <p class="text-xl md:text-2xl text-stone-500 italic font-serif leading-relaxed mb-8">
                 How Generative AI commoditized the signifiers of expertise, decoupled visual presentation from statistical truth, and induced a systemic race to the bottom in analytics.
@@ -172,9 +146,52 @@
         <div class="mb-12 p-8 bg-stone-50 border-l-4 border-burntOrange rounded-r-lg ui-text">
             <h3 class="text-sm font-bold uppercase tracking-wider text-burntOrange mb-4 font-sans">Abstract</h3>
             <p class="text-base text-stone-600 font-serif leading-relaxed italic">
-                In the era of generative AI, the cost of visual and conversational presentation has collapsed to near-zero, fracturing the historical correlation between an analytical interface and its mathematical validity. This paper performs an epistemological autopsy on the resulting decay of organizational decision systems. We model the evaluator as a bounded cognitive channel prone to heuristic substitution, driven by peer competitive pressures into a Nash Equilibrium of Fragility. By formalizing the disconnect between simulated validation scores and fat-tailed real-world exposure, we illustrate how modern enterprises expose themselves to catastrophic out-of-distribution shocks. Finally, we propose a concrete roadmap for epistemic restoration: aligning incentives through skin-in-the-game compensation, implementing blinded System 2 expert audits, and enforcing architectural safety boundaries to mandate computational modesty.
+                In the era of generative AI, the cost of visual and conversational presentation has collapsed to near-zero, breaking the historical single-crossing condition where interface polish served as a separating signal of analytical rigor. This paper performs an epistemological autopsy on the resulting decay of organizational decision systems. We model the evaluator as a cognitive channel with finite Shannon capacity, showing how time pressure forces a behavioral shift from System 2 logical validation to System 1 aesthetic heuristics (attribute substitution). Under these constraints, we analyze a game-theoretic race to the bottom where competitive delivery pressures lock developers into a zero-rigor pooling equilibrium—a Mean-Field Nash Equilibrium of Fragility. By formalizing the transition of systems from the protected "Sanctuary" of simulated validation to the open "Arena" of fat-tailed real-world exposures ($\alpha_{\text{tail}} \in (1,2)$), we model the eventual collapse of trust as a discontinuous cusp catastrophe. Finally, we propose a concrete institutional and technical framework for epistemic restoration: aligning developer incentives under limited-liability caps, implementing blinded, white-box System 2 expert audits, enforcing conformal prediction reject options to cap OOD losses, and restructuring the executive layer with board-insulated risk oversight.
             </p>
         </div>
+
+        <!-- Notation / Symbol Table -->
+        <details class="proof-details mb-12">
+            <summary>Notation: Table of Symbols</summary>
+            <div class="mt-4 overflow-x-auto font-sans text-sm leading-relaxed">
+                <table class="w-full text-left border-collapse">
+                    <tbody class="align-top divide-y divide-stone-200">
+                        <tr><td class="py-2 pr-4 font-semibold text-stone-800" colspan="2">Vectors &amp; signals (§II)</td></tr>
+                        <tr><td class="py-1 pr-4 font-mono">$\mathbf{P}, \mathbf{R}$</td><td class="py-1">Presentation vector ($\in\mathbb{R}^3$) and Rigor vector ($\in\mathbb{R}^4$): latent quality.</td></tr>
+                        <tr><td class="py-1 pr-4 font-mono">$\mathbf{S}_P, \mathbf{S}_R$</td><td class="py-1">Observed presentation / rigor (audit) signals; $\boldsymbol{\epsilon}_P,\boldsymbol{\epsilon}_R$ their noise.</td></tr>
+                        <tr><td class="py-1 pr-4 font-mono">$\hat{P}, \hat{R}, \hat{U}, U$</td><td class="py-1">Perceived presentation, perceived rigor, perceived utility; $U=g(\mathbf{R})$ real utility.</td></tr>
+                        <tr><td class="py-1 pr-4 font-mono">$\mathbf{B}_{\text{halo}}$</td><td class="py-1">Stale prior cross-loading matrix ($\mathbb{R}^{4\times3}$) mapping polish onto perceived rigor.</td></tr>
+                        <tr><td class="py-1 pr-4 font-mono">$\lambda$</td><td class="py-1">Epistemic scrutiny parameter $=\sigma_0^2/(\sigma_0^2+\sigma_A^2)\in[0,1]$; $\lambda\to0$ = halo bypass.</td></tr>
+                        <tr><td class="py-1 pr-4 font-mono">$\sigma_0^2,\sigma_A^2,\sigma_r^2$</td><td class="py-1">Prior, audit-channel, and rigor-source variances.</td></tr>
+
+                        <tr><td class="py-2 pr-4 font-semibold text-stone-800 pt-3" colspan="2">Cognitive channel (§III)</td></tr>
+                        <tr><td class="py-1 pr-4 font-mono">$C_{\text{eval}}, \tau_R$</td><td class="py-1">Evaluator channel capacity (bits/s) and audit time spent.</td></tr>
+                        <tr><td class="py-1 pr-4 font-mono">$D, R_d(D)$</td><td class="py-1">MSE distortion of the mental model; Gaussian rate-distortion function.</td></tr>
+                        <tr><td class="py-1 pr-4 font-mono">$h(\cdot)$</td><td class="py-1">Differential entropy; $h(\mathbf{R}\mid\hat{\mathbf{R}})$ = residual uncertainty after audit.</td></tr>
+                        <tr><td class="py-1 pr-4 font-mono">$d(T), \gamma, \theta$</td><td class="py-1">Temporal discount; impatience coefficient; time-multiplier of rigor.</td></tr>
+                        <tr><td class="py-1 pr-4 font-mono">$T_{\text{avail}}, T_{\text{req}}, T_{\text{benchmark}}$</td><td class="py-1">Available, required, and mean-field peer release timelines.</td></tr>
+
+                        <tr><td class="py-2 pr-4 font-semibold text-stone-800 pt-3" colspan="2">Developer game (§IV)</td></tr>
+                        <tr><td class="py-1 pr-4 font-mono">$K, K_R, K_P$</td><td class="py-1">Effort budget; rigor and presentation allocations ($K_R+K_P\le K$).</td></tr>
+                        <tr><td class="py-1 pr-4 font-mono">$\alpha(\mathbf{R}), \beta$</td><td class="py-1">Linear presentation cost (type-dependent pre-GenAI, $\to\alpha_0\approx0$); convex rigor cost.</td></tr>
+                        <tr><td class="py-1 pr-4 font-mono">$w_u, w_r, w_L$</td><td class="py-1">Weights on perceived utility, intrinsic pride, and personal liability.</td></tr>
+
+                        <tr><td class="py-2 pr-4 font-semibold text-stone-800 pt-3" colspan="2">Decoupling, ruin &amp; recovery (§V)</td></tr>
+                        <tr><td class="py-1 pr-4 font-mono">$V_{\text{sim}}, \mu_{\text{eff}}, \chi$</td><td class="py-1">Simulated validation score; its presentation bias; Arena feedback-coupling.</td></tr>
+                        <tr><td class="py-1 pr-4 font-mono">$\alpha_{\text{tail}}, x_{\text{min}}$</td><td class="py-1">Power-law tail index ($\in(1,2)$) and onset scale of OOD shocks $X$.</td></tr>
+                        <tr><td class="py-1 pr-4 font-mono">$L(X), S, c_{\text{error}}, \phi_0$</td><td class="py-1">Loss, capital reserve, model error multiplier, loss-scaling coefficient.</td></tr>
+                        <tr><td class="py-1 pr-4 font-mono">$P(\text{Ruin}), \psi(S)$</td><td class="py-1">Single-period and dynamic infinite-horizon ruin probabilities.</td></tr>
+                        <tr><td class="py-1 pr-4 font-mono">$z_p, a, b$</td><td class="py-1">Cusp order parameter (net trust in polish); net-evidence and rigidity controls.</td></tr>
+
+                        <tr><td class="py-2 pr-4 font-semibold text-stone-800 pt-3" colspan="2">Restoration (§VI)</td></tr>
+                        <tr><td class="py-1 pr-4 font-mono">$Y_\epsilon(x), q_{1-\epsilon}, \alpha(x,y)$</td><td class="py-1">Conformal prediction set; calibration quantile; non-conformity score.</td></tr>
+                        <tr><td class="py-1 pr-4 font-mono">$E_{\text{max-fallback}}$</td><td class="py-1">Bounded cost of a correctly-triggered reject (abstention).</td></tr>
+                        <tr><td class="py-1 pr-4 font-mono">$V_{\text{org}}, \Lambda_{\text{ruin}}$</td><td class="py-1">Long-run organizational value $=\mathbb{E}[g(\mathbf{R})]-P(\text{Ruin})\Lambda_{\text{ruin}}$; ruin cost.</td></tr>
+                        <tr><td class="py-1 pr-4 text-stone-500 italic" colspan="2">Note: $\epsilon$ (with subscripts $u,d,p,r,c,\text{sim}$) denotes small floor/noise terms local to each section.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </details>
 
         <!-- Section 1: The Spectacle in the Conference Room -->
         <article class="prose prose-stone max-w-none">
@@ -228,6 +245,13 @@
                 <p class="mb-6">
                     The result is the proliferation of hyperreal analytics—systems that are approved, funded, and celebrated inside the corporate vacuum, only to fail silently when they inevitably collide with the physical or economic realities of the outside world.
                 </p>
+
+                <div class="my-8 p-6 bg-stone-50 border-l-4 border-stone-400 rounded-r-lg font-sans text-sm text-stone-700 leading-relaxed shadow-sm">
+                    <h4 class="text-stone-900 font-bold uppercase tracking-wider mb-2 font-sans" style="font-size: 11px;">Section I Summary: The Spectacle Defined</h4>
+                    <p class="mb-0">
+                        Historically, a software tool's polished user interface was hard and expensive to build, making it a reliable proxy (an <strong>indexical sign</strong>) of high-quality backend engineering. Today, Generative AI has collapsed presentational costs to near-zero, breaking this link. In large, siloed corporate environments, this decoupling allows unverified models to achieve funding and approval purely through presentational appeal and self-referential benchmarks, driving out the incentives to build actual mathematical or scientific correctness. This creates <strong>hyperreal analytics</strong>: tools that look pristine in the conference room but fail in practice.
+                    </p>
+                </div>
             </section>
 
             <!-- Section 2: The Epistemological Vectors: Defining "Good" -->
@@ -354,8 +378,17 @@
                     In the Pre-GenAI era, because visual presentation ($\mathbf{P}$) was also difficult and time-consuming to build, the baseline corporate timelines were adjusted to accommodate long software cycles, or the visible lack of a polished interface flagged that a project was still in its early research phase. Today, GenAI compresses the timeline required to construct a functional interface: $T_{\text{req}}(\mathbf{P}) \to \epsilon_p \approx 0$. This raises executive expectations and compresses the available timeline to a new threshold $T_{\text{avail}}' \ll T_{\text{avail}}$. This compression shifts the constraint even further down the tail of required time, squeezing the probability of achieving rigor to an asymptotically negligible level:
                     $$ P(T_{\text{avail}}' \ge T_{\text{req}}(\mathbf{R})) = \epsilon' \ll \epsilon $$
                 </p>
-Since developers face severe professional penalties for late delivery, they make a rational choice under constraints: they maximize the commoditized presentation layer using GenAI ($\mathbf{P} \to \mathbf{P}_{\text{max}}$) to generate high Perceived Utility ($\hat{U} \to \hat{U}_{\text{max}}$), while leaving the mathematical core unverified ($\mathbf{R} \to \mathbf{R}_{\text{min}}$). Within the closed doors of a large enterprise—shielded from external market correction—the project receives funding, praise, and approval based entirely on the simulation of value ($\hat{U}$), while the operational decay ($U$) remains invisible until the system collides with reality.
-            </p>
+                <p class="mb-6">
+                    Since developers face severe professional penalties for late delivery, they make a rational choice under constraints: they maximize the commoditized presentation layer using GenAI ($\mathbf{P} \to \mathbf{P}_{\text{max}}$) to generate high Perceived Utility ($\hat{U} \to \hat{U}_{\text{max}}$), while leaving the mathematical core unverified ($\mathbf{R} \to \mathbf{R}_{\text{min}}$). Within the closed doors of a large enterprise—shielded from external market correction—the project receives funding, praise, and approval based entirely on the simulation of value ($\hat{U}$), while the operational decay ($U$) remains invisible until the system collides with reality.
+                </p>
+
+                <div class="my-8 p-6 bg-stone-50 border-l-4 border-stone-400 rounded-r-lg font-sans text-sm text-stone-700 leading-relaxed shadow-sm">
+                    <h4 class="text-stone-900 font-bold uppercase tracking-wider mb-2 font-sans" style="font-size: 11px;">Section II Summary: The Epistemological Vectors</h4>
+                    <p class="mb-0">
+                        An application's quality is defined by two distinct vectors: <strong>Presentation</strong> ($\mathbf{P}$), representing visual and linguistic polish, and <strong>Rigor</strong> ($\mathbf{R}$), representing backend mathematical and empirical soundness. Generative AI makes high-quality presentation cheap ($\mathbf{P} \to 1$), but does not automate rigor. Evaluators, relying on historical priors where visual polish was a reliable proxy for backend quality, suffer from the <strong>Halo Effect</strong>. Under timeline and cognitive pressures, their capacity to audit the backend collapses ($\lambda \to 0$), forcing them to estimate statistical soundness purely from the visual wrapper. Developers, facing professional penalties for late delivery, rationally prioritize presentation over verification, leading to polished but operationally fragile systems.
+                    </p>
+                </div>
+            </section>
 
             <!-- Section 3: The Cognitive Bypass: How Evaluators Are Seduced -->
             <section id="bypass" class="mb-16">
@@ -531,6 +564,9 @@ Since developers face severe professional penalties for late delivery, they make
                     $$ R_{\text{total}}(D) \le C_{\text{eval}} \cdot \tau_R $$
                 </p>
                 <p class="mb-6">
+                    <em>A note on scope.</em> The identification of an evaluator's audit with a capacity-constrained Shannon channel is a modeling <em>analogy</em>, not a theorem transported intact: the source–channel apparatus was built for physical transmission, and the parameters here ($d$, $\sigma_r^2$, $C_{\text{eval}}$) are not directly measurable. The exponential bound $D(\tau_R)$ derived below should therefore be read as an illustrative formalization of the <strong>scrutiny asymmetry</strong>—why bounded audit time forces heuristic substitution—rather than as a calibrated, point-predictive law. Its empirical content is carried by the falsifiable predictions of §6.5, not by the constants themselves.
+                </p>
+                <p class="mb-6">
                     To isolate the average distortion $D$ and understand how it scales with audit time, we solve this inequality step-by-step:
                     <ol class="list-decimal pl-8 mb-6 space-y-2 text-base">
                         <li>Divide both sides of the inequality by $\frac{d}{2}$:
@@ -603,12 +639,21 @@ Since developers face severe professional penalties for late delivery, they make
                     $$ \lim_{T \to \infty} d(T) = \epsilon_d \quad \implies \quad \hat{U}_{\text{discounted}} \approx \hat{U} \cdot \epsilon_d $$
                     This reveals a devastating paradox in modern enterprise decision-making: <strong>taking the necessary time to ensure mathematical correctness ($\mathbf{R}$) asymptotically discounts the project's perceived value toward a negligible floor before it is ever deployed.</strong> The system structurally selects for speed and flash, actively punishing the contemplative time required for scientific truth.
                 </p>
+                <div class="my-8 p-6 bg-stone-50 border-l-4 border-stone-400 rounded-r-lg font-sans text-sm text-stone-700 leading-relaxed shadow-sm">
+                    <h4 class="text-stone-900 font-bold uppercase tracking-wider mb-2 font-sans" style="font-size: 11px;">Section III Summary: The Cognitive Bypass</h4>
+                    <p class="mb-0">
+                        An evaluator acts as an information channel with a finite cognitive capacity ($C_{\text{eval}}$). Evaluating complex mathematical models is subject to Shannon's <strong>rate-distortion limits</strong>: the reconstruction error (distortion, $D$) of the evaluator's mental model decays exponentially with audit time ($\tau_R$). Under compressed timeline benchmarks, this audit time shrinks to zero ($\tau_R \to 0$), forcing the distortion to its maximum prior variance ($\sigma_r^2$). To resolve this blindness, the evaluator's brain triggers <strong>heuristic substitution</strong>, replacing System 2 logical validation with System 1 visual shortcuts (the Halo Effect). Because taking time to check backend correctness overruns the fast-release expectations of adjacent teams, the system imposes a <strong>temporal discount penalty</strong>, actively punishing teams that allocate time to build true mathematical rigor.
+                    </p>
+                </div>
             </section>
 
             <!-- Section 4: The Game of Analytics: Spence Signaling, Lemons, and the Mimetic Pooling Equilibrium -->
             <section id="game" class="mb-16">
                 <h2 class="text-2xl font-bold mb-6 border-b border-stone-200 pb-2 text-stone-900 ui-text">
-                    IV. The Game of Analytics: Spence Signaling, Lemons, and the Mimetic Pooling Equil                <h3 class="text-lg font-semibold text-stone-800 mt-8 mb-4 ui-text">4.1 Spence Signaling and the Collapse of Single-Crossing</h3>
+                    IV. The Game of Analytics: Spence Signaling, Lemons, and the Mimetic Pooling Equilibrium
+                </h2>
+                
+                <h3 class="text-lg font-semibold text-stone-800 mt-8 mb-4 ui-text">4.1 Spence Signaling and the Collapse of Single-Crossing</h3>
                 <p class="mb-6">
                     To understand how analytical decay propagates through an organization, we must analyze the developer's strategy using the economics of asymmetric information, specifically the frameworks of <strong>Spence's signaling theory (1973)</strong> and <strong>Akerlof's lemons market (1970)</strong>. In any corporate enterprise, the true rigor of an analytical model is a latent quality, unobservable to executive leadership without costly and slow technical auditing. The developer must therefore emit observable signals of competence. Let the visual presentation and conversational fluency of the interface represent the presentation signal, $\mathbf{S}_P$, and the documented mathematical validation represent the rigor signal, $\mathbf{S}_R$.
                 </p>
@@ -710,6 +755,12 @@ Since developers face severe professional penalties for late delivery, they make
                 <p class="mb-6">
                     We note that this zero-rigor pooling equilibrium is not necessarily unique. Depending on the joint distribution of pride parameters $w_{r,i}$ and the organization's initial priors, other equilibria may coexist. For example, if the organization starts with an extremely high epistemic scrutiny parameter ($\lambda \to 1$), a high-rigor separating equilibrium could theoretically be sustained. However, once corporate timelines compress and evaluators adopt the Halo prior ($\lambda \to 0$), the zero-rigor profile becomes the unique stable equilibrium within this basin of attraction. The system's path-dependency traps the organization in this coordination failure, locking developers into the pooling equilibrium of fragility.
                 </p>
+                <div class="my-8 p-6 bg-stone-50 border-l-4 border-stone-400 rounded-r-lg font-sans text-sm text-stone-700 leading-relaxed shadow-sm">
+                    <h4 class="text-stone-900 font-bold uppercase tracking-wider mb-2 font-sans" style="font-size: 11px;">Section IV Summary: The Mimetic Trap</h4>
+                    <p class="mb-0">
+                        In asymmetric information markets, high-quality developers signal their competence through visual polish because their marginal cost of presentation is lower than that of low-quality developers (Spence's <strong>single-crossing condition</strong>). Generative AI collapses this signaling channel by reducing presentational costs to zero for all developers. Because evaluators cannot visually distinguish wrapper tools from mathematically rigorous systems, the system enters an <strong>Akerlof lemons market</strong>: developers of rigorous tools pool with wrapper developers to save auditing costs. Combined with developer <strong>limited liability</strong> (consequences of failure are absorbed by the firm's balance sheet rather than personal developer compensation) and competitive peer pressures, the organization locks into a stable <strong>Mean-Field Nash Equilibrium of Fragility</strong>, where all developers rationally choose zero backend rigor.
+                    </p>
+                </div>
             </section>
 
             <!-- Section 5: The Ontological Shock: When the Simulation Collapses -->
@@ -772,6 +823,9 @@ Since developers face severe professional penalties for late delivery, they make
                     since the tail index of the loss distribution, $\alpha_{\text{tail}}/2 \in (0.5, 1)$, is less than 1, meaning that even the conditional expectation of tail losses is unbounded.
                 </p>
                 <p class="mb-6">
+                    <em>Sensitivity to the loss exponent.</em> Both the divergent mean and the infinite Expected Shortfall are consequences of composing the heavy tail with a <em>quadratic</em> loss, which pushes the loss tail index to $\alpha_{\text{tail}}/2 \in (0.5, 1)$. Under a linear loss ($L \propto X$) the loss inherits $\alpha_{\text{tail}} \in (1,2)$, so its mean is finite and ES diverges only for $\alpha_{\text{tail}}<1$; under a contractually capped loss every moment is finite. The qualitative conclusion—dangerously heavy, poorly-estimated tails that static buffers under-reserve—is robust across these choices, but the specific "infinite ES" result is an artifact of the convex squared-loss amplification and should be read as a worst-case rather than a generic property.
+                </p>
+                <p class="mb-6">
                     Leaning on a VaR-type threshold exceedance introduces its own epistemic hazard: VaR is notoriously blind to the shape of the tail beyond the threshold (and is non-subadditive), a limitation that mirrors the organization's own hyperreal blindness to extreme outcomes. We reconcile this ex-ante divergence with ex-post reality by observing that the firm's decision-makers optimize ex ante against an unbounded loss model whose moments diverge (rendering expected-loss minimization mathematically ill-posed as a decision tool), while the physical realized event space is truncated ex post at total capital $S$ due to limited liability and bankruptcy, which turns the exceedance of $S$ into a hard, absorbing barrier (ruin).
                 </p>
                 <p class="mb-6">
@@ -806,6 +860,9 @@ Since developers face severe professional penalties for late delivery, they make
                     When net evidence is near neutral, the system lies within the bistable wedge ($|a| < \sqrt{4b^3/27}$) where two trust states coexist; prior to the shock the organization sits on the upper sheet, where trust in polish is high ($z_p > 0 \implies w_p > \bar{w}_p$) and scrutiny is low ($\lambda \approx 0$). However, as operational shocks accumulate and $a$ rises across the critical fold threshold $a_{\text{crit}} = \sqrt{4b^3/27}$, the upper sheet of trust vanishes. The evaluator's cognitive state undergoes a discontinuous jump, collapsing trust in polish ($w_p \to 0 \implies z_p \to -\bar{w}_p$) and driving the scrutiny parameter to the complete verification limit ($\lambda_{\text{post-shock}} \to 1$).
                 </p>
                 <p class="mb-6">
+                    <em>A caveat on the cusp.</em> We use Thom's cusp as an illustrative parameterization, not an empirically identified dynamical law. Catastrophe-theoretic models of qualitative ("soft") variables such as trust were justly criticized for post-hoc curve-fitting and weak falsifiability (Sussmann &amp; Zahler, 1978); the control axes $a$ and $b$ here are interpretive rather than independently measured. What the construction contributes is the <em>qualitative structure</em>—bistability, a discontinuous downward jump, and an asymmetric (hysteretic) recovery path—which the prose argument already motivates; the manifold formalizes that structure without licensing a calibrated prediction of <em>when</em> the jump fires.
+                </p>
+                <p class="mb-6">
                     This mathematical jump resolves the inconsistency in the perceived utility equation. Under normal operations, perceived utility is $\hat{U} = \mathbf{w}_{\hat{r}}^T \hat{R} + \mathbf{w}_{\hat{p}}^T \hat{P}$. During the Ontological Shock, the collapse of trust in polish zeros out the presentation weight vector ($\mathbf{w}_{\hat{p}} \to \mathbf{0}$), while the maximum scrutiny ($\lambda \to 1$) drives the perceived rigor to its true, neglected floor ($\hat{R} \to \mathbf{R}_{\text{min}}$). Consequently, the perceived utility collapses to:
                     $$ \hat{U}_{\text{shock}} \approx \mathbf{w}_{\hat{r}}^T \mathbf{R}_{\text{min}} + \mathbf{0}^T \hat{P} \approx \epsilon_u \approx 0 $$
                     approaching the real-utility floor $\epsilon_u = g(\mathbf{R}_{\text{min}})$ since both perceived and real utility vanish as mathematical rigor goes to its minimum ($\mathbf{R} \to \mathbf{R}_{\text{min}}$). The polished dashboard is still present on the monitor, but its subjective utility collapses to zero; the visual container, once a signifier of competence, is suddenly perceived as a deceptive facade.
@@ -813,6 +870,12 @@ Since developers face severe professional penalties for late delivery, they make
                 <p class="mb-6">
                     Crucially, empirical studies of organizational failure (Vaughan, 1996) show that this correction is rarely permanent. As modeled by the cusp geometry, the system exhibits <strong>hysteresis</strong>: the path back to trust is not the reverse of the path to collapse. As time passes, the memory of the ruin event decays—a cognitive decay known as <strong>disaster myopia</strong> (Minsky, 1986)—and fresh, unfalsified polished deliverables begin to rebuild the halo. Merely letting the net-evidence parameter $a$ relax back toward zero is not enough: within the bistable wedge the system remains trapped on the low-trust sheet, which is precisely the signature of hysteresis. Only as new "wins" accumulate and drive $a$ negative, across the opposite fold at $-a_{\text{crit}} = -\sqrt{4b^3/27}$, does the low-trust sheet vanish and trust discontinuously re-jump to the upper sheet ($z_p > 0$). The organization slides back to the normalization of deviance, treating the ruin event as an exogenous "black swan" or bad luck rather than a structural failure, and the zero-rigor pooling equilibrium is restored. This full hysteresis loop—a down-jump at $+a_{\text{crit}}$ and a delayed up-jump at $-a_{\text{crit}}$—structurally motivates the institutional interventions in Section VI: if shocks permanently self-corrected, no independent executive veto or red-teaming would be necessary to protect the organization.
                 </p>
+                <div class="my-8 p-6 bg-stone-50 border-l-4 border-stone-400 rounded-r-lg font-sans text-sm text-stone-700 leading-relaxed shadow-sm">
+                    <h4 class="text-stone-900 font-bold uppercase tracking-wider mb-2 font-sans" style="font-size: 11px;">Section V Summary: The Ontological Shock</h4>
+                    <p class="mb-0">
+                        Organizations isolate analytical models within a self-referential <strong>Sanctuary</strong>, using biased validation metrics ($V_{\text{sim}}$ like LLM-as-judge scores) that reward presentation and style rather than empirical accuracy. This decoupling severs feedback from the external <strong>Arena</strong>, masking extreme out-of-distribution (OOD) tail risks where shock losses have infinite variance and expected losses diverge. When a realized loss event breaches the capital reserve ($L(X) > S$), the simulated hyperreal success collapses, inducing a sudden <strong>Ontological Shock</strong>. We model this discontinuous collapse of trust using a <strong>cusp catastrophe manifold</strong>. Due to <strong>hysteresis</strong>, trust does not gradually recover: as time passes and memory of the ruin fades (disaster myopia), trust stays low until a threshold is crossed, triggering a sudden re-jump back to the normalization of deviance, restoring the fragile zero-rigor equilibrium.
+                    </p>
+                </div>
             </section>
 
             <!-- Section VI: Epistemic Restoration: Designing for Rigor -->
@@ -992,14 +1055,14 @@ Since developers face severe professional penalties for late delivery, they make
                     Two headline regimes:
                     <ul class="list-disc pl-8 mb-6 space-y-2 text-base">
                         <li><strong>Regime 1 — The Spectacle (weak audit, no liability):</strong> with $\lambda_{\text{audit}} = 0.1$ and $w_L = 0$, the population collapses to a <strong>Mimetic Pooling Equilibrium</strong> at $K_R = 0.00$ (population s.d. $0.00$; 100% at the zero-rigor corner). Presentation fully substitutes for rigor.</li>
-                        <li><strong>Regime 2 — Epistemic Restoration (expert audit, capped liability):</strong> with $\lambda_{\text{audit}} = 0.9$ (note: held below 1, respecting the irreducible-noise limit $\lambda_{\max}\lesssim1$ of §6.2) and $w_L = 15$ subject to the per-developer wealth cap, the population converges to a tight <strong>Separating Equilibrium</strong> at $K_R \approx 3.80$ (population s.d. $\approx 0$), i.e. essentially all developers invest the rigor needed to clear the gate.</li>
+                        <li><strong>Regime 2 — Epistemic Restoration (expert audit, capped liability):</strong> with $\lambda_{\text{audit}} = 0.9$ (note: held below 1, respecting the irreducible-noise limit $\lambda_{\max}\lesssim1$ of §6.2) and $w_L = 15$ subject to the per-developer wealth cap, the population converges to a tight <strong>Separating Equilibrium</strong> at $K_R \approx 3.76$ (population s.d. $\approx 0.04$), i.e. essentially all developers invest the rigor needed to clear the gate (just above the analytic gate minimum of $3.75$ derived below).</li>
                     </ul>
                 </p>
                 <p class="mb-6">
-                    Two further results go beyond what the two regimes alone show. First, a <strong>phase boundary</strong>: sweeping $\lambda_{\text{audit}}$ at $w_L = 0$, mean rigor stays pinned at $0$ until a sharp transition between $\lambda_{\text{audit}} = 0.60$ and $0.65$, after which it rises monotonically (to $\approx 3.9$ by $\lambda_{\text{audit}} = 0.95$). This numerically located threshold matches the closed-form gate condition exactly: the corner $K_R = 0$ clears the gate iff $(1-\lambda_{\text{audit}})B_{\text{halo}}K \ge V_{\text{thresh}}$, i.e. iff $\lambda_{\text{audit}} \le 1 - V_{\text{thresh}}/(B_{\text{halo}}K) = 0.60$ — so the simulation independently recovers the analytic scrutiny threshold. Second, an <strong>ablation</strong> isolating the levers: audit gate only ($\lambda=0.9, w_L=0$) $\Rightarrow K_R = 3.80$; liability only ($\lambda=0.1, w_L=15$) $\Rightarrow K_R = 0.44$; both $\Rightarrow K_R = 3.80$. The blinded audit gate is the dominant driver, while liability <em>alone</em> is weak — precisely because the wealth ceiling of §6.1 caps the realized clawback for most developers, an effect the simulation makes visible rather than assuming away. (The conformal reject-option of §6.3 acts on the realized loss tail $\Lambda_{\text{ruin}}$, not on the developer's rigor choice, so it does not enter this best-response and is omitted here by design.)
+                    Two further results go beyond what the two regimes alone show. First, a <strong>phase boundary</strong>: sweeping $\lambda_{\text{audit}}$ at $w_L = 0$, mean rigor stays pinned at $0$ until a sharp transition between $\lambda_{\text{audit}} = 0.60$ and $0.65$, after which it rises monotonically ($\approx 1.68$ at $\lambda_{\text{audit}}=0.65$, reaching $\approx 3.90$ by $\lambda_{\text{audit}} = 0.95$). This numerically located threshold matches the closed-form gate condition exactly: the corner $K_R = 0$ clears the gate iff $(1-\lambda_{\text{audit}})B_{\text{halo}}K \ge V_{\text{thresh}}$, i.e. iff $\lambda_{\text{audit}} \le 1 - V_{\text{thresh}}/(B_{\text{halo}}K) = 0.60$ — so the simulation independently recovers the analytic scrutiny threshold. Second, an <strong>ablation</strong> isolating the levers: audit gate only ($\lambda=0.9, w_L=0$) $\Rightarrow K_R = 3.76$; liability only ($\lambda=0.1, w_L=15$) $\Rightarrow K_R = 0.00$; both $\Rightarrow K_R = 3.76$. The blinded audit gate is the dominant driver, while liability <em>alone</em> moves rigor essentially not at all — precisely because the wealth ceiling of §6.1 caps the realized clawback for most developers (whose log-normal wealth lies well below $w_L$) while the halo still lets cheap presentation clear the low-$\lambda$ gate, an effect the simulation makes visible rather than assuming away. (The conformal reject-option of §6.3 acts on the realized loss tail $\Lambda_{\text{ruin}}$, not on the developer's rigor choice, so it does not enter this best-response and is omitted here by design.)
                 </p>
                 <p class="mb-6">
-                    These results <em>illustrate</em>—rather than prove in general—that the structural interventions can shift the population from pooling to separation, and they sharpen the theory in two ways the closed form did not: they locate the scrutiny phase transition ($\lambda^\ast \approx 0.60$) and they show, consistent with §6.1–§6.2, that incentive liability is necessary but insufficient on its own, with the blinded expert audit doing the decisive work.
+                    These results <em>illustrate</em>—rather than prove in general—that the structural interventions can shift the population from pooling to separation, and they sharpen the theory in two ways the closed form did not: they locate the scrutiny phase transition ($\lambda^\ast \approx 0.60$) and they show, consistent with §6.1–§6.2, that the blinded expert audit does the decisive work while incentive liability is insufficient on its own—indeed, under the wealth ceiling it adds essentially nothing on top of the audit gate in this parameterization.
                 </p>
 
                 <h3 class="text-lg font-semibold text-stone-800 mt-8 mb-4 ui-text">Conclusion: Re-anchoring the Sign</h3>
@@ -1040,6 +1103,12 @@ Since developers face severe professional penalties for late delivery, they make
                     Even though this transition requires slowing down the delivery cycle ($T > T_{\text{benchmark}}$) and paying a high premium for deep expert audits, the long-term expected value of the organization is vastly maximized. Rigor is revealed not as an administrative tax or a drag on speed, but as the core asset that protects the enterprise from structural ruin. By re-anchoring the analytical signifier to its empirical signified, we move past the hyperreal simulation of competence and build systems that are quiet, modest, and true.
                 </p>
 
+                <div class="my-8 p-6 bg-stone-50 border-l-4 border-stone-400 rounded-r-lg font-sans text-sm text-stone-700 leading-relaxed shadow-sm">
+                    <h4 class="text-stone-900 font-bold uppercase tracking-wider mb-2 font-sans" style="font-size: 11px;">Section VI Summary: Epistemic Restoration</h4>
+                    <p class="mb-0">
+                        To restore scientific truth, the organization must implement three structural controls: first, <strong>Incentive Alignment</strong> by raising developer liability ($w_L > w_{\text{threshold}}$) to penalize zero-rigor shortcuts; second, <strong>Decoupled System 2 Audits</strong> by blinding auditors to the user interface ($\mathbf{S}_P = \mathbf{0}$) and utilizing deep human domain experts to drive analytical scrutiny to its maximum precision ($\lambda_{\text{audit}} \to \lambda_{\max}$); third, <strong>Conformal Selective Prediction</strong> to dynamically compute uncertainty and reject predictions off-distribution, capping fat-tailed losses at the cost of the fallback policy. The executive layer is restructured with checks and balances between the Chief Analytical Officer (utility generator) and Chief Epistemic Officer (veto-wielding validator). Because risk oversight is prone to political decay and disaster myopia over time, these safety guardrails must be board-insulated and reinforced by external forcing (real-world validation and open loop-opening exposure).
+                    </p>
+                </div>
             </section>
         </article>
 

@@ -109,6 +109,22 @@
             stroke-width: 0.5;
             stroke: #4b5563;
         }
+
+        /* Consequence chain (Section V): latent in the Pre-GenAI era, active Post-GenAI */
+        .mode-pre-genai .link-ruin {
+            opacity: 0.18;
+            stroke-width: 1;
+        }
+        .mode-post-genai .link-ruin {
+            opacity: 1;
+            stroke-width: 2.5;
+        }
+        .mode-pre-genai .node-consequence {
+            opacity: 0.3;
+        }
+        .mode-post-genai .node-consequence {
+            opacity: 1;
+        }
     </style>
 </head>
 <body class="font-sans antialiased overflow-hidden h-screen flex flex-col">
@@ -117,7 +133,7 @@
     <header class="px-8 py-4 border-b border-slate-900 glassmorphism flex items-center justify-between z-10">
         <div>
             <h1 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
-                <span class="text-accentBlue">☯</span> The Semiotic Decay of AI Analytics
+                <span class="text-accentBlue">☯</span> Beautiful and Wrong: The Semiotic Decay of AI Analytics
             </h1>
             <p class="text-xs text-slate-400">An Epistemological & Game-Theoretic Causal Model</p>
         </div>
@@ -134,8 +150,8 @@
                 <div id="toggle-bg" class="absolute top-1 left-1 bottom-1 w-[105px] bg-slate-800 rounded-full transition-all duration-300"></div>
             </div>
             
-            <a href="exam_simulator.html" class="text-xs font-medium text-slate-400 hover:text-white transition-colors">
-                ← Portfolio
+            <a href="semiotic_decay.html" class="text-xs font-medium text-slate-400 hover:text-white transition-colors">
+                ← Back to Paper
             </a>
         </div>
     </header>
@@ -148,7 +164,7 @@
             <div class="absolute inset-0 pointer-events-none bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:24px_24px] opacity-15"></div>
             
             <!-- SVG Causal Graph -->
-            <svg id="causal-svg" class="w-full h-full max-w-5xl max-h-[600px] mode-pre-genai" viewBox="0 0 960 560" xmlns="http://www.w3.org/2000/svg">
+            <svg id="causal-svg" class="w-full h-full max-w-6xl max-h-[600px] mode-pre-genai" viewBox="0 0 1140 560" xmlns="http://www.w3.org/2000/svg">
                 <!-- Defs for arrows, gradients -->
                 <defs>
                     <!-- Standard Marker -->
@@ -166,6 +182,10 @@
                     <!-- Active Rose Marker -->
                     <marker id="arrow-rose" viewBox="0 0 10 10" refX="28" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
                         <path d="M 0 1 L 10 5 L 0 9 z" fill="#f43f5e"/>
+                    </marker>
+                    <!-- Active Violet Marker (feedback) -->
+                    <marker id="arrow-violet" viewBox="0 0 10 10" refX="28" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 1 L 10 5 L 0 9 z" fill="#8b5cf6"/>
                     </marker>
                 </defs>
 
@@ -219,6 +239,17 @@
                 <!-- Feedback Loop -->
                 <path d="M 880 440 Q 500 530 100 290" fill="none" class="causal-link active-flow link-feedback" stroke="#8b5cf6" stroke-width="1.5" stroke-dasharray="6,6" marker-end="url(#arrow)"/>
 
+                <!-- ===== Consequence Chain (Section V): The Arena ===== -->
+                <!-- Approval -> deployment -> exposure (Ruin) -->
+                <line x1="900" y1="280" x2="1040" y2="280" class="causal-link active-flow link-ruin" stroke="#f43f5e" stroke-width="2" marker-end="url(#arrow-rose)"/>
+                <!-- Real Utility governs the loss: low U amplifies Ruin -->
+                <path d="M 900 130 Q 1010 190 1040 262" fill="none" class="causal-link active-flow link-ruin" stroke="#f43f5e" stroke-width="2" marker-end="url(#arrow-rose)"/>
+                <!-- Fat-tailed OOD shock X triggers the loss -->
+                <line x1="1040" y1="135" x2="1040" y2="258" class="causal-link active-flow link-ruin" stroke="#f43f5e" stroke-width="2" marker-end="url(#arrow-rose)"/>
+                <!-- Ruin -> Ontological Shock -->
+                <line x1="1040" y1="302" x2="1040" y2="428" class="causal-link active-flow link-ruin" stroke="#f43f5e" stroke-width="2" marker-end="url(#arrow-rose)"/>
+                <!-- Ontological Shock -> scrutiny correction (lambda -> 1, trust in polish collapses): feedback to Perceived Utility -->
+                <path d="M 1030 462 Q 880 520 800 305" fill="none" class="causal-link active-flow link-ruin" stroke="#8b5cf6" stroke-width="2" stroke-dasharray="6,6" marker-end="url(#arrow-violet)"/>
 
                 <!-- Nodes (Grouped by Category) -->
 
@@ -312,6 +343,28 @@
                     <circle cx="880" cy="420" r="22" fill="#0f172a" stroke="#ec4899" stroke-width="2.5" class="node-circle"/>
                     <text x="880" y="425" text-anchor="middle" font-family="Inter" font-weight="700" font-size="14" fill="#ec4899">B</text>
                     <text x="880" y="460" text-anchor="middle" font-family="Inter" font-weight="500" font-size="11" fill="#94a3b8">Peer Benchmark</text>
+                </g>
+
+                <!-- CONSEQUENCE CHAIN NODES (Section V) -->
+                <!-- Fat-tailed OOD Shock -->
+                <g id="node-X" onclick="selectNode('X')" class="node-consequence" style="--glow-color: #f43f5e">
+                    <circle cx="1040" cy="110" r="22" fill="#0f172a" stroke="#f43f5e" stroke-width="2" class="node-circle"/>
+                    <text x="1040" y="115" text-anchor="middle" font-family="Inter" font-weight="700" font-size="14" fill="#f43f5e">X</text>
+                    <text x="1040" y="150" text-anchor="middle" font-family="Inter" font-weight="500" font-size="11" fill="#94a3b8">OOD Shock</text>
+                </g>
+
+                <!-- Ruin event -->
+                <g id="node-RUIN" onclick="selectNode('RUIN')" class="node-consequence" style="--glow-color: #f43f5e">
+                    <circle cx="1040" cy="280" r="22" fill="#0f172a" stroke="#f43f5e" stroke-width="2.5" class="node-circle"/>
+                    <text x="1040" y="285" text-anchor="middle" font-family="Inter" font-weight="700" font-size="13" fill="#f43f5e">Ruin</text>
+                    <text x="1040" y="320" text-anchor="middle" font-family="Inter" font-weight="500" font-size="11" fill="#94a3b8">L(X) &gt; S</text>
+                </g>
+
+                <!-- Ontological Shock -->
+                <g id="node-OS" onclick="selectNode('OS')" class="node-consequence" style="--glow-color: #8b5cf6">
+                    <circle cx="1040" cy="450" r="22" fill="#0f172a" stroke="#8b5cf6" stroke-width="2.5" class="node-circle"/>
+                    <text x="1040" y="455" text-anchor="middle" font-family="Inter" font-weight="700" font-size="13" fill="#8b5cf6">Ω</text>
+                    <text x="1040" y="490" text-anchor="middle" font-family="Inter" font-weight="500" font-size="11" fill="#94a3b8">Ontological Shock</text>
                 </g>
             </svg>
         </main>
@@ -490,7 +543,7 @@
                 badge: 'EVALUATOR COGNITIVE STATE',
                 symbol: 'Û',
                 symbolColor: '#8b5cf6',
-                badgeBg: 'bg-violet-950/50 text-accentViolet border-violet-905/30',
+                badgeBg: 'bg-violet-950/50 text-accentViolet border-violet-900/30',
                 equation: '$$ \\hat{U} = w_{\\hat{r}} \\hat{R} + w_{\\hat{p}} \\hat{P} $$',
                 preDescription: 'The evaluator\'s cognitive estimate of the application\'s usefulness. Pre-GenAI, this was heavily dominated by Perceived Rigor ($w_{\\hat{r}} \\gg w_{\\hat{p}}$) because flash was rare and scrutiny was high.',
                 postDescription: 'The evaluator\'s cognitive estimate of utility. Driven heavily by visual flashiness and natural language fluency ($w_{\\hat{p}} \\ge w_{\\hat{r}}$) as polish creates a strong illusion of use-value.',
@@ -515,7 +568,7 @@
                 symbol: 'A',
                 symbolColor: '#f59e0b',
                 badgeBg: 'bg-amber-950/50 text-accentAmber border-amber-900/30',
-                equation: '$$ A = \\theta \\hat{U} - \\beta T - \\gamma B $$',
+                equation: '$$ A = \\hat{U} \\cdot d(T), \\quad d(T) = e^{-\\gamma \\max(0,\\, T - T_{\\text{benchmark}})} $$',
                 preDescription: 'Granted after thorough scrutiny of the application\'s analytical validity and actual rigor. Flash was a secondary luxury and did not drive approval.',
                 postDescription: 'Granted rapidly due to high perceived utility ($\\hat{U}$) from the AI demo, combined with intense pressure to match the delivery speeds of other teams.',
                 get description() { return currentMode === 'pre' ? this.preDescription : this.postDescription; },
@@ -539,10 +592,43 @@
                 symbol: 'B',
                 symbolColor: '#ec4899',
                 badgeBg: 'bg-pink-950/50 text-accentPink border-pink-900/30',
-                equation: '$$ B = \\mathbb{E}[\\mathbf{P}_{\\text{peers}}] \\cdot \\mathbb{E}[1/T_{\\text{peers}}] $$',
-                description: 'The baseline standard of visual polish and speed established by other teams within the organization. When other teams get executive praise for fast, flashy deliverables, this baseline goes up.',
-                genaiEffect: 'If adjacent teams deploy low-rigor, GenAI-wrapped apps in record time and receive recognition, this raises $B$. Executives begin to evaluate all analytics teams under this distorted expectation.',
+                equation: '$$ T_{\\text{benchmark},i} = T_0 + \\frac{\\theta}{N-1} \\sum_{j \\neq i} K_{R,j} $$',
+                description: 'The mean-field release horizon set by peer teams: the baseline completion time the organization expects, driven by how much rigor effort ($K_R$) peers allocate. When adjacent teams ship fast, low-rigor wrappers, the peer mean $K_{R,j} \\to 0$ collapses the benchmark toward the wrapper baseline $T_0$.',
+                genaiEffect: 'When adjacent teams deploy low-rigor, GenAI-wrapped apps in record time and are rewarded, the peer mean rigor $K_{R,j} \\to 0$ collapses the benchmark toward the wrapper baseline $T_0$. Every other team is then evaluated against this compressed, near-zero release horizon.',
                 philosophy: 'Mimetic Desire (René Girard). The organization\'s appreciation is comparative, not absolute. The developer does not compete against a standard of truth, but against the simulated speed of their peers.'
+            },
+            'X': {
+                title: 'Out-of-Distribution Shock',
+                badge: 'EXOGENOUS ARENA INPUT',
+                symbol: 'X',
+                symbolColor: '#f43f5e',
+                badgeBg: 'bg-rose-950/50 text-accentRose border-rose-900/30',
+                equation: '$$ P(X \\ge x) \\sim (x / x_{\\text{min}})^{-\\alpha_{\\text{tail}}}, \\quad \\alpha_{\\text{tail}} \\in (1,2) $$',
+                description: 'The fat-tailed, real-world state shock the model meets once deployed in the open "Arena." In the regime $\\alpha_{\\text{tail}} \\in (1,2)$ the mean exists but the variance is infinite: outcomes are dominated by rare, extreme events the sanitized demo never tested.',
+                genaiEffect: 'GenAI does not create the tail — it removes the defenses against it. A wrapper with zero rigor ($R \\to R_{\\min}$) carries a large error multiplier $c_{\\text{error}}$, so an ordinary tail draw becomes a catastrophic loss.',
+                philosophy: 'The Real (Lacan) intrudes. The Arena is indifferent to the signifiers that ruled the Sanctuary; the territory finally refuses the map.'
+            },
+            'RUIN': {
+                title: 'Ruin Event',
+                badge: 'ORGANIZATIONAL OUTCOME',
+                symbol: 'Ruin',
+                symbolColor: '#f43f5e',
+                badgeBg: 'bg-rose-950/50 text-accentRose border-rose-900/30',
+                equation: '$$ P(\\text{Ruin}) \\sim x_{\\text{min}}^{\\alpha_{\\text{tail}}} \\left( \\frac{\\phi_0 c_{\\text{error}}^2}{S} \\right)^{\\alpha_{\\text{tail}}/2} $$',
+                description: 'The event where a shock-driven loss exceeds the firm\'s capital reserve, $L(X) > S$. Because the loss inherits a heavy tail, the ruin probability decays only polynomially in the reserve $S$ — doubling capital barely halves the risk, so buffers priced on Gaussian intuition under-reserve by orders of magnitude.',
+                genaiEffect: 'Low rigor inflates the error multiplier $c_{\\text{error}}$, which enters squared: ruin probability rises sharply as the model amplifies rather than absorbs the shock. The decoupled "Sanctuary" never saw it coming because its validation proxy rewarded polish, not survival.',
+                philosophy: 'The bill for the simulacrum. Hyperreal value, accumulated inside the closed loop, is settled in a single catastrophic transaction with the real.'
+            },
+            'OS': {
+                title: 'Ontological Shock',
+                badge: 'BELIEF-STATE COLLAPSE',
+                symbol: 'Ω',
+                symbolColor: '#8b5cf6',
+                badgeBg: 'bg-violet-950/50 text-accentViolet border-violet-900/30',
+                equation: '$$ z_p^3 - b\\,z_p + a = 0 \\;\\Rightarrow\\; \\lambda_{\\text{post-shock}} \\to 1,\\; \\mathbf{w}_{\\hat p} \\to \\mathbf{0} $$',
+                description: 'The discontinuous collapse of trust when ruin dissolves the hyperreal. Modeled as a cusp catastrophe: as failure evidence crosses a fold threshold, the high-trust sheet vanishes, scrutiny jumps to its maximum ($\\lambda \\to 1$), and perceived utility crashes to the real-utility floor ($\\hat{U}_{\\text{shock}} \\approx \\epsilon_u$).',
+                genaiEffect: 'The polished dashboard is still on the monitor — but its subjective utility is suddenly zero. The very fluency that won approval is now read as a deceptive facade.',
+                philosophy: 'Due to hysteresis, the correction is not permanent: as the memory of ruin fades (disaster myopia) and fresh polished wins accumulate, trust re-jumps to the upper sheet and the zero-rigor equilibrium is restored — the structural case for board-insulated oversight rather than relying on the shock to teach a lasting lesson.'
             }
         };
 
@@ -558,7 +644,7 @@
             
             // Adjust toggle style
             if (mode === 'pre') {
-                svg.setAttribute('class', 'w-full h-full max-w-5xl max-h-[600px] mode-pre-genai');
+                svg.setAttribute('class', 'w-full h-full max-w-6xl max-h-[600px] mode-pre-genai');
                 toggleBg.style.left = '4px';
                 toggleBg.style.width = '105px';
                 btnPre.classList.add('text-white');
@@ -577,7 +663,7 @@
 
                 statusSummary.innerHTML = "Under the <strong>Pre-GenAI Era</strong>, visual flash was difficult and costly to build. Consequently, applications were evaluated and approved based on actual mathematical rigor, high scrutiny, and structural validity.";
             } else {
-                svg.setAttribute('class', 'w-full h-full max-w-5xl max-h-[600px] mode-post-genai');
+                svg.setAttribute('class', 'w-full h-full max-w-6xl max-h-[600px] mode-post-genai');
                 toggleBg.style.left = '109px';
                 toggleBg.style.width = '115px';
                 btnPost.classList.add('text-white');
@@ -657,6 +743,9 @@
             eqContainer.innerHTML = data.equation;
             MathJax.typesetPromise([eqContainer]);
         }
+
+        // Initialize default mode on load so all node states are in sync
+        setMode('pre');
     </script>
 </body>
 </html>
