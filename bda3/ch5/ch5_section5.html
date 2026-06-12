@@ -394,7 +394,7 @@
                         Now, the SAT is designed to be tough to beat. It's supposed to measure abilities built over years. But all these <span class="feynman-intuition">eight different high schools</span> ran their own coaching programs, and <span class="feynman-emphasis">every single school</span> was convinced their program was a huge success.
                     </p>
                     <p class="mb-6">
-                        But here's the catch: <span class="feynman-pause-short"></span> they had <span class="feynman-pitfall">no prior reason to think any one school's program was better than the others</span>. To them, they were all just schools trying their best, completely independent, with no obvious differences in quality.
+                        But here's the catch: <span class="feynman-pause-short"></span> they had no prior reason to think any one school's program was better than the others. To them, they were all just schools trying their best, completely independent, with no obvious differences in quality.
                         <span class="feynman-pause-long"></span>
                         So they ran randomized experiments in each school. They collected the data, adjusted for the kids' starting scores (using covariance, which is just a fancy way of leveling the playing field), and came up with an <span class="feynman-intuition">estimated coaching effect</span> for each school, which we'll call $y_j$, and a measure of the noise, which we'll call the standard error $\sigma_j$.
                     </p>
@@ -415,49 +415,49 @@
                             <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
                                 <td class="px-6 py-4 font-bold text-bayesian-navy">A</td>
                                 <td class="px-6 py-4 text-right"><span class="feynman-intuition">28</span></td>
-                                <td class="px-6 py-4 text-right"><span class="feynman-pitfall">15</span></td>
+                                <td class="px-6 py-4 text-right">15</td>
                                 <td class="px-6 py-4 text-xs italic text-teal-800 bg-teal-50/20">Looks huge, but the noise (15) is almost as big!</td>
                             </tr>
                             <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
                                 <td class="px-6 py-4 font-bold text-bayesian-navy">B</td>
                                 <td class="px-6 py-4 text-right"><span class="feynman-intuition">8</span></td>
-                                <td class="px-6 py-4 text-right"><span class="feynman-pitfall">10</span></td>
+                                <td class="px-6 py-4 text-right">10</td>
                                 <td class="px-6 py-4 text-xs italic text-slate-500">Tiny positive signal, completely buried in noise.</td>
                             </tr>
                             <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
                                 <td class="px-6 py-4 font-bold text-bayesian-navy">C</td>
                                 <td class="px-6 py-4 text-right"><span class="feynman-intuition">-3</span></td>
-                                <td class="px-6 py-4 text-right"><span class="feynman-pitfall">16</span></td>
-                                <td class="px-6 py-4 text-xs italic text-rose-800 bg-rose-50/20">A negative effect? Or just a random bounce?</td>
+                                <td class="px-6 py-4 text-right">16</td>
+                                <td class="px-6 py-4 text-xs italic text-slate-500">A negative effect? Or just a random bounce?</td>
                             </tr>
                             <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
                                 <td class="px-6 py-4 font-bold text-bayesian-navy">D</td>
                                 <td class="px-6 py-4 text-right"><span class="feynman-intuition">7</span></td>
-                                <td class="px-6 py-4 text-right"><span class="feynman-pitfall">11</span></td>
+                                <td class="px-6 py-4 text-right">11</td>
                                 <td class="px-6 py-4 text-xs italic text-slate-500">Same as B: very noisy.</td>
                             </tr>
                             <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
                                 <td class="px-6 py-4 font-bold text-bayesian-navy">E</td>
                                 <td class="px-6 py-4 text-right"><span class="feynman-intuition">-1</span></td>
-                                <td class="px-6 py-4 text-right"><span class="feynman-pitfall">9</span></td>
+                                <td class="px-6 py-4 text-right">9</td>
                                 <td class="px-6 py-4 text-xs italic text-slate-500">Near zero, with slightly lower noise.</td>
                             </tr>
                             <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
                                 <td class="px-6 py-4 font-bold text-bayesian-navy">F</td>
                                 <td class="px-6 py-4 text-right"><span class="feynman-intuition">1</span></td>
-                                <td class="px-6 py-4 text-right"><span class="feynman-pitfall">11</span></td>
+                                <td class="px-6 py-4 text-right">11</td>
                                 <td class="px-6 py-4 text-xs italic text-slate-500">Flatline.</td>
                             </tr>
                             <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
                                 <td class="px-6 py-4 font-bold text-bayesian-navy">G</td>
                                 <td class="px-6 py-4 text-right"><span class="feynman-intuition">18</span></td>
-                                <td class="px-6 py-4 text-right"><span class="feynman-pitfall">10</span></td>
+                                <td class="px-6 py-4 text-right">10</td>
                                 <td class="px-6 py-4 text-xs italic text-teal-800 bg-teal-50/20">A decent positive bounce, almost double the noise!</td>
                             </tr>
                             <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
                                 <td class="px-6 py-4 font-bold text-bayesian-navy">H</td>
                                 <td class="px-6 py-4 text-right"><span class="feynman-intuition">12</span></td>
-                                <td class="px-6 py-4 text-right"><span class="feynman-pitfall">18</span></td>
+                                <td class="px-6 py-4 text-right">18</td>
                                 <td class="px-6 py-4 text-xs italic text-slate-500">Highly uncertain.</td>
                             </tr>
                         </tbody>
@@ -482,7 +482,7 @@
                     <p class="mb-6">
                         If you take a quick look at the raw table, you might think: <span class="feynman-intuition">'Look! Some coaching programs work well (School A got 28 points, School G got 18), some have tiny effects, and some are negative.'</span> <span class="feynman-pause-medium"></span>
                         But hold on! Look at the standard errors.
-                        When you calculate the 95% posterior interval for each school separately, <span class="feynman-pitfall">they all overlap substantially.</span>
+                        When you calculate the 95% posterior interval for each school separately, they all overlap substantially.
                         School A is $28 \pm 30$, School C is $-3 \pm 32$.
                         Because the noise is so large, <span class="feynman-emphasis">you cannot statistically tell any of these schools apart.</span> They are all stepping on each other's toes in terms of error bars. If you treat them separately, you're pretending they're isolated islands, but your data is too weak to back that up.
                     </p>
@@ -527,7 +527,7 @@
                         <span class="feynman-pause-medium"></span>
                         Now look at our actual table of results: 28, 18, 12, 8, 7, 1, $-1$, and $-3$.
                         <span class="feynman-emphasis">They match almost perfectly!</span>
-                        So, yes! <span class="feynman-pitfall">An observed effect of 28 in school A is completely consistent with pure random noise.</span> It would be foolish to believe School A has a program that is uniquely superior.
+                        So, yes! An observed effect of 28 in school A is completely consistent with pure random noise. <span class="feynman-pitfall">It would be foolish to believe School A has a program that is uniquely superior.</span>
                     </p>
 
                     <h3 class="text-xl font-semibold mb-4 text-bayesian-navy ui-text">The paradox of extremes</h3>
