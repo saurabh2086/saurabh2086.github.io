@@ -255,15 +255,12 @@
                 </div>
             </div>
             
-            <!-- Format Selector (Three Tabs) -->
+            <!-- Format Selector (Two Tabs) -->
             <div class="flex items-center gap-3 w-full md:w-auto">
                 <span class="text-xs font-bold uppercase tracking-wider text-bayesian-slate">Format:</span>
                 <div class="bg-slate-200/50 p-1 rounded-lg flex gap-1 w-full md:w-auto">
                     <button id="format-normal" onclick="setFormatMode('normal')" class="flex-1 md:flex-initial px-4 py-2 text-xs font-bold rounded-md transition-all duration-200 bg-bayesian-navy text-white shadow-soft">
                         Normal
-                    </button>
-                    <button id="format-style" onclick="setFormatMode('style')" class="flex-1 md:flex-initial px-4 py-2 text-xs font-bold rounded-md transition-all duration-200 bg-transparent text-bayesian-slate hover:text-bayesian-navy">
-                        Style
                     </button>
                     <button id="format-rewritten" onclick="setFormatMode('rewritten')" class="flex-1 md:flex-initial px-4 py-2 text-xs font-bold rounded-md transition-all duration-200 bg-transparent text-bayesian-slate hover:text-bayesian-navy">
                         Rewritten Piece
@@ -657,429 +654,6 @@
             </div>
         </div>
 
-        <!-- Feynman Style Mode Container (Original Prose Styled) -->
-        <div class="mode-feynman-style hidden">
-            <!-- Collapsible Legend -->
-            <details class="mb-8 p-4 bg-teal-50/30 border border-teal-200/50 rounded-lg text-sm text-teal-900 ui-text leading-relaxed shadow-soft group">
-                <summary class="font-bold cursor-pointer flex items-center justify-between text-teal-800 list-none focus:outline-none select-none">
-                    <div class="flex items-center gap-2 text-xs md:text-sm">
-                        <svg class="w-4 h-4 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                        Feynman Style Notation Key
-                    </div>
-                    <span class="text-xs font-semibold text-teal-700 hover:text-teal-950 transition-colors group-open:hidden">Show Key &darr;</span>
-                    <span class="text-xs font-semibold text-teal-700 hover:text-teal-950 transition-colors hidden group-open:inline">Hide Key &uarr;</span>
-                </summary>
-                <div class="mt-4 border-t border-teal-200/40 pt-3">
-                    <ul class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2.5 text-xs text-teal-850">
-                        <li><span class="feynman-intuition">Teal Text</span>: Physical setups, raw observations, and data.</li>
-                        <li><span class="feynman-math">Blue Text</span>: Core mathematical concepts and equations.</li>
-                        <li><span class="feynman-pitfall">Rose Text</span>: Statistical traps, false conclusions, and warnings.</li>
-                        <li><span class="feynman-emphasis">Bold Text</span>: Key emphasis on core concepts.</li>
-                        <li><span class="feynman-pause-short"></span>: A short breath or visual pause in the lecture.</li>
-                        <li><span class="feynman-pause-medium"></span>: A medium conversational pause.</li>
-                        <li><span class="feynman-pause-long"></span>: A long silent pause (letting a thought sink in).</li>
-                    </ul>
-                </div>
-            </details>
-
-            <!-- Introduction Section -->
-            <section class="mb-16">
-                <div class="prose max-w-none text-bayesian-text mb-6">
-                    <p class="mb-6">
-                        We illustrate the <span class="feynman-math">hierarchical normal model</span> <span class="feynman-pause-short"></span> with a problem in which the <span class="feynman-emphasis">Bayesian analysis gives conclusions <span class="feynman-pause-short"></span> that differ in important respects <span class="feynman-pause-short"></span> from other methods</span>.
-                    </p>
-                    <p class="mb-6">
-                        A study was performed for the <span class="feynman-intuition">Educational Testing Service</span> <span class="feynman-pause-short"></span> to analyze the effects of special coaching programs <span class="feynman-pause-short"></span> on test scores. <span class="feynman-pause-medium"></span> Separate randomized experiments were performed <span class="feynman-pause-short"></span> to estimate the effects of coaching programs <span class="feynman-pause-short"></span> for the <span class="feynman-intuition">SAT-V</span> (Scholastic Aptitude Test-Verbal) <span class="feynman-pause-short"></span> in each of <span class="feynman-intuition">eight high schools</span>. <span class="feynman-pause-medium"></span> The outcome variable in each study <span class="feynman-pause-short"></span> was the score on a special administration <span class="feynman-pause-short"></span> of the SAT-V, <span class="feynman-pause-medium"></span> a standardized multiple choice test <span class="feynman-pause-short"></span> administered by the Educational Testing Service <span class="feynman-pause-short"></span> and used to help colleges <span class="feynman-pause-short"></span> make admissions decisions; <span class="feynman-pause-medium"></span> the scores can vary between 200 and 800, <span class="feynman-pause-short"></span> with mean about 500 <span class="feynman-pause-short"></span> and standard deviation about 100. <span class="feynman-pause-medium"></span> The SAT examinations are designed <span class="feynman-pause-short"></span> to be resistant to short-term efforts <span class="feynman-pause-short"></span> directed specifically toward improving performance on the test; <span class="feynman-pause-medium"></span> instead, <span class="feynman-pause-short"></span> they are designed to reflect knowledge acquired <span class="feynman-pause-short"></span> and abilities developed <span class="feynman-pause-short"></span> over many years of education. <span class="feynman-pause-medium"></span> Nevertheless, <span class="feynman-pause-short"></span> each of the eight schools in this study <span class="feynman-pause-short"></span> considered its short-term coaching program <span class="feynman-pause-short"></span> to be successful <span class="feynman-pause-short"></span> at increasing SAT scores. <span class="feynman-pause-medium"></span> Also, <span class="feynman-pause-short"></span> there was no prior reason to believe <span class="feynman-pause-short"></span> that any of the eight programs <span class="feynman-pause-short"></span> was more effective than any other, <span class="feynman-pause-short"></span> or that some were more similar in effect to each other <span class="feynman-pause-short"></span> than to any other.
-                    </p>
-                    <p class="mb-6">
-                        The results of the experiments <span class="feynman-pause-short"></span> are summarized in <span class="feynman-intuition">Table 5.2</span>. <span class="feynman-pause-medium"></span> All students in the experiments <span class="feynman-pause-short"></span> had already taken the PSAT (Preliminary SAT), <span class="feynman-pause-medium"></span> and allowance was made <span class="feynman-pause-short"></span> for differences in the PSAT-M (Mathematics) and PSAT-V test scores <span class="feynman-pause-short"></span> between coached and uncoached students. <span class="feynman-pause-medium"></span> In particular, <span class="feynman-pause-short"></span> in each school <span class="feynman-pause-short"></span> the estimated coaching effect and its standard error <span class="feynman-pause-short"></span> were obtained by an <span class="feynman-math">analysis of covariance adjustment</span> <span class="feynman-pause-medium"></span> (that is, a <span class="feynman-math">linear regression</span> was performed <span class="feynman-pause-short"></span> of SAT-V on treatment group, <span class="feynman-pause-short"></span> using PSAT-M and PSAT-V as control variables) <span class="feynman-pause-short"></span> appropriate for a completely randomized experiment. <span class="feynman-pause-medium"></span> A separate regression <span class="feynman-pause-short"></span> was estimated for each school. <span class="feynman-pause-medium"></span> Although not simple sample means <span class="feynman-pause-short"></span> (because of the covariance adjustments), <span class="feynman-pause-medium"></span> the <span class="feynman-intuition">estimated coaching effects</span>, which we label $y_j$, <span class="feynman-pause-short"></span> and their <span class="feynman-math">sampling variances</span>, $\sigma_j^2$, <span class="feynman-pause-short"></span> play the same role in our model <span class="feynman-pause-short"></span> as $\bar{y}_{\cdot j}$ and $\sigma_j^2$ in the previous section. <span class="feynman-pause-medium"></span> The estimates $y_j$ <span class="feynman-pause-short"></span> are obtained by independent experiments <span class="feynman-pause-medium"></span> and have approximately <span class="feynman-math">normal sampling distributions</span> <span class="feynman-pause-short"></span> with sampling variances that are known, <span class="feynman-pause-short"></span> for all practical purposes, <span class="feynman-pause-medium"></span> because the sample sizes in all of the eight experiments <span class="feynman-pause-short"></span> were relatively large, <span class="feynman-pause-short"></span> over thirty students in each school <span class="feynman-pause-short"></span> (recall the discussion of data reduction in Section 4.1). <span class="feynman-pause-medium"></span> Incidentally, <span class="feynman-pause-short"></span> an increase of eight points on the SAT-V <span class="feynman-pause-short"></span> corresponds to about one more test item correct.
-                    </p>
-                </div>
-
-                <!-- Table 5.2 Observed effects -->
-                <div class="overflow-x-auto my-8 border border-bayesian-border rounded-lg bg-white shadow-soft">
-                    <table class="min-w-full divide-y divide-bayesian-border text-sm">
-                        <thead class="bg-bayesian-surfaceAlt">
-                            <tr class="ui-text font-semibold text-bayesian-navy text-left">
-                                <th class="px-6 py-4">School</th>
-                                <th class="px-6 py-4 text-right">Estimated treatment effect, $y_j$</th>
-                                <th class="px-6 py-4 text-right">Standard error estimate, $\sigma_j$</th>
-                                <th class="px-6 py-4">Intuitive Readout</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-bayesian-border text-bayesian-text font-medium">
-                            <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
-                                <td class="px-6 py-4 font-bold text-bayesian-navy">A</td>
-                                <td class="px-6 py-4 text-right"><span class="feynman-intuition">28</span></td>
-                                <td class="px-6 py-4 text-right">15</td>
-                                <td class="px-6 py-4 text-xs italic text-teal-800 bg-teal-50/20">Looks huge, but the noise (15) is almost as big!</td>
-                            </tr>
-                            <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
-                                <td class="px-6 py-4 font-bold text-bayesian-navy">B</td>
-                                <td class="px-6 py-4 text-right"><span class="feynman-intuition">8</span></td>
-                                <td class="px-6 py-4 text-right">10</td>
-                                <td class="px-6 py-4 text-xs italic text-slate-500">Tiny positive signal, completely buried in noise.</td>
-                            </tr>
-                            <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
-                                <td class="px-6 py-4 font-bold text-bayesian-navy">C</td>
-                                <td class="px-6 py-4 text-right"><span class="feynman-intuition">-3</span></td>
-                                <td class="px-6 py-4 text-right">16</td>
-                                <td class="px-6 py-4 text-xs italic text-rose-800 bg-rose-50/20">A negative effect? Or just a random bounce?</td>
-                            </tr>
-                            <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
-                                <td class="px-6 py-4 font-bold text-bayesian-navy">D</td>
-                                <td class="px-6 py-4 text-right"><span class="feynman-intuition">7</span></td>
-                                <td class="px-6 py-4 text-right">11</td>
-                                <td class="px-6 py-4 text-xs italic text-slate-500">Same as B: very noisy.</td>
-                            </tr>
-                            <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
-                                <td class="px-6 py-4 font-bold text-bayesian-navy">E</td>
-                                <td class="px-6 py-4 text-right"><span class="feynman-intuition">-1</span></td>
-                                <td class="px-6 py-4 text-right">9</td>
-                                <td class="px-6 py-4 text-xs italic text-slate-500">Near zero, with slightly lower noise.</td>
-                            </tr>
-                            <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
-                                <td class="px-6 py-4 font-bold text-bayesian-navy">F</td>
-                                <td class="px-6 py-4 text-right"><span class="feynman-intuition">1</span></td>
-                                <td class="px-6 py-4 text-right">11</td>
-                                <td class="px-6 py-4 text-xs italic text-slate-500">Flatline.</td>
-                            </tr>
-                            <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
-                                <td class="px-6 py-4 font-bold text-bayesian-navy">G</td>
-                                <td class="px-6 py-4 text-right"><span class="feynman-intuition">18</span></td>
-                                <td class="px-6 py-4 text-right">10</td>
-                                <td class="px-6 py-4 text-xs italic text-teal-800 bg-teal-50/20">A decent positive bounce, almost double the noise!</td>
-                            </tr>
-                            <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
-                                <td class="px-6 py-4 font-bold text-bayesian-navy">H</td>
-                                <td class="px-6 py-4 text-right"><span class="feynman-intuition">12</span></td>
-                                <td class="px-6 py-4 text-right">18</td>
-                                <td class="px-6 py-4 text-xs italic text-slate-500">Highly uncertain.</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div class="px-6 py-3 bg-bayesian-surfaceAlt/30 border-t border-bayesian-border text-xs text-bayesian-slate italic">
-                        <strong>Table 5.2 (Feynman Styled):</strong> Observed effects of special preparation on SAT-V scores in eight randomized experiments. The "Intuitive Readout" column shows how a researcher visually interrogates the data before writing down mathematical models.
-                    </div>
-                </div>
-            </section>
-
-            <!-- Section: Inferences based on nonhierarchical models -->
-            <section class="mb-16">
-                <h2 class="text-2xl font-semibold mb-6 border-b pb-2 border-bayesian-border ui-text">
-                    Inferences based on nonhierarchical models and their problems
-                </h2>
-                <div class="prose max-w-none text-bayesian-text">
-                    <p class="mb-6">
-                        Before fitting the <span class="feynman-math">hierarchical Bayesian model</span>, we first consider <span class="feynman-emphasis">two simpler nonhierarchical methods</span>—estimating the effects from the eight experiments independently, and complete pooling—and discuss why neither of these approaches is adequate for this example.
-                    </p>
-
-                    <h3 class="text-xl font-semibold mb-4 text-bayesian-navy ui-text">Separate estimates</h3>
-                    <p class="mb-6">
-                        A cursory examination of <span class="feynman-intuition">Table 5.2</span> <span class="feynman-pause-short"></span> may at first suggest <span class="feynman-pause-short"></span> that some coaching programs have moderate effects <span class="feynman-pause-short"></span> (in the range 18–28 points), <span class="feynman-pause-short"></span> most have small effects (0–12 points), <span class="feynman-pause-short"></span> and two have small negative effects; <span class="feynman-pause-medium"></span> however, <span class="feynman-pause-short"></span> when we take note of the standard errors <span class="feynman-pause-short"></span> of these estimated effects, <span class="feynman-pause-medium"></span> we see that <span class="feynman-emphasis">it is difficult statistically to distinguish between any of the experiments</span>. <span class="feynman-pause-long"></span> For example, <span class="feynman-pause-short"></span> treating each experiment separately <span class="feynman-pause-short"></span> and applying the simple normal analysis in each <span class="feynman-pause-short"></span> yields <span class="feynman-math">95% posterior intervals</span> <span class="feynman-pause-short"></span> that all overlap substantially.
-                    </p>
-
-                    <h3 class="text-xl font-semibold mb-4 text-bayesian-navy ui-text">A pooled estimate</h3>
-                    <p class="mb-6">
-                        The general overlap in the posterior intervals <span class="feynman-pause-short"></span> based on independent analyses <span class="feynman-pause-short"></span> suggests that all experiments <span class="feynman-pause-short"></span> might be estimating the same quantity. <span class="feynman-pause-medium"></span> Under the hypothesis that all experiments have the same effect <span class="feynman-pause-short"></span> and produce independent estimates of this common effect, <span class="feynman-pause-medium"></span> we could treat the data in Table 5.2 <span class="feynman-pause-short"></span> as eight normally distributed observations <span class="feynman-pause-short"></span> with known variances. <span class="feynman-pause-medium"></span> With a noninformative prior distribution, <span class="feynman-pause-short"></span> the posterior mean for the common coaching effect in the schools is $\bar{y}_{\cdot\cdot}$, <span class="feynman-pause-short"></span> as defined in equation (5.13) with $y_j$ in place of $\bar{y}_{\cdot j}$:
-                    </p>
-
-                    <div class="academic-card p-6 mb-6 mt-8 border-l-4 border-blue-500">
-                        <h4 class="font-semibold text-bayesian-navy ui-text mb-4">Common-Effect Estimation (Complete Pooling)</h4>
-                        <p class="mb-4 text-sm">
-                            Under complete pooling, the shared effect estimate $\bar{y}_{\cdot\cdot}$ and its variance are:
-                        </p>
-                        <div class="code-block text-center py-4 bg-bayesian-surfaceAlt border border-bayesian-border rounded mb-4">
-                            <span class="feynman-math">$$\bar{y}_{\cdot\cdot} = \frac{\sum_{j=1}^8 \frac{y_j}{\sigma_j^2}}{\sum_{j=1}^8 \frac{1}{\sigma_j^2}} = 7.7$$</span>
-                            <span class="feynman-math">$$\text{Var}(\bar{y}_{\cdot\cdot}) = \left( \sum_{j=1}^8 \frac{1}{\sigma_j^2} \right)^{-1} = 16.6$$</span>
-                        </div>
-                        <p class="text-sm text-bayesian-slate italic">
-                            This yields a posterior standard error of $\sqrt{16.6} \approx 4.1$, leading to a 95% posterior interval of $[-0.5, 15.9]$, or approximately $[8 \pm 8]$.
-                        </p>
-                    </div>
-
-                    <p class="mb-6">
-                        Supporting this analysis, the classical test of the hypothesis that all $\theta_j$'s are estimating the same quantity yields a $\chi^2$ statistic less than its degrees of freedom ($7$, in this case):
-                        <span class="feynman-math">$$\sum_{j=1}^8 \frac{(y_j - \bar{y}_{\cdot\cdot})^2}{\sigma_j^2} = 4.6$$</span>
-                        To put it another way, the estimate $\hat{\tau}^2$ from equation (5.22) is negative, suggesting no evidence of variance between schools.
-                    </p>
-
-                    <h3 class="text-xl font-semibold mb-4 text-bayesian-navy ui-text">Would it be possible to see an effect of 28 by chance?</h3>
-                    <p class="mb-6">
-                        Would it be possible <span class="feynman-pause-short"></span> to have one school’s observed effect be 28 <span class="feynman-pause-short"></span> just by chance, <span class="feynman-pause-medium"></span> if the coaching effects in all eight schools <span class="feynman-pause-short"></span> were really the same? <span class="feynman-pause-medium"></span> To get a feeling for the natural variation <span class="feynman-pause-short"></span> that we would expect across eight studies <span class="feynman-pause-short"></span> if this assumption were true, <span class="feynman-pause-medium"></span> suppose the estimated treatment effects <span class="feynman-pause-short"></span> are eight independent draws from a normal distribution <span class="feynman-pause-short"></span> with mean 8 points and standard deviation 13 points <span class="feynman-pause-short"></span> (the square root of the mean of the eight variances $\sigma_j^2$).
-                        <span class="feynman-pause-long"></span>
-                        Then, <span class="feynman-pause-short"></span> based on the expected values <span class="feynman-pause-short"></span> of normal order statistics, <span class="feynman-pause-medium"></span> we would expect the largest observed value of $y_j$ <span class="feynman-pause-short"></span> to be about 26 points <span class="feynman-pause-medium"></span> and the others, <span class="feynman-pause-short"></span> in diminishing order, <span class="feynman-pause-medium"></span> to be about 19, 14, 10, 6, 2, $-3$, and $-9$ points. <span class="feynman-pause-long"></span> These expected effect sizes <span class="feynman-pause-short"></span> are consistent with the set of observed effect sizes <span class="feynman-pause-short"></span> in Table 5.2. <span class="feynman-pause-long"></span> <span class="feynman-pitfall">Thus, <span class="feynman-pause-short"></span> it would appear imprudent <span class="feynman-pause-short"></span> to believe that school A <span class="feynman-pause-short"></span> really has an effect as large as 28 points.</span>
-                    </p>
-
-                    <h3 class="text-xl font-semibold mb-4 text-bayesian-navy ui-text">Difficulties with the separate and pooled estimates</h3>
-                    <p class="mb-6">
-                        To see the problems <span class="feynman-pause-short"></span> with the two extreme attitudes <span class="feynman-pause-medium"></span>—the separate analyses <span class="feynman-pause-short"></span> that consider each $\theta_j$ separately, <span class="feynman-pause-medium"></span> and the alternative view (a single common effect) <span class="feynman-pause-short"></span> that leads to the pooled estimate— <span class="feynman-pause-medium"></span> consider $\theta_1$, <span class="feynman-pause-short"></span> the effect in school A. <span class="feynman-pause-long"></span>
-                        The effect in school A <span class="feynman-pause-short"></span> is estimated as $28.4$ <span class="feynman-pause-short"></span> with a standard error of $14.9$ <span class="feynman-pause-short"></span> under the separate analysis, <span class="feynman-pause-medium"></span> versus a pooled estimate of $7.7$ <span class="feynman-pause-short"></span> with a standard error of $4.1$ <span class="feynman-pause-short"></span> under the common-effect model.
-                    </p>
-                    
-                    <div class="theorem-block my-8 border-l-4 border-rose-500">
-                        <h4 class="text-sm font-bold text-bayesian-navy uppercase tracking-wider mb-3 ui-text">The Limitations of Extremes</h4>
-                        <ul class="list-disc pl-6 space-y-2.5 text-bayesian-text">
-                            <li>
-                                The separate analyses of the eight schools imply: <em>"the probability is $\frac{1}{2}$ that the true effect in A is more than $28.4$"</em>, <span class="feynman-pitfall">a doubtful statement</span>, considering the results for the other seven schools.
-                            </li>
-                            <li>
-                                On the other hand, the pooled model implies: <em>"the probability is $\frac{1}{2}$ that the true effect in A is less than $7.7$"</em>, which, despite the non-significant $\chi^2$ test, <span class="feynman-pitfall">seems an inaccurate summary of our knowledge</span>.
-                            </li>
-                            <li>
-                                The pooled model also implies: <em>"the probability is $\frac{1}{2}$ that the true effect in A is less than the true effect in C"</em>, which is also <span class="feynman-pitfall">difficult to justify</span> given the data in Table 5.2.
-                            </li>
-                        </ul>
-                    </div>
-
-                    <p class="mb-6">
-                        Neither estimate is fully satisfactory, <span class="feynman-pause-medium"></span> and we would like a compromise <span class="feynman-pause-short"></span> that combines information <span class="feynman-pause-short"></span> from all eight experiments <span class="feynman-pause-medium"></span> without assuming all the $\theta_j$’s to be equal. <span class="feynman-pause-long"></span> The Bayesian analysis <span class="feynman-pause-short"></span> under the hierarchical model <span class="feynman-pause-short"></span> provides exactly that.
-                    </p>
-                </div>
-            </section>
-
-            <!-- Cognitive Readout Box for Feynman Style -->
-            <div class="mt-12 p-6 bg-bayesian-surfaceAlt border border-bayesian-border rounded-lg text-sm text-bayesian-navy ui-text leading-relaxed shadow-soft">
-                <h4 class="font-bold text-base mb-3 text-bayesian-navy">Cognitive Design: How Visual Highlight Segregates Reading</h4>
-                <p class="mb-4">
-                    This alternative formatting (Feynman Style) applies color and typography to the original text to alter how our brains process structured prose:
-                </p>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
-                    <div>
-                        <h5 class="font-semibold text-xs uppercase tracking-wider text-bayesian-slate mb-1">1. Subvocalization & Pace</h5>
-                        <p class="text-xs text-bayesian-text">
-                            By embedding explicit visual pause markers (<span class="feynman-pause-short"></span>) and spacing, the text forces the reader to slow down and match the cadence of spoken speech. This replicates the rhythm of a lecture, giving the brain time to digest the preceding clause before moving on.
-                        </p>
-                    </div>
-                    <div>
-                        <h5 class="font-semibold text-xs uppercase tracking-wider text-bayesian-slate mb-1">2. Preattentive Color Cues</h5>
-                        <p class="text-xs text-bayesian-text">
-                            The color system segregates information preattentively. Before reading the words, the eye recognizes <span class="feynman-intuition">data (teal)</span>, <span class="feynman-math">models (blue)</span>, and <span class="feynman-pitfall">pitfalls (rose)</span>. This structural categorization reduces cognitive load.
-                        </p>
-                    </div>
-                    <div>
-                        <h5 class="font-semibold text-xs uppercase tracking-wider text-bayesian-slate mb-1">3. Salience & Focus</h5>
-                        <p class="text-xs text-bayesian-text">
-                            Varying bold weights direct visual focus to core concepts. Instead of treating all sentences with equal typographic weight, the formatting creates a hierarchy of salience that prioritizes core theoretical conclusions.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Neil deGrasse Tyson Style Mode Container (Original Prose Styled) -->
-        <div class="mode-tyson-style hidden">
-            <!-- Collapsible Legend -->
-            <details class="mb-8 p-4 bg-violet-50/30 border border-violet-200/50 rounded-lg text-sm text-violet-900 ui-text leading-relaxed shadow-soft group">
-                <summary class="font-bold cursor-pointer flex items-center justify-between text-violet-800 list-none focus:outline-none select-none">
-                    <div class="flex items-center gap-2 text-xs md:text-sm">
-                        <svg class="w-4 h-4 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                        Tyson Style Notation Key
-                    </div>
-                    <span class="text-xs font-semibold text-violet-700 hover:text-violet-950 transition-colors group-open:hidden">Show Key &darr;</span>
-                    <span class="text-xs font-semibold text-violet-700 hover:text-violet-950 transition-colors hidden group-open:inline">Hide Key &uarr;</span>
-                </summary>
-                <div class="mt-4 border-t border-violet-200/40 pt-3">
-                    <ul class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2.5 text-xs text-violet-850">
-                        <li><span class="tyson-intuition">Violet Text</span>: Cosmic setups, observations, and raw data.</li>
-                        <li><span class="tyson-math">Cyan Text</span>: Core mathematical concepts and equations.</li>
-                        <li><span class="tyson-pitfall">Orange Text</span>: Statistical traps, illusions, and warnings.</li>
-                        <li><span class="tyson-emphasis">Bold Text</span>: Explanatory weight or conceptual anchors.</li>
-                        <li><span class="tyson-pause-short"></span>: A quick breath or conceptual pulse.</li>
-                        <li><span class="tyson-pause-medium"></span>: A dramatic beat in speech.</li>
-                        <li><span class="tyson-pause-long"></span>: A long silence to reflect on the grandeur of the cosmos.</li>
-                    </ul>
-                </div>
-            </details>
-
-            <!-- Introduction Section -->
-            <section class="mb-16">
-                <div class="prose max-w-none text-bayesian-text mb-6">
-                    <p class="mb-6">
-                        We illustrate the <span class="tyson-math">hierarchical normal model</span> with a problem in which the <span class="tyson-emphasis">Bayesian analysis gives conclusions that differ in important respects from other methods</span>.
-                    </p>
-                    <p class="mb-6">
-                        A study was performed for the <span class="tyson-intuition">Educational Testing Service</span> to analyze the effects of special coaching programs on test scores. <span class="tyson-pause-short"></span> Separate randomized experiments were performed to estimate the effects of coaching programs for the <span class="tyson-intuition">SAT-V</span> (Scholastic Aptitude Test-Verbal) in each of <span class="tyson-intuition">eight high schools</span>. <span class="tyson-pause-medium"></span> The outcome variable in each study was the score on a special administration of the SAT-V, <span class="tyson-pause-short"></span> a standardized multiple choice test administered by the Educational Testing Service and used to help colleges make admissions decisions; <span class="tyson-pause-short"></span> the scores can vary between 200 and 800, with mean about 500 and standard deviation about 100. <span class="tyson-pause-medium"></span> The SAT examinations are designed to be resistant to short-term efforts directed specifically toward improving performance on the test; <span class="tyson-pause-short"></span> instead, <span class="tyson-pause-short"></span> they are designed to reflect knowledge acquired and abilities developed over many years of education. <span class="tyson-pause-medium"></span> Nevertheless, <span class="tyson-pause-short"></span> each of the eight schools in this study considered its short-term coaching program to be successful at increasing SAT scores. <span class="tyson-pause-short"></span> Also, <span class="tyson-pause-short"></span> there was no prior reason to believe that any of the eight programs was more effective than any other, <span class="tyson-pause-short"></span> or that some were more similar in effect to each other than to any other.
-                    </p>
-                    <p class="mb-6">
-                        The results of the experiments are summarized in <span class="tyson-intuition">Table 5.2</span>. <span class="tyson-pause-short"></span> All students in the experiments had already taken the PSAT (Preliminary SAT), <span class="tyson-pause-short"></span> and allowance was made for differences in the PSAT-M (Mathematics) and PSAT-V test scores between coached and uncoached students. <span class="tyson-pause-medium"></span> In particular, <span class="tyson-pause-short"></span> in each school, <span class="tyson-pause-short"></span> the estimated coaching effect and its standard error were obtained by an <span class="tyson-math">analysis of covariance adjustment</span> <span class="tyson-pause-medium"></span> (that is, a <span class="tyson-math">linear regression</span> was performed of SAT-V on treatment group, <span class="tyson-pause-short"></span> using PSAT-M and PSAT-V as control variables) <span class="tyson-pause-short"></span> appropriate for a completely randomized experiment. <span class="tyson-pause-medium"></span> A separate regression was estimated for each school. <span class="tyson-pause-medium"></span> Although not simple sample means <span class="tyson-pause-short"></span> (because of the covariance adjustments), <span class="tyson-pause-short"></span> the <span class="tyson-intuition">estimated coaching effects</span>, which we label $y_j$, <span class="tyson-pause-short"></span> and their <span class="tyson-math">sampling variances</span>, $\sigma_j^2$, <span class="tyson-pause-short"></span> play the same role in our model as $\bar{y}_{\cdot j}$ and $\sigma_j^2$ in the previous section. <span class="tyson-pause-medium"></span> The estimates $y_j$ are obtained by independent experiments <span class="tyson-pause-short"></span> and have approximately <span class="tyson-math">normal sampling distributions</span> <span class="tyson-pause-short"></span> with sampling variances that are known, <span class="tyson-pause-short"></span> for all practical purposes, <span class="tyson-pause-short"></span> because the sample sizes in all of the eight experiments were relatively large— <span class="tyson-pause-short"></span> over thirty students in each school. <span class="tyson-pause-medium"></span> Incidentally, <span class="tyson-pause-short"></span> an increase of eight points on the SAT-V corresponds to about one more test item correct.
-                    </p>
-                </div>
-
-                <!-- Table 5.2 Observed effects -->
-                <div class="overflow-x-auto my-8 border border-bayesian-border rounded-lg bg-white shadow-soft">
-                    <table class="min-w-full divide-y divide-bayesian-border text-sm">
-                        <thead class="bg-bayesian-surfaceAlt">
-                            <tr class="ui-text font-semibold text-bayesian-navy text-left">
-                                <th class="px-6 py-4">School</th>
-                                <th class="px-6 py-4 text-right">Estimated treatment effect, $y_j$</th>
-                                <th class="px-6 py-4 text-right">Standard error estimate, $\sigma_j$</th>
-                                <th class="px-6 py-4">Cosmic Readout</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-bayesian-border text-bayesian-text font-medium">
-                            <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
-                                <td class="px-6 py-4 font-bold text-bayesian-navy">A</td>
-                                <td class="px-6 py-4 text-right"><span class="tyson-intuition">28</span></td>
-                                <td class="px-6 py-4 text-right">15</td>
-                                <td class="px-6 py-4 text-xs italic text-violet-900 bg-violet-50/20">A raw flare of 28 points, but shrouded in a vast dust cloud of noise (15).</td>
-                            </tr>
-                            <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
-                                <td class="px-6 py-4 font-bold text-bayesian-navy">B</td>
-                                <td class="px-6 py-4 text-right"><span class="tyson-intuition">8</span></td>
-                                <td class="px-6 py-4 text-right">10</td>
-                                <td class="px-6 py-4 text-xs italic text-slate-500">A tiny orbital wobble, lost in the background radiation.</td>
-                            </tr>
-                            <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
-                                <td class="px-6 py-4 font-bold text-bayesian-navy">C</td>
-                                <td class="px-6 py-4 text-right"><span class="tyson-intuition">-3</span></td>
-                                <td class="px-6 py-4 text-right">16</td>
-                                <td class="px-6 py-4 text-xs italic text-orange-900 bg-orange-50/20">Appears to fall backward into the dark, but it's well within random fluctuations.</td>
-                            </tr>
-                            <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
-                                <td class="px-6 py-4 font-bold text-bayesian-navy">D</td>
-                                <td class="px-6 py-4 text-right"><span class="tyson-intuition">7</span></td>
-                                <td class="px-6 py-4 text-right">11</td>
-                                <td class="px-6 py-4 text-xs italic text-slate-500">A dim signature, barely distinguishable from zero.</td>
-                            </tr>
-                            <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
-                                <td class="px-6 py-4 font-bold text-bayesian-navy">E</td>
-                                <td class="px-6 py-4 text-right"><span class="tyson-intuition">-1</span></td>
-                                <td class="px-6 py-4 text-right">9</td>
-                                <td class="px-6 py-4 text-xs italic text-slate-500">A flat line, showing no expansion or contraction.</td>
-                            </tr>
-                            <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
-                                <td class="px-6 py-4 font-bold text-bayesian-navy">F</td>
-                                <td class="px-6 py-4 text-right"><span class="tyson-intuition">1</span></td>
-                                <td class="px-6 py-4 text-right">11</td>
-                                <td class="px-6 py-4 text-xs italic text-slate-500">Stagnant, like a cold, inactive solar system.</td>
-                            </tr>
-                            <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
-                                <td class="px-6 py-4 font-bold text-bayesian-navy">G</td>
-                                <td class="px-6 py-4 text-right"><span class="tyson-intuition">18</span></td>
-                                <td class="px-6 py-4 text-right">10</td>
-                                <td class="px-6 py-4 text-xs italic text-violet-900 bg-violet-50/20">A decent beacon of light, rising above the noise horizon.</td>
-                            </tr>
-                            <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
-                                <td class="px-6 py-4 font-bold text-bayesian-navy">H</td>
-                                <td class="px-6 py-4 text-right"><span class="tyson-intuition">12</span></td>
-                                <td class="px-6 py-4 text-right">18</td>
-                                <td class="px-6 py-4 text-xs italic text-slate-500">A massive variance (18) dwarfs the signal. Highly uncertain.</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div class="px-6 py-3 bg-bayesian-surfaceAlt/30 border-t border-bayesian-border text-xs text-bayesian-slate italic">
-                        <strong>Table 5.2 (Tyson Styled):</strong> Observed effects of special preparation on SAT-V scores in eight randomized experiments. The "Cosmic Readout" column shows how an astrophysicist visually interrogates the data before writing down mathematical models.
-                    </div>
-                </div>
-            </section>
-
-            <!-- Section: Inferences based on nonhierarchical models -->
-            <section class="mb-16">
-                <h2 class="text-2xl font-semibold mb-6 border-b pb-2 border-bayesian-border ui-text">
-                    Inferences based on nonhierarchical models and their problems
-                </h2>
-                <div class="prose max-w-none text-bayesian-text">
-                    <p class="mb-6">
-                        Before fitting the <span class="tyson-math">hierarchical Bayesian model</span>, we first consider <span class="tyson-emphasis">two simpler nonhierarchical methods</span>—estimating the effects from the eight experiments independently, and complete pooling—and discuss why neither of these approaches is adequate for this example.
-                    </p>
-
-                    <p class="mb-6">
-                        A cursory examination of <span class="tyson-intuition">Table 5.2</span> <span class="tyson-pause-short"></span> may at first suggest <span class="tyson-pause-short"></span> that some coaching programs have moderate effects <span class="tyson-pause-short"></span> (in the range 18–28 points), <span class="tyson-pause-short"></span> most have small effects (0–12 points), <span class="tyson-pause-short"></span> and two have small negative effects; <span class="tyson-pause-medium"></span> however, <span class="tyson-pause-short"></span> when we take note of the standard errors <span class="tyson-pause-short"></span> of these estimated effects, <span class="tyson-pause-medium"></span> we see that <span class="tyson-emphasis">it is difficult statistically to distinguish between any of the experiments</span>. <span class="tyson-pause-long"></span> For example, <span class="tyson-pause-short"></span> treating each experiment separately <span class="tyson-pause-short"></span> and applying the simple normal analysis in each <span class="tyson-pause-short"></span> yields <span class="tyson-math">95% posterior intervals</span> <span class="tyson-pause-short"></span> that all overlap substantially.
-                    </p>
-
-                    <h3 class="text-xl font-semibold mb-4 text-bayesian-navy ui-text">A pooled estimate</h3>
-                    <p class="mb-6">
-                        The general overlap in the posterior intervals <span class="tyson-pause-short"></span> based on independent analyses <span class="tyson-pause-short"></span> suggests that all experiments <span class="tyson-pause-short"></span> might be estimating the same quantity. <span class="tyson-pause-medium"></span> Under the hypothesis that all experiments have the same effect <span class="tyson-pause-short"></span> and produce independent estimates of this common effect, <span class="tyson-pause-medium"></span> we could treat the data in Table 5.2 <span class="tyson-pause-short"></span> as eight normally distributed observations <span class="tyson-pause-short"></span> with known variances. <span class="tyson-pause-medium"></span> With a noninformative prior distribution, <span class="tyson-pause-short"></span> the posterior mean for the common coaching effect in the schools is $\bar{y}_{\cdot\cdot}$, <span class="tyson-pause-short"></span> as defined in equation (5.13) with $y_j$ in place of $\bar{y}_{\cdot j}$:
-                    </p>
-
-                    <div class="academic-card p-6 mb-6 mt-8 border-l-4 border-cyan-500">
-                        <h4 class="font-semibold text-bayesian-navy ui-text mb-4">Common-Effect Estimation (Complete Pooling)</h4>
-                        <p class="mb-4 text-sm">
-                            Under complete pooling, the shared effect estimate $\bar{y}_{\cdot\cdot}$ and its variance are:
-                        </p>
-                        <div class="code-block text-center py-4 bg-bayesian-surfaceAlt border border-bayesian-border rounded mb-4">
-                            <span class="tyson-math">$$\bar{y}_{\cdot\cdot} = \frac{\sum_{j=1}^8 \frac{y_j}{\sigma_j^2}}{\sum_{j=1}^8 \frac{1}{\sigma_j^2}} = 7.7$$</span>
-                            <span class="tyson-math">$$\text{Var}(\bar{y}_{\cdot\cdot}) = \left( \sum_{j=1}^8 \frac{1}{\sigma_j^2} \right)^{-1} = 16.6$$</span>
-                        </div>
-                        <p class="text-sm text-bayesian-slate italic">
-                            This yields a posterior standard error of $\sqrt{16.6} \approx 4.1$, leading to a 95% posterior interval of $[-0.5, 15.9]$, or approximately $[8 \pm 8]$.
-                        </p>
-                    </div>
-
-                    <p class="mb-6">
-                        Supporting this analysis, the classical test of the hypothesis that all $\theta_j$'s are estimating the same quantity yields a $\chi^2$ statistic less than its degrees of freedom ($7$, in this case):
-                        <span class="tyson-math">$$\sum_{j=1}^8 \frac{(y_j - \bar{y}_{\cdot\cdot})^2}{\sigma_j^2} = 4.6$$</span>
-                        To put it another way, the estimate $\hat{\tau}^2$ from equation (5.22) is negative, suggesting no evidence of variance between schools.
-                    </p>
-
-                    <h3 class="text-xl font-semibold mb-4 text-bayesian-navy ui-text">Would it be possible to see an effect of 28 by chance?</h3>
-                    <p class="mb-6">
-                        Would it be possible <span class="tyson-pause-short"></span> to have one school’s observed effect be 28 <span class="tyson-pause-short"></span> just by chance, <span class="tyson-pause-medium"></span> if the coaching effects in all eight schools <span class="tyson-pause-short"></span> were really the same? <span class="tyson-pause-medium"></span> To get a feeling for the natural variation <span class="tyson-pause-short"></span> that we would expect across eight studies <span class="tyson-pause-short"></span> if this assumption were true, <span class="tyson-pause-medium"></span> suppose the estimated treatment effects <span class="tyson-pause-short"></span> are eight independent draws from a normal distribution <span class="tyson-pause-short"></span> with mean 8 points and standard deviation 13 points <span class="tyson-pause-short"></span> (the square root of the mean of the eight variances $\sigma_j^2$).
-                        <span class="tyson-pause-long"></span>
-                        Then, <span class="tyson-pause-short"></span> based on the expected values <span class="tyson-pause-short"></span> of normal order statistics, <span class="tyson-pause-medium"></span> we would expect the largest observed value of $y_j$ <span class="tyson-pause-short"></span> to be about 26 points <span class="tyson-pause-medium"></span> and the others, <span class="tyson-pause-short"></span> in diminishing order, <span class="tyson-pause-medium"></span> to be about 19, 14, 10, 6, 2, $-3$, and $-9$ points. <span class="tyson-pause-long"></span> These expected effect sizes <span class="tyson-pause-short"></span> are consistent with the set of observed effect sizes <span class="tyson-pause-short"></span> in Table 5.2. <span class="tyson-pause-long"></span> <span class="tyson-pitfall">Thus, <span class="tyson-pause-short"></span> it would appear imprudent <span class="tyson-pause-short"></span> to believe that school A <span class="tyson-pause-short"></span> really has an effect as large as 28 points.</span>
-                    </p>
-
-                    <h3 class="text-xl font-semibold mb-4 text-bayesian-navy ui-text">Difficulties with the separate and pooled estimates</h3>
-                    <p class="mb-6">
-                        To see the problems <span class="tyson-pause-short"></span> with the two extreme attitudes <span class="tyson-pause-medium"></span>—the separate analyses <span class="tyson-pause-short"></span> that consider each $\theta_j$ separately, <span class="tyson-pause-medium"></span> and the alternative view (a single common effect) <span class="tyson-pause-short"></span> that leads to the pooled estimate— <span class="tyson-pause-medium"></span> consider $\theta_1$, <span class="tyson-pause-short"></span> the effect in school A. <span class="tyson-pause-long"></span>
-                        The effect in school A <span class="tyson-pause-short"></span> is estimated as $28.4$ <span class="tyson-pause-short"></span> with a standard error of $14.9$ <span class="tyson-pause-short"></span> under the separate analysis, <span class="tyson-pause-medium"></span> versus a pooled estimate of $7.7$ <span class="tyson-pause-short"></span> with a standard error of $4.1$ <span class="tyson-pause-short"></span> under the common-effect model.
-                    </p>
-                    
-                    <div class="theorem-block my-8 border-l-4 border-orange-500">
-                        <h4 class="text-sm font-bold text-bayesian-navy uppercase tracking-wider mb-3 ui-text">The Limitations of Extremes</h4>
-                        <ul class="list-disc pl-6 space-y-2.5 text-bayesian-text">
-                            <li>
-                                The separate analyses of the eight schools imply: <em>"the probability is $\frac{1}{2}$ that the true effect in A is more than $28.4$"</em>, <span class="tyson-pitfall">a doubtful statement</span>, considering the results for the other seven schools.
-                            </li>
-                            <li>
-                                On the other hand, the pooled model implies: <em>"the probability is $\frac{1}{2}$ that the true effect in A is less than $7.7$"</em>, which, despite the non-significant $\chi^2$ test, <span class="tyson-pitfall">seems an inaccurate summary of our knowledge</span>.
-                            </li>
-                            <li>
-                                The pooled model also implies: <em>"the probability is $\frac{1}{2}$ that the true effect in A is less than the true effect in C"</em>, which is also <span class="tyson-pitfall">difficult to justify</span> given the data in Table 5.2.
-                            </li>
-                        </ul>
-                    </div>
-
-                    <p class="mb-6">
-                        Neither estimate is fully satisfactory, <span class="tyson-pause-medium"></span> and we would like a compromise <span class="tyson-pause-short"></span> that combines information <span class="tyson-pause-short"></span> from all eight experiments <span class="tyson-pause-medium"></span> without assuming all the $\theta_j$’s to be equal. <span class="tyson-pause-long"></span> The Bayesian analysis <span class="tyson-pause-short"></span> under the hierarchical model <span class="tyson-pause-short"></span> provides exactly that.
-                    </p>
-                </div>
-            </section>
-
-            <!-- Cognitive Readout Box for Tyson Style -->
-            <div class="mt-12 p-6 bg-bayesian-surfaceAlt border border-bayesian-border rounded-lg text-sm text-bayesian-navy ui-text leading-relaxed shadow-soft">
-                <h4 class="font-bold text-base mb-3 text-bayesian-navy">Cognitive Design: How Cosmic Highlights Alter Processing</h4>
-                <p class="mb-4">
-                    This cosmic formatting (Tyson Style) uses galactic color palettes and visual pacing to reshape our engagement with technical prose:
-                </p>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
-                    <div>
-                        <h5 class="font-semibold text-xs uppercase tracking-wider text-bayesian-slate mb-1">1. Subvocalization & Cosmic Pace</h5>
-                        <p class="text-xs text-bayesian-text">
-                            By injecting violet-themed pause markers (<span class="tyson-pause-short"></span>), the reader is encouraged to slow down and subvocalize in a theatrical, narrative cadence. This structural rhythm lets complex ideas land with gravity.
-                        </p>
-                    </div>
-                    <div>
-                        <h5 class="font-semibold text-xs uppercase tracking-wider text-bayesian-slate mb-1">2. Preattentive Galactic Cues</h5>
-                        <p class="text-xs text-bayesian-text">
-                            The space-themed palette segregates ideas preattentively. The eye maps <span class="tyson-intuition">observations (violet)</span>, <span class="tyson-math">mathematical orbits (cyan)</span>, and <span class="tyson-pitfall">optical illusions (orange)</span> automatically.
-                        </p>
-                    </div>
-                    <div>
-                        <h5 class="font-semibold text-xs uppercase tracking-wider text-bayesian-slate mb-1">3. Theatrical Focus</h5>
-                        <p class="text-xs text-bayesian-text">
-                            Bold visual anchors serve as narrative stars. They guide your eyes toward the central physical intuition, preventing the reader from getting lost in dry mathematical abstraction.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- Neil deGrasse Tyson Lecture Mode Container -->
         <div class="mode-tyson-lecture hidden">
             <!-- Collapsible Legend -->
@@ -1293,17 +867,13 @@
         function updateDisplay() {
             // Get all sections
             const standardElements = document.querySelectorAll('.mode-standard');
-            const feynmanStyleElements = document.querySelectorAll('.mode-feynman-style');
             const feynmanLectureElements = document.querySelectorAll('.mode-feynman-lecture');
-            const tysonStyleElements = document.querySelectorAll('.mode-tyson-style');
             const tysonLectureElements = document.querySelectorAll('.mode-tyson-lecture');
 
             // Hide all sections first
             const allElements = [
                 ...standardElements,
-                ...feynmanStyleElements,
                 ...feynmanLectureElements,
-                ...tysonStyleElements,
                 ...tysonLectureElements
             ];
             allElements.forEach(el => el.classList.add('hidden'));
@@ -1311,12 +881,6 @@
             // Show current active section based on format and selected voice
             if (activeFormat === 'normal') {
                 standardElements.forEach(el => el.classList.remove('hidden'));
-            } else if (activeFormat === 'style') {
-                if (activeVoice === 'feynman') {
-                    feynmanStyleElements.forEach(el => el.classList.remove('hidden'));
-                } else if (activeVoice === 'tyson') {
-                    tysonStyleElements.forEach(el => el.classList.remove('hidden'));
-                }
             } else if (activeFormat === 'rewritten') {
                 if (activeVoice === 'feynman') {
                     feynmanLectureElements.forEach(el => el.classList.remove('hidden'));
@@ -1340,9 +904,8 @@
 
             // Update Format button styles
             const formatNormalBtn = document.getElementById('format-normal');
-            const formatStyleBtn = document.getElementById('format-style');
             const formatRewrittenBtn = document.getElementById('format-rewritten');
-            const formatBtns = [formatNormalBtn, formatStyleBtn, formatRewrittenBtn];
+            const formatBtns = [formatNormalBtn, formatRewrittenBtn];
             
             formatBtns.forEach(btn => {
                 if (btn) {
@@ -1352,7 +915,6 @@
 
             let activeFormatBtn = null;
             if (activeFormat === 'normal') activeFormatBtn = formatNormalBtn;
-            else if (activeFormat === 'style') activeFormatBtn = formatStyleBtn;
             else if (activeFormat === 'rewritten') activeFormatBtn = formatRewrittenBtn;
 
             if (activeFormatBtn) {
