@@ -146,6 +146,53 @@
             letter-spacing: 0.05em;
             color: #111827;
         }
+
+        /* Neil deGrasse Tyson Mode Styling */
+        .tyson-intuition {
+            color: #7c3aed; /* Violet-600 */
+            font-weight: 600;
+        }
+        .tyson-math {
+            color: #0891b2; /* Cyan-600 */
+            font-weight: 600;
+        }
+        .tyson-pitfall {
+            color: #ea580c; /* Orange-600 */
+            font-weight: 600;
+        }
+        .tyson-pause-short {
+            display: inline-block;
+            width: 1.5rem;
+            height: 1px;
+            vertical-align: middle;
+            margin: 0 0.25rem;
+            border-bottom: 2px dashed #c084fc; /* Purple/Violet dashed */
+        }
+        .tyson-pause-medium {
+            display: inline-block;
+            width: 3rem;
+            height: 1px;
+            vertical-align: middle;
+            margin: 0 0.5rem;
+            border-bottom: 3px dotted #c084fc; /* Purple/Violet dotted */
+        }
+        .tyson-pause-long {
+            margin-top: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-left: 2px dashed #c084fc; /* Purple/Violet dashed line */
+            padding-left: 1rem;
+        }
+        .tyson-emphasis {
+            font-weight: 700;
+            color: #1e1b4b; /* Indigo-950 */
+        }
+        .tyson-loud {
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 0.95em;
+            letter-spacing: 0.05em;
+            color: #4c1d95; /* Violet-950 */
+        }
     </style>
 </head>
 
@@ -189,19 +236,35 @@
             </p>
         </header>
 
-        <!-- Reading Mode Switcher Widget -->
-        <div class="flex justify-end items-center gap-4 mb-8 bg-bayesian-surfaceAlt border border-bayesian-border rounded-lg p-2 max-w-md ml-auto ui-text shadow-soft">
-            <span class="text-xs font-semibold uppercase text-bayesian-slate">Reading Mode:</span>
-            <div class="bg-gray-100 p-0.5 rounded-md flex gap-1">
-                <button id="toggle-standard" onclick="setReadingMode('standard')" class="px-3 py-1.5 text-xs font-bold rounded transition-all duration-200 bg-bayesian-navy text-white shadow-soft">
-                    Academic
-                </button>
-                <button id="toggle-feynman-lecture" onclick="setReadingMode('feynman-lecture')" class="px-3 py-1.5 text-xs font-bold rounded transition-all duration-200 bg-transparent text-bayesian-slate hover:text-bayesian-navy">
-                    Feynman Lecture
-                </button>
-                <button id="toggle-feynman-style" onclick="setReadingMode('feynman-style')" class="px-3 py-1.5 text-xs font-bold rounded transition-all duration-200 bg-transparent text-bayesian-slate hover:text-bayesian-navy">
-                    Feynman Style
-                </button>
+        <!-- Unified Switcher Widget -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10 bg-bayesian-surfaceAlt border border-bayesian-border rounded-xl p-4 ui-text shadow-soft">
+            <!-- Voice Selector -->
+            <div class="flex items-center gap-3 w-full md:w-auto">
+                <span class="text-xs font-bold uppercase tracking-wider text-bayesian-slate">Select Voice:</span>
+                <div class="bg-slate-200/50 p-1 rounded-lg flex gap-1 w-full md:w-auto">
+                    <button id="voice-feynman" onclick="setExplainerVoice('feynman')" class="flex-1 md:flex-initial px-4 py-2 text-xs font-bold rounded-md transition-all duration-200 bg-bayesian-navy text-white shadow-soft">
+                        Richard Feynman
+                    </button>
+                    <button id="voice-tyson" onclick="setExplainerVoice('tyson')" class="flex-1 md:flex-initial px-4 py-2 text-xs font-bold rounded-md transition-all duration-200 bg-transparent text-bayesian-slate hover:text-bayesian-navy">
+                        Neil deGrasse Tyson
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Format Selector (Three Tabs) -->
+            <div class="flex items-center gap-3 w-full md:w-auto">
+                <span class="text-xs font-bold uppercase tracking-wider text-bayesian-slate">Format:</span>
+                <div class="bg-slate-200/50 p-1 rounded-lg flex gap-1 w-full md:w-auto">
+                    <button id="format-normal" onclick="setFormatMode('normal')" class="flex-1 md:flex-initial px-4 py-2 text-xs font-bold rounded-md transition-all duration-200 bg-bayesian-navy text-white shadow-soft">
+                        Normal
+                    </button>
+                    <button id="format-style" onclick="setFormatMode('style')" class="flex-1 md:flex-initial px-4 py-2 text-xs font-bold rounded-md transition-all duration-200 bg-transparent text-bayesian-slate hover:text-bayesian-navy">
+                        Style
+                    </button>
+                    <button id="format-rewritten" onclick="setFormatMode('rewritten')" class="flex-1 md:flex-initial px-4 py-2 text-xs font-bold rounded-md transition-all duration-200 bg-transparent text-bayesian-slate hover:text-bayesian-navy">
+                        Rewritten Piece
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -802,6 +865,395 @@
             </div>
         </div>
 
+        <!-- Neil deGrasse Tyson Style Mode Container (Original Prose Styled) -->
+        <div class="mode-tyson-style hidden">
+            <!-- Collapsible Legend -->
+            <details class="mb-8 p-4 bg-violet-50/30 border border-violet-200/50 rounded-lg text-sm text-violet-900 ui-text leading-relaxed shadow-soft group">
+                <summary class="font-bold cursor-pointer flex items-center justify-between text-violet-800 list-none focus:outline-none select-none">
+                    <div class="flex items-center gap-2 text-xs md:text-sm">
+                        <svg class="w-4 h-4 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        Tyson Style Notation Key
+                    </div>
+                    <span class="text-xs font-semibold text-violet-700 hover:text-violet-950 transition-colors group-open:hidden">Show Key &darr;</span>
+                    <span class="text-xs font-semibold text-violet-700 hover:text-violet-950 transition-colors hidden group-open:inline">Hide Key &uarr;</span>
+                </summary>
+                <div class="mt-4 border-t border-violet-200/40 pt-3">
+                    <ul class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2.5 text-xs text-violet-850">
+                        <li><span class="tyson-intuition">Violet Text</span>: Cosmic setups, observations, and raw data.</li>
+                        <li><span class="tyson-math">Cyan Text</span>: Core mathematical concepts and equations.</li>
+                        <li><span class="tyson-pitfall">Orange Text</span>: Statistical traps, illusions, and warnings.</li>
+                        <li><span class="tyson-emphasis">Bold Text</span>: Explanatory weight or conceptual anchors.</li>
+                        <li><span class="tyson-pause-short"></span>: A quick breath or conceptual pulse.</li>
+                        <li><span class="tyson-pause-medium"></span>: A dramatic beat in speech.</li>
+                        <li><span class="tyson-pause-long"></span>: A long silence to reflect on the grandeur of the cosmos.</li>
+                    </ul>
+                </div>
+            </details>
+
+            <!-- Introduction Section -->
+            <section class="mb-16">
+                <div class="prose max-w-none text-bayesian-text mb-6">
+                    <p class="mb-6">
+                        We illustrate the <span class="tyson-math">hierarchical normal model</span> with a problem in which the <span class="tyson-emphasis">Bayesian analysis gives conclusions that differ in important respects from other methods</span>.
+                    </p>
+                    <p class="mb-6">
+                        A study was performed for the <span class="tyson-intuition">Educational Testing Service</span> to analyze the effects of special coaching programs on test scores. <span class="tyson-pause-short"></span> Separate randomized experiments were performed to estimate the effects of coaching programs for the <span class="tyson-intuition">SAT-V</span> (Scholastic Aptitude Test-Verbal) in each of <span class="tyson-intuition">eight high schools</span>. <span class="tyson-pause-medium"></span> The outcome variable in each study was the score on a special administration of the SAT-V, <span class="tyson-pause-short"></span> a standardized multiple choice test administered by the Educational Testing Service and used to help colleges make admissions decisions; the scores can vary between 200 and 800, with mean about 500 and standard deviation about 100. <span class="tyson-pause-medium"></span> The SAT examinations are designed to be resistant to short-term efforts directed specifically toward improving performance on the test; instead they are designed to reflect knowledge acquired and abilities developed over many years of education. <span class="tyson-pause-short"></span> Nevertheless, each of the eight schools in this study considered its short-term coaching program to be successful at increasing SAT scores. <span class="tyson-pause-short"></span> Also, there was no prior reason to believe that any of the eight programs was more effective than any other or that some were more similar in effect to each other than to any other.
+                    </p>
+                    <p class="mb-6">
+                        The results of the experiments are summarized in <span class="tyson-intuition">Table 5.2</span>. <span class="tyson-pause-short"></span> All students in the experiments had already taken the PSAT (Preliminary SAT), and allowance was made for differences in the PSAT-M (Mathematics) and PSAT-V test scores between coached and uncoached students. <span class="tyson-pause-medium"></span> In particular, in each school the estimated coaching effect and its standard error were obtained by an <span class="tyson-math">analysis of covariance adjustment</span> (that is, a <span class="tyson-math">linear regression</span> was performed of SAT-V on treatment group, using PSAT-M and PSAT-V as control variables) appropriate for a completely randomized experiment. <span class="tyson-pause-short"></span> A separate regression was estimated for each school. <span class="tyson-pause-medium"></span> Although not simple sample means (because of the covariance adjustments), the <span class="tyson-intuition">estimated coaching effects</span>, which we label $y_j$, and their <span class="tyson-math">sampling variances</span>, $\sigma_j^2$, play the same role in our model as $\bar{y}_{\cdot j}$ and $\sigma_j^2$ in the previous section. <span class="tyson-pause-medium"></span> The estimates $y_j$ are obtained by independent experiments and have approximately <span class="tyson-math">normal sampling distributions</span> with sampling variances that are known, for all practical purposes, because the sample sizes in all of the eight experiments were relatively large, over thirty students in each school (recall the discussion of data reduction in Section 4.1). <span class="tyson-pause-short"></span> Incidentally, an increase of eight points on the SAT-V corresponds to about one more test item correct.
+                    </p>
+                </div>
+
+                <!-- Table 5.2 Observed effects -->
+                <div class="overflow-x-auto my-8 border border-bayesian-border rounded-lg bg-white shadow-soft">
+                    <table class="min-w-full divide-y divide-bayesian-border text-sm">
+                        <thead class="bg-bayesian-surfaceAlt">
+                            <tr class="ui-text font-semibold text-bayesian-navy text-left">
+                                <th class="px-6 py-4">School</th>
+                                <th class="px-6 py-4 text-right">Estimated treatment effect, $y_j$</th>
+                                <th class="px-6 py-4 text-right">Standard error estimate, $\sigma_j$</th>
+                                <th class="px-6 py-4">Cosmic Readout</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-bayesian-border text-bayesian-text font-medium">
+                            <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
+                                <td class="px-6 py-4 font-bold text-bayesian-navy">A</td>
+                                <td class="px-6 py-4 text-right"><span class="tyson-intuition">28</span></td>
+                                <td class="px-6 py-4 text-right">15</td>
+                                <td class="px-6 py-4 text-xs italic text-violet-900 bg-violet-50/20">A raw flare of 28 points, but shrouded in a vast dust cloud of noise (15).</td>
+                            </tr>
+                            <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
+                                <td class="px-6 py-4 font-bold text-bayesian-navy">B</td>
+                                <td class="px-6 py-4 text-right"><span class="tyson-intuition">8</span></td>
+                                <td class="px-6 py-4 text-right">10</td>
+                                <td class="px-6 py-4 text-xs italic text-slate-500">A tiny orbital wobble, lost in the background radiation.</td>
+                            </tr>
+                            <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
+                                <td class="px-6 py-4 font-bold text-bayesian-navy">C</td>
+                                <td class="px-6 py-4 text-right"><span class="tyson-intuition">-3</span></td>
+                                <td class="px-6 py-4 text-right">16</td>
+                                <td class="px-6 py-4 text-xs italic text-orange-900 bg-orange-50/20">Appears to fall backward into the dark, but it's well within random fluctuations.</td>
+                            </tr>
+                            <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
+                                <td class="px-6 py-4 font-bold text-bayesian-navy">D</td>
+                                <td class="px-6 py-4 text-right"><span class="tyson-intuition">7</span></td>
+                                <td class="px-6 py-4 text-right">11</td>
+                                <td class="px-6 py-4 text-xs italic text-slate-500">A dim signature, barely distinguishable from zero.</td>
+                            </tr>
+                            <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
+                                <td class="px-6 py-4 font-bold text-bayesian-navy">E</td>
+                                <td class="px-6 py-4 text-right"><span class="tyson-intuition">-1</span></td>
+                                <td class="px-6 py-4 text-right">9</td>
+                                <td class="px-6 py-4 text-xs italic text-slate-500">A flat line, showing no expansion or contraction.</td>
+                            </tr>
+                            <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
+                                <td class="px-6 py-4 font-bold text-bayesian-navy">F</td>
+                                <td class="px-6 py-4 text-right"><span class="tyson-intuition">1</span></td>
+                                <td class="px-6 py-4 text-right">11</td>
+                                <td class="px-6 py-4 text-xs italic text-slate-500">Stagnant, like a cold, inactive solar system.</td>
+                            </tr>
+                            <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
+                                <td class="px-6 py-4 font-bold text-bayesian-navy">G</td>
+                                <td class="px-6 py-4 text-right"><span class="tyson-intuition">18</span></td>
+                                <td class="px-6 py-4 text-right">10</td>
+                                <td class="px-6 py-4 text-xs italic text-violet-900 bg-violet-50/20">A decent beacon of light, rising above the noise horizon.</td>
+                            </tr>
+                            <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
+                                <td class="px-6 py-4 font-bold text-bayesian-navy">H</td>
+                                <td class="px-6 py-4 text-right"><span class="tyson-intuition">12</span></td>
+                                <td class="px-6 py-4 text-right">18</td>
+                                <td class="px-6 py-4 text-xs italic text-slate-500">A massive variance (18) dwarfs the signal. Highly uncertain.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="px-6 py-3 bg-bayesian-surfaceAlt/30 border-t border-bayesian-border text-xs text-bayesian-slate italic">
+                        <strong>Table 5.2 (Tyson Styled):</strong> Observed effects of special preparation on SAT-V scores in eight randomized experiments. The "Cosmic Readout" column shows how an astrophysicist visually interrogates the data before writing down mathematical models.
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: Inferences based on nonhierarchical models -->
+            <section class="mb-16">
+                <h2 class="text-2xl font-semibold mb-6 border-b pb-2 border-bayesian-border ui-text">
+                    Inferences based on nonhierarchical models and their problems
+                </h2>
+                <div class="prose max-w-none text-bayesian-text">
+                    <p class="mb-6">
+                        Before fitting the <span class="tyson-math">hierarchical Bayesian model</span>, we first consider <span class="tyson-emphasis">two simpler nonhierarchical methods</span>—estimating the effects from the eight experiments independently, and complete pooling—and discuss why neither of these approaches is adequate for this example.
+                    </p>
+
+                    <h3 class="text-xl font-semibold mb-4 text-bayesian-navy ui-text">Separate estimates</h3>
+                    <p class="mb-6">
+                        A cursory examination of <span class="tyson-intuition">Table 5.2</span> may at first suggest that some coaching programs have moderate effects (in the range 18–28 points), most have small effects (0–12 points), and two have small negative effects; <span class="tyson-pause-medium"></span> however, when we take note of the standard errors of these estimated effects, we see that <span class="tyson-emphasis">it is difficult statistically to distinguish between any of the experiments</span>. <span class="tyson-pause-long"></span> For example, treating each experiment separately and applying the simple normal analysis in each yields <span class="tyson-math">95% posterior intervals</span> that all overlap substantially.
+                    </p>
+
+                    <h3 class="text-xl font-semibold mb-4 text-bayesian-navy ui-text">A pooled estimate</h3>
+                    <p class="mb-6">
+                        The general overlap in the posterior intervals based on independent analyses suggests that all experiments might be estimating the same quantity. <span class="tyson-pause-short"></span> Under the hypothesis that all experiments have the same effect and produce independent estimates of this common effect, we could treat the data in Table 5.2 as eight normally distributed observations with known variances. <span class="tyson-pause-medium"></span> With a noninformative prior distribution, the posterior mean for the common coaching effect in the schools is $\bar{y}_{\cdot\cdot}$, as defined in equation (5.13) with $y_j$ in place of $\bar{y}_{\cdot j}$:
+                    </p>
+
+                    <div class="academic-card p-6 mb-6 mt-8 border-l-4 border-cyan-500">
+                        <h4 class="font-semibold text-bayesian-navy ui-text mb-4">Common-Effect Estimation (Complete Pooling)</h4>
+                        <p class="mb-4 text-sm">
+                            Under complete pooling, the shared effect estimate $\bar{y}_{\cdot\cdot}$ and its variance are:
+                        </p>
+                        <div class="code-block text-center py-4 bg-bayesian-surfaceAlt border border-bayesian-border rounded mb-4">
+                            <span class="tyson-math">$$\bar{y}_{\cdot\cdot} = \frac{\sum_{j=1}^8 \frac{y_j}{\sigma_j^2}}{\sum_{j=1}^8 \frac{1}{\sigma_j^2}} = 7.7$$</span>
+                            <span class="tyson-math">$$\text{Var}(\bar{y}_{\cdot\cdot}) = \left( \sum_{j=1}^8 \frac{1}{\sigma_j^2} \right)^{-1} = 16.6$$</span>
+                        </div>
+                        <p class="text-sm text-bayesian-slate italic">
+                            This yields a posterior standard error of $\sqrt{16.6} \approx 4.1$, leading to a 95% posterior interval of $[-0.5, 15.9]$, or approximately $[8 \pm 8]$.
+                        </p>
+                    </div>
+
+                    <p class="mb-6">
+                        Supporting this analysis, the classical test of the hypothesis that all $\theta_j$'s are estimating the same quantity yields a $\chi^2$ statistic less than its degrees of freedom ($7$, in this case):
+                        <span class="tyson-math">$$\sum_{j=1}^8 \frac{(y_j - \bar{y}_{\cdot\cdot})^2}{\sigma_j^2} = 4.6$$</span>
+                        To put it another way, the estimate $\hat{\tau}^2$ from equation (5.22) is negative, suggesting no evidence of variance between schools.
+                    </p>
+
+                    <h3 class="text-xl font-semibold mb-4 text-bayesian-navy ui-text">Would it be possible to see an effect of 28 by chance?</h3>
+                    <p class="mb-6">
+                        Would it be possible to have one school’s observed effect be 28 just by chance, if the coaching effects in all eight schools were really the same? <span class="tyson-pause-medium"></span> To get a feeling for the natural variation that we would expect across eight studies if this assumption were true, <span class="tyson-pause-short"></span> suppose the estimated treatment effects are eight independent draws from a normal distribution with mean 8 points and standard deviation 13 points (the square root of the mean of the eight variances $\sigma_j^2$).
+                        <span class="tyson-pause-long"></span>
+                        Then, based on the expected values of normal order statistics, we would expect the largest observed value of $y_j$ to be about 26 points and the others, in diminishing order, to be about 19, 14, 10, 6, 2, $-3$, and $-9$ points. <span class="tyson-pause-medium"></span> These expected effect sizes are consistent with the set of observed effect sizes in Table 5.2. <span class="tyson-pause-long"></span> <span class="tyson-pitfall">Thus, it would appear imprudent to believe that school A really has an effect as large as 28 points.</span>
+                    </p>
+
+                    <h3 class="text-xl font-semibold mb-4 text-bayesian-navy ui-text">Difficulties with the separate and pooled estimates</h3>
+                    <p class="mb-6">
+                        To see the problems with the two extreme attitudes—the separate analyses that consider each $\theta_j$ separately, and the alternative view (a single common effect) that leads to the pooled estimate—consider $\theta_1$, the effect in school A. <span class="tyson-pause-medium"></span>
+                        The effect in school A is estimated as $28.4$ with a standard error of $14.9$ under the separate analysis, versus a pooled estimate of $7.7$ with a standard error of $4.1$ under the common-effect model.
+                    </p>
+                    
+                    <div class="theorem-block my-8 border-l-4 border-orange-500">
+                        <h4 class="text-sm font-bold text-bayesian-navy uppercase tracking-wider mb-3 ui-text">The Limitations of Extremes</h4>
+                        <ul class="list-disc pl-6 space-y-2.5 text-bayesian-text">
+                            <li>
+                                The separate analyses of the eight schools imply: <em>"the probability is $\frac{1}{2}$ that the true effect in A is more than $28.4$"</em>, <span class="tyson-pitfall">a doubtful statement</span>, considering the results for the other seven schools.
+                            </li>
+                            <li>
+                                On the other hand, the pooled model implies: <em>"the probability is $\frac{1}{2}$ that the true effect in A is less than $7.7$"</em>, which, despite the non-significant $\chi^2$ test, <span class="tyson-pitfall">seems an inaccurate summary of our knowledge</span>.
+                            </li>
+                            <li>
+                                The pooled model also implies: <em>"the probability is $\frac{1}{2}$ that the true effect in A is less than the true effect in C"</em>, which is also <span class="tyson-pitfall">difficult to justify</span> given the data in Table 5.2.
+                            </li>
+                        </ul>
+                    </div>
+
+                    <p class="mb-6">
+                        Neither estimate is fully satisfactory, and we would like a compromise that combines information from all eight experiments without assuming all the $\theta_j$’s to be equal. <span class="tyson-pause-short"></span> The Bayesian analysis under the hierarchical model provides exactly that.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Cognitive Readout Box for Tyson Style -->
+            <div class="mt-12 p-6 bg-bayesian-surfaceAlt border border-bayesian-border rounded-lg text-sm text-bayesian-navy ui-text leading-relaxed shadow-soft">
+                <h4 class="font-bold text-base mb-3 text-bayesian-navy">Cognitive Design: How Cosmic Highlights Alter Processing</h4>
+                <p class="mb-4">
+                    This cosmic formatting (Tyson Style) uses galactic color palettes and visual pacing to reshape our engagement with technical prose:
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
+                    <div>
+                        <h5 class="font-semibold text-xs uppercase tracking-wider text-bayesian-slate mb-1">1. Subvocalization & Cosmic Pace</h5>
+                        <p class="text-xs text-bayesian-text">
+                            By injecting violet-themed pause markers (<span class="tyson-pause-short"></span>), the reader is encouraged to slow down and subvocalize in a theatrical, narrative cadence. This structural rhythm lets complex ideas land with gravity.
+                        </p>
+                    </div>
+                    <div>
+                        <h5 class="font-semibold text-xs uppercase tracking-wider text-bayesian-slate mb-1">2. Preattentive Galactic Cues</h5>
+                        <p class="text-xs text-bayesian-text">
+                            The space-themed palette segregates ideas preattentively. The eye maps <span class="tyson-intuition">observations (violet)</span>, <span class="tyson-math">mathematical orbits (cyan)</span>, and <span class="tyson-pitfall">optical illusions (orange)</span> automatically.
+                        </p>
+                    </div>
+                    <div>
+                        <h5 class="font-semibold text-xs uppercase tracking-wider text-bayesian-slate mb-1">3. Theatrical Focus</h5>
+                        <p class="text-xs text-bayesian-text">
+                            Bold visual anchors serve as narrative stars. They guide your eyes toward the central physical intuition, preventing the reader from getting lost in dry mathematical abstraction.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Neil deGrasse Tyson Lecture Mode Container -->
+        <div class="mode-tyson-lecture hidden">
+            <!-- Collapsible Legend -->
+            <details class="mb-8 p-4 bg-violet-50/30 border border-violet-200/50 rounded-lg text-sm text-violet-900 ui-text leading-relaxed shadow-soft group">
+                <summary class="font-bold cursor-pointer flex items-center justify-between text-violet-800 list-none focus:outline-none select-none">
+                    <div class="flex items-center gap-2 text-xs md:text-sm">
+                        <svg class="w-4 h-4 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        Tyson Lecture Notation Key
+                    </div>
+                    <span class="text-xs font-semibold text-violet-700 hover:text-violet-950 transition-colors group-open:hidden">Show Key &darr;</span>
+                    <span class="text-xs font-semibold text-violet-700 hover:text-violet-950 transition-colors hidden group-open:inline">Hide Key &uarr;</span>
+                </summary>
+                <div class="mt-4 border-t border-violet-200/40 pt-3">
+                    <ul class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2.5 text-xs text-violet-850">
+                        <li><span class="tyson-intuition">Violet Text</span>: Cosmic setups, observations, and raw data.</li>
+                        <li><span class="tyson-math">Cyan Text</span>: Core mathematical concepts and equations.</li>
+                        <li><span class="tyson-pitfall">Orange Text</span>: Statistical traps, illusions, and warnings.</li>
+                        <li><span class="tyson-emphasis">Bold Text</span>: Explanatory weight or conceptual anchors.</li>
+                        <li><span class="tyson-pause-short"></span>: A quick breath or conceptual pulse.</li>
+                        <li><span class="tyson-pause-medium"></span>: A dramatic beat in speech.</li>
+                        <li><span class="tyson-pause-long"></span>: A long silence to reflect on the grandeur of the cosmos.</li>
+                    </ul>
+                </div>
+            </details>
+
+            <section class="mb-16">
+                <div class="prose max-w-none text-bayesian-text mb-6">
+                    <p class="mb-6">
+                        We live in a <span class="tyson-emphasis">universe defined by noise</span>. <span class="tyson-pause-medium"></span> When you point a telescope to the heavens, <span class="tyson-pause-short"></span> you don't get pristine, perfect images of the stars. You get pixels dancing in the dark, photons scattered by interstellar gas, and dust lanes obscuring the light. <span class="tyson-pause-medium"></span> This is the fundamental challenge of all observational science. <span class="tyson-pause-long"></span>
+                    </p>
+                    <p class="mb-6">
+                        So, let us look at a study from the <span class="tyson-intuition">Educational Testing Service</span>. <span class="tyson-pause-short"></span> They wanted to measure the impact of coaching programs on SAT scores across <span class="tyson-intuition">eight different high schools</span>. <span class="tyson-pause-medium"></span> Now, they conducted randomized experiments in each school. They got eight separate measurements. <span class="tyson-pause-short"></span> Each school's program was its own independent star system, orbiting in the vast dark. And we have no prior reason to believe any one school's coaching was a shining giant compared to the rest. <span class="tyson-pause-long"></span>
+                    </p>
+                    <p class="mb-6">
+                        Let us examine the observations, plotted right here in <span class="tyson-intuition">Table 5.2</span>. In particular, we have estimated coaching effects $y_j$ and their standard errors $\sigma_j$. These errors are the instrument noise—the atmospheric turbulence that distorts our view. And in this cosmic neighborhood, the noise is formidable.
+                    </p>
+                </div>
+
+                <!-- Table 5.2 Observed effects -->
+                <div class="overflow-x-auto my-8 border border-bayesian-border rounded-lg bg-white shadow-soft">
+                    <table class="min-w-full divide-y divide-bayesian-border text-sm">
+                        <thead class="bg-bayesian-surfaceAlt">
+                            <tr class="ui-text font-semibold text-bayesian-navy text-left">
+                                <th class="px-6 py-4">School</th>
+                                <th class="px-6 py-4 text-right">Estimated treatment effect, $y_j$</th>
+                                <th class="px-6 py-4 text-right">Standard error estimate, $\sigma_j$</th>
+                                <th class="px-6 py-4">Cosmic Readout</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-bayesian-border text-bayesian-text font-medium">
+                            <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
+                                <td class="px-6 py-4 font-bold text-bayesian-navy">A</td>
+                                <td class="px-6 py-4 text-right"><span class="tyson-intuition">28</span></td>
+                                <td class="px-6 py-4 text-right">15</td>
+                                <td class="px-6 py-4 text-xs italic text-violet-900 bg-violet-50/20">A raw flare of 28 points, but shrouded in a vast dust cloud of noise (15).</td>
+                            </tr>
+                            <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
+                                <td class="px-6 py-4 font-bold text-bayesian-navy">B</td>
+                                <td class="px-6 py-4 text-right"><span class="tyson-intuition">8</span></td>
+                                <td class="px-6 py-4 text-right">10</td>
+                                <td class="px-6 py-4 text-xs italic text-slate-500">A tiny orbital wobble, lost in the background radiation.</td>
+                            </tr>
+                            <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
+                                <td class="px-6 py-4 font-bold text-bayesian-navy">C</td>
+                                <td class="px-6 py-4 text-right"><span class="tyson-intuition">-3</span></td>
+                                <td class="px-6 py-4 text-right">16</td>
+                                <td class="px-6 py-4 text-xs italic text-orange-900 bg-orange-50/20">Appears to fall backward into the dark, but it's well within random fluctuations.</td>
+                            </tr>
+                            <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
+                                <td class="px-6 py-4 font-bold text-bayesian-navy">D</td>
+                                <td class="px-6 py-4 text-right"><span class="tyson-intuition">7</span></td>
+                                <td class="px-6 py-4 text-right">11</td>
+                                <td class="px-6 py-4 text-xs italic text-slate-500">A dim signature, barely distinguishable from zero.</td>
+                            </tr>
+                            <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
+                                <td class="px-6 py-4 font-bold text-bayesian-navy">E</td>
+                                <td class="px-6 py-4 text-right"><span class="tyson-intuition">-1</span></td>
+                                <td class="px-6 py-4 text-right">9</td>
+                                <td class="px-6 py-4 text-xs italic text-slate-500">A flat line, showing no expansion or contraction.</td>
+                            </tr>
+                            <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
+                                <td class="px-6 py-4 font-bold text-bayesian-navy">F</td>
+                                <td class="px-6 py-4 text-right"><span class="tyson-intuition">1</span></td>
+                                <td class="px-6 py-4 text-right">11</td>
+                                <td class="px-6 py-4 text-xs italic text-slate-500">Stagnant, like a cold, inactive solar system.</td>
+                            </tr>
+                            <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
+                                <td class="px-6 py-4 font-bold text-bayesian-navy">G</td>
+                                <td class="px-6 py-4 text-right"><span class="tyson-intuition">18</span></td>
+                                <td class="px-6 py-4 text-right">10</td>
+                                <td class="px-6 py-4 text-xs italic text-violet-900 bg-violet-50/20">A decent beacon of light, rising above the noise horizon.</td>
+                            </tr>
+                            <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
+                                <td class="px-6 py-4 font-bold text-bayesian-navy">H</td>
+                                <td class="px-6 py-4 text-right"><span class="tyson-intuition">12</span></td>
+                                <td class="px-6 py-4 text-right">18</td>
+                                <td class="px-6 py-4 text-xs italic text-slate-500">A massive variance (18) dwarfs the signal. Highly uncertain.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Section: Inferences based on nonhierarchical models -->
+            <section class="mb-16">
+                <h2 class="text-2xl font-semibold mb-6 border-b pb-2 border-bayesian-border ui-text">
+                    The Danger of Extreme Models
+                </h2>
+                <div class="prose max-w-none text-bayesian-text">
+                    <p class="mb-6">
+                        Before we search for the truth through hierarchical physics, let us analyze two extreme paths that naive observers often stumble into. <span class="tyson-pause-short"></span> We can look at each experiment in absolute isolation, <span class="tyson-pause-short"></span> or we can pool their light completely. <span class="tyson-pause-medium"></span> Let us witness why both models collapse under scrutiny.
+                    </p>
+
+                    <h3 class="text-xl font-semibold mb-4 text-bayesian-navy ui-text">Separate Estimates: Isolated Galaxies</h3>
+                    <p class="mb-6">
+                        If you take a cursory glance at <span class="tyson-intuition">Table 5.2</span>, you might gasp: <span class="tyson-intuition">"Look at School A! It has a giant effect of 28 points! A true stellar explosion!"</span> <span class="tyson-pause-medium"></span> But when you adjust your telescope, you realize the standard error is 15. <span class="tyson-pause-short"></span> In the grand calculus of uncertainty, when you draw the 95% posterior interval, it overlaps substantially with every other school. <span class="tyson-pause-long"></span> They are not isolated islands; they are part of a shared cluster, and we cannot tell them apart through independent lenses.
+                    </p>
+
+                    <h3 class="text-xl font-semibold mb-4 text-bayesian-navy ui-text">Complete Pooling: The Homogenous Cosmos</h3>
+                    <p class="mb-6">
+                        So you choose the opposite extreme. You declare: <span class="tyson-emphasis">"All schools are identical."</span> You pool all eight measurements together, combining their apertures. <span class="tyson-pause-short"></span> When you run the math, you calculate a weighted average of $\bar{y}_{\cdot\cdot} = 7.7$, with a standard error of $4.1$.
+                    </p>
+
+                    <div class="academic-card p-6 mb-6 mt-8 border-l-4 border-cyan-500">
+                        <h4 class="font-semibold text-bayesian-navy ui-text mb-4">Complete Pooling (The Shared Cosmos)</h4>
+                        <div class="code-block text-center py-4 bg-bayesian-surfaceAlt border border-bayesian-border rounded mb-4">
+                            <span class="tyson-math">$$\bar{y}_{\cdot\cdot} = 7.7$$</span>
+                            <span class="tyson-math">$$\text{Var}(\bar{y}_{\cdot\cdot}) = 16.6 \quad (\text{SE} \approx 4.1)$$</span>
+                        </div>
+                        <p class="text-sm text-bayesian-slate italic">
+                            This gives us a 95% confidence interval of approximately $[-0.5, 15.9]$.
+                        </p>
+                    </div>
+
+                    <p class="mb-6">
+                        This model is simple. It's clean. But does it reflect reality? <span class="tyson-pause-medium"></span> Let us ask: is it scientifically plausible to declare that School A, with its raw measurement of 28, has a true effect of only 7.7? <span class="tyson-pause-short"></span> Or that School C, which recorded -3, has a true effect of 7.7? <span class="tyson-pause-long"></span> That is like saying every star in a cluster has the exact same mass, simply because your telescope is too blurry to resolve their individual profiles. <span class="tyson-pause-medium"></span> <span class="tyson-pitfall">It is a flat, uniform view of a rich, diverse cosmos.</span>
+                    </p>
+
+                    <h3 class="text-xl font-semibold mb-4 text-bayesian-navy ui-text">The Bayesian Compromise: Resolving the Blur</h3>
+                    <p class="mb-6">
+                        Neither extreme is satisfying. <span class="tyson-pause-short"></span> We need a compromise. A mathematical gravity well that allows the schools to express their individual parameters, yet pulls them toward a common center of mass based on the precision of their measurements. <span class="tyson-pause-medium"></span>
+                        This is the power of the <span class="tyson-math">hierarchical Bayesian model</span>. It lets the data talk to each other across the voids of space, sharing strength, resolving the blurry universe into sharp, undeniable focus. <span class="tyson-pause-long"></span>
+                    </p>
+                </div>
+            </section>
+
+            <!-- Cognitive Readout Box for Tyson Lecture -->
+            <div class="mt-12 p-6 bg-bayesian-surfaceAlt border border-bayesian-border rounded-lg text-sm text-bayesian-navy ui-text leading-relaxed shadow-soft">
+                <h4 class="font-bold text-base mb-3 text-bayesian-navy">Cognitive Design: Tyson's Cosmic Framework</h4>
+                <p class="mb-4">
+                    This cosmic rewrite utilizes metaphorical substitution to aid complex statistical comprehension:
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
+                    <div>
+                        <h5 class="font-semibold text-xs uppercase tracking-wider text-bayesian-slate mb-1">1. Metaphorical Mapping</h5>
+                        <p class="text-xs text-bayesian-text">
+                            By translating schools into star systems and measurement errors into telescope noise, the text leverages pre-existing physical intuitions to ground dry statistical concepts.
+                        </p>
+                    </div>
+                    <div>
+                        <h5 class="font-semibold text-xs uppercase tracking-wider text-bayesian-slate mb-1">2. Cosmic Pacing</h5>
+                        <p class="text-xs text-bayesian-text">
+                            The rhythm features long pauses (<span class="tyson-pause-long"></span>) following mind-bending assertions, encouraging readers to stop and ponder the conceptual implications before moving forward.
+                        </p>
+                    </div>
+                    <div>
+                        <h5 class="font-semibold text-xs uppercase tracking-wider text-bayesian-slate mb-1">3. Color-Coded Gravity</h5>
+                        <p class="text-xs text-bayesian-text">
+                            Cosmic coloring draws visual contrast between physical phenomena (violet), planetary models (cyan), and stellar hazards (orange), lowering cognitive friction during reading.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- References & Study Disclaimer -->
         <section class="mt-20 pt-8 border-t border-bayesian-border">
             <div class="p-6 bg-bayesian-surfaceAlt border border-bayesian-border rounded-lg text-sm text-bayesian-text leading-relaxed">
@@ -822,48 +1274,86 @@
 
     <!-- Reading Mode Toggler JS -->
     <script>
-        function setReadingMode(mode) {
+        let activeVoice = 'feynman';
+        let activeFormat = 'normal';
+
+        function setExplainerVoice(voice) {
+            activeVoice = voice;
+            updateDisplay();
+        }
+
+        function setFormatMode(format) {
+            activeFormat = format;
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            // Get all sections
             const standardElements = document.querySelectorAll('.mode-standard');
-            const lectureElements = document.querySelectorAll('.mode-feynman-lecture');
-            const styleElements = document.querySelectorAll('.mode-feynman-style');
+            const feynmanStyleElements = document.querySelectorAll('.mode-feynman-style');
+            const feynmanLectureElements = document.querySelectorAll('.mode-feynman-lecture');
+            const tysonStyleElements = document.querySelectorAll('.mode-tyson-style');
+            const tysonLectureElements = document.querySelectorAll('.mode-tyson-lecture');
 
-            const toggleStandardBtn = document.getElementById('toggle-standard');
-            const toggleLectureBtn = document.getElementById('toggle-feynman-lecture');
-            const toggleStyleBtn = document.getElementById('toggle-feynman-style');
+            // Hide all sections first
+            const allElements = [
+                ...standardElements,
+                ...feynmanStyleElements,
+                ...feynmanLectureElements,
+                ...tysonStyleElements,
+                ...tysonLectureElements
+            ];
+            allElements.forEach(el => el.classList.add('hidden'));
 
-            // Reset buttons
-            const buttons = [toggleStandardBtn, toggleLectureBtn, toggleStyleBtn];
-            buttons.forEach(btn => {
+            // Show current active section based on format and selected voice
+            if (activeFormat === 'normal') {
+                standardElements.forEach(el => el.classList.remove('hidden'));
+            } else if (activeFormat === 'style') {
+                if (activeVoice === 'feynman') {
+                    feynmanStyleElements.forEach(el => el.classList.remove('hidden'));
+                } else if (activeVoice === 'tyson') {
+                    tysonStyleElements.forEach(el => el.classList.remove('hidden'));
+                }
+            } else if (activeFormat === 'rewritten') {
+                if (activeVoice === 'feynman') {
+                    feynmanLectureElements.forEach(el => el.classList.remove('hidden'));
+                } else if (activeVoice === 'tyson') {
+                    tysonLectureElements.forEach(el => el.classList.remove('hidden'));
+                }
+            }
+
+            // Update Voice button styles
+            const voiceFeynmanBtn = document.getElementById('voice-feynman');
+            const voiceTysonBtn = document.getElementById('voice-tyson');
+            if (voiceFeynmanBtn && voiceTysonBtn) {
+                if (activeVoice === 'feynman') {
+                    voiceFeynmanBtn.className = 'flex-1 md:flex-initial px-4 py-2 text-xs font-bold rounded-md transition-all duration-200 bg-bayesian-navy text-white shadow-soft';
+                    voiceTysonBtn.className = 'flex-1 md:flex-initial px-4 py-2 text-xs font-bold rounded-md transition-all duration-200 bg-transparent text-bayesian-slate hover:text-bayesian-navy';
+                } else {
+                    voiceTysonBtn.className = 'flex-1 md:flex-initial px-4 py-2 text-xs font-bold rounded-md transition-all duration-200 bg-bayesian-navy text-white shadow-soft';
+                    voiceFeynmanBtn.className = 'flex-1 md:flex-initial px-4 py-2 text-xs font-bold rounded-md transition-all duration-200 bg-transparent text-bayesian-slate hover:text-bayesian-navy';
+                }
+            }
+
+            // Update Format button styles
+            const formatNormalBtn = document.getElementById('format-normal');
+            const formatStyleBtn = document.getElementById('format-style');
+            const formatRewrittenBtn = document.getElementById('format-rewritten');
+            const formatBtns = [formatNormalBtn, formatStyleBtn, formatRewrittenBtn];
+            
+            formatBtns.forEach(btn => {
                 if (btn) {
-                    btn.classList.remove('bg-bayesian-navy', 'text-white', 'shadow-soft');
-                    btn.classList.add('bg-transparent', 'text-bayesian-slate', 'hover:text-bayesian-navy');
+                    btn.className = 'flex-1 md:flex-initial px-4 py-2 text-xs font-bold rounded-md transition-all duration-200 bg-transparent text-bayesian-slate hover:text-bayesian-navy';
                 }
             });
 
-            // Hide all
-            standardElements.forEach(el => el.classList.add('hidden'));
-            lectureElements.forEach(el => el.classList.add('hidden'));
-            styleElements.forEach(el => el.classList.add('hidden'));
+            let activeFormatBtn = null;
+            if (activeFormat === 'normal') activeFormatBtn = formatNormalBtn;
+            else if (activeFormat === 'style') activeFormatBtn = formatStyleBtn;
+            else if (activeFormat === 'rewritten') activeFormatBtn = formatRewrittenBtn;
 
-            // Show active and highlight button
-            if (mode === 'feynman-lecture') {
-                lectureElements.forEach(el => el.classList.remove('hidden'));
-                if (toggleLectureBtn) {
-                    toggleLectureBtn.classList.add('bg-bayesian-navy', 'text-white', 'shadow-soft');
-                    toggleLectureBtn.classList.remove('bg-transparent', 'text-bayesian-slate', 'hover:text-bayesian-navy');
-                }
-            } else if (mode === 'feynman-style') {
-                styleElements.forEach(el => el.classList.remove('hidden'));
-                if (toggleStyleBtn) {
-                    toggleStyleBtn.classList.add('bg-bayesian-navy', 'text-white', 'shadow-soft');
-                    toggleStyleBtn.classList.remove('bg-transparent', 'text-bayesian-slate', 'hover:text-bayesian-navy');
-                }
-            } else {
-                standardElements.forEach(el => el.classList.remove('hidden'));
-                if (toggleStandardBtn) {
-                    toggleStandardBtn.classList.add('bg-bayesian-navy', 'text-white', 'shadow-soft');
-                    toggleStandardBtn.classList.remove('bg-transparent', 'text-bayesian-slate', 'hover:text-bayesian-navy');
-                }
+            if (activeFormatBtn) {
+                activeFormatBtn.className = 'flex-1 md:flex-initial px-4 py-2 text-xs font-bold rounded-md transition-all duration-200 bg-bayesian-navy text-white shadow-soft';
             }
 
             // Trigger MathJax typesetting so formulas render correctly in the unhidden div
@@ -871,6 +1361,11 @@
                 window.MathJax.typeset();
             }
         }
+
+        // Initialize display state on load
+        window.addEventListener('DOMContentLoaded', () => {
+            updateDisplay();
+        });
     </script>
 </body>
 
