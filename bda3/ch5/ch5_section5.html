@@ -358,23 +358,29 @@
         <!-- Feynman Lecture Mode Container -->
         <div class="mode-feynman hidden">
             <!-- Collapsible Legend -->
-            <div class="mb-8 p-5 bg-teal-50/40 border border-teal-200/60 rounded-lg text-sm text-teal-900 ui-text leading-relaxed shadow-soft">
-                <div class="font-bold mb-3 flex items-center gap-2 text-teal-800">
-                    <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    Feynman Lecture Notation Key
+            <details class="mb-8 p-4 bg-teal-50/30 border border-teal-200/50 rounded-lg text-sm text-teal-900 ui-text leading-relaxed shadow-soft group">
+                <summary class="font-bold cursor-pointer flex items-center justify-between text-teal-800 list-none focus:outline-none select-none">
+                    <div class="flex items-center gap-2 text-xs md:text-sm">
+                        <svg class="w-4 h-4 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        Feynman Lecture Notation Key
+                    </div>
+                    <span class="text-xs font-semibold text-teal-700 hover:text-teal-950 transition-colors group-open:hidden">Show Key &darr;</span>
+                    <span class="text-xs font-semibold text-teal-700 hover:text-teal-950 transition-colors hidden group-open:inline">Hide Key &uarr;</span>
+                </summary>
+                <div class="mt-4 border-t border-teal-200/40 pt-3">
+                    <ul class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2.5 text-xs text-teal-850">
+                        <li><span class="feynman-intuition">Teal Text</span>: Physical setups, raw observations, and data.</li>
+                        <li><span class="feynman-math">Blue Text</span>: Core mathematical concepts and equations.</li>
+                        <li><span class="feynman-pitfall">Rose Text</span>: Statistical traps, false conclusions, and warnings.</li>
+                        <li><span class="feynman-emphasis">Bold Text</span>: Vocal emphasis, louder speech, or crucial details.</li>
+                        <li><span class="feynman-pause-short"></span>: A short breath or visual pause in the lecture.</li>
+                        <li><span class="feynman-pause-medium"></span>: A medium conversational pause.</li>
+                        <li><span class="feynman-pause-long"></span>: A long silent pause (letting a thought sink in).</li>
+                    </ul>
                 </div>
-                <ul class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2.5 text-xs text-teal-850">
-                    <li><span class="feynman-intuition">Teal Text</span>: Physical setups, raw observations, and data.</li>
-                    <li><span class="feynman-math">Blue Text</span>: Core mathematical concepts and equations.</li>
-                    <li><span class="feynman-pitfall">Rose Text</span>: Statistical traps, false conclusions, and warnings.</li>
-                    <li><span class="feynman-emphasis">Bold Text</span>: Vocal emphasis, louder speech, or crucial details.</li>
-                    <li><span class="feynman-pause-short"></span>: A short breath or visual pause in the lecture.</li>
-                    <li><span class="feynman-pause-medium"></span>: A medium conversational pause.</li>
-                    <li><span class="feynman-pause-long"></span>: A long silent pause (letting a thought sink in).</li>
-                </ul>
-            </div>
+            </details>
 
             <!-- Introduction Section -->
             <section class="mb-16">
