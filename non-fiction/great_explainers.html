@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Art of Explanation: Legendary Communicators of Science & Math</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400;1,6..72,600&display=swap" rel="stylesheet">
+
+    <!-- Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bayesian: {
+                            bg: '#f7f9fb',
+                            text: '#191c1e',
+                            navy: '#131b2e',
+                            blue: '#0051d5',
+                            slate: '#75859d',
+                            surface: '#ffffff',
+                            surfaceAlt: '#f8fafc',
+                            border: '#e2e8f0'
+                        }
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 12px rgba(15, 23, 42, 0.05)',
+                        'premium': '0 12px 30px rgba(19, 27, 46, 0.08)'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Newsreader', serif;
+            background-color: #f7f9fb;
+            color: #191c1e;
+            font-size: 1.25rem;
+            line-height: 1.7;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        .ui-text {
+            font-family: 'Inter', sans-serif;
+            color: #131b2e;
+        }
+
+        .math-inline {
+            font-family: 'Newsreader', serif;
+            font-size: 1.3rem;
+        }
+
+        .theorem-block {
+            background-color: #f8fafc;
+            border-left: 2px solid #0051d5;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .academic-card {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .academic-card:hover {
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+            transform: translateY(-1px);
+        }
+
+        .tab-btn {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #75859d;
+            border-bottom: 2px solid transparent;
+            padding-bottom: 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn.active {
+            color: #0051d5;
+            border-color: #0051d5;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+
+<body class="antialiased">
+
+    <!-- Main Container -->
+    <div class="max-w-[880px] mx-auto px-4 py-16">
+
+        <!-- Navigation -->
+        <nav class="mb-8 flex items-center gap-6">
+            <a href="../index.html"
+                class="inline-flex items-center text-sm font-semibold text-bayesian-slate hover:text-bayesian-navy transition-colors ui-text">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                Back to Index
+            </a>
+            <span class="text-bayesian-border">|</span>
+            <a href="../index.html"
+                class="inline-flex items-center text-sm font-semibold text-bayesian-slate hover:text-bayesian-navy transition-colors ui-text">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                </svg>
+                Home
+            </a>
+        </nav>
+
+        <!-- Header -->
+        <header class="mb-16">
+            <div
+                class="inline-block px-3 py-1 bg-bayesian-surfaceAlt border border-bayesian-border text-bayesian-slate rounded text-xs font-semibold tracking-wide mb-6 uppercase ui-text">
+                Non-Fiction &bull; The Science of Communication
+            </div>
+            <h1 class="text-4xl font-bold mb-6 tracking-tight leading-tight ui-text">
+                The Art of Explanation
+            </h1>
+            <p class="text-xl text-bayesian-slate leading-relaxed">
+                Analyzing the cognitive architectures, vocal modulation patterns, and pacing dynamics of the world's most celebrated educators in science, mathematics, and technology.
+            </p>
+        </header>
+
+        <!-- Introduction Content -->
+        <section class="mb-16">
+            <div class="prose max-w-none text-bayesian-text mb-6">
+                <p class="mb-6">
+                    A great explanation does more than transfer information—it manages human attention, respects working memory limits, and builds progressive conceptual ladders. When studying the methods of legendary science and mathematics explainers, we find they share not only deep mastery of their subjects, but also a sophisticated grasp of verbal performance and cognitive psychology.
+                </p>
+                
+                <h2 class="text-2xl font-semibold mb-6 border-b pb-2 border-bayesian-border ui-text">
+                    The Three Pillars of Explanatory Delivery
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                    <div class="p-6 bg-white border border-bayesian-border rounded-lg shadow-soft">
+                        <h4 class="font-bold text-bayesian-navy text-lg mb-2 ui-text">1. Conceptual Scaffolding</h4>
+                        <p class="text-sm text-bayesian-slate leading-relaxed">
+                            Avoiding the "expert curse" by dismantling jargon. New abstract structures are systematically anchored to the listener's existing physical intuition, introducing formal labels only after the behavior of the system is clear.
+                        </p>
+                    </div>
+                    <div class="p-6 bg-white border border-bayesian-border rounded-lg shadow-soft">
+                        <h4 class="font-bold text-bayesian-navy text-lg mb-2 ui-text">2. Vocal Modulation</h4>
+                        <p class="text-sm text-bayesian-slate leading-relaxed">
+                            Monotone speech causes rapid mental habituation. Great explainers constantly vary their pitch, volume, and inflection to signpost transitions, emphasize key takeaways, and convey emotional excitement.
+                        </p>
+                    </div>
+                    <div class="p-6 bg-white border border-bayesian-border rounded-lg shadow-soft">
+                        <h4 class="font-bold text-bayesian-navy text-lg mb-2 ui-text">3. Pacing and The Pause</h4>
+                        <p class="text-sm text-bayesian-slate leading-relaxed">
+                            Working memory requires regular breathing room. Inserting "processing pauses" (usually 2–3 seconds) after presenting a dense concept allows the brain time to consolidate the mental model before moving forward.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Explainers Directory -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-semibold mb-6 border-b pb-2 border-bayesian-border ui-text">
+                Legendary Profiles in Science & Math
+            </h2>
+
+            <div class="space-y-8">
+
+                <!-- Richard Feynman -->
+                <div class="academic-card p-8 bg-white">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h3 class="text-xl font-bold text-bayesian-navy ui-text">Richard Feynman</h3>
+                            <p class="text-xs font-semibold text-bayesian-slate uppercase tracking-wider">Theoretical Physics &bull; Nobel Laureate</p>
+                        </div>
+                        <span class="text-xs font-mono bg-blue-50 text-bayesian-blue border border-blue-100 px-2 py-1 rounded font-semibold">First-Principles</span>
+                    </div>
+
+                    <blockquote class="pl-4 border-l-2 border-bayesian-blue italic text-base text-bayesian-slate mb-6">
+                        "If you can't explain it in simple terms to a freshman, you don't understand it yourself."
+                    </blockquote>
+
+                    <!-- Tabs -->
+                    <div>
+                        <div class="flex gap-6 border-b border-bayesian-border mb-4">
+                            <button onclick="switchTab('feynman', 'approach')" id="tab-btn-feynman-approach" class="tab-btn active">Approach</button>
+                            <button onclick="switchTab('feynman', 'vocal')" id="tab-btn-feynman-vocal" class="tab-btn">Vocal Style & Pacing</button>
+                            <button onclick="switchTab('feynman', 'works')" id="tab-btn-feynman-works" class="tab-btn">Key Works</button>
+                        </div>
+
+                        <div id="tab-content-feynman-approach" class="tab-content active text-sm text-bayesian-text space-y-2 leading-relaxed">
+                            <p><strong>Jargon Demolition:</strong> Feynman believed naming things was often confused with understanding them. He taught by stripping away specialized words, describing the interactions of particles or systems in plain English first.</p>
+                            <p><strong>Visual Models:</strong> He translated advanced mathematics into simple diagrams (Feynman diagrams), mapping complex integrals to visual particle paths that made quantum electrodynamics intuitive.</p>
+                        </div>
+                        <div id="tab-content-feynman-vocal" class="tab-content text-sm text-bayesian-text space-y-2 leading-relaxed">
+                            <p><strong>The Queens Accent:</strong> Possessed a distinct, colloquial, and energetic New York accent that instantly humanized academic physics.</p>
+                            <p><strong>Pacing & Humor:</strong> He built ideas with highly energetic momentum, modulated his voice to a lower register when explaining a core paradox, and paused briefly before delivering key insights with a shrug, showing that physics was ultimately logical rather than mysterious.</p>
+                        </div>
+                        <div id="tab-content-feynman-works" class="tab-content text-sm text-bayesian-text leading-relaxed">
+                            <ul class="list-disc pl-5 space-y-1">
+                                <li><strong>The Feynman Lectures on Physics</strong> (Pedagogical masterpiece)</li>
+                                <li><strong>QED: The Strange Theory of Light and Matter</strong> (Quantum mechanics without formulas)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carl Sagan -->
+                <div class="academic-card p-8 bg-white">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h3 class="text-xl font-bold text-bayesian-navy ui-text">Carl Sagan</h3>
+                            <p class="text-xs font-semibold text-bayesian-slate uppercase tracking-wider">Astronomy & Cosmology</p>
+                        </div>
+                        <span class="text-xs font-mono bg-blue-50 text-bayesian-blue border border-blue-100 px-2 py-1 rounded font-semibold">Narrative Scope</span>
+                    </div>
+
+                    <blockquote class="pl-4 border-l-2 border-bayesian-blue italic text-base text-bayesian-slate mb-6">
+                        "Somewhere, something incredible is waiting to be known."
+                    </blockquote>
+
+                    <!-- Tabs -->
+                    <div>
+                        <div class="flex gap-6 border-b border-bayesian-border mb-4">
+                            <button onclick="switchTab('sagan', 'approach')" id="tab-btn-sagan-approach" class="tab-btn active">Approach</button>
+                            <button onclick="switchTab('sagan', 'vocal')" id="tab-btn-sagan-vocal" class="tab-btn">Vocal Style & Pacing</button>
+                            <button onclick="switchTab('sagan', 'works')" id="tab-btn-sagan-works" class="tab-btn">Key Works</button>
+                        </div>
+
+                        <div id="tab-content-sagan-approach" class="tab-content active text-sm text-bayesian-text space-y-2 leading-relaxed">
+                            <p><strong>Philosophical Framing:</strong> Sagan integrated scientific facts with historical context, human vanity, and philosophical reflection. He framed science not as a collection of metrics, but as a critical tool for human survival.</p>
+                            <p><strong>Scale Metaphors:</strong> Created the "Cosmic Calendar," condensing 13.8 billion years of cosmic history into a single calendar year to help the human mind visualize deep geological and cosmic time.</p>
+                        </div>
+                        <div id="tab-content-sagan-vocal" class="tab-content text-sm text-bayesian-text space-y-2 leading-relaxed">
+                            <p><strong>Resonant Baritone:</strong> Spoke with a deep, theatrical, and warm baritone voice. His articulation was exceptionally slow and precise.</p>
+                            <p><strong>The Meditative Pause:</strong> He utilized long, quiet pauses at the end of sentences, giving the listener the space to process the massive scales of distance and time he described, encouraging awe rather than confusion.</p>
+                        </div>
+                        <div id="tab-content-sagan-works" class="tab-content text-sm text-bayesian-text leading-relaxed">
+                            <ul class="list-disc pl-5 space-y-1">
+                                <li><strong>Cosmos: A Personal Voyage</strong> (Documentary series)</li>
+                                <li><strong>Pale Blue Dot</strong> (Meditation on the pixel of Earth)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Leonard Susskind -->
+                <div class="academic-card p-8 bg-white">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h3 class="text-xl font-bold text-bayesian-navy ui-text">Leonard Susskind</h3>
+                            <p class="text-xs font-semibold text-bayesian-slate uppercase tracking-wider">Theoretical Physics &bull; Stanford Professor</p>
+                        </div>
+                        <span class="text-xs font-mono bg-blue-50 text-bayesian-blue border border-blue-100 px-2 py-1 rounded font-semibold">Minimal Fluff</span>
+                    </div>
+
+                    <blockquote class="pl-4 border-l-2 border-bayesian-blue italic text-base text-bayesian-slate mb-6">
+                        "My goal is to give you the theoretical minimum—the core tools you need to do physics, and not one piece of extra fluff."
+                    </blockquote>
+
+                    <!-- Tabs -->
+                    <div>
+                        <div class="flex gap-6 border-b border-bayesian-border mb-4">
+                            <button onclick="switchTab('susskind', 'approach')" id="tab-btn-susskind-approach" class="tab-btn active">Approach</button>
+                            <button onclick="switchTab('susskind', 'vocal')" id="tab-btn-susskind-vocal" class="tab-btn">Vocal Style & Pacing</button>
+                            <button onclick="switchTab('susskind', 'works')" id="tab-btn-susskind-works" class="tab-btn">Key Works</button>
+                        </div>
+
+                        <div id="tab-content-susskind-approach" class="tab-content active text-sm text-bayesian-text space-y-2 leading-relaxed">
+                            <p><strong>The Theoretical Minimum:</strong> Susskind strips away academic gatekeeping by teaching the actual mathematics of physics (calculus, state vectors, tensors) but avoiding dense proofs in favor of physical reasoning.</p>
+                            <p><strong>Blackboard Construction:</strong> Taught for decades directly on blackboards, building up physical systems from raw initial states, showing how differential equations describe actual quantum or cosmological realities.</p>
+                        </div>
+                        <div id="tab-content-susskind-vocal" class="tab-content text-sm text-bayesian-text space-y-2 leading-relaxed">
+                            <p><strong>Gravelly & Unpretentious:</strong> Speaks with a deep, slow, gravelly, and unhurried voice that reflects his working-class background (he was a plumber before becoming a physicist).</p>
+                            <p><strong>Syntax-aligned Pauses:</strong> He walks back and forth across the blackboard, sketching states and pausing after writing a key equation, letting the physical syntax of the formula align with the reader's mental model.</p>
+                        </div>
+                        <div id="tab-content-susskind-works" class="tab-content text-sm text-bayesian-text leading-relaxed">
+                            <ul class="list-disc pl-5 space-y-1">
+                                <li><strong>The Theoretical Minimum</strong> (Book series covering Classical, Quantum, Relativity, and Cosmology)</li>
+                                <li><strong>Stanford Continuing Studies Lectures</strong> (Freely available video lectures)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Neil deGrasse Tyson -->
+                <div class="academic-card p-8 bg-white">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h3 class="text-xl font-bold text-bayesian-navy ui-text">Neil deGrasse Tyson</h3>
+                            <p class="text-xs font-semibold text-bayesian-slate uppercase tracking-wider">Astrophysics &bull; Science Outreach</p>
+                        </div>
+                        <span class="text-xs font-mono bg-blue-50 text-bayesian-blue border border-blue-100 px-2 py-1 rounded font-semibold">Cultural Hooks</span>
+                    </div>
+
+                    <blockquote class="pl-4 border-l-2 border-bayesian-blue italic text-base text-bayesian-slate mb-6">
+                        "The good thing about science is that it's true whether or not you believe in it."
+                    </blockquote>
+
+                    <!-- Tabs -->
+                    <div>
+                        <div class="flex gap-6 border-b border-bayesian-border mb-4">
+                            <button onclick="switchTab('tyson', 'approach')" id="tab-btn-tyson-approach" class="tab-btn active">Approach</button>
+                            <button onclick="switchTab('tyson', 'vocal')" id="tab-btn-tyson-vocal" class="tab-btn">Vocal Style & Pacing</button>
+                            <button onclick="switchTab('tyson', 'works')" id="tab-btn-tyson-works" class="tab-btn">Key Works</button>
+                        </div>
+
+                        <div id="tab-content-tyson-approach" class="tab-content active text-sm text-bayesian-text space-y-2 leading-relaxed">
+                            <p><strong>Cultural Context:</strong> Tyson anchors cosmological concepts to everyday culture, pop media, movies, and historical trivia, drawing the listener in with familiar topics before shifting to physics.</p>
+                            <p><strong>Active Metaphor:</strong> Connects highly abstract concepts (like gravity wells or time dilation) to simple physical behaviors, like dropping a bowling ball on a mattress.</p>
+                        </div>
+                        <div id="tab-content-tyson-vocal" class="tab-content text-sm text-bayesian-text space-y-2 leading-relaxed">
+                            <p><strong>Dynamic Modulation:</strong> Uses a booming, highly modulated voice with extreme shifts in pitch and volume to express excitement and keep the listener's focus active.</p>
+                            <p><strong>Rhythmic Acceleration:</strong> Speeds up his delivery to build excitement about a scientific discovery, then drops to a quiet, dramatic whisper when explaining the core mystery or conclusion.</p>
+                        </div>
+                        <div id="tab-content-tyson-works" class="tab-content text-sm text-bayesian-text leading-relaxed">
+                            <ul class="list-disc pl-5 space-y-1">
+                                <li><strong>Cosmos: A Spacetime Odyssey</strong> (Docuseries follow-up to Sagan)</li>
+                                <li><strong>Astrophysics for People in a Hurry</strong> (Bestselling introduction to the cosmos)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gilbert Strang -->
+                <div class="academic-card p-8 bg-white">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h3 class="text-xl font-bold text-bayesian-navy ui-text">Gilbert Strang</h3>
+                            <p class="text-xs font-semibold text-bayesian-slate uppercase tracking-wider">Applied Mathematics &bull; MIT Professor</p>
+                        </div>
+                        <span class="text-xs font-mono bg-blue-50 text-bayesian-blue border border-blue-100 px-2 py-1 rounded font-semibold">Geometric Space</span>
+                    </div>
+
+                    <blockquote class="pl-4 border-l-2 border-bayesian-blue italic text-base text-bayesian-slate mb-6">
+                        "Linear algebra is math that can actually be visualized, and that is where its power comes from."
+                    </blockquote>
+
+                    <!-- Tabs -->
+                    <div>
+                        <div class="flex gap-6 border-b border-bayesian-border mb-4">
+                            <button onclick="switchTab('strang', 'approach')" id="tab-btn-strang-approach" class="tab-btn active">Approach</button>
+                            <button onclick="switchTab('strang', 'vocal')" id="tab-btn-strang-vocal" class="tab-btn">Vocal Style & Pacing</button>
+                            <button onclick="switchTab('strang', 'works')" id="tab-btn-strang-works" class="tab-btn">Key Works</button>
+                        </div>
+
+                        <div id="tab-content-strang-approach" class="tab-content active text-sm text-bayesian-text space-y-2 leading-relaxed">
+                            <p><strong>Example-First:</strong> Strang introduces concepts by immediately showing a simple, numerical system (like a $2 \times 2$ matrix) and solving it. He allows the general theory to emerge from the patterns discovered in the concrete example.</p>
+                            <p><strong>Geometric Focus:</strong> Rather than viewing algebra as mechanical symbol manipulation, he explains matrices as physical transformations—stretching, rotating, and projecting vectors in space.</p>
+                        </div>
+                        <div id="tab-content-strang-vocal" class="tab-content text-sm text-bayesian-text space-y-2 leading-relaxed">
+                            <p><strong>Conversational Empathy:</strong> Speaks with a soft, friendly, and highly supportive voice that feels like a dialogue between peers rather than a formal university lecture.</p>
+                            <p><strong>Active Query Pacing:</strong> Regularly punctuates his calculations with conversational checkpoints ("Is this right?", "What do we do here?"), pausing for the classroom (or video audience) to think through the logical step before proceeding.</p>
+                        </div>
+                        <div id="tab-content-strang-works" class="tab-content text-sm text-bayesian-text leading-relaxed">
+                            <ul class="list-disc pl-5 space-y-1">
+                                <li><strong>Introduction to Linear Algebra</strong> (Standard university textbook)</li>
+                                <li><strong>MIT 18.06 OpenCourseWare</strong> (Beloved global lecture series)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grant Sanderson -->
+                <div class="academic-card p-8 bg-white">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h3 class="text-xl font-bold text-bayesian-navy ui-text">Grant Sanderson</h3>
+                            <p class="text-xs font-semibold text-bayesian-slate uppercase tracking-wider">Visual Mathematics &bull; Creator of 3Blue1Brown</p>
+                        </div>
+                        <span class="text-xs font-mono bg-blue-50 text-bayesian-blue border border-blue-100 px-2 py-1 rounded font-semibold">Visual Priming</span>
+                    </div>
+
+                    <blockquote class="pl-4 border-l-2 border-bayesian-blue italic text-base text-bayesian-slate mb-6">
+                        "The goal is to show the beauty of mathematics and provide a visual intuition before introducing the formal algebraic rules."
+                    </blockquote>
+
+                    <!-- Tabs -->
+                    <div>
+                        <div class="flex gap-6 border-b border-bayesian-border mb-4">
+                            <button onclick="switchTab('sanderson', 'approach')" id="tab-btn-sanderson-approach" class="tab-btn active">Approach</button>
+                            <button onclick="switchTab('sanderson', 'vocal')" id="tab-btn-sanderson-vocal" class="tab-btn">Vocal Style & Pacing</button>
+                            <button onclick="switchTab('sanderson', 'works')" id="tab-btn-sanderson-works" class="tab-btn">Key Works</button>
+                        </div>
+
+                        <div id="tab-content-sanderson-approach" class="tab-content active text-sm text-bayesian-text space-y-2 leading-relaxed">
+                            <p><strong>Invention-First:</strong> Sanderson designs narratives where the student "discovers" mathematical principles. By starting with a specific conflict and exploring failure modes, the formal mathematical tool emerges naturally as the solution.</p>
+                            <p><strong>Geometric Animations:</strong> Uses custom animations to visualize the geometry underlying calculus, linear algebra, and neural networks, allowing the eye to see what coordinates and matrices are actually doing.</p>
+                        </div>
+                        <div id="tab-content-sanderson-vocal" class="tab-content text-sm text-bayesian-text space-y-2 leading-relaxed">
+                            <p><strong>Analytical Calm:</strong> Delivers explanations in a quiet, calm, and highly measured tone, which reduces mathematical anxiety and encourages deliberate thinking.</p>
+                            <p><strong>Synchronized Pacing:</strong> Speaks with a controlled, unhurried tempo, inserting distinct pauses when animations shift to ensure the listener's visual system has time to align with the verbal description.</p>
+                        </div>
+                        <div id="tab-content-sanderson-works" class="tab-content text-sm text-bayesian-text leading-relaxed">
+                            <ul class="list-disc pl-5 space-y-1">
+                                <li><strong>Essence of Calculus</strong> (Visual guide to limits, derivatives, and integrals)</li>
+                                <li><strong>3Blue1Brown Channel</strong> (Pioneering channel in digital math pedagogy)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Douglas Hofstadter -->
+                <div class="academic-card p-8 bg-white">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h3 class="text-xl font-bold text-bayesian-navy ui-text">Douglas Hofstadter</h3>
+                            <p class="text-xs font-semibold text-bayesian-slate uppercase tracking-wider">Cognitive Science &bull; Mathematical Logic</p>
+                        </div>
+                        <span class="text-xs font-mono bg-blue-50 text-bayesian-blue border border-blue-100 px-2 py-1 rounded font-semibold">Recursive Metaphor</span>
+                    </div>
+
+                    <blockquote class="pl-4 border-l-2 border-bayesian-blue italic text-base text-bayesian-slate mb-6">
+                        "Isomorphism is what happens when two complex structures can be mapped onto each other, revealing a shared, hidden meaning."
+                    </blockquote>
+
+                    <!-- Tabs -->
+                    <div>
+                        <div class="flex gap-6 border-b border-bayesian-border mb-4">
+                            <button onclick="switchTab('hofstadter', 'approach')" id="tab-btn-hofstadter-approach" class="tab-btn active">Approach</button>
+                            <button onclick="switchTab('hofstadter', 'vocal')" id="tab-btn-hofstadter-vocal" class="tab-btn">Vocal Style & Pacing</button>
+                            <button onclick="switchTab('hofstadter', 'works')" id="tab-btn-hofstadter-works" class="tab-btn">Key Works</button>
+                        </div>
+
+                        <div id="tab-content-hofstadter-approach" class="tab-content active text-sm text-bayesian-text space-y-2 leading-relaxed">
+                            <p><strong>Recursive Analogy:</strong> Hofstadter explains abstract concepts (like recursion, self-reference, and Gödel's incompleteness theorem) by constructing parallel dialogues, wordplay, and analogies across music (Bach), art (Escher), and logic (Gödel).</p>
+                            <p><strong>Conceptual Mappings:</strong> He focuses on identifying "isomorphisms"—showing how simple mechanical rules in formal logic map onto the complex processes of human consciousness.</p>
+                        </div>
+                        <div id="tab-content-hofstadter-vocal" class="tab-content text-sm text-bayesian-text space-y-2 leading-relaxed">
+                            <p><strong>Playful & Rhythmic:</strong> Writes and speaks with a highly structured, playful, and layered cadence that mirrors the recursive concepts he describes.</p>
+                            <p><strong>Cognitive Pauses:</strong> Paces his ideas to let self-referential patterns sink in, using storytelling loops where the format of the dialogue itself explains the concept (e.g., a dialogue about recursion that recurses).</p>
+                        </div>
+                        <div id="tab-content-hofstadter-works" class="tab-content text-sm text-bayesian-text leading-relaxed">
+                            <ul class="list-disc pl-5 space-y-1">
+                                <li><strong>Gödel, Escher, Bach: an Eternal Golden Braid</strong> (Pulitzer Prize-winning masterpiece)</li>
+                                <li><strong>I Am a Strange Loop</strong> (Deep dive into the nature of self and logic)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Steven Strogatz -->
+                <div class="academic-card p-8 bg-white">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h3 class="text-xl font-bold text-bayesian-navy ui-text">Steven Strogatz</h3>
+                            <p class="text-xs font-semibold text-bayesian-slate uppercase tracking-wider">Applied Mathematics &bull; Cornell Professor</p>
+                        </div>
+                        <span class="text-xs font-mono bg-blue-50 text-bayesian-blue border border-blue-100 px-2 py-1 rounded font-semibold">Story-Driven Sync</span>
+                    </div>
+
+                    <blockquote class="pl-4 border-l-2 border-bayesian-blue italic text-base text-bayesian-slate mb-6">
+                        "Calculus is the language of change, and the universe is in constant motion."
+                    </blockquote>
+
+                    <!-- Tabs -->
+                    <div>
+                        <div class="flex gap-6 border-b border-bayesian-border mb-4">
+                            <button onclick="switchTab('strogatz', 'approach')" id="tab-btn-strogatz-approach" class="tab-btn active">Approach</button>
+                            <button onclick="switchTab('strogatz', 'vocal')" id="tab-btn-strogatz-vocal" class="tab-btn">Vocal Style & Pacing</button>
+                            <button onclick="switchTab('strogatz', 'works')" id="tab-btn-strogatz-works" class="tab-btn">Key Works</button>
+                        </div>
+
+                        <div id="tab-content-strogatz-approach" class="tab-content active text-sm text-bayesian-text space-y-2 leading-relaxed">
+                            <p><strong>Narrative Scaffolding:</strong> Strogatz explains math through the history of human struggle to solve dynamic mysteries. He presents calculus as a historical, philosophical epic of trying to model curves and movements.</p>
+                            <p><strong>Synchronized Dynamics:</strong> Explains complex network science and differential equations by using visual examples of sync—like pendulum clocks locking step, or thousands of fireflies blinking in unison.</p>
+                        </div>
+                        <div id="tab-content-strogatz-vocal" class="tab-content text-sm text-bayesian-text space-y-2 leading-relaxed">
+                            <p><strong>Enthusiastic Warmth:</strong> Speaks with a highly expressive, curious, and welcoming tone. His voice rises and falls with genuine excitement about logical breakthroughs.</p>
+                            <p><strong>Conceptual Pausing:</strong> He speaks in a measured, patient tempo, deliberately slowing down when transitioning from static geometric problems to the fluid motion calculations of calculus.</p>
+                        </div>
+                        <div id="tab-content-strogatz-works" class="tab-content text-sm text-bayesian-text leading-relaxed">
+                            <ul class="list-disc pl-5 space-y-1">
+                                <li><strong>Infinite Powers</strong> (How calculus explains the physical universe)</li>
+                                <li><strong>Sync: How Order Emerges from Chaos in the Universe, Nature, and Daily Life</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Claude Shannon -->
+                <div class="academic-card p-8 bg-white">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h3 class="text-xl font-bold text-bayesian-navy ui-text">Claude Shannon</h3>
+                            <p class="text-xs font-semibold text-bayesian-slate uppercase tracking-wider">Mathematics &bull; Father of Information Theory</p>
+                        </div>
+                        <span class="text-xs font-mono bg-blue-50 text-bayesian-blue border border-blue-100 px-2 py-1 rounded font-semibold">Structural Modeling</span>
+                    </div>
+
+                    <blockquote class="pl-4 border-l-2 border-bayesian-blue italic text-base text-bayesian-slate mb-6">
+                        "Information is the resolution of uncertainty."
+                    </blockquote>
+
+                    <!-- Tabs -->
+                    <div>
+                        <div class="flex gap-6 border-b border-bayesian-border mb-4">
+                            <button onclick="switchTab('shannon', 'approach')" id="tab-btn-shannon-approach" class="tab-btn active">Approach</button>
+                            <button onclick="switchTab('shannon', 'vocal')" id="tab-btn-shannon-vocal" class="tab-btn">Vocal Style & Pacing</button>
+                            <button onclick="switchTab('shannon', 'works')" id="tab-btn-shannon-works" class="tab-btn">Key Works</button>
+                        </div>
+
+                        <div id="tab-content-shannon-approach" class="tab-content active text-sm text-bayesian-text space-y-2 leading-relaxed">
+                            <p><strong>Structural Simplification:</strong> Shannon was a master of setting up clear, simple frameworks. He explained "information" by reducing communication channels to a basic block diagram containing a source, a transmitter, a channel, and a receiver.</p>
+                            <p><strong>Analogy Mapping:</strong> Explained the math of logic gates by showing how electrical switches mapped directly to basic Boolean algebra, founding modern computer design.</p>
+                        </div>
+                        <div id="tab-content-shannon-vocal" class="tab-content text-sm text-bayesian-text space-y-2 leading-relaxed">
+                            <p><strong>Pragmatic & Economy of Speech:</strong> Spoke with direct, unpretentious clarity, avoiding unnecessary decoration or complexity.</p>
+                            <p><strong>Logical Pacing:</strong> His explanations had a steady, logical progression, pausing to ensure each definition was complete before building on top of it.</p>
+                        </div>
+                        <div id="tab-content-shannon-works" class="tab-content text-sm text-bayesian-text leading-relaxed">
+                            <ul class="list-disc pl-5 space-y-1">
+                                <li><strong>A Mathematical Theory of Communication</strong> (The foundation of information theory)</li>
+                                <li><strong>A Symbolic Analysis of Relay and Switching Circuits</strong> (Mapping logic gates to switches)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grace Hopper -->
+                <div class="academic-card p-8 bg-white">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h3 class="text-xl font-bold text-bayesian-navy ui-text">Grace Hopper</h3>
+                            <p class="text-xs font-semibold text-bayesian-slate uppercase tracking-wider">Computer Science &bull; Computing Pioneer</p>
+                        </div>
+                        <span class="text-xs font-mono bg-blue-50 text-bayesian-blue border border-blue-100 px-2 py-1 rounded font-semibold">Physical Metaphor</span>
+                    </div>
+
+                    <blockquote class="pl-4 border-l-2 border-bayesian-blue italic text-base text-bayesian-slate mb-6">
+                        "Here is a nanosecond: it is exactly 11.8 inches of wire, the distance that light travels in one billionth of a second."
+                    </blockquote>
+
+                    <!-- Tabs -->
+                    <div>
+                        <div class="flex gap-6 border-b border-bayesian-border mb-4">
+                            <button onclick="switchTab('hopper', 'approach')" id="tab-btn-hopper-approach" class="tab-btn active">Approach</button>
+                            <button onclick="switchTab('hopper', 'vocal')" id="tab-btn-hopper-vocal" class="tab-btn">Vocal Style & Pacing</button>
+                            <button onclick="switchTab('hopper', 'works')" id="tab-btn-hopper-works" class="tab-btn">Key Works</button>
+                        </div>
+
+                        <div id="tab-content-hopper-approach" class="tab-content active text-sm text-bayesian-text space-y-2 leading-relaxed">
+                            <p><strong>Physical Metaphors:</strong> Hopper pioneered compiler design and explained computer systems using tangible, physical items. Her most famous demonstration used pieces of wire cut to exactly 11.8 inches to physically show the audience what a "nanosecond" represents.</p>
+                            <p><strong>User-centric High-Level Coding:</strong> She explained that computers should read human-like English words rather than binary, leading directly to COBOL and modern programming syntax.</p>
+                        </div>
+                        <div id="tab-content-hopper-vocal" class="tab-content text-sm text-bayesian-text space-y-2 leading-relaxed">
+                            <p><strong>Direct & Sharp:</strong> Spoke with a very direct, witty, and pragmatically authoritative voice. She used stories about the navy and early computer errors (founding the term "debugging") to keep audiences engaged.</p>
+                            <p><strong>Props as Pacing Anchors:</strong> She paced her explanations around physical props, holding up her nanosecond wires or a coil representing a microsecond (984 feet of wire) to control the exact moments the audience focused on hardware speeds.</p>
+                        </div>
+                        <div id="tab-content-hopper-works" class="tab-content text-sm text-bayesian-text leading-relaxed">
+                            <ul class="list-disc pl-5 space-y-1">
+                                <li><strong>The A-0 Compiler</strong> (The world's first compiler implementation)</li>
+                                <li><strong>COBOL Specification</strong> (First english-based high-level programming language)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- The Explainer's Matrix -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-semibold mb-6 border-b pb-2 border-bayesian-border ui-text">
+                The Explainer's Matrix
+            </h2>
+            <p class="mb-6">
+                A comparative look at the pedagogical focus, vocal pacing, and core vectors used by these explainers:
+            </p>
+
+            <div class="overflow-x-auto border border-bayesian-border rounded-lg bg-white shadow-soft">
+                <table class="min-w-full divide-y divide-bayesian-border text-sm">
+                    <thead class="bg-bayesian-surfaceAlt">
+                        <tr class="ui-text font-semibold text-bayesian-navy text-left">
+                            <th class="px-6 py-4">Explainer</th>
+                            <th class="px-6 py-4">Core Focus</th>
+                            <th class="px-6 py-4">Pacing Rhythm</th>
+                            <th class="px-6 py-4">Primary Vector</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-bayesian-border text-bayesian-text">
+                        <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
+                            <td class="px-6 py-4 font-bold text-bayesian-navy">Richard Feynman</td>
+                            <td class="px-6 py-4">Physical Intuition</td>
+                            <td class="px-6 py-4">High-energy build-ups with conversational release</td>
+                            <td class="px-6 py-4">Jargon removal & mechanical models</td>
+                        </tr>
+                        <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
+                            <td class="px-6 py-4 font-bold text-bayesian-navy">Carl Sagan</td>
+                            <td class="px-6 py-4">Cosmic Scale & Wonder</td>
+                            <td class="px-6 py-4">Slow, dramatic, with long meditative pauses</td>
+                            <td class="px-6 py-4">Historical narratives & philosophical context</td>
+                        </tr>
+                        <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
+                            <td class="px-6 py-4 font-bold text-bayesian-navy">Leonard Susskind</td>
+                            <td class="px-6 py-4">Theoretical Physics</td>
+                            <td class="px-6 py-4">Slow, measured, aligned with blackboard derivations</td>
+                            <td class="px-6 py-4">The theoretical minimum & structural equations</td>
+                        </tr>
+                        <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
+                            <td class="px-6 py-4 font-bold text-bayesian-navy">Neil deGrasse Tyson</td>
+                            <td class="px-6 py-4">Astrophysics Outreach</td>
+                            <td class="px-6 py-4">Dynamic, theatrical, with rapid pacing shifts</td>
+                            <td class="px-6 py-4">Pop-culture connections & everyday metaphors</td>
+                        </tr>
+                        <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
+                            <td class="px-6 py-4 font-bold text-bayesian-navy">Gilbert Strang</td>
+                            <td class="px-6 py-4">Linear Transformations</td>
+                            <td class="px-6 py-4">Steady, conversational, with regular checkpoints</td>
+                            <td class="px-6 py-4">Numerical examples & spatial intuition</td>
+                        </tr>
+                        <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
+                            <td class="px-6 py-4 font-bold text-bayesian-navy">Grant Sanderson</td>
+                            <td class="px-6 py-4">Visual Logic</td>
+                            <td class="px-6 py-4">Calm, slow, matched to geometric animation</td>
+                            <td class="px-6 py-4">Invention-first problem solving & visual graphs</td>
+                        </tr>
+                        <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
+                            <td class="px-6 py-4 font-bold text-bayesian-navy">Douglas Hofstadter</td>
+                            <td class="px-6 py-4">Mathematical Logic</td>
+                            <td class="px-6 py-4">Playful, rhythmic, using self-referential loops</td>
+                            <td class="px-6 py-4">Analogies across music, art, and language</td>
+                        </tr>
+                        <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
+                            <td class="px-6 py-4 font-bold text-bayesian-navy">Steven Strogatz</td>
+                            <td class="px-6 py-4">Dynamic Systems</td>
+                            <td class="px-6 py-4">Enthusiastic, story-driven, linking history to math</td>
+                            <td class="px-6 py-4">Biological synchronization & motion stories</td>
+                        </tr>
+                        <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
+                            <td class="px-6 py-4 font-bold text-bayesian-navy">Claude Shannon</td>
+                            <td class="px-6 py-4">Information Theory</td>
+                            <td class="px-6 py-4">Concise, direct, logical, and unhurried</td>
+                            <td class="px-6 py-4">Minimalist block diagrams & structural models</td>
+                        </tr>
+                        <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
+                            <td class="px-6 py-4 font-bold text-bayesian-navy">Grace Hopper</td>
+                            <td class="px-6 py-4">Computer Systems</td>
+                            <td class="px-6 py-4">Direct, sharp, using physical props as timing anchors</td>
+                            <td class="px-6 py-4">Hardware speed wire models & COBOL english syntax</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="mt-20 pt-8 border-t border-bayesian-border text-center text-sm text-bayesian-slate">
+            <p>&copy; 2026 The Art of Explanation. An analysis of the physical, cognitive, and vocal mechanics of pedagogy.</p>
+        </footer>
+
+    </div>
+
+    <!-- Tab Switching Logic -->
+    <script>
+        function switchTab(cardId, tabName) {
+            const tabs = ['approach', 'vocal', 'works'];
+            tabs.forEach(tab => {
+                const btn = document.getElementById(`tab-btn-${cardId}-${tab}`);
+                const content = document.getElementById(`tab-content-${cardId}-${tab}`);
+                
+                if (tab === tabName) {
+                    btn.classList.add('active');
+                    content.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                    content.classList.remove('active');
+                }
+            });
+        }
+    </script>
+
+</body>
+</html>

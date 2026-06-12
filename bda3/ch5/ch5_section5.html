@@ -149,7 +149,145 @@
                     We illustrate the hierarchical normal model with a problem in which the Bayesian analysis gives conclusions that differ in important respects from other methods.
                 </p>
                 <p class="mb-6">
-                    A study was performed for the Educational Testing Service to analyze the effects of special coaching programs on test scores. Separate randomized experiments were performed to estimate the effects of coaching programs for the SAT-V (Scholastic Aptitude Test-Verbal) in each of eight high schools. The outcome variable in each study was the score on a special administration of the SAT-V, a standardized multiple choice test administered by the Educational Testing Service and used to help colleges make admissions decisions.
+                    A study was performed for the Educational Testing Service to analyze the effects of special coaching programs on test scores. Separate randomized experiments were performed to estimate the effects of coaching programs for the SAT-V (Scholastic Aptitude Test-Verbal) in each of eight high schools. The outcome variable in each study was the score on a special administration of the SAT-V, a standardized multiple choice test administered by the Educational Testing Service and used to help colleges make admissions decisions; the scores can vary between 200 and 800, with mean about 500 and standard deviation about 100. The SAT examinations are designed to be resistant to short-term efforts directed specifically toward improving performance on the test; instead they are designed to reflect knowledge acquired and abilities developed over many years of education. Nevertheless, each of the eight schools in this study considered its short-term coaching program to be successful at increasing SAT scores. Also, there was no prior reason to believe that any of the eight programs was more effective than any other or that some were more similar in effect to each other than to any other.
+                </p>
+                <p class="mb-6">
+                    The results of the experiments are summarized in Table 5.2. All students in the experiments had already taken the PSAT (Preliminary SAT), and allowance was made for differences in the PSAT-M (Mathematics) and PSAT-V test scores between coached and uncoached students. In particular, in each school the estimated coaching effect and its standard error were obtained by an analysis of covariance adjustment (that is, a linear regression was performed of SAT-V on treatment group, using PSAT-M and PSAT-V as control variables) appropriate for a completely randomized experiment. A separate regression was estimated for each school. Although not simple sample means (because of the covariance adjustments), the estimated coaching effects, which we label $y_j$, and their sampling variances, $\sigma_j^2$, play the same role in our model as $\bar{y}_{\cdot j}$ and $\sigma_j^2$ in the previous section. The estimates $y_j$ are obtained by independent experiments and have approximately normal sampling distributions with sampling variances that are known, for all practical purposes, because the sample sizes in all of the eight experiments were relatively large, over thirty students in each school (recall the discussion of data reduction in Section 4.1). Incidentally, an increase of eight points on the SAT-V corresponds to about one more test item correct.
+                </p>
+            </div>
+
+            <!-- Table 5.2 Observed effects -->
+            <div class="overflow-x-auto my-8 border border-bayesian-border rounded-lg bg-white shadow-soft">
+                <table class="min-w-full divide-y divide-bayesian-border text-sm">
+                    <thead class="bg-bayesian-surfaceAlt">
+                        <tr class="ui-text font-semibold text-bayesian-navy text-left">
+                            <th class="px-6 py-4">School</th>
+                            <th class="px-6 py-4 text-right">Estimated treatment effect, $y_j$</th>
+                            <th class="px-6 py-4 text-right">Standard error estimate, $\sigma_j$</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-bayesian-border text-bayesian-text font-medium">
+                        <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
+                            <td class="px-6 py-4 font-bold text-bayesian-navy">A</td>
+                            <td class="px-6 py-4 text-right">28</td>
+                            <td class="px-6 py-4 text-right">15</td>
+                        </tr>
+                        <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
+                            <td class="px-6 py-4 font-bold text-bayesian-navy">B</td>
+                            <td class="px-6 py-4 text-right">8</td>
+                            <td class="px-6 py-4 text-right">10</td>
+                        </tr>
+                        <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
+                            <td class="px-6 py-4 font-bold text-bayesian-navy">C</td>
+                            <td class="px-6 py-4 text-right">-3</td>
+                            <td class="px-6 py-4 text-right">16</td>
+                        </tr>
+                        <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
+                            <td class="px-6 py-4 font-bold text-bayesian-navy">D</td>
+                            <td class="px-6 py-4 text-right">7</td>
+                            <td class="px-6 py-4 text-right">11</td>
+                        </tr>
+                        <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
+                            <td class="px-6 py-4 font-bold text-bayesian-navy">E</td>
+                            <td class="px-6 py-4 text-right">-1</td>
+                            <td class="px-6 py-4 text-right">9</td>
+                        </tr>
+                        <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
+                            <td class="px-6 py-4 font-bold text-bayesian-navy">F</td>
+                            <td class="px-6 py-4 text-right">1</td>
+                            <td class="px-6 py-4 text-right">11</td>
+                        </tr>
+                        <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
+                            <td class="px-6 py-4 font-bold text-bayesian-navy">G</td>
+                            <td class="px-6 py-4 text-right">18</td>
+                            <td class="px-6 py-4 text-right">10</td>
+                        </tr>
+                        <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
+                            <td class="px-6 py-4 font-bold text-bayesian-navy">H</td>
+                            <td class="px-6 py-4 text-right">12</td>
+                            <td class="px-6 py-4 text-right">18</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="px-6 py-3 bg-bayesian-surfaceAlt/30 border-t border-bayesian-border text-xs text-bayesian-slate italic">
+                    <strong>Table 5.2:</strong> Observed effects of special preparation on SAT-V scores in eight randomized experiments. Estimates are based on separate covariance analyses for each high school.
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: Inferences based on nonhierarchical models -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-semibold mb-6 border-b pb-2 border-bayesian-border ui-text">
+                Inferences based on nonhierarchical models and their problems
+            </h2>
+            <div class="prose max-w-none text-bayesian-text">
+                <p class="mb-6">
+                    Before fitting the hierarchical Bayesian model, we first consider two simpler nonhierarchical methods—estimating the effects from the eight experiments independently, and complete pooling—and discuss why neither of these approaches is adequate for this example.
+                </p>
+
+                <h3 class="text-xl font-semibold mb-4 text-bayesian-navy ui-text">Separate estimates</h3>
+                <p class="mb-6">
+                    A cursory examination of Table 5.2 may at first suggest that some coaching programs have moderate effects (in the range 18–28 points), most have small effects (0–12 points), and two have small negative effects; however, when we take note of the standard errors of these estimated effects, we see that it is difficult statistically to distinguish between any of the experiments. For example, treating each experiment separately and applying the simple normal analysis in each yields 95% posterior intervals that all overlap substantially.
+                </p>
+
+                <h3 class="text-xl font-semibold mb-4 text-bayesian-navy ui-text">A pooled estimate</h3>
+                <p class="mb-6">
+                    The general overlap in the posterior intervals based on independent analyses suggests that all experiments might be estimating the same quantity. Under the hypothesis that all experiments have the same effect and produce independent estimates of this common effect, we could treat the data in Table 5.2 as eight normally distributed observations with known variances. With a noninformative prior distribution, the posterior mean for the common coaching effect in the schools is $\bar{y}_{\cdot\cdot}$, as defined in equation (5.13) with $y_j$ in place of $\bar{y}_{\cdot j}$:
+                </p>
+
+                <div class="academic-card p-6 mb-6 mt-8">
+                    <h4 class="font-semibold text-bayesian-navy ui-text mb-4">Common-Effect Estimation (Complete Pooling)</h4>
+                    <p class="mb-4">
+                        Under complete pooling, the shared effect estimate $\bar{y}_{\cdot\cdot}$ and its variance are:
+                    </p>
+                    <div class="code-block text-center py-4 bg-bayesian-surfaceAlt border border-bayesian-border rounded mb-4">
+                        $$\bar{y}_{\cdot\cdot} = \frac{\sum_{j=1}^8 \frac{y_j}{\sigma_j^2}}{\sum_{j=1}^8 \frac{1}{\sigma_j^2}} = 7.7$$
+                        $$\text{Var}(\bar{y}_{\cdot\cdot}) = \left( \sum_{j=1}^8 \frac{1}{\sigma_j^2} \right)^{-1} = 16.6$$
+                    </div>
+                    <p class="text-sm text-bayesian-slate italic">
+                        This yields a posterior standard error of $\sqrt{16.6} \approx 4.1$, leading to a 95% posterior interval of $[-0.5, 15.9]$, or approximately $[8 \pm 8]$.
+                    </p>
+                </div>
+
+                <p class="mb-6">
+                    Supporting this analysis, the classical test of the hypothesis that all $\theta_j$'s are estimating the same quantity yields a $\chi^2$ statistic less than its degrees of freedom ($7$, in this case):
+                    $$\sum_{j=1}^8 \frac{(y_j - \bar{y}_{\cdot\cdot})^2}{\sigma_j^2} = 4.6$$
+                    To put it another way, the estimate $\hat{\tau}^2$ from equation (5.22) is negative, suggesting no evidence of variance between schools.
+                </p>
+
+                <h3 class="text-xl font-semibold mb-4 text-bayesian-navy ui-text">Would it be possible to see an effect of 28 by chance?</h3>
+                <p class="mb-6">
+                    Would it be possible to have one school’s observed effect be 28 just by chance, if the coaching effects in all eight schools were really the same? To get a feeling for the natural variation that we would expect across eight studies if this assumption were true, suppose the estimated treatment effects are eight independent draws from a normal distribution with mean 8 points and standard deviation 13 points (the square root of the mean of the eight variances $\sigma_j^2$).
+                </p>
+                <p class="mb-6">
+                    Then, based on the expected values of normal order statistics, we would expect the largest observed value of $y_j$ to be about 26 points and the others, in diminishing order, to be about 19, 14, 10, 6, 2, $-3$, and $-9$ points. These expected effect sizes are consistent with the set of observed effect sizes in Table 5.2. Thus, it would appear imprudent to believe that school A really has an effect as large as 28 points.
+                </p>
+
+                <h3 class="text-xl font-semibold mb-4 text-bayesian-navy ui-text">Difficulties with the separate and pooled estimates</h3>
+                <p class="mb-6">
+                    To see the problems with the two extreme attitudes—the separate analyses that consider each $\theta_j$ separately, and the alternative view (a single common effect) that leads to the pooled estimate—consider $\theta_1$, the effect in school A. 
+                </p>
+                <p class="mb-6">
+                    The effect in school A is estimated as $28.4$ with a standard error of $14.9$ under the separate analysis, versus a pooled estimate of $7.7$ with a standard error of $4.1$ under the common-effect model.
+                </p>
+                
+                <div class="theorem-block my-8">
+                    <h4 class="text-sm font-bold text-bayesian-navy uppercase tracking-wider mb-3 ui-text">The Limitations of Extremes</h4>
+                    <ul class="list-disc pl-6 space-y-2 text-bayesian-text">
+                        <li>
+                            The separate analyses of the eight schools imply: <em>"the probability is $\frac{1}{2}$ that the true effect in A is more than $28.4$"</em>, a doubtful statement, considering the results for the other seven schools.
+                        </li>
+                        <li>
+                            On the other hand, the pooled model implies: <em>"the probability is $\frac{1}{2}$ that the true effect in A is less than $7.7$"</em>, which, despite the non-significant $\chi^2$ test, seems an inaccurate summary of our knowledge.
+                        </li>
+                        <li>
+                            The pooled model also implies: <em>"the probability is $\frac{1}{2}$ that the true effect in A is less than the true effect in C"</em>, which is also difficult to justify given the data in Table 5.2.
+                        </li>
+                    </ul>
+                </div>
+
+                <p class="mb-6">
+                    Neither estimate is fully satisfactory, and we would like a compromise that combines information from all eight experiments without assuming all the $\theta_j$’s to be equal. The Bayesian analysis under the hierarchical model provides exactly that.
                 </p>
             </div>
         </section>
