@@ -99,8 +99,6 @@
             box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
             transform: translateY(-1px);
         }
-
-
     </style>
 </head>
 
@@ -124,7 +122,8 @@
                 class="inline-flex items-center text-sm font-semibold text-bayesian-slate hover:text-bayesian-navy transition-colors ui-text">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
+                    </path>
                 </svg>
                 Home
             </a>
@@ -140,178 +139,539 @@
                 5.5 Example: Parallel Experiments in Eight Schools
             </h1>
             <p class="text-xl text-bayesian-slate leading-relaxed">
-                Illustrating the hierarchical normal model with a study of coaching program effects on test scores across eight high schools.
+                Illustrating the hierarchical normal model with a study of coaching program effects on test scores
+                across eight high schools.
             </p>
         </header>
 
 
-            <!-- Introduction Content -->
-            <section class="mb-16">
-                <div class="prose max-w-none text-bayesian-text mb-6">
-                    <p class="mb-6">
-                        We illustrate the hierarchical normal model with a problem in which the Bayesian analysis gives conclusions that differ in important respects from other methods.
-                    </p>
-                    <p class="mb-6">
-                        A study was performed for the Educational Testing Service to analyze the effects of special coaching programs on test scores. Separate randomized experiments were performed to estimate the effects of coaching programs for the SAT-V (Scholastic Aptitude Test-Verbal) in each of eight high schools. The outcome variable in each study was the score on a special administration of the SAT-V, a standardized multiple choice test administered by the Educational Testing Service and used to help colleges make admissions decisions; the scores can vary between 200 and 800, with mean about 500 and standard deviation about 100. The SAT examinations are designed to be resistant to short-term efforts directed specifically toward improving performance on the test; instead they are designed to reflect knowledge acquired and abilities developed over many years of education. Nevertheless, each of the eight schools in this study considered its short-term coaching program to be successful at increasing SAT scores. Also, there was no prior reason to believe that any of the eight programs was more effective than any other or that some were more similar in effect to each other than to any other.
-                    </p>
-                    <p class="mb-6">
-                        The results of the experiments are summarized in Table 5.2. All students in the experiments had already taken the PSAT (Preliminary SAT), and allowance was made for differences in the PSAT-M (Mathematics) and PSAT-V test scores between coached and uncoached students. In particular, in each school the estimated coaching effect and its standard error were obtained by an analysis of covariance adjustment (that is, a linear regression was performed of SAT-V on treatment group, using PSAT-M and PSAT-V as control variables) appropriate for a completely randomized experiment. A separate regression was estimated for each school. Although not simple sample means (because of the covariance adjustments), the estimated coaching effects, which we label $y_j$, and their sampling variances, $\sigma_j^2$, play the same role in our model as $\bar{y}_{\cdot j}$ and $\sigma_j^2$ in the previous section. The estimates $y_j$ are obtained by independent experiments and have approximately normal sampling distributions with sampling variances that are known, for all practical purposes, because the sample sizes in all of the eight experiments were relatively large, over thirty students in each school (recall the discussion of data reduction in Section 4.1). Incidentally, an increase of eight points on the SAT-V corresponds to about one more test item correct.
-                    </p>
-                </div>
-
-                <!-- Table 5.2 Observed effects -->
-                <div class="overflow-x-auto my-8 border border-bayesian-border rounded-lg bg-white shadow-soft">
-                    <table class="min-w-full divide-y divide-bayesian-border text-sm">
-                        <thead class="bg-bayesian-surfaceAlt">
-                            <tr class="ui-text font-semibold text-bayesian-navy text-left">
-                                <th class="px-6 py-4">School</th>
-                                <th class="px-6 py-4 text-right">Estimated treatment effect, $y_j$</th>
-                                <th class="px-6 py-4 text-right">Standard error estimate, $\sigma_j$</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-bayesian-border text-bayesian-text font-medium">
-                            <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
-                                <td class="px-6 py-4 font-bold text-bayesian-navy">A</td>
-                                <td class="px-6 py-4 text-right">28</td>
-                                <td class="px-6 py-4 text-right">15</td>
-                            </tr>
-                            <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
-                                <td class="px-6 py-4 font-bold text-bayesian-navy">B</td>
-                                <td class="px-6 py-4 text-right">8</td>
-                                <td class="px-6 py-4 text-right">10</td>
-                            </tr>
-                            <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
-                                <td class="px-6 py-4 font-bold text-bayesian-navy">C</td>
-                                <td class="px-6 py-4 text-right">-3</td>
-                                <td class="px-6 py-4 text-right">16</td>
-                            </tr>
-                            <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
-                                <td class="px-6 py-4 font-bold text-bayesian-navy">D</td>
-                                <td class="px-6 py-4 text-right">7</td>
-                                <td class="px-6 py-4 text-right">11</td>
-                            </tr>
-                            <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
-                                <td class="px-6 py-4 font-bold text-bayesian-navy">E</td>
-                                <td class="px-6 py-4 text-right">-1</td>
-                                <td class="px-6 py-4 text-right">9</td>
-                            </tr>
-                            <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
-                                <td class="px-6 py-4 font-bold text-bayesian-navy">F</td>
-                                <td class="px-6 py-4 text-right">1</td>
-                                <td class="px-6 py-4 text-right">11</td>
-                            </tr>
-                            <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
-                                <td class="px-6 py-4 font-bold text-bayesian-navy">G</td>
-                                <td class="px-6 py-4 text-right">18</td>
-                                <td class="px-6 py-4 text-right">10</td>
-                            </tr>
-                            <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
-                                <td class="px-6 py-4 font-bold text-bayesian-navy">H</td>
-                                <td class="px-6 py-4 text-right">12</td>
-                                <td class="px-6 py-4 text-right">18</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div class="px-6 py-3 bg-bayesian-surfaceAlt/30 border-t border-bayesian-border text-xs text-bayesian-slate italic">
-                        <strong>Table 5.2:</strong> Observed effects of special preparation on SAT-V scores in eight randomized experiments. Estimates are based on separate covariance analyses for each high school.
-                    </div>
-                </div>
-            </section>
-
-            <!-- Section: Inferences based on nonhierarchical models -->
-            <section class="mb-16">
-                <h2 class="text-2xl font-semibold mb-6 border-b pb-2 border-bayesian-border ui-text">
-                    Inferences based on nonhierarchical models and their problems
-                </h2>
-                <div class="prose max-w-none text-bayesian-text">
-                    <p class="mb-6">
-                        Before fitting the hierarchical Bayesian model, we first consider two simpler nonhierarchical methods—estimating the effects from the eight experiments independently, and complete pooling—and discuss why neither of these approaches is adequate for this example.
-                    </p>
-
-                    <h3 class="text-xl font-semibold mb-4 text-bayesian-navy ui-text">Separate estimates</h3>
-                    <p class="mb-6">
-                        A cursory examination of Table 5.2 may at first suggest that some coaching programs have moderate effects (in the range 18–28 points), most have small effects (0–12 points), and two have small negative effects; however, when we take note of the standard errors of these estimated effects, we see that it is difficult statistically to distinguish between any of the experiments. For example, treating each experiment separately and applying the simple normal analysis in each yields 95% posterior intervals that all overlap substantially.
-                    </p>
-
-                    <h3 class="text-xl font-semibold mb-4 text-bayesian-navy ui-text">A pooled estimate</h3>
-                    <p class="mb-6">
-                        The general overlap in the posterior intervals based on independent analyses suggests that all experiments might be estimating the same quantity. Under the hypothesis that all experiments have the same effect and produce independent estimates of this common effect, we could treat the data in Table 5.2 as eight normally distributed observations with known variances. With a noninformative prior distribution, the posterior mean for the common coaching effect in the schools is $\bar{y}_{\cdot\cdot}$, as defined in equation (5.13) with $y_j$ in place of $\bar{y}_{\cdot j}$:
-                    </p>
-
-                    <div class="academic-card p-6 mb-6 mt-8">
-                        <h4 class="font-semibold text-bayesian-navy ui-text mb-4">Common-Effect Estimation (Complete Pooling)</h4>
-                        <p class="mb-4">
-                            Under complete pooling, the shared effect estimate $\bar{y}_{\cdot\cdot}$ and its variance are:
-                        </p>
-                        <div class="code-block text-center py-4 bg-bayesian-surfaceAlt border border-bayesian-border rounded mb-4">
-                            $$\bar{y}_{\cdot\cdot} = \frac{\sum_{j=1}^8 \frac{y_j}{\sigma_j^2}}{\sum_{j=1}^8 \frac{1}{\sigma_j^2}} = 7.7$$
-                            $$\text{Var}(\bar{y}_{\cdot\cdot}) = \left( \sum_{j=1}^8 \frac{1}{\sigma_j^2} \right)^{-1} = 16.6$$
-                        </div>
-                        <p class="text-sm text-bayesian-slate italic">
-                            This yields a posterior standard error of $\sqrt{16.6} \approx 4.1$, leading to a 95% posterior interval of $[-0.5, 15.9]$, or approximately $[8 \pm 8]$.
-                        </p>
-                    </div>
-
-                    <p class="mb-6">
-                        Supporting this analysis, the classical test of the hypothesis that all $\theta_j$'s are estimating the same quantity yields a $\chi^2$ statistic less than its degrees of freedom ($7$, in this case):
-                        $$\sum_{j=1}^8 \frac{(y_j - \bar{y}_{\cdot\cdot})^2}{\sigma_j^2} = 4.6$$
-                        To put it another way, the estimate $\hat{\tau}^2$ from equation (5.22) is negative, suggesting no evidence of variance between schools.
-                    </p>
-
-                    <h3 class="text-xl font-semibold mb-4 text-bayesian-navy ui-text">Would it be possible to see an effect of 28 by chance?</h3>
-                    <p class="mb-6">
-                        Would it be possible to have one school’s observed effect be 28 just by chance, if the coaching effects in all eight schools were really the same? To get a feeling for the natural variation that we would expect across eight studies if this assumption were true, suppose the estimated treatment effects are eight independent draws from a normal distribution with mean 8 points and standard deviation 13 points (the square root of the mean of the eight variances $\sigma_j^2$).
-                    </p>
-                    <p class="mb-6">
-                        Then, based on the expected values of normal order statistics, we would expect the largest observed value of $y_j$ to be about 26 points and the others, in diminishing order, to be about 19, 14, 10, 6, 2, $-3$, and $-9$ points. These expected effect sizes are consistent with the set of observed effect sizes in Table 5.2. Thus, it would appear imprudent to believe that school A really has an effect as large as 28 points.
-                    </p>
-
-                    <h3 class="text-xl font-semibold mb-4 text-bayesian-navy ui-text">Difficulties with the separate and pooled estimates</h3>
-                    <p class="mb-6">
-                        To see the problems with the two extreme attitudes—the separate analyses that consider each $\theta_j$ separately, and the alternative view (a single common effect) that leads to the pooled estimate—consider $\theta_1$, the effect in school A.
-                    </p>
-                    <p class="mb-6">
-                        The effect in school A is estimated as $28.4$ with a standard error of $14.9$ under the separate analysis, versus a pooled estimate of $7.7$ with a standard error of $4.1$ under the common-effect model.
-                    </p>
-                    
-                    <div class="theorem-block my-8">
-                        <h4 class="text-sm font-bold text-bayesian-navy uppercase tracking-wider mb-3 ui-text">The Limitations of Extremes</h4>
-                        <ul class="list-disc pl-6 space-y-2 text-bayesian-text">
-                            <li>
-                                The separate analyses of the eight schools imply: <em>"the probability is $\frac{1}{2}$ that the true effect in A is more than $28.4$"</em>, a doubtful statement, considering the results for the other seven schools.
-                            </li>
-                            <li>
-                                On the other hand, the pooled model implies: <em>"the probability is $\frac{1}{2}$ that the true effect in A is less than $7.7$"</em>, which, despite the non-significant $\chi^2$ test, seems an inaccurate summary of our knowledge.
-                            </li>
-                            <li>
-                                The pooled model also implies: <em>"the probability is $\frac{1}{2}$ that the true effect in A is less than the true effect in C"</em>, which is also difficult to justify given the data in Table 5.2.
-                            </li>
-                        </ul>
-                    </div>
-
-                    <p class="mb-6">
-                        Neither estimate is fully satisfactory, and we would like a compromise that combines information from all eight experiments without assuming all the $\theta_j$’s to be equal. The Bayesian analysis under the hierarchical model provides exactly that.
-                    </p>
-                </div>
-
-
-
-
-        <!-- References & Study Disclaimer -->
-        <section class="mt-20 pt-8 border-t border-bayesian-border">
-            <div class="p-6 bg-bayesian-surfaceAlt border border-bayesian-border rounded-lg text-sm text-bayesian-text leading-relaxed">
-                <h4 class="font-bold text-bayesian-navy text-base mb-3 ui-text">References & Study Disclaimer</h4>
-                <p class="mb-4">
-                    This page represents personal study notes and derivations written to clarify my own understanding of hierarchical Bayesian models. The content is based on:
+        <!-- Introduction Content -->
+        <section class="mb-16">
+            <div class="prose max-w-none text-bayesian-text mb-6">
+                <p class="mb-6">
+                    We illustrate the hierarchical normal model with a problem in which the Bayesian analysis gives
+                    conclusions that differ in important respects from other methods.
                 </p>
-                <blockquote class="pl-4 border-l-2 border-bayesian-slate italic mb-4 text-bayesian-slate">
-                    Gelman, A., Carlin, J. B., Stern, H. S., Dunson, D. B., Vehtari, A., & Rubin, D. B. (2013). <em>Bayesian Data Analysis</em> (3rd ed.). CRC Press.
-                </blockquote>
-                <p class="mb-0">
-                    For official materials, including a copy of the textbook PDF for non-commercial use, please visit the official <a href="http://www.stat.columbia.edu/~gelman/book/" target="_blank" rel="noopener noreferrer" class="text-bayesian-blue hover:underline">Columbia University BDA Page</a> or explore Aki Vehtari's <a href="https://avehtari.github.io/BDA_course_Aalto/" target="_blank" rel="noopener noreferrer" class="text-bayesian-blue hover:underline">Aalto BDA Course Portal</a>. Any typos or mathematical errors on this page are my own.
+                <p class="mb-6">
+                    A study was performed for the Educational Testing Service to analyze the effects of special coaching
+                    programs on test scores. Separate randomized experiments were performed to estimate the effects of
+                    coaching programs for the SAT-V (Scholastic Aptitude Test-Verbal) in each of eight high schools. The
+                    outcome variable in each study was the score on a special administration of the SAT-V, a
+                    standardized multiple choice test administered by the Educational Testing Service and used to help
+                    colleges make admissions decisions; the scores can vary between 200 and 800, with mean about 500 and
+                    standard deviation about 100. The SAT examinations are designed to be resistant to short-term
+                    efforts directed specifically toward improving performance on the test; instead they are designed to
+                    reflect knowledge acquired and abilities developed over many years of education. Nevertheless, each
+                    of the eight schools in this study considered its short-term coaching program to be successful at
+                    increasing SAT scores. Also, there was no prior reason to believe that any of the eight programs was
+                    more effective than any other or that some were more similar in effect to each other than to any
+                    other.
+                </p>
+                <p class="mb-6">
+                    The results of the experiments are summarized in Table 5.2. All students in the experiments had
+                    already taken the PSAT (Preliminary SAT), and allowance was made for differences in the PSAT-M
+                    (Mathematics) and PSAT-V test scores between coached and uncoached students. In particular, in each
+                    school the estimated coaching effect and its standard error were obtained by an analysis of
+                    covariance adjustment (that is, a linear regression was performed of SAT-V on treatment group, using
+                    PSAT-M and PSAT-V as control variables) appropriate for a completely randomized experiment. A
+                    separate regression was estimated for each school. Although not simple sample means (because of the
+                    covariance adjustments), the estimated coaching effects, which we label $y_j$, and their sampling
+                    variances, $\sigma_j^2$, play the same role in our model as $\bar{y}_{\cdot j}$ and $\sigma_j^2$ in
+                    the previous section. The estimates $y_j$ are obtained by independent experiments and have
+                    approximately normal sampling distributions with sampling variances that are known, for all
+                    practical purposes, because the sample sizes in all of the eight experiments were relatively large,
+                    over thirty students in each school (recall the discussion of data reduction in Section 4.1).
+                    Incidentally, an increase of eight points on the SAT-V corresponds to about one more test item
+                    correct.
                 </p>
             </div>
         </section>
+
+        <!-- ANCOVA Deep-Dive Explanation Box (Feynman Style) -->
+        <details class="academic-card p-6 mb-8 cursor-pointer">
+            <summary class="flex items-center justify-between font-semibold text-bayesian-blue ui-text select-none">
+                <span class="flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Feynman's Guide: What is "Analysis of Covariance" (ANCOVA)?
+                </span>
+                <span class="text-xs text-bayesian-slate">Click to toggle explanation &darr;</span>
+            </summary>
+            <div class="mt-4 text-sm text-bayesian-text leading-relaxed space-y-4 cursor-default"
+                onclick="event.stopPropagation()">
+                <p>
+                    Imagine you want to test if a new pair of running shoes (our <strong>coaching program</strong>)
+                    makes kids run faster. You take a group of kids, give half of them the new shoes, and leave the
+                    other half in their old sneakers. Then you measure their times in a final race (the <strong>SAT
+                        score</strong>).
+                </p>
+                <p>
+                    But there's a catch. What if, just by sheer luck, the group that got the new shoes happened to have
+                    the fastest kids in the school to begin with? If you just compare the average times of the two
+                    groups, you'll think the shoes are magic, when really you're just measuring the kids' natural
+                    talent.
+                </p>
+                <p>
+                    To fix this, you look at their times in a practice race <em>before</em> they got the new shoes (the
+                    <strong>PSAT score</strong>). By subtracting their baseline practice times, you "level the starting
+                    line." You adjust everyone's final score based on where they started, so you only measure the extra
+                    speed added <em>by the shoes themselves</em>. This adjustment is what statisticians call
+                    <strong>Analysis of Covariance (ANCOVA)</strong>:
+                </p>
+                <div
+                    class="py-3 px-4 bg-bayesian-surfaceAlt border border-bayesian-border rounded font-mono text-center overflow-x-auto my-3 text-xs md:text-sm">
+                    $$\text{Final SAT}_i = \text{Baseline Score} + \text{Extra Speed from Coaching}_i +
+                    \text{Unexplained Noise}_i$$
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                    <div class="p-4 bg-bayesian-surfaceAlt rounded-lg border border-bayesian-border">
+                        <span class="font-bold text-bayesian-navy block mb-2 ui-text">Why do we do this?</span>
+                        Because each school only has about 30 kids. With a group that small, a random coin toss can
+                        easily put all the high-performing kids into the coached group. Controlling for pre-treatment
+                        PSAT scores acts as a correction factor for this baseline imbalance.
+                    </div>
+                    <div class="p-4 bg-bayesian-surfaceAlt rounded-lg border border-bayesian-border">
+                        <span class="font-bold text-bayesian-navy block mb-2 ui-text">What does it achieve?</span>
+                        <ul class="list-disc pl-5 space-y-2">
+                            <li><strong>Fairness (No Bias):</strong> It lets us compare coached and uncoached students
+                                who started at the exact same academic baseline.</li>
+                            <li><strong>Precision (Narrower Margins):</strong> Since prior test scores are highly
+                                predictive of final scores, removing this baseline variation filters out a massive
+                                amount of "student-to-student noise." This leaves us with a much cleaner estimate and a
+                                significantly smaller margin of error ($\sigma_j$).</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </details>
+
+        <!-- Table 5.2 Observed effects -->
+        <div class="overflow-x-auto my-8 border border-bayesian-border rounded-lg bg-white shadow-soft">
+            <table class="min-w-full divide-y divide-bayesian-border text-sm">
+                <thead class="bg-bayesian-surfaceAlt">
+                    <tr class="ui-text font-semibold text-bayesian-navy text-left">
+                        <th class="px-6 py-4">School</th>
+                        <th class="px-6 py-4 text-right">Estimated treatment effect, $y_j$</th>
+                        <th class="px-6 py-4 text-right">Standard error estimate, $\sigma_j$</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-bayesian-border text-bayesian-text font-medium">
+                    <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
+                        <td class="px-6 py-4 font-bold text-bayesian-navy">A</td>
+                        <td class="px-6 py-4 text-right">28</td>
+                        <td class="px-6 py-4 text-right">15</td>
+                    </tr>
+                    <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
+                        <td class="px-6 py-4 font-bold text-bayesian-navy">B</td>
+                        <td class="px-6 py-4 text-right">8</td>
+                        <td class="px-6 py-4 text-right">10</td>
+                    </tr>
+                    <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
+                        <td class="px-6 py-4 font-bold text-bayesian-navy">C</td>
+                        <td class="px-6 py-4 text-right">-3</td>
+                        <td class="px-6 py-4 text-right">16</td>
+                    </tr>
+                    <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
+                        <td class="px-6 py-4 font-bold text-bayesian-navy">D</td>
+                        <td class="px-6 py-4 text-right">7</td>
+                        <td class="px-6 py-4 text-right">11</td>
+                    </tr>
+                    <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
+                        <td class="px-6 py-4 font-bold text-bayesian-navy">E</td>
+                        <td class="px-6 py-4 text-right">-1</td>
+                        <td class="px-6 py-4 text-right">9</td>
+                    </tr>
+                    <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
+                        <td class="px-6 py-4 font-bold text-bayesian-navy">F</td>
+                        <td class="px-6 py-4 text-right">1</td>
+                        <td class="px-6 py-4 text-right">11</td>
+                    </tr>
+                    <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
+                        <td class="px-6 py-4 font-bold text-bayesian-navy">G</td>
+                        <td class="px-6 py-4 text-right">18</td>
+                        <td class="px-6 py-4 text-right">10</td>
+                    </tr>
+                    <tr class="hover:bg-bayesian-surfaceAlt/50 transition-colors">
+                        <td class="px-6 py-4 font-bold text-bayesian-navy">H</td>
+                        <td class="px-6 py-4 text-right">12</td>
+                        <td class="px-6 py-4 text-right">18</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div
+                class="px-6 py-3 bg-bayesian-surfaceAlt/30 border-t border-bayesian-border text-xs text-bayesian-slate italic">
+                <strong>Table 5.2:</strong> Observed effects of special preparation on SAT-V scores in eight randomized
+                experiments. Estimates are based on separate covariance analyses for each high school.
+            </div>
+        </div>
+        </section>
+
+        <!-- Section: Inferences based on nonhierarchical models -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-semibold mb-6 border-b pb-2 border-bayesian-border ui-text">
+                Inferences based on nonhierarchical models and their problems
+            </h2>
+            <div class="prose max-w-none text-bayesian-text">
+                <p class="mb-6">
+                    Before fitting the hierarchical Bayesian model, we first consider two simpler nonhierarchical
+                    methods—estimating the effects from the eight experiments independently, and complete pooling—and
+                    discuss why neither of these approaches is adequate for this example.
+                </p>
+
+                <h3 class="text-xl font-semibold mb-4 text-bayesian-navy ui-text">Separate estimates</h3>
+                <p class="mb-6">
+                    A cursory examination of Table 5.2 may at first suggest that some coaching programs have moderate
+                    effects (in the range 18–28 points), most have small effects (0–12 points), and two have small
+                    negative effects; however, when we take note of the standard errors of these estimated effects, we
+                    see that it is difficult statistically to distinguish between any of the experiments. For example,
+                    treating each experiment separately and applying the simple normal analysis in each yields 95%
+                    posterior intervals that all overlap substantially.
+                </p>
+
+                <!-- Separate Estimates Interval Plot -->
+                <div class="academic-card p-6 my-8 bg-white shadow-soft not-prose">
+                    <h4 class="font-semibold text-bayesian-navy ui-text mb-2 text-base">Separate Estimates with 95%
+                        Posterior Intervals</h4>
+                    <p class="text-xs text-bayesian-slate mb-6 leading-relaxed">
+                        This plot shows the independent estimates ($y_j$) and their 95% uncertainty intervals ($y_j \pm
+                        1.96\sigma_j$) for each school. The vertical dashed line and light blue shaded band represent
+                        the completely pooled estimate ($7.7 \pm 8.0$). Note how all the intervals overlap
+                        substantially, making it statistically impossible to distinguish the schools based on separate
+                        estimates alone.
+                    </p>
+                    <div class="flex justify-center">
+                        <svg class="w-full max-w-[600px] h-auto" viewBox="0 0 600 360"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <!-- Grid Lines -->
+                            <line x1="80" y1="30" x2="80" y2="310" stroke="#f1f5f9" stroke-width="1.5" />
+                            <line x1="176" y1="30" x2="176" y2="310" stroke="#f1f5f9" stroke-width="1.5" />
+                            <line x1="272" y1="30" x2="272" y2="310" stroke="#e2e8f0" stroke-width="1.5" />
+                            <line x1="368" y1="30" x2="368" y2="310" stroke="#f1f5f9" stroke-width="1.5" />
+                            <line x1="464" y1="30" x2="464" y2="310" stroke="#f1f5f9" stroke-width="1.5" />
+                            <line x1="560" y1="30" x2="560" y2="310" stroke="#f1f5f9" stroke-width="1.5" />
+
+                            <!-- Pooled Estimate Band & Mean Line -->
+                            <rect x="270" y="30" width="78" height="280" fill="rgba(0, 81, 213, 0.06)" />
+                            <line x1="309" y1="30" x2="309" y2="310" stroke="#0051d5" stroke-width="1.5"
+                                stroke-dasharray="4,4" />
+
+                            <!-- School Interval Lines & Points -->
+                            <!-- School A -->
+                            <line x1="265" y1="57.5" x2="548" y2="57.5" stroke="#475569" stroke-width="2" />
+                            <line x1="265" y1="52.5" x2="265" y2="62.5" stroke="#475569" stroke-width="2" />
+                            <line x1="548" y1="52.5" x2="548" y2="62.5" stroke="#475569" stroke-width="2" />
+                            <circle cx="406" cy="57.5" r="5" fill="#0051d5" stroke="#ffffff" stroke-width="1.5" />
+                            <text x="40" y="62" class="ui-text text-xs font-semibold fill-slate-700"
+                                text-anchor="middle">School A</text>
+
+                            <!-- School B -->
+                            <line x1="216" y1="92.5" x2="404" y2="92.5" stroke="#475569" stroke-width="2" />
+                            <line x1="216" y1="87.5" x2="216" y2="97.5" stroke="#475569" stroke-width="2" />
+                            <line x1="404" y1="87.5" x2="404" y2="97.5" stroke="#475569" stroke-width="2" />
+                            <circle cx="310" cy="92.5" r="5" fill="#0051d5" stroke="#ffffff" stroke-width="1.5" />
+                            <text x="40" y="97" class="ui-text text-xs font-semibold fill-slate-700"
+                                text-anchor="middle">School B</text>
+
+                            <!-- School C -->
+                            <line x1="107" y1="127.5" x2="408" y2="127.5" stroke="#475569" stroke-width="2" />
+                            <line x1="107" y1="122.5" x2="107" y2="132.5" stroke="#475569" stroke-width="2" />
+                            <line x1="408" y1="122.5" x2="408" y2="132.5" stroke="#475569" stroke-width="2" />
+                            <circle cx="258" cy="127.5" r="5" fill="#0051d5" stroke="#ffffff" stroke-width="1.5" />
+                            <text x="40" y="132" class="ui-text text-xs font-semibold fill-slate-700"
+                                text-anchor="middle">School C</text>
+
+                            <!-- School D -->
+                            <line x1="202" y1="162.5" x2="409" y2="162.5" stroke="#475569" stroke-width="2" />
+                            <line x1="202" y1="157.5" x2="202" y2="167.5" stroke="#475569" stroke-width="2" />
+                            <line x1="409" y1="157.5" x2="409" y2="167.5" stroke="#475569" stroke-width="2" />
+                            <circle cx="306" cy="162.5" r="5" fill="#0051d5" stroke="#ffffff" stroke-width="1.5" />
+                            <text x="40" y="167" class="ui-text text-xs font-semibold fill-slate-700"
+                                text-anchor="middle">School D</text>
+
+                            <!-- School E -->
+                            <line x1="183" y1="197.5" x2="352" y2="197.5" stroke="#475569" stroke-width="2" />
+                            <line x1="183" y1="192.5" x2="183" y2="202.5" stroke="#475569" stroke-width="2" />
+                            <line x1="352" y1="192.5" x2="352" y2="202.5" stroke="#475569" stroke-width="2" />
+                            <circle cx="267" cy="197.5" r="5" fill="#0051d5" stroke="#ffffff" stroke-width="1.5" />
+                            <text x="40" y="202" class="ui-text text-xs font-semibold fill-slate-700"
+                                text-anchor="middle">School E</text>
+
+                            <!-- School F -->
+                            <line x1="173" y1="232.5" x2="380" y2="232.5" stroke="#475569" stroke-width="2" />
+                            <line x1="173" y1="227.5" x2="173" y2="237.5" stroke="#475569" stroke-width="2" />
+                            <line x1="380" y1="227.5" x2="380" y2="237.5" stroke="#475569" stroke-width="2" />
+                            <circle cx="277" cy="232.5" r="5" fill="#0051d5" stroke="#ffffff" stroke-width="1.5" />
+                            <text x="40" y="237" class="ui-text text-xs font-semibold fill-slate-700"
+                                text-anchor="middle">School F</text>
+
+                            <!-- School G -->
+                            <line x1="264" y1="267.5" x2="452" y2="267.5" stroke="#475569" stroke-width="2" />
+                            <line x1="264" y1="262.5" x2="264" y2="272.5" stroke="#475569" stroke-width="2" />
+                            <line x1="452" y1="262.5" x2="452" y2="272.5" stroke="#475569" stroke-width="2" />
+                            <circle cx="358" cy="267.5" r="5" fill="#0051d5" stroke="#ffffff" stroke-width="1.5" />
+                            <text x="40" y="272" class="ui-text text-xs font-semibold fill-slate-700"
+                                text-anchor="middle">School G</text>
+
+                            <!-- School H -->
+                            <line x1="160" y1="302.5" x2="499" y2="302.5" stroke="#475569" stroke-width="2" />
+                            <line x1="160" y1="297.5" x2="160" y2="307.5" stroke="#475569" stroke-width="2" />
+                            <line x1="499" y1="297.5" x2="499" y2="307.5" stroke="#475569" stroke-width="2" />
+                            <circle cx="330" cy="302.5" r="5" fill="#0051d5" stroke="#ffffff" stroke-width="1.5" />
+                            <text x="40" y="307" class="ui-text text-xs font-semibold fill-slate-700"
+                                text-anchor="middle">School H</text>
+
+                            <!-- Axis Baseline and Ticks -->
+                            <line x1="80" y1="310" x2="560" y2="310" stroke="#94a3b8" stroke-width="1.5" />
+
+                            <text x="80" y="330" class="font-sans text-[10px] fill-slate-500"
+                                text-anchor="middle">-40</text>
+                            <text x="176" y="330" class="font-sans text-[10px] fill-slate-500"
+                                text-anchor="middle">-20</text>
+                            <text x="272" y="330" class="font-sans text-[10px] fill-slate-500"
+                                text-anchor="middle">0</text>
+                            <text x="368" y="330" class="font-sans text-[10px] fill-slate-500"
+                                text-anchor="middle">20</text>
+                            <text x="464" y="330" class="font-sans text-[10px] fill-slate-500"
+                                text-anchor="middle">40</text>
+                            <text x="560" y="330" class="font-sans text-[10px] fill-slate-500"
+                                text-anchor="middle">60</text>
+
+                            <text x="320" y="350" class="font-sans text-xs font-semibold fill-slate-600"
+                                text-anchor="middle">Estimated Coaching Effect (Points)</text>
+                        </svg>
+                    </div>
+                </div>
+
+                <h3 class="text-xl font-semibold mb-4 text-bayesian-navy ui-text">A pooled estimate</h3>
+                <p class="mb-6">
+                    The general overlap in the posterior intervals based on independent analyses suggests that all
+                    experiments might be estimating the same quantity. Under the hypothesis that all experiments have
+                    the same effect and produce independent estimates of this common effect, we could treat the data in
+                    Table 5.2 as eight normally distributed observations with known variances. With a noninformative
+                    prior distribution, the posterior mean for the common coaching effect in the schools is
+                    $\bar{y}_{\cdot\cdot}$, as defined in equation (5.13) with $y_j$ in place of $\bar{y}_{\cdot j}$:
+                </p>
+
+                <div class="academic-card p-6 mb-6 mt-8">
+                    <h4 class="font-semibold text-bayesian-navy ui-text mb-4">Common-Effect Estimation (Complete
+                        Pooling)</h4>
+                    <p class="mb-4">
+                        Under complete pooling, the shared effect estimate $\bar{y}_{\cdot\cdot}$ and its variance are:
+                    </p>
+                    <div
+                        class="code-block text-center py-4 bg-bayesian-surfaceAlt border border-bayesian-border rounded mb-4">
+                        $$\bar{y}_{\cdot\cdot} = \frac{\sum_{j=1}^8 \frac{y_j}{\sigma_j^2}}{\sum_{j=1}^8
+                        \frac{1}{\sigma_j^2}} = 7.7$$
+                        $$\text{Var}(\bar{y}_{\cdot\cdot}) = \left( \sum_{j=1}^8 \frac{1}{\sigma_j^2} \right)^{-1} =
+                        16.6$$
+                    </div>
+                    <p class="text-sm text-bayesian-slate italic">
+                        This yields a posterior standard error of $\sqrt{16.6} \approx 4.1$, leading to a 95% posterior
+                        interval of $[-0.5, 15.9]$, or approximately $[8 \pm 8]$.
+                    </p>
+                </div>
+
+                <p class="mb-6">
+                    Supporting this analysis, the classical test of the hypothesis that all $\theta_j$'s are estimating
+                    the same quantity yields a $\chi^2$ statistic less than its degrees of freedom ($7$, in this case):
+                    $$\sum_{j=1}^8 \frac{(y_j - \bar{y}_{\cdot\cdot})^2}{\sigma_j^2} = 4.6$$
+                    To put it another way, the classical estimate $\hat{\tau}^2$ of the between-school variance $\tau^2$ (from <a href="ch5_section4.html#classical-point-estimation" class="text-bayesian-blue hover:underline">equation 5.22 in Section 5.4</a>) is negative, suggesting no evidence of variance between schools.
+                </p>
+
+                <!-- Negative Variance Explainer Box (Feynman Style) -->
+                <details class="academic-card p-6 mb-8 cursor-pointer not-prose">
+                    <summary
+                        class="flex items-center justify-between font-semibold text-bayesian-blue ui-text select-none">
+                        <span class="flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z">
+                                </path>
+                            </svg>
+                            How Can a Variance Estimate ($\hat{\tau}^2$) Be Negative?
+                        </span>
+                        <span class="text-xs text-bayesian-slate">Click to toggle explanation &darr;</span>
+                    </summary>
+                    <div class="mt-4 text-sm text-bayesian-text leading-relaxed space-y-4 cursor-default"
+                        onclick="event.stopPropagation()">
+                        <p>
+                            Before explaining the negative value, let's define what these symbols mean:
+                        </p>
+                        <ul class="list-disc pl-6 mb-4 space-y-1 text-xs md:text-sm">
+                            <li><strong>$\tau$ (tau):</strong> The true standard deviation of the treatment effects between schools. It measures the true variation (heterogeneity) among the schools.</li>
+                            <li><strong>$\tau^2$:</strong> The true variance between schools.</li>
+                            <li><strong>$\hat{\tau}^2$:</strong> The classical sample estimate of this variance, calculated from our observed data.</li>
+                        </ul>
+                        <p>
+                            A variance tells you how "spread out" things are. Since it is calculated by squaring
+                            numbers, <strong>true physical variance can never be negative</strong> ($\tau^2 \ge 0$).
+                            Yet, the
+                            mathematical formula for our estimate ($\hat{\tau}^2$) gives us a negative number. Here is
+                            why that happens:
+                        </p>
+                        <p>
+                            Imagine you have eight identical copper coins, all weighing exactly 10 grams. If you weigh
+                            them on a scale that has some random measurement noise (sampling error), your readings will
+                            fluctuate—say, between 9.8 and 10.2 grams.
+                        </p>
+                        <p>
+                            If you try to calculate the true differences between the coins, you have to subtract the
+                            scale's noise from the total variation you saw:
+                        </p>
+                        <div
+                            class="py-3 px-4 bg-bayesian-surfaceAlt border border-bayesian-border rounded font-mono text-center my-3 text-xs md:text-sm">
+                            $$\text{True Variation between Coins } (\tau^2) = \text{Observed Variation of Readings} -
+                            \text{Expected Noise of the Scale}$$
+                        </div>
+                        <p>
+                            Because the coins are actually identical, the observed variation in your readings is
+                            entirely due to the scale's noise. In fact, by pure chance, the readings might be clustered
+                            even closer together than the scale's average error margin. When you subtract the large
+                            expected noise from the small observed variation, the math forces the estimate to go
+                            <strong>negative</strong>.
+                        </p>
+
+                        <!-- SVG Visualizing Negative Variance Concept -->
+                        <div
+                            class="flex flex-col items-center py-4 bg-bayesian-surfaceAlt border border-bayesian-border rounded-lg my-4">
+                            <span class="text-xs font-semibold text-bayesian-navy mb-2 ui-text">Visualizing Variance
+                                Subtraction</span>
+                            <svg class="w-full max-w-[480px] h-auto" viewBox="0 0 480 180"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <!-- Axis Line -->
+                                <line x1="40" y1="140" x2="440" y2="140" stroke="#94a3b8" stroke-width="1.5" />
+                                <text x="40" y="155" class="font-sans text-[10px] fill-slate-500"
+                                    text-anchor="middle">-30</text>
+                                <text x="240" y="155" class="font-sans text-[10px] fill-slate-500"
+                                    text-anchor="middle">0</text>
+                                <text x="440" y="155" class="font-sans text-[10px] fill-slate-500"
+                                    text-anchor="middle">+30</text>
+
+                                <!-- Expected Scale Noise Bar (Wide) -->
+                                <rect x="70" y="30" width="340" height="24" fill="rgba(239, 68, 68, 0.08)" rx="4"
+                                    stroke="rgba(239, 68, 68, 0.2)" stroke-width="1" />
+                                <text x="240" y="46" class="ui-text text-[10px] font-bold fill-red-700"
+                                    text-anchor="middle">Expected Measurement Noise (Wide margin of error)</text>
+
+                                <!-- Observed Spread Bar (Narrow) -->
+                                <rect x="220" y="75" width="207" height="24" fill="rgba(59, 130, 246, 0.12)" rx="4"
+                                    stroke="rgba(59, 130, 246, 0.3)" stroke-width="1" />
+                                <text x="323" y="91" class="ui-text text-[10px] font-bold fill-blue-700"
+                                    text-anchor="middle">Observed Spread of Estimates</text>
+
+                                <!-- Subtraction Bracket/Arrow -->
+                                <path d="M 220 110 L 220 120 L 427 120 L 427 110" fill="none" stroke="#64748b"
+                                    stroke-width="1" />
+                                <text x="323" y="132" class="font-sans text-[9px] fill-slate-500"
+                                    text-anchor="middle">Observed spread fits completely inside the scale's noise
+                                    margin</text>
+                            </svg>
+                        </div>
+
+                        <p>
+                            In our SAT study, the schools' estimated coaching effects are so close to each other
+                            relative to the very large standard errors of the measurements that the formula concludes
+                            there is zero (or mathematically "negative") true variation between the schools.
+                        </p>
+                        <p>
+                            <strong>How we solve this:</strong> In classical statistics, we simply round this negative
+                            result to zero ($\hat{\tau}^2 = 0$) and assume all schools are identical. But in Bayesian
+                            hierarchical modeling, we treat the variance as a probability distribution constrained to be
+                            positive. The model peaks at zero but leaves a tail of positive possibilities open, allowing
+                            the data to speak for itself without arbitrary truncation.
+                        </p>
+                    </div>
+                </details>
+
+                <h3 class="text-xl font-semibold mb-4 text-bayesian-navy ui-text">Would it be possible to see an effect
+                    of 28 by chance?</h3>
+                <p class="mb-6">
+                    Would it be possible to have one school’s observed effect be 28 just by chance, if the coaching
+                    effects in all eight schools were really the same? To get a feeling for the natural variation that
+                    we would expect across eight studies if this assumption were true, suppose the estimated treatment
+                    effects are eight independent draws from a normal distribution with mean 8 points and standard
+                    deviation 13 points (the square root of the mean of the eight variances $\sigma_j^2$).
+                </p>
+                <p class="mb-6">
+                    Then, based on the expected values of normal order statistics, we would expect the largest observed
+                    value of $y_j$ to be about 26 points and the others, in diminishing order, to be about 19, 14, 10,
+                    6, 2, $-3$, and $-9$ points. These expected effect sizes are consistent with the set of observed
+                    effect sizes in Table 5.2. Thus, it would appear imprudent to believe that school A really has an
+                    effect as large as 28 points.
+                </p>
+
+                <h3 class="text-xl font-semibold mb-4 text-bayesian-navy ui-text">Difficulties with the separate and
+                    pooled estimates</h3>
+                <p class="mb-6">
+                    To see the problems with the two extreme attitudes—the separate analyses that consider each
+                    $\theta_j$ separately, and the alternative view (a single common effect) that leads to the pooled
+                    estimate—consider $\theta_1$, the effect in school A.
+                </p>
+                <p class="mb-6">
+                    The effect in school A is estimated as $28.4$ with a standard error of $14.9$ under the separate
+                    analysis, versus a pooled estimate of $7.7$ with a standard error of $4.1$ under the common-effect
+                    model.
+                </p>
+
+                <div class="theorem-block my-8">
+                    <h4 class="text-sm font-bold text-bayesian-navy uppercase tracking-wider mb-3 ui-text">The
+                        Limitations of Extremes</h4>
+                    <ul class="list-disc pl-6 space-y-2 text-bayesian-text">
+                        <li>
+                            The separate analyses of the eight schools imply: <em>"the probability is $\frac{1}{2}$ that
+                                the true effect in A is more than $28.4$"</em>, a doubtful statement, considering the
+                            results for the other seven schools.
+                        </li>
+                        <li>
+                            On the other hand, the pooled model implies: <em>"the probability is $\frac{1}{2}$ that the
+                                true effect in A is less than $7.7$"</em>, which, despite the non-significant $\chi^2$
+                            test, seems an inaccurate summary of our knowledge.
+                        </li>
+                        <li>
+                            The pooled model also implies: <em>"the probability is $\frac{1}{2}$ that the true effect in
+                                A is less than the true effect in C"</em>, which is also difficult to justify given the
+                            data in Table 5.2.
+                        </li>
+                    </ul>
+                </div>
+
+                <p class="mb-6">
+                    Neither estimate is fully satisfactory, and we would like a compromise that combines information
+                    from all eight experiments without assuming all the $\theta_j$’s to be equal. The Bayesian analysis
+                    under the hierarchical model provides exactly that.
+                </p>
+            </div>
+
+
+
+
+            <!-- References & Study Disclaimer -->
+            <section class="mt-20 pt-8 border-t border-bayesian-border">
+                <div
+                    class="p-6 bg-bayesian-surfaceAlt border border-bayesian-border rounded-lg text-sm text-bayesian-text leading-relaxed">
+                    <h4 class="font-bold text-bayesian-navy text-base mb-3 ui-text">References & Study Disclaimer</h4>
+                    <p class="mb-4">
+                        This page represents personal study notes and derivations written to clarify my own
+                        understanding of hierarchical Bayesian models. The content is based on:
+                    </p>
+                    <blockquote class="pl-4 border-l-2 border-bayesian-slate italic mb-4 text-bayesian-slate">
+                        Gelman, A., Carlin, J. B., Stern, H. S., Dunson, D. B., Vehtari, A., & Rubin, D. B. (2013).
+                        <em>Bayesian Data Analysis</em> (3rd ed.). CRC Press.
+                    </blockquote>
+                    <p class="mb-0">
+                        For official materials, including a copy of the textbook PDF for non-commercial use, please
+                        visit the official <a href="http://www.stat.columbia.edu/~gelman/book/" target="_blank"
+                            rel="noopener noreferrer" class="text-bayesian-blue hover:underline">Columbia University BDA
+                            Page</a> or explore Aki Vehtari's <a href="https://avehtari.github.io/BDA_course_Aalto/"
+                            target="_blank" rel="noopener noreferrer" class="text-bayesian-blue hover:underline">Aalto
+                            BDA Course Portal</a>. Any typos or mathematical errors on this page are my own.
+                    </p>
+                </div>
+            </section>
 
     </div>
 
