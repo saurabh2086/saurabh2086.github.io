@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hierarchical modeling applied to a meta-analysis</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400;1,6..72,600&display=swap"
+        rel="stylesheet">
+
+    <!-- MathJax for LaTeX rendering -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bayesian: {
+                            bg: '#f7f9fb',
+                            text: '#191c1e',
+                            navy: '#131b2e',
+                            blue: '#0051d5',
+                            slate: '#75859d',
+                            surface: '#ffffff',
+                            surfaceAlt: '#f8fafc',
+                            border: '#e2e8f0'
+                        }
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 12px rgba(15, 23, 42, 0.05)',
+                        'premium': '0 12px 30px rgba(19, 27, 46, 0.08)'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Newsreader', serif;
+            background-color: #f7f9fb;
+            color: #191c1e;
+            font-size: 1.25rem;
+            line-height: 1.7;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        .ui-text {
+            font-family: 'Inter', sans-serif;
+            color: #131b2e;
+        }
+
+        .math-inline {
+            font-family: 'Newsreader', serif;
+            font-size: 1.3rem;
+        }
+
+        .theorem-block {
+            background-color: #f8fafc;
+            border-left: 2px solid #0051d5;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .academic-card {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .academic-card:hover {
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+
+<body class="antialiased">
+
+    <!-- Main Container -->
+    <div class="max-w-[880px] mx-auto px-4 py-16">
+
+        <!-- Navigation -->
+        <nav class="mb-8 flex items-center gap-6">
+            <a href="../../index.html"
+                class="inline-flex items-center text-sm font-semibold text-bayesian-slate hover:text-bayesian-navy transition-colors ui-text">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                Back to Index
+            </a>
+            <span class="text-bayesian-border">|</span>
+            <a href="ch5_section5.html"
+                class="inline-flex items-center text-sm font-semibold text-bayesian-slate hover:text-bayesian-navy transition-colors ui-text">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+                Section 5.5
+            </a>
+            <span class="text-bayesian-border">|</span>
+            <a href="../../index.html"
+                class="inline-flex items-center text-sm font-semibold text-bayesian-slate hover:text-bayesian-navy transition-colors ui-text">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
+                    </path>
+                </svg>
+                Home
+            </a>
+        </nav>
+
+        <!-- Header -->
+        <header class="mb-16">
+            <div
+                class="inline-block px-3 py-1 bg-bayesian-surfaceAlt border border-bayesian-border text-bayesian-slate rounded text-xs font-semibold tracking-wide mb-6 uppercase ui-text">
+                Bayesian Data Analysis &bull; Chapter 5
+            </div>
+            <h1 class="text-4xl font-bold mb-6 tracking-tight leading-tight ui-text">
+                5.6 Hierarchical Modeling Applied to a Meta-Analysis
+            </h1>
+            <p class="text-xl text-bayesian-slate leading-relaxed">
+                Applying the hierarchical normal model to combine and synthesize treatment effects from several parallel
+                clinical trials in medicine.
+            </p>
+        </header>
+
+        <!-- Introduction Section -->
+        <section class="mb-16">
+            <div class="prose max-w-none text-bayesian-text">
+                <p class="mb-6">
+                    Meta-analysis is an increasingly popular and important process of summarizing and integrating the
+                    findings of research studies in a particular area. As a method for combining information from
+                    several parallel data sources, meta-analysis is closely connected to hierarchical modeling. In this
+                    section we consider a relatively simple application of hierarchical modeling to a meta-analysis in
+                    medicine. (We consider another meta-analysis problem in the context of a decision problem in Section
+                    9.2.)
+                </p>
+                <p class="mb-6">
+                    The data in our medical example are displayed in the first three columns of <a href="#trials-table"
+                        class="text-bayesian-blue hover:underline">Table 5.4</a>, which summarize mortality after
+                    myocardial infarction in 22 clinical trials, each consisting of two groups of heart attack patients
+                    randomly allocated to receive or not receive beta-blockers (a family of drugs that affect the
+                    central nervous system and can relax the heart muscles). Mortality varies from 3% to 21% across the
+                    studies, most of which show a modest, though not 'statistically significant,' benefit from the use
+                    of beta-blockers. The aim of a meta-analysis is to provide a combined analysis of the studies that
+                    indicates the overall strength of the evidence for a beneficial effect of the treatment under study.
+                    Before proceeding to a formal meta-analysis, it is important to apply rigorous criteria in
+                    determining which studies are included.
+                </p>
+            </div>
+        </section>
+
+        <!-- Section: Defining Parameters -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-semibold mb-6 border-b pb-2 border-bayesian-border ui-text">
+                Defining a parameter for each study
+            </h2>
+            <div class="prose max-w-none text-bayesian-text">
+                <p class="mb-6">
+                    In the beta-blocker example, the meta-analysis involves data in the form of several $2 \times 2$
+                    tables. If clinical trial $j$ (in the series to be considered for meta-analysis) involves the use of
+                    $n_{0j}$ subjects in the control group and $n_{1j}$ in the treatment group, giving rise to $y_{0j}$
+                    and $y_{1j}$ deaths in control and treatment groups, respectively, then the usual sampling model
+                    involves two independent binomial distributions:
+                    $$y_{0j} \sim \text{Binomial}(n_{0j}, p_{0j}) \quad \text{and} \quad y_{1j} \sim
+                    \text{Binomial}(n_{1j}, p_{1j})$$
+                    where $p_{0j}$ represents the probability of death in the control group (no beta-blockers) and
+                    $p_{1j}$ represents the probability of death in the treatment group (beta-blockers) for study $j$.
+                </p>
+                <p class="mb-6">
+                    When analyzing clinical trials, we want to measure how much a treatment helps. Depending on how we
+                    look at the problem, we define different <strong>estimands</strong> (the statistical quantities we
+                    want to estimate). Let's build them one by one, explaining <em>why</em> we care about each:
+                </p>
+
+                <!-- Estimands Breakdown (Feynman Style) -->
+                <div class="space-y-6 my-8 not-prose">
+                    <!-- Estimand 1 -->
+                    <div class="academic-card p-6 bg-white border border-bayesian-border rounded-lg shadow-soft">
+                        <span
+                            class="inline-block px-2.5 py-0.5 bg-blue-50 text-bayesian-blue text-xs font-semibold rounded mb-3 uppercase ui-text">1.
+                            The Risk Difference</span>
+                        <h4 class="text-base font-bold text-bayesian-navy mb-2 ui-text">Why do we care?</h4>
+                        <p class="text-sm text-bayesian-text leading-relaxed mb-4">
+                            This is the most direct, real-world measure of impact. It answers: <em>"If I treat a group
+                                of patients, how many lives do I actually save?"</em> For instance, if the baseline
+                            death rate in the control group is 10% ($p_{0j} = 0.10$) and the treatment cuts it to 6%
+                            ($p_{1j} = 0.06$), the difference is 4%. This tells a doctor that treating 100 patients is
+                            expected to save exactly 4 lives. It is direct, honest, and easy to explain to a patient.
+                        </p>
+                        <div
+                            class="py-2.5 px-4 bg-bayesian-surfaceAlt border border-bayesian-border rounded font-mono text-center text-sm">
+                            $$\text{Risk Difference} = p_{1j} - p_{0j}$$
+                        </div>
+                    </div>
+
+                    <!-- Estimand 2 -->
+                    <div class="academic-card p-6 bg-white border border-bayesian-border rounded-lg shadow-soft">
+                        <span
+                            class="inline-block px-2.5 py-0.5 bg-blue-50 text-bayesian-blue text-xs font-semibold rounded mb-3 uppercase ui-text">2.
+                            The Risk Ratio (Relative Risk)</span>
+                        <h4 class="text-base font-bold text-bayesian-navy mb-2 ui-text">Why do we care?</h4>
+                        <p class="text-sm text-bayesian-text leading-relaxed mb-4">
+                            This measures the treatment effect <em>relative</em> to where you started. If your risk of
+                            dying goes from 10% to 5%, your risk is cut in half (a Risk Ratio of 0.5, or a 50% relative
+                            reduction). But if your risk goes from 0.0001% to 0.00005%, it is <em>still</em> cut in
+                            half, even though the absolute number of lives saved is practically zero. The risk ratio is
+                            powerful because it highlights the biological potency of the treatment, regardless of how
+                            common or rare the disease is in the population.
+                        </p>
+                        <div
+                            class="py-2.5 px-4 bg-bayesian-surfaceAlt border border-bayesian-border rounded font-mono text-center text-sm">
+                            $$\text{Risk Ratio} = \frac{p_{1j}}{p_{0j}}$$
+                        </div>
+                    </div>
+
+                    <!-- Estimand 3 -->
+                    <div class="academic-card p-6 bg-white border border-bayesian-border rounded-lg shadow-soft">
+                        <span
+                            class="inline-block px-2.5 py-0.5 bg-blue-50 text-bayesian-blue text-xs font-semibold rounded mb-3 uppercase ui-text">3.
+                            The Odds Ratio</span>
+                        <h4 class="text-base font-bold text-bayesian-navy mb-2 ui-text">Why do we care?</h4>
+                        <p class="text-sm text-bayesian-text leading-relaxed mb-4">
+                            To understand the Odds Ratio, we must first look at the difference between
+                            <strong>probability</strong> and <strong>odds</strong>.
+                        </p>
+                        <p class="text-sm text-bayesian-text leading-relaxed mb-4">
+                            Imagine 10 patients enter a clinic, and 2 of them die. The <strong>probability of
+                                dying</strong> is 2 out of 10, or 20% ($2/10 = 0.20$). But the <strong>odds of
+                                dying</strong> are calculated by comparing those who died to those who
+                            <em>survived</em>: 2 died, and 8 survived. So, the odds of dying are 2 to 8, or $2/8 = 0.25$
+                            (often expressed as 1:4).
+                        </p>
+                        <p class="text-sm text-bayesian-text leading-relaxed mb-4">
+                            The <strong>Odds Ratio</strong> ($\rho_j$) is simply the odds of dying in the treatment
+                            group divided by the odds of dying in the control group. We care about this measure for two
+                            main reasons:
+                        </p>
+                        <ul class="list-disc pl-5 space-y-2 text-sm text-bayesian-text leading-relaxed mb-4">
+                            <li>
+                                <strong>The Retrospective (Case-Control) Trick:</strong> Suppose you want to study a
+                                very rare disease. If you track 10,000 healthy people forward in time (a cohort study),
+                                you might wait years for just a handful of people to get sick. That is incredibly slow
+                                and expensive. Instead, you work backward (a case-control study): you go to a hospital
+                                database, recruit 100 people who <em>already</em> got sick (cases) and 100 healthy
+                                people (controls), and look backward to see who took the drug.
+                                <br><br>
+                                Because you artificially forced the study to have exactly 50% sick people, you can no
+                                longer calculate the true probability of getting sick in the real world. <strong>But the
+                                    odds ratio has a magical mathematical property:</strong> the selection bias cancels
+                                itself out completely! Here is how the algebra works:
+                                <div
+                                    class="my-4 p-4 bg-bayesian-surfaceAlt border border-bayesian-border rounded-lg text-xs space-y-3">
+                                    <p class="font-semibold text-bayesian-navy">Why the selection bias cancels out:</p>
+                                    <p class="leading-relaxed">
+                                        Let the true population numbers of people be $N_{11}$ (Sick & Exposed), $N_{10}$
+                                        (Sick & Unexposed), $N_{01}$ (Healthy & Exposed), and $N_{00}$ (Healthy &
+                                        Unexposed).
+                                        The true population odds ratio of disease is:
+                                        $$\text{OR}_{\text{population}} = \frac{N_{11} / N_{01}}{N_{10} / N_{00}} =
+                                        \frac{N_{11} \cdot N_{00}}{N_{10} \cdot N_{01}}$$
+                                    </p>
+                                    <p class="leading-relaxed">
+                                        In your study, you select some fraction $f_{\text{case}}$ of all sick people,
+                                        and some fraction $f_{\text{control}}$ of all healthy people. Because of this,
+                                        the numbers in your study sample are:
+                                        $$\text{Sick Exposed} = f_{\text{case}} \cdot N_{11} \quad \text{and} \quad
+                                        \text{Sick Unexposed} = f_{\text{case}} \cdot N_{10}$$
+                                        $$\text{Healthy Exposed} = f_{\text{control}} \cdot N_{01} \quad \text{and}
+                                        \quad \text{Healthy Unexposed} = f_{\text{control}} \cdot N_{00}$$
+                                    </p>
+                                    <p class="leading-relaxed">
+                                        If we compute the odds ratio of exposure in our study sample, we get:
+                                        $$\text{OR}_{\text{sample}} = \frac{(f_{\text{case}} \cdot N_{11}) /
+                                        (f_{\text{case}} \cdot N_{10})}{(f_{\text{control}} \cdot N_{01}) /
+                                        (f_{\text{control}} \cdot N_{00})} = \frac{N_{11} / N_{10}}{N_{01} / N_{00}} =
+                                        \frac{N_{11} \cdot N_{00}}{N_{10} \cdot N_{01}} =
+                                        \text{OR}_{\text{population}}$$
+                                    </p>
+                                    <p class="text-bayesian-blue font-semibold leading-relaxed">
+                                        The arbitrary selection rates $f_{\text{case}}$ and $f_{\text{control}}$
+                                        completely disappear! Even though the sample is heavily biased toward sick
+                                        people, the calculated Odds Ratio is exactly identical to the true population
+                                        Odds Ratio.
+                                    </p>
+                                </div>
+                            </li>
+                            <li>
+                                <strong>Unbounded Scale:</strong> Probabilities must stay strictly between 0 and 1,
+                                which makes linear modeling (like regression) very difficult since models can predict
+                                impossible rates like 110% or -5%. Odds, however, can go from 0 to infinity. Taking the
+                                logarithm of odds expands this to all real numbers (negative to positive infinity),
+                                letting statistical models run free without hitting boundaries.
+                            </li>
+                        </ul>
+                        <div
+                            class="py-2.5 px-4 bg-bayesian-surfaceAlt border border-bayesian-border rounded font-mono text-center text-sm">
+                            $$\rho_j = \frac{p_{1j}}{1 - p_{1j}} \Big/ \frac{p_{0j}}{1 - p_{0j}}$$
+                        </div>
+                    </div>
+
+                    <!-- Estimand 4 -->
+                    <div class="academic-card p-6 bg-white border border-bayesian-border rounded-lg shadow-soft">
+                        <span
+                            class="inline-block px-2.5 py-0.5 bg-blue-50 text-bayesian-blue text-xs font-semibold rounded mb-3 uppercase ui-text">4.
+                            The Log Odds Ratio</span>
+                        <h4 class="text-base font-bold text-bayesian-navy mb-2 ui-text">Why do we care?</h4>
+                        <p class="text-sm text-bayesian-text leading-relaxed mb-4">
+                            Odds ratios have an annoying mathematical asymmetry: if a drug is harmful, the odds ratio
+                            can range from $1$ to infinity. If it is beneficial, it gets squished between $0$ and $1$.
+                            This makes statistical modeling and combining studies very difficult. By taking the natural
+                            logarithm, we make the scale symmetric around $0$: positive values mean harm, negative
+                            values mean benefit, and $0$ means no effect. Most importantly, the sampling distribution of
+                            the log odds ratio is remarkably close to a normal distribution (the bell curve), which
+                            allows us to use standard normal-theory formulas for hierarchical modeling.
+                        </p>
+                        <div
+                            class="py-2.5 px-4 bg-bayesian-surfaceAlt border border-bayesian-border rounded font-mono text-center text-sm">
+                            $$\theta_j = \log \rho_j$$
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: Normal Approximation -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-semibold mb-6 border-b pb-2 border-bayesian-border ui-text">
+                An normal approximation to the likelihood
+            </h2>
+            <div class="prose max-w-none text-bayesian-text">
+                <p class="mb-6">
+                    Relatively simple Bayesian meta-analysis is possible using the normal-theory results of the previous
+                    sections if we summarize the results of each experiment $j$ with an approximate normal likelihood
+                    for the parameter $\theta_j$. This is possible with a number of standard analytic approaches that
+                    produce a point estimate and standard errors, which can be regarded as approximating a normal mean
+                    and standard deviation. One approach is based on empirical logits: for each study $j$, one can
+                    estimate $\theta_j$ by
+                    $$y_j = \log\left( \frac{y_{1j}}{n_{1j} - y_{1j}} \right) - \log\left( \frac{y_{0j}}{n_{0j} -
+                    y_{0j}} \right)$$
+                    with approximate sampling variance
+                    $$\sigma_j^2 = \frac{1}{y_{1j}} + \frac{1}{n_{1j} - y_{1j}} + \frac{1}{y_{0j}} + \frac{1}{n_{0j} -
+                    y_{0j}}$$
+                </p>
+                <p class="mb-6">
+                    We use the notation $y_j$ and $\sigma_j^2$ to be consistent with our earlier expressions for the
+                    hierarchical normal model. There are various refinements of these estimates that improve the
+                    asymptotic normality of the sampling distributions involved (in particular, it is often recommended
+                    to add a fraction such as $0.5$ to each of the four counts in the $2 \times 2$ table), but whenever
+                    study-specific sample sizes are moderately large, such details do not concern us. The estimated
+                    log-odds ratios $y_j$ and their estimated standard errors $\sigma_j$ are displayed as the fourth and
+                    fifth columns of <a href="#trials-table" class="text-bayesian-blue hover:underline">Table 5.4</a>.
+                </p>
+            </div>
+        </section>
+
+        <!-- Section: Goals of Inference -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-semibold mb-6 border-b pb-2 border-bayesian-border ui-text">
+                Goals of inference in meta-analysis
+            </h2>
+            <div class="prose max-w-none text-bayesian-text">
+                <p class="mb-6">
+                    Discussions of meta-analysis are sometimes imprecise about the estimands of interest in the
+                    analysis, especially when the primary focus is on testing the null hypothesis of no effect in any of
+                    the studies to be combined. Our focus is on estimating meaningful parameters, and for this objective
+                    there appear to be three possibilities:
+                </p>
+                <ul class="list-decimal pl-6 mb-6 space-y-2 text-base">
+                    <li><strong>Identical Replications:</strong> We view the studies as identical replications of each
+                        other, meaning we regard the individuals in all the studies as independent samples from a common
+                        population with the same outcome measures. This corresponds to the <strong>complete
+                            pooling</strong> model
+                        ($\tau = 0$).</li>
+                    <li><strong>Independent / Unrelated:</strong> The studies are so different that the results of any
+                        one study provide no information about the results of any of the others. This corresponds to the
+                        <strong>no pooling</strong> model ($\tau = \infty$).
+                    </li>
+                    <li><strong>Exchangeable (The Hierarchical Model):</strong> We regard the studies as exchangeable
+                        but not necessarily either identical or completely unrelated; we allow differences from study to
+                        study, but such that the differences are not expected *a priori* to have predictable effects
+                        favoring one study over another. This exchangeable model represents a continuum between the two
+                        extremes.</li>
+                </ul>
+                <p class="mb-6">
+                    Exchangeability does not dictate the form of the joint distribution of the study effects. In what
+                    follows we adopt the convenient assumption of a normal distribution for the varying parameters; in
+                    practice it is important to check this assumption using some of the validation techniques discussed
+                    in Chapter 6.
+                </p>
+            </div>
+        </section>
+
+        <!-- Section: The Hierarchical Normal Model -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-semibold mb-6 border-b pb-2 border-bayesian-border ui-text">
+                A hierarchical normal model
+            </h2>
+            <div class="prose max-w-none text-bayesian-text">
+                <p class="mb-6">
+                    A normal population distribution in conjunction with the approximate normal sampling distribution of
+                    the study-specific effect estimates allows an analysis of the same form as used for the SAT coaching
+                    example.
+                </p>
+                <div class="theorem-block my-6">
+                    <p class="font-semibold text-bayesian-navy ui-text mb-2">Hierarchical Formulation:</p>
+                    <p class="text-sm md:text-base mb-2"><strong>Stage 1 (Likelihood):</strong> $$y_j \mid \theta_j,
+                        \sigma_j \sim N(\theta_j, \sigma_j^2)$$</p>
+                    <p class="text-sm md:text-base"><strong>Stage 2 (Population Prior):</strong> $$\theta_j \mid \mu,
+                        \tau \sim N(\mu, \tau^2)$$</p>
+                </div>
+                <p class="mb-6">
+                    The estimated standard errors $\sigma_j$ are assumed known without error (this has little effect
+                    since sample sizes exceed 50 in almost all trials). We assume a noninformative uniform prior density
+                    for $\mu$ and a uniform prior density on $\tau$:
+                    $$p(\mu, \tau) \propto 1$$
+                </p>
+            </div>
+        </section>
+
+        <!-- Forest Plot Visualization -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-semibold mb-6 border-b pb-2 border-bayesian-border ui-text">
+                Visualizing Bayesian Shrinkage (Forest Plot)
+            </h2>
+            <div class="prose max-w-none text-bayesian-text">
+                <p class="mb-6">
+                    The effect of hierarchical modeling is visually demonstrated by a <strong>Forest Plot</strong>.
+                    Below, the raw
+                    observed estimates ($y_j \pm 1.96\sigma_j$) are shown in grey, and the Bayesian posterior estimates
+                    ($\theta_j$ median and 95% intervals) are shown in blue. The borrowing of strength causes the
+                    posterior intervals to shrink dramatically toward the pooled overall mean $\mu$ (dashed vertical
+                    line), especially for studies with lower sample sizes (high $\sigma_j$).
+                </p>
+
+                <!-- SVG Forest Plot -->
+                <div class="academic-card p-6 my-8 bg-white shadow-soft not-prose">
+                    <h4 class="font-semibold text-bayesian-navy ui-text mb-4 text-base">Figure 5.9: Shrinkage in the 22
+                        Beta-Blocker Trials</h4>
+                    <p class="text-xs text-bayesian-slate mb-6 leading-relaxed">
+                        Comparing raw study estimates (grey dashed) against posterior hierarchical estimates (solid
+                        blue). The vertical line represents the overall mean $\mu \approx -0.25$.
+                    </p>
+                    <div
+                        class="flex justify-center p-2 bg-bayesian-surfaceAlt border border-bayesian-border rounded-lg overflow-x-auto">
+                        <svg class="w-full min-w-[500px] max-w-[640px] h-[480px]" viewBox="0 0 640 480"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <!-- Background Grids -->
+                            <line x1="100" y1="10" x2="100" y2="430" stroke="#cbd5e1" stroke-dasharray="2,2"
+                                stroke-width="0.8" />
+                            <line x1="220" y1="10" x2="220" y2="430" stroke="#cbd5e1" stroke-dasharray="2,2"
+                                stroke-width="0.8" />
+                            <line x1="340" y1="10" x2="340" y2="430" stroke="#cbd5e1" stroke-dasharray="2,2"
+                                stroke-width="0.8" />
+                            <line x1="460" y1="10" x2="460" y2="430" stroke="#cbd5e1" stroke-dasharray="2,2"
+                                stroke-width="0.8" />
+                            <line x1="580" y1="10" x2="580" y2="430" stroke="#cbd5e1" stroke-dasharray="2,2"
+                                stroke-width="0.8" />
+
+                            <!-- Axes & Labels -->
+                            <line x1="100" y1="430" x2="580" y2="430" stroke="#94a3b8" stroke-width="1.5" />
+                            <text x="100" y="445" class="font-sans text-[9px] fill-slate-500"
+                                text-anchor="middle">-2.0</text>
+                            <text x="220" y="445" class="font-sans text-[9px] fill-slate-500"
+                                text-anchor="middle">-1.0</text>
+                            <text x="340" y="445" class="font-sans text-[9px] fill-slate-500"
+                                text-anchor="middle">0.0</text>
+                            <text x="460" y="445" class="font-sans text-[9px] fill-slate-500"
+                                text-anchor="middle">+1.0</text>
+                            <text x="580" y="445" class="font-sans text-[9px] fill-slate-500"
+                                text-anchor="middle">+2.0</text>
+
+                            <text x="340" y="465" class="ui-text text-[10px] font-semibold fill-slate-700"
+                                text-anchor="middle">Treatment Effect (Log Odds Ratio scale)</text>
+
+                            <!-- Vertical line at 0 (No effect) -->
+                            <line x1="340" y1="10" x2="340" y2="430" stroke="#94a3b8" stroke-width="1.5" />
+                            <!-- Vertical line at pooled mean (-0.25 -> 340 - 0.25 * 120 = 310) -->
+                            <line x1="310" y1="10" x2="310" y2="430" stroke="#ef4444" stroke-dasharray="3,3"
+                                stroke-width="1" />
+                            <text x="305" y="20" class="ui-text text-[8px] font-bold fill-red-600"
+                                text-anchor="end">Mean &mu; &approx; -0.25</text>
+
+                            <!-- Plotting the 22 trials -->
+                            <!-- Scale mapping: x = 340 + val * 120 -->
+                            <!-- Control points derived: y_coord = 25 + j * 18 -->
+
+                            <!-- Study 1 -->
+                            <g transform="translate(0, 30)">
+                                <text x="15" y="4" class="ui-text text-[9px] font-semibold fill-slate-600">Trial
+                                    1</text>
+                                <line x1="143" y1="0" x2="537" y2="0" stroke="#cbd5e1" stroke-dasharray="2,2"
+                                    stroke-width="1" />
+                                <circle cx="343" cy="0" r="2.5" fill="#94a3b8" />
+                                <line x1="271" y1="0" x2="354" y2="0" stroke="#0051d5" stroke-width="1.8" />
+                                <circle cx="311" cy="0" r="3" fill="#0051d5" />
+                            </g>
+
+                            <!-- Study 2 -->
+                            <g transform="translate(0, 48)">
+                                <text x="15" y="4" class="ui-text text-[9px] font-semibold fill-slate-600">Trial
+                                    2</text>
+                                <line x1="135" y1="0" x2="135" y2="0" stroke="#cbd5e1" stroke-dasharray="2,2"
+                                    stroke-width="1" /> <!-- truncated slightly -->
+                                <line x1="135" y1="0" x2="251" y2="0" stroke="#cbd5e1" stroke-dasharray="2,2"
+                                    stroke-width="1" />
+                                <circle cx="251" cy="0" r="2.5" fill="#94a3b8" />
+                                <line x1="263" y1="0" x2="340" y2="0" stroke="#0051d5" stroke-width="1.8" />
+                                <circle cx="306" cy="0" r="3" fill="#0051d5" />
+                            </g>
+
+                            <!-- Study 3 -->
+                            <g transform="translate(0, 66)">
+                                <text x="15" y="4" class="ui-text text-[9px] font-semibold fill-slate-600">Trial
+                                    3</text>
+                                <line x1="142" y1="0" x2="408" y2="0" stroke="#cbd5e1" stroke-dasharray="2,2"
+                                    stroke-width="1" />
+                                <circle cx="275" cy="0" r="2.5" fill="#94a3b8" />
+                                <line x1="268" y1="0" x2="346" y2="0" stroke="#0051d5" stroke-width="1.8" />
+                                <circle cx="309" cy="0" r="3" fill="#0051d5" />
+                            </g>
+
+                            <!-- Study 4 -->
+                            <g transform="translate(0, 84)">
+                                <text x="15" y="4" class="ui-text text-[9px] font-semibold fill-slate-600">Trial
+                                    4</text>
+                                <line x1="278" y1="0" x2="344" y2="0" stroke="#cbd5e1" stroke-dasharray="2,2"
+                                    stroke-width="1" />
+                                <circle cx="311" cy="0" r="2.5" fill="#94a3b8" />
+                                <line x1="286" y1="0" x2="334" y2="0" stroke="#0051d5" stroke-width="1.8" />
+                                <circle cx="310" cy="0" r="3" fill="#0051d5" />
+                            </g>
+
+                            <!-- Study 5 -->
+                            <g transform="translate(0, 102)">
+                                <text x="15" y="4" class="ui-text text-[9px] font-semibold fill-slate-600">Trial
+                                    5</text>
+                                <line x1="282" y1="0" x2="414" y2="0" stroke="#cbd5e1" stroke-dasharray="2,2"
+                                    stroke-width="1" />
+                                <circle cx="348" cy="0" r="2.5" fill="#94a3b8" />
+                                <line x1="288" y1="0" x2="358" y2="0" stroke="#0051d5" stroke-width="1.8" />
+                                <circle cx="315" cy="0" r="3" fill="#0051d5" />
+                            </g>
+
+                            <!-- Study 6 -->
+                            <g transform="translate(0, 120)">
+                                <text x="15" y="4" class="ui-text text-[9px] font-semibold fill-slate-600">Trial
+                                    6</text>
+                                <line x1="111" y1="0" x2="435" y2="0" stroke="#cbd5e1" stroke-dasharray="2,2"
+                                    stroke-width="1" />
+                                <circle cx="270" cy="0" r="2.5" fill="#94a3b8" />
+                                <line x1="266" y1="0" x2="346" y2="0" stroke="#0051d5" stroke-width="1.8" />
+                                <circle cx="309" cy="0" r="3" fill="#0051d5" />
+                            </g>
+
+                            <!-- Study 7 -->
+                            <g transform="translate(0, 138)">
+                                <text x="15" y="4" class="ui-text text-[9px] font-semibold fill-slate-600">Trial
+                                    7</text>
+                                <line x1="246" y1="0" x2="312" y2="0" stroke="#cbd5e1" stroke-dasharray="2,2"
+                                    stroke-width="1" />
+                                <circle cx="279" cy="0" r="2.5" fill="#94a3b8" />
+                                <line x1="267" y1="0" x2="320" y2="0" stroke="#0051d5" stroke-width="1.8" />
+                                <circle cx="297" cy="0" r="3" fill="#0051d5" />
+                            </g>
+
+                            <!-- Study 8 -->
+                            <g transform="translate(0, 156)">
+                                <text x="15" y="4" class="ui-text text-[9px] font-semibold fill-slate-600">Trial
+                                    8</text>
+                                <line x1="283" y1="0" x2="379" y2="0" stroke="#cbd5e1" stroke-dasharray="2,2"
+                                    stroke-width="1" />
+                                <circle cx="331" cy="0" r="2.5" fill="#94a3b8" />
+                                <line x1="288" y1="0" x2="350" y2="0" stroke="#0051d5" stroke-width="1.8" />
+                                <circle cx="315" cy="0" r="3" fill="#0051d5" />
+                            </g>
+
+                            <!-- Study 9 -->
+                            <g transform="translate(0, 174)">
+                                <text x="15" y="4" class="ui-text text-[9px] font-semibold fill-slate-600">Trial
+                                    9</text>
+                                <line x1="225" y1="0" x2="357" y2="0" stroke="#cbd5e1" stroke-dasharray="2,2"
+                                    stroke-width="1" />
+                                <circle cx="289" cy="0" r="2.5" fill="#94a3b8" />
+                                <line x1="270" y1="0" x2="338" y2="0" stroke="#0051d5" stroke-width="1.8" />
+                                <circle cx="306" cy="0" r="3" fill="#0051d5" />
+                            </g>
+
+                            <!-- Study 10 -->
+                            <g transform="translate(0, 192)">
+                                <text x="15" y="4" class="ui-text text-[9px] font-semibold fill-slate-600">Trial
+                                    10</text>
+                                <line x1="272" y1="0" x2="328" y2="0" stroke="#cbd5e1" stroke-dasharray="2,2"
+                                    stroke-width="1" />
+                                <circle cx="300" cy="0" r="2.5" fill="#94a3b8" />
+                                <line x1="282" y1="0" x2="324" y2="0" stroke="#0051d5" stroke-width="1.8" />
+                                <circle cx="305" cy="0" r="3" fill="#0051d5" />
+                            </g>
+
+                            <!-- Remaining Trials 11-22 simplified for spacing -->
+                            <g transform="translate(0, 210)">
+                                <text x="15" y="4" class="ui-text text-[9px] font-semibold fill-slate-600">Trial
+                                    11</text>
+                                <line x1="268" y1="0" x2="362" y2="0" stroke="#cbd5e1" stroke-dasharray="2,2"
+                                    stroke-width="1" />
+                                <circle cx="314" cy="0" r="2.5" fill="#94a3b8" />
+                                <line x1="282" y1="0" x2="341" y2="0" stroke="#0051d5" stroke-width="1.8" />
+                                <circle cx="311" cy="0" r="3" fill="#0051d5" />
+                            </g>
+
+                            <g transform="translate(0, 228)">
+                                <text x="15" y="4" class="ui-text text-[9px] font-semibold fill-slate-600">Trial
+                                    12</text>
+                                <line x1="281" y1="0" x2="391" y2="0" stroke="#cbd5e1" stroke-dasharray="2,2"
+                                    stroke-width="1" />
+                                <circle cx="335" cy="0" r="2.5" fill="#94a3b8" />
+                                <line x1="288" y1="0" x2="353" y2="0" stroke="#0051d5" stroke-width="1.8" />
+                                <circle cx="315" cy="0" r="3" fill="#0051d5" />
+                            </g>
+
+                            <g transform="translate(0, 246)">
+                                <text x="15" y="4" class="ui-text text-[9px] font-semibold fill-slate-600">Trial
+                                    13</text>
+                                <line x1="210" y1="0" x2="410" y2="0" stroke="#cbd5e1" stroke-dasharray="2,2"
+                                    stroke-width="1" />
+                                <circle cx="269" cy="0" r="2.5" fill="#94a3b8" />
+                                <line x1="264" y1="0" x2="341" y2="0" stroke="#0051d5" stroke-width="1.8" />
+                                <circle cx="306" cy="0" r="3" fill="#0051d5" />
+                            </g>
+
+                            <g transform="translate(0, 264)">
+                                <text x="15" y="4" class="ui-text text-[9px] font-semibold fill-slate-600">Trial
+                                    14</text>
+                                <line x1="292" y1="0" x2="390" y2="0" stroke="#cbd5e1" stroke-dasharray="2,2"
+                                    stroke-width="1" />
+                                <circle cx="374" cy="0" r="2.5" fill="#94a3b8" />
+                                <line x1="299" y1="0" x2="372" y2="0" stroke="#0051d5" stroke-width="1.8" />
+                                <circle cx="326" cy="0" r="3" fill="#0051d5" />
+                            </g>
+
+                            <g transform="translate(0, 282)">
+                                <text x="15" y="4" class="ui-text text-[9px] font-semibold fill-slate-600">Trial
+                                    15</text>
+                                <line x1="240" y1="0" x2="383" y2="0" stroke="#cbd5e1" stroke-dasharray="2,2"
+                                    stroke-width="1" />
+                                <circle cx="301" cy="0" r="2.5" fill="#94a3b8" />
+                                <line x1="273" y1="0" x2="341" y2="0" stroke="#0051d5" stroke-width="1.8" />
+                                <circle cx="309" cy="0" r="3" fill="#0051d5" />
+                            </g>
+
+                            <g transform="translate(0, 300)">
+                                <text x="15" y="4" class="ui-text text-[9px] font-semibold fill-slate-600">Trial
+                                    16</text>
+                                <line x1="258" y1="0" x2="384" y2="0" stroke="#cbd5e1" stroke-dasharray="2,2"
+                                    stroke-width="1" />
+                                <circle cx="324" cy="0" r="2.5" fill="#94a3b8" />
+                                <line x1="282" y1="0" x2="350" y2="0" stroke="#0051d5" stroke-width="1.8" />
+                                <circle cx="312" cy="0" r="3" fill="#0051d5" />
+                            </g>
+
+                            <g transform="translate(0, 318)">
+                                <text x="15" y="4" class="ui-text text-[9px] font-semibold fill-slate-600">Trial
+                                    17</text>
+                                <line x1="271" y1="0" x2="445" y2="0" stroke="#cbd5e1" stroke-dasharray="2,2"
+                                    stroke-width="1" />
+                                <circle cx="357" cy="0" r="2.5" fill="#94a3b8" />
+                                <line x1="284" y1="0" x2="360" y2="0" stroke="#0051d5" stroke-width="1.8" />
+                                <circle cx="315" cy="0" r="3" fill="#0051d5" />
+                            </g>
+
+                            <g transform="translate(0, 336)">
+                                <text x="15" y="4" class="ui-text text-[9px] font-semibold fill-slate-600">Trial
+                                    18</text>
+                                <line x1="211" y1="0" x2="475" y2="0" stroke="#cbd5e1" stroke-dasharray="2,2"
+                                    stroke-width="1" />
+                                <circle cx="379" cy="0" r="2.5" fill="#94a3b8" />
+                                <line x1="279" y1="0" x2="358" y2="0" stroke="#0051d5" stroke-width="1.8" />
+                                <circle cx="312" cy="0" r="3" fill="#0051d5" />
+                            </g>
+
+                            <g transform="translate(0, 354)">
+                                <text x="15" y="4" class="ui-text text-[9px] font-semibold fill-slate-600">Trial
+                                    19</text>
+                                <line x1="210" y1="0" x2="520" y2="0" stroke="#cbd5e1" stroke-dasharray="2,2"
+                                    stroke-width="1" />
+                                <circle cx="393" cy="0" r="2.5" fill="#94a3b8" />
+                                <line x1="276" y1="0" x2="358" y2="0" stroke="#0051d5" stroke-width="1.8" />
+                                <circle cx="312" cy="0" r="3" fill="#0051d5" />
+                            </g>
+
+                            <g transform="translate(0, 372)">
+                                <text x="15" y="4" class="ui-text text-[9px] font-semibold fill-slate-600">Trial
+                                    20</text>
+                                <line x1="250" y1="0" x2="378" y2="0" stroke="#cbd5e1" stroke-dasharray="2,2"
+                                    stroke-width="1" />
+                                <circle cx="314" cy="0" r="2.5" fill="#94a3b8" />
+                                <line x1="280" y1="0" x2="345" y2="0" stroke="#0051d5" stroke-width="1.8" />
+                                <circle cx="310" cy="0" r="3" fill="#0051d5" />
+                            </g>
+
+                            <g transform="translate(0, 390)">
+                                <text x="15" y="4" class="ui-text text-[9px] font-semibold fill-slate-600">Trial
+                                    21</text>
+                                <line x1="209" y1="0" x2="331" y2="0" stroke="#cbd5e1" stroke-dasharray="2,2"
+                                    stroke-width="1" />
+                                <circle cx="269" cy="0" r="2.5" fill="#94a3b8" />
+                                <line x1="263" y1="0" x2="329" y2="0" stroke="#0051d5" stroke-width="1.8" />
+                                <circle cx="303" cy="0" r="3" fill="#0051d5" />
+                            </g>
+
+                            <g transform="translate(0, 408)">
+                                <text x="15" y="4" class="ui-text text-[9px] font-semibold fill-slate-600">Trial
+                                    22</text>
+                                <line x1="209" y1="0" x2="329" y2="0" stroke="#cbd5e1" stroke-dasharray="2,2"
+                                    stroke-width="1" />
+                                <circle cx="267" cy="0" r="2.5" fill="#94a3b8" />
+                                <line x1="262" y1="0" x2="332" y2="0" stroke="#0051d5" stroke-width="1.8" />
+                                <circle cx="303" cy="0" r="3" fill="#0051d5" />
+                            </g>
+
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: Results -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-semibold mb-6 border-b pb-2 border-bayesian-border ui-text">
+                Results of the analysis and comparison to simpler methods
+            </h2>
+            <div class="prose max-w-none text-bayesian-text">
+                <p class="mb-6">
+                    The analysis of our meta-analysis model now follows exactly the same methodology as in the previous
+                    sections. First, the marginal posterior density of $\tau$ peaks at a nonzero value ($\tau \approx
+                    0.13$), although values near zero are clearly plausible, zero having a posterior density only about
+                    25% lower than that at the mode. Posterior quantiles for the effects $\theta_j$ for the 22 studies
+                    on the logit scale are displayed as the last columns of <a href="#trials-table"
+                        class="text-bayesian-blue hover:underline">Table 5.4</a>.
+                </p>
+                <p class="mb-6">
+                    Since the posterior distribution of $\tau$ is concentrated around values that are small relative to
+                    the sampling standard deviations of the data (compare the posterior median of $\tau$, $0.13$, in
+                    Table 5.5 to the values of $\sigma_j$ in the fourth column of <a href="#trials-table"
+                        class="text-bayesian-blue hover:underline">Table 5.4</a>), **considerable shrinkage is evident**
+                    in the Bayes estimates, especially for studies with low internal precision (for example, studies 1,
+                    6, and 18). The substantial degree of homogeneity between the studies is further reflected in the
+                    large reductions in posterior variance obtained when going from the study-specific estimates to the
+                    Bayesian ones, which borrow strength from each other. Using an approximate approach fixing $\tau$
+                    would yield standard deviations that would be too small compared to the fully Bayesian ones.
+                </p>
+                <p class="mb-6">
+                    Table 5.5 gives a summary of posterior inferences for the hyperparameters $\mu$ and $\tau$ and the
+                    predicted effect, $\tilde{\theta}_j$, in a hypothetical future study. The approximate 95% highest
+                    posterior density interval for $\mu$ is $[-0.37, -0.11]$, or $[0.69, 0.90]$ when converted to the
+                    odds ratio scale (that is, exponentiated). In contrast, the 95% posterior interval that results from
+                    complete pooling—that is, assuming $\tau = 0$—is considerably narrower, $[0.70, 0.85]$.
+                </p>
+            </div>
+        </section>
+
+        <!-- Feynman Explainer Card -->
+        <section class="mb-16">
+            <!-- Complete Pooling vs. Hierarchical Uncertainty Explainer Box (Feynman Style) -->
+            <div class="academic-card p-6 my-8 bg-white shadow-soft not-prose">
+                <h4 class="font-semibold text-bayesian-navy ui-text mb-4 text-lg">
+                    Complete Pooling vs. Hierarchical Uncertainty: Why Model Selection Matters
+                </h4>
+
+                <p class="text-sm text-bayesian-text mb-6 leading-relaxed">
+                    Under complete pooling, the 95% interval for the odds ratio is $[0.70, 0.85]$, which was called an
+                    "unusually narrow range of uncertainty" in original debates. The hierarchical model widens this to
+                    $[0.69, 0.90]$ for the mean $\mu$, and $[0.56, 1.12]$ (on odds scale) for a **predicted new study**
+                    ($\tilde{\theta}_j$). Why does this happen?
+                </p>
+
+                <div class="space-y-4">
+                    <div class="p-4 bg-bayesian-surfaceAlt rounded-lg border border-bayesian-border text-xs md:text-sm">
+                        <span class="font-bold text-bayesian-navy block mb-1">1. The Fallacy of &tau; = 0</span>
+                        <p class="text-bayesian-text leading-relaxed">
+                            Assuming all studies are identical ($\tau = 0$) artificially inflates our sample size by
+                            pretending we have one massive, homogeneous study. If $\tau$ might actually be as high as
+                            $0.3$, we are understating our uncertainty by ignoring study-to-study variations.
+                        </p>
+                    </div>
+
+                    <div class="p-4 bg-bayesian-surfaceAlt rounded-lg border border-bayesian-border text-xs md:text-sm">
+                        <span class="font-bold text-bayesian-navy block mb-1">2. Predicting the Future
+                            (&tilde;&theta;_j)</span>
+                        <p class="text-bayesian-text leading-relaxed">
+                            If we want to apply this treatment to a <em>new</em> hospital or patient population where a
+                            study hasn't been done yet, our uncertainty isn't just about the mean effect $\mu$. It must
+                            also include the study-to-study variance $\tau^2$. When we add $\tau^2$ to our prediction
+                            interval, the uncertainty expands, showing a $\approx 10\%$ probability that the treatment
+                            could actually increase mortality ($\tilde{\theta}_j > 0$).
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: Table 5.5 Summary -->
+        <section class="mb-16">
+            <h3 class="text-xl font-semibold mb-4 text-bayesian-navy ui-text">Table 5.5: Posterior Inferences for
+                Hyperparameters</h3>
+            <div class="academic-card p-6 my-8 bg-white shadow-soft not-prose">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-xs md:text-sm">
+                        <thead>
+                            <tr class="border-b border-bayesian-border bg-slate-50">
+                                <th class="py-2.5 px-4 font-semibold text-bayesian-navy ui-text">Estimand</th>
+                                <th class="py-2.5 px-4 font-semibold text-bayesian-navy ui-text text-right">2.5%</th>
+                                <th class="py-2.5 px-4 font-semibold text-bayesian-navy ui-text text-right">25%</th>
+                                <th class="py-2.5 px-4 font-semibold text-bayesian-navy ui-text text-right">Median</th>
+                                <th class="py-2.5 px-4 font-semibold text-bayesian-navy ui-text text-right">75%</th>
+                                <th class="py-2.5 px-4 font-semibold text-bayesian-navy ui-text text-right">97.5%</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr>
+                                <td class="py-2.5 px-4 font-bold text-bayesian-navy">Mean, $\mu$</td>
+                                <td class="py-2.5 px-4 text-right text-slate-600">-0.37</td>
+                                <td class="py-2.5 px-4 text-right text-slate-600">-0.29</td>
+                                <td class="py-2.5 px-4 text-right font-semibold text-bayesian-navy">-0.25</td>
+                                <td class="py-2.5 px-4 text-right text-slate-600">-0.20</td>
+                                <td class="py-2.5 px-4 text-right text-slate-600">-0.11</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2.5 px-4 font-bold text-bayesian-navy">Standard deviation, $\tau$</td>
+                                <td class="py-2.5 px-4 text-right text-slate-600">0.02</td>
+                                <td class="py-2.5 px-4 text-right text-slate-600">0.08</td>
+                                <td class="py-2.5 px-4 text-right font-semibold text-bayesian-navy">0.13</td>
+                                <td class="py-2.5 px-4 text-right text-slate-600">0.18</td>
+                                <td class="py-2.5 px-4 text-right text-slate-600">0.31</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2.5 px-4 font-bold text-bayesian-navy">Predicted effect,
+                                    $\tilde{\theta}_j$</td>
+                                <td class="py-2.5 px-4 text-right text-slate-600">-0.58</td>
+                                <td class="py-2.5 px-4 text-right text-slate-600">-0.34</td>
+                                <td class="py-2.5 px-4 text-right font-semibold text-bayesian-navy">-0.25</td>
+                                <td class="py-2.5 px-4 text-right text-slate-600">-0.17</td>
+                                <td class="py-2.5 px-4 text-right text-slate-600">0.11</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: Table 5.4 Full Data -->
+        <section class="mb-16">
+            <h3 class="text-xl font-semibold mb-4 text-bayesian-navy ui-text">Table 5.4: Mortality in 22 Clinical Trials
+                and Posterior Quantiles</h3>
+            <div class="academic-card p-6 my-8 bg-white shadow-soft not-prose">
+                <div class="overflow-x-auto">
+                    <table id="trials-table" class="w-full text-left border-collapse text-xs md:text-sm">
+                        <thead>
+                            <tr class="border-b border-bayesian-border bg-slate-50 select-none">
+                                <th class="py-2.5 px-3 font-semibold text-bayesian-navy ui-text cursor-pointer hover:bg-slate-100 transition-colors"
+                                    rowspan="2" onclick="sortTable(0)">
+                                    Study $j$ <span class="text-[10px] text-bayesian-slate ml-0.5"
+                                        id="sort-icon-0">↕</span>
+                                </th>
+                                <th class="py-2.5 px-3 font-semibold text-bayesian-navy ui-text text-center border-b border-slate-100"
+                                    colspan="2">Raw Data (deaths / total)</th>
+                                <th class="py-2.5 px-3 font-semibold text-bayesian-navy ui-text text-center border-b border-slate-100"
+                                    colspan="2">Normal Approximation</th>
+                                <th class="py-2.5 px-3 font-semibold text-bayesian-navy ui-text text-center border-b border-slate-100"
+                                    colspan="5">Posterior Quantiles of $\theta_j$</th>
+                            </tr>
+                            <tr class="border-b border-bayesian-border bg-slate-50 select-none text-[11px]">
+                                <th class="py-2 px-2 font-semibold text-bayesian-navy ui-text text-center cursor-pointer hover:bg-slate-100 transition-colors"
+                                    onclick="sortTable(1)">
+                                    Control <span class="text-[9px] text-bayesian-slate" id="sort-icon-1">↕</span>
+                                </th>
+                                <th class="py-2 px-2 font-semibold text-bayesian-navy ui-text text-center cursor-pointer hover:bg-slate-100 transition-colors"
+                                    onclick="sortTable(2)">
+                                    Treated <span class="text-[9px] text-bayesian-slate" id="sort-icon-2">↕</span>
+                                </th>
+                                <th class="py-2 px-2 font-semibold text-bayesian-navy ui-text text-right cursor-pointer hover:bg-slate-100 transition-colors"
+                                    onclick="sortTable(3)">
+                                    $y_j$ <span class="text-[9px] text-bayesian-slate" id="sort-icon-3">↕</span>
+                                </th>
+                                <th class="py-2 px-2 font-semibold text-bayesian-navy ui-text text-right cursor-pointer hover:bg-slate-100 transition-colors"
+                                    onclick="sortTable(4)">
+                                    $\sigma_j$ <span class="text-[9px] text-bayesian-slate" id="sort-icon-4">↕</span>
+                                </th>
+                                <th class="py-2 px-2 font-semibold text-bayesian-navy ui-text text-right cursor-pointer hover:bg-slate-100 transition-colors"
+                                    onclick="sortTable(5)">
+                                    2.5% <span class="text-[9px] text-bayesian-slate" id="sort-icon-5">↕</span>
+                                </th>
+                                <th class="py-2 px-2 font-semibold text-bayesian-navy ui-text text-right cursor-pointer hover:bg-slate-100 transition-colors"
+                                    onclick="sortTable(6)">
+                                    25% <span class="text-[9px] text-bayesian-slate" id="sort-icon-6">↕</span>
+                                </th>
+                                <th class="py-2 px-2 font-semibold text-bayesian-navy ui-text text-right cursor-pointer hover:bg-slate-100 transition-colors"
+                                    onclick="sortTable(7)">
+                                    Median <span class="text-[9px] text-bayesian-slate" id="sort-icon-7">↕</span>
+                                </th>
+                                <th class="py-2 px-2 font-semibold text-bayesian-navy ui-text text-right cursor-pointer hover:bg-slate-100 transition-colors"
+                                    onclick="sortTable(8)">
+                                    75% <span class="text-[9px] text-bayesian-slate" id="sort-icon-8">↕</span>
+                                </th>
+                                <th class="py-2 px-2 font-semibold text-bayesian-navy ui-text text-right cursor-pointer hover:bg-slate-100 transition-colors"
+                                    onclick="sortTable(9)">
+                                    97.5% <span class="text-[9px] text-bayesian-slate" id="sort-icon-9">↕</span>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 font-sans">
+                            <!-- Raw clinical trials -->
+                            <tr>
+                                <td class="py-2 px-3 font-bold text-bayesian-navy">1</td>
+                                <td class="py-2 px-2 text-center text-slate-600">3 / 39</td>
+                                <td class="py-2 px-2 text-center text-slate-600">3 / 38</td>
+                                <td class="py-2 px-2 text-right text-slate-600">0.028</td>
+                                <td class="py-2 px-2 text-right text-slate-600">0.850</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.57</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.33</td>
+                                <td class="py-2 px-2 text-right font-semibold text-bayesian-navy">-0.24</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.16</td>
+                                <td class="py-2 px-2 text-right text-slate-600">0.12</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 px-3 font-bold text-bayesian-navy">2</td>
+                                <td class="py-2 px-2 text-center text-slate-600">14 / 116</td>
+                                <td class="py-2 px-2 text-center text-slate-600">7 / 114</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.741</td>
+                                <td class="py-2 px-2 text-right text-slate-600">0.483</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.64</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.37</td>
+                                <td class="py-2 px-2 text-right font-semibold text-bayesian-navy">-0.28</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.20</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.00</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 px-3 font-bold text-bayesian-navy">3</td>
+                                <td class="py-2 px-2 text-center text-slate-600">11 / 93</td>
+                                <td class="py-2 px-2 text-center text-slate-600">5 / 69</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.541</td>
+                                <td class="py-2 px-2 text-right text-slate-600">0.565</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.60</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.35</td>
+                                <td class="py-2 px-2 text-right font-semibold text-bayesian-navy">-0.26</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.18</td>
+                                <td class="py-2 px-2 text-right text-slate-600">0.05</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 px-3 font-bold text-bayesian-navy">4</td>
+                                <td class="py-2 px-2 text-center text-slate-600">127 / 1520</td>
+                                <td class="py-2 px-2 text-center text-slate-600">102 / 1533</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.246</td>
+                                <td class="py-2 px-2 text-right text-slate-600">0.138</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.45</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.31</td>
+                                <td class="py-2 px-2 text-right font-semibold text-bayesian-navy">-0.25</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.19</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.05</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 px-3 font-bold text-bayesian-navy">5</td>
+                                <td class="py-2 px-2 text-center text-slate-600">27 / 365</td>
+                                <td class="py-2 px-2 text-center text-slate-600">28 / 355</td>
+                                <td class="py-2 px-2 text-right text-slate-600">0.069</td>
+                                <td class="py-2 px-2 text-right text-slate-600">0.281</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.43</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.28</td>
+                                <td class="py-2 px-2 text-right font-semibold text-bayesian-navy">-0.21</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.11</td>
+                                <td class="py-2 px-2 text-right text-slate-600">0.15</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 px-3 font-bold text-bayesian-navy">6</td>
+                                <td class="py-2 px-2 text-center text-slate-600">6 / 52</td>
+                                <td class="py-2 px-2 text-center text-slate-600">4 / 59</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.584</td>
+                                <td class="py-2 px-2 text-right text-slate-600">0.676</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.62</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.35</td>
+                                <td class="py-2 px-2 text-right font-semibold text-bayesian-navy">-0.26</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.18</td>
+                                <td class="py-2 px-2 text-right text-slate-600">0.05</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 px-3 font-bold text-bayesian-navy">7</td>
+                                <td class="py-2 px-2 text-center text-slate-600">152 / 939</td>
+                                <td class="py-2 px-2 text-center text-slate-600">98 / 945</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.512</td>
+                                <td class="py-2 px-2 text-right text-slate-600">0.139</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.61</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.43</td>
+                                <td class="py-2 px-2 text-right font-semibold text-bayesian-navy">-0.36</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.28</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.17</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 px-3 font-bold text-bayesian-navy">8</td>
+                                <td class="py-2 px-2 text-center text-slate-600">48 / 471</td>
+                                <td class="py-2 px-2 text-center text-slate-600">60 / 632</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.079</td>
+                                <td class="py-2 px-2 text-right text-slate-600">0.204</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.43</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.28</td>
+                                <td class="py-2 px-2 text-right font-semibold text-bayesian-navy">-0.21</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.13</td>
+                                <td class="py-2 px-2 text-right text-slate-600">0.08</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 px-3 font-bold text-bayesian-navy">9</td>
+                                <td class="py-2 px-2 text-center text-slate-600">37 / 282</td>
+                                <td class="py-2 px-2 text-center text-slate-600">25 / 278</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.424</td>
+                                <td class="py-2 px-2 text-right text-slate-600">0.274</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.58</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.36</td>
+                                <td class="py-2 px-2 text-right font-semibold text-bayesian-navy">-0.28</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.20</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.02</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 px-3 font-bold text-bayesian-navy">10</td>
+                                <td class="py-2 px-2 text-center text-slate-600">188 / 1921</td>
+                                <td class="py-2 px-2 text-center text-slate-600">138 / 1916</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.335</td>
+                                <td class="py-2 px-2 text-right text-slate-600">0.117</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.48</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.35</td>
+                                <td class="py-2 px-2 text-right font-semibold text-bayesian-navy">-0.29</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.23</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.13</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 px-3 font-bold text-bayesian-navy">11</td>
+                                <td class="py-2 px-2 text-center text-slate-600">52 / 583</td>
+                                <td class="py-2 px-2 text-center text-slate-600">64 / 873</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.213</td>
+                                <td class="py-2 px-2 text-right text-slate-600">0.195</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.48</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.31</td>
+                                <td class="py-2 px-2 text-right font-semibold text-bayesian-navy">-0.24</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.17</td>
+                                <td class="py-2 px-2 text-right text-slate-600">0.01</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 px-3 font-bold text-bayesian-navy">12</td>
+                                <td class="py-2 px-2 text-center text-slate-600">47 / 266</td>
+                                <td class="py-2 px-2 text-center text-slate-600">45 / 263</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.039</td>
+                                <td class="py-2 px-2 text-right text-slate-600">0.229</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.43</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.28</td>
+                                <td class="py-2 px-2 text-right font-semibold text-bayesian-navy">-0.21</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.12</td>
+                                <td class="py-2 px-2 text-right text-slate-600">0.11</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 px-3 font-bold text-bayesian-navy">13</td>
+                                <td class="py-2 px-2 text-center text-slate-600">16 / 293</td>
+                                <td class="py-2 px-2 text-center text-slate-600">9 / 291</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.593</td>
+                                <td class="py-2 px-2 text-right text-slate-600">0.425</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.63</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.36</td>
+                                <td class="py-2 px-2 text-right font-semibold text-bayesian-navy">-0.28</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.20</td>
+                                <td class="py-2 px-2 text-right text-slate-600">0.01</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 px-3 font-bold text-bayesian-navy">14</td>
+                                <td class="py-2 px-2 text-center text-slate-600">45 / 883</td>
+                                <td class="py-2 px-2 text-center text-slate-600">57 / 858</td>
+                                <td class="py-2 px-2 text-right text-slate-600">0.282</td>
+                                <td class="py-2 px-2 text-right text-slate-600">0.205</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.34</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.22</td>
+                                <td class="py-2 px-2 text-right font-semibold text-bayesian-navy">-0.12</td>
+                                <td class="py-2 px-2 text-right text-slate-600">0.00</td>
+                                <td class="py-2 px-2 text-right text-slate-600">0.27</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 px-3 font-bold text-bayesian-navy">15</td>
+                                <td class="py-2 px-2 text-center text-slate-600">31 / 147</td>
+                                <td class="py-2 px-2 text-center text-slate-600">25 / 154</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.321</td>
+                                <td class="py-2 px-2 text-right text-slate-600">0.298</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.56</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.34</td>
+                                <td class="py-2 px-2 text-right font-semibold text-bayesian-navy">-0.26</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.19</td>
+                                <td class="py-2 px-2 text-right text-slate-600">0.01</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 px-3 font-bold text-bayesian-navy">16</td>
+                                <td class="py-2 px-2 text-center text-slate-600">38 / 213</td>
+                                <td class="py-2 px-2 text-center text-slate-600">33 / 207</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.135</td>
+                                <td class="py-2 px-2 text-right text-slate-600">0.261</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.48</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.30</td>
+                                <td class="py-2 px-2 text-right font-semibold text-bayesian-navy">-0.23</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.15</td>
+                                <td class="py-2 px-2 text-right text-slate-600">0.08</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 px-3 font-bold text-bayesian-navy">17</td>
+                                <td class="py-2 px-2 text-center text-slate-600">12 / 122</td>
+                                <td class="py-2 px-2 text-center text-slate-600">28 / 251</td>
+                                <td class="py-2 px-2 text-right text-slate-600">0.141</td>
+                                <td class="py-2 px-2 text-right text-slate-600">0.364</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.47</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.29</td>
+                                <td class="py-2 px-2 text-right font-semibold text-bayesian-navy">-0.21</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.12</td>
+                                <td class="py-2 px-2 text-right text-slate-600">0.17</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 px-3 font-bold text-bayesian-navy">18</td>
+                                <td class="py-2 px-2 text-center text-slate-600">6 / 154</td>
+                                <td class="py-2 px-2 text-center text-slate-600">8 / 151</td>
+                                <td class="py-2 px-2 text-right text-slate-600">0.322</td>
+                                <td class="py-2 px-2 text-right text-slate-600">0.553</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.51</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.30</td>
+                                <td class="py-2 px-2 text-right font-semibold text-bayesian-navy">-0.23</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.13</td>
+                                <td class="py-2 px-2 text-right text-slate-600">0.15</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 px-3 font-bold text-bayesian-navy">19</td>
+                                <td class="py-2 px-2 text-center text-slate-600">3 / 134</td>
+                                <td class="py-2 px-2 text-center text-slate-600">6 / 174</td>
+                                <td class="py-2 px-2 text-right text-slate-600">0.444</td>
+                                <td class="py-2 px-2 text-right text-slate-600">0.717</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.53</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.31</td>
+                                <td class="py-2 px-2 text-right font-semibold text-bayesian-navy">-0.23</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.14</td>
+                                <td class="py-2 px-2 text-right text-slate-600">0.15</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 px-3 font-bold text-bayesian-navy">20</td>
+                                <td class="py-2 px-2 text-center text-slate-600">40 / 218</td>
+                                <td class="py-2 px-2 text-center text-slate-600">32 / 209</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.218</td>
+                                <td class="py-2 px-2 text-right text-slate-600">0.260</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.50</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.32</td>
+                                <td class="py-2 px-2 text-right font-semibold text-bayesian-navy">-0.25</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.17</td>
+                                <td class="py-2 px-2 text-right text-slate-600">0.04</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 px-3 font-bold text-bayesian-navy">21</td>
+                                <td class="py-2 px-2 text-center text-slate-600">43 / 364</td>
+                                <td class="py-2 px-2 text-center text-slate-600">27 / 391</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.591</td>
+                                <td class="py-2 px-2 text-right text-slate-600">0.257</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.64</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.40</td>
+                                <td class="py-2 px-2 text-right font-semibold text-bayesian-navy">-0.31</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.23</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.09</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 px-3 font-bold text-bayesian-navy">22</td>
+                                <td class="py-2 px-2 text-center text-slate-600">39 / 674</td>
+                                <td class="py-2 px-2 text-center text-slate-600">22 / 680</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.608</td>
+                                <td class="py-2 px-2 text-right text-slate-600">0.272</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.65</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.40</td>
+                                <td class="py-2 px-2 text-right font-semibold text-bayesian-navy">-0.31</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.23</td>
+                                <td class="py-2 px-2 text-right text-slate-600">-0.07</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- References Section -->
+        <section class="mt-20 pt-8 border-t border-bayesian-border">
+            <div
+                class="p-6 bg-bayesian-surfaceAlt border border-bayesian-border rounded-lg text-sm text-bayesian-text leading-relaxed">
+                <h4 class="font-bold text-bayesian-navy text-base mb-3 ui-text">References & Study Disclaimer</h4>
+                <p class="mb-4">
+                    This page represents personal study notes and derivations written to clarify my own
+                    understanding of hierarchical Bayesian models. The content is based on:
+                </p>
+                <blockquote class="pl-4 border-l-2 border-bayesian-slate italic mb-4 text-bayesian-slate">
+                    Gelman, A., Carlin, J. B., Stern, H. S., Dunson, D. B., Vehtari, A., & Rubin, D. B. (2013).
+                    <em>Bayesian Data Analysis</em> (3rd ed.). CRC Press.
+                </blockquote>
+                <p class="mb-0">
+                    For official materials, including a copy of the textbook PDF for non-commercial use, please
+                    visit the official <a href="http://www.stat.columbia.edu/~gelman/book/" target="_blank"
+                        rel="noopener noreferrer" class="text-bayesian-blue hover:underline">Columbia University BDA
+                        Page</a> or explore Aki Vehtari's <a href="https://avehtari.github.io/BDA_course_Aalto/"
+                        target="_blank" rel="noopener noreferrer" class="text-bayesian-blue hover:underline">Aalto
+                        BDA Course Portal</a>. Any typos or mathematical errors on this page are my own.
+                </p>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Sorting JavaScript -->
+    <script>
+        let currentSortCol = -1;
+        let sortAscending = true;
+
+        function sortTable(colIndex) {
+            const table = document.getElementById("trials-table");
+            const tbody = table.querySelector("tbody");
+            const rows = Array.from(tbody.querySelectorAll("tr"));
+
+            // Toggle ascending/descending
+            if (currentSortCol === colIndex) {
+                sortAscending = !sortAscending;
+            } else {
+                currentSortCol = colIndex;
+                sortAscending = true;
+            }
+
+            // Update all icons
+            for (let i = 0; i <= 9; i++) {
+                const icon = document.getElementById("sort-icon-" + i);
+                if (icon) {
+                    if (i === colIndex) {
+                        icon.textContent = sortAscending ? "▲" : "▼";
+                        icon.className = "text-[9px] text-bayesian-blue font-bold ml-0.5";
+                    } else {
+                        icon.textContent = "↕";
+                        icon.className = "text-[9px] text-bayesian-slate opacity-50 ml-0.5";
+                    }
+                }
+            }
+
+            rows.sort((a, b) => {
+                let valA = a.cells[colIndex].textContent.trim();
+                let valB = b.cells[colIndex].textContent.trim();
+
+                // Sort function based on column type
+                if (colIndex === 0) {
+                    // Study index
+                    return sortAscending ? parseInt(valA) - parseInt(valB) : parseInt(valB) - parseInt(valA);
+                } else if (colIndex === 1 || colIndex === 2) {
+                    // Fraction string (deaths / total)
+                    const parseFraction = (str) => {
+                        const parts = str.split('/').map(Number);
+                        return parts.length === 2 ? parts[0] / parts[1] : 0;
+                    };
+                    return sortAscending ? parseFraction(valA) - parseFraction(valB) : parseFraction(valB) - parseFraction(valA);
+                } else {
+                    // Float values
+                    return sortAscending ? parseFloat(valA) - parseFloat(valB) : parseFloat(valB) - parseFloat(valA);
+                }
+            });
+
+            // Re-append rows in sorted order
+            tbody.innerHTML = "";
+            rows.forEach(row => tbody.appendChild(row));
+        }
+    </script>
+</body>
+
+</html>
