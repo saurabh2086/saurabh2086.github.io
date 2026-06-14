@@ -931,7 +931,7 @@
                             In Figure 5.6, you will notice that the line for <strong>School C</strong> (dashed orange line) crosses the lines for <strong>School E</strong> (purple) and <strong>School F</strong> (pink) as $\tau$ decreases toward 0. This seems counter-intuitive at first: if School C started with the lowest observed estimate ($-3.0$) and School E started higher ($-0.6$), how does School C end up <em>above</em> School E at intermediate values of $\tau$?
                         </p>
                         <p>
-                            The answer lies in the **measurement precision** (the standard errors $\sigma_j$ in Table 5.2):
+                            The answer lies in the <strong>measurement precision</strong> (the standard errors $\sigma_j$ in Table 5.2):
                         </p>
                         <ul class="list-disc pl-6 mb-4 space-y-2 text-xs md:text-sm">
                             <li><strong>School C:</strong> Observed effect of $-3.0$ but with a very large standard error of $16.3$. The model has very little confidence in this number.</li>
@@ -944,7 +944,7 @@
                             Because School C's data is so noisy (large standard error), the model discounts it rapidly, pulling its estimate toward the pooled average of $7.7$ very quickly. On the other hand, because School E's estimate is much more precise, the model resists pooling it, allowing its estimate to stick closer to its observed value of $-0.6$ for longer. 
                         </p>
                         <p>
-                            As we decrease $\tau$, School C zooms upward toward $7.7$ much faster than School E does, crossing it in the process. This is the hallmark of Bayesian shrinkage: **noisy estimates shrink faster than precise ones**.
+                            As we decrease $\tau$, School C zooms upward toward $7.7$ much faster than School E does, crossing it in the process. This is the hallmark of Bayesian shrinkage: <strong>noisy estimates shrink faster than precise ones</strong>.
                         </p>
                     </div>
                 </details>

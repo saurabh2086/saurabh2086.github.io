@@ -317,7 +317,7 @@
                         <p class="text-sm text-bayesian-text leading-relaxed mb-4">
                             The parameter $\tau$ does not have any simple conjugate prior because its marginal
                             likelihood depends in a complex way on the data. However, the inverse-gamma family is
-                            **conditionally conjugate** given the other parameters ($\mu, \theta$): if $\tau^2$ has an
+                            <strong>conditionally conjugate</strong> given the other parameters ($\mu, \theta$): if $\tau^2$ has an
                             inverse-gamma prior, its conditional posterior $p(\tau^2 \mid \theta, \mu, y)$ is also
                             inverse-gamma.
                         </p>
@@ -336,7 +336,7 @@
                             Distributions</h3>
                         <p class="text-sm text-bayesian-text leading-relaxed mb-4">
                             The half-$t$ family (constrained to be positive since scale $\tau \ge 0$) offers an
-                            excellent weakly informative family. A key member is the **half-Cauchy prior** with scale
+                            excellent weakly informative family. A key member is the <strong>half-Cauchy prior</strong> with scale
                             parameter $A$:
                             $$p(\tau) \propto \frac{1}{1 + (\tau/A)^2}, \quad \tau \ge 0$$
                         </p>
@@ -481,12 +481,12 @@
                     As shown in the charts:
                 </p>
                 <ul class="list-disc pl-6 mb-6 space-y-2 text-base">
-                    <li>The **Uniform prior on $\tau$** (left) allows the posterior to reflect the data, support values
+                    <li>The <strong>Uniform prior on $\tau$</strong> (left) allows the posterior to reflect the data, support values
                         below 20, and drop off in the tail. It does not constrain the posterior.</li>
-                    <li>The **Inverse-gamma(1, 1)** model (middle) heavily restricts the posterior, squeezing it to a
+                    <li>The <strong>Inverse-gamma(1, 1)</strong> model (middle) heavily restricts the posterior, squeezing it to a
                         narrow zone where the prior is concentrated. The posterior is dominated by the prior, not the
                         data.</li>
-                    <li>The **Inverse-gamma(0.001, 0.001)** model (right) spikes heavily near zero. This is because the
+                    <li>The <strong>Inverse-gamma(0.001, 0.001)</strong> model (right) spikes heavily near zero. This is because the
                         likelihood remains high near zero, and the massive prior spike pulls the posterior into a
                         degenerate spike at zero.</li>
                 </ul>
@@ -619,11 +619,11 @@
                     As displayed in Figure 5.10:
                 </p>
                 <ul class="list-disc pl-6 mb-6 space-y-2 text-base">
-                    <li>The **Uniform prior** (left) produces a posterior with an extremely heavy right tail. It
+                    <li>The <strong>Uniform prior</strong> (left) produces a posterior with an extremely heavy right tail. It
                         contains values of $\tau > 100$ that are clinically and educationally impossible. This leads to
                         severe underpooling, meaning we treat the three schools as completely separate, losing the
                         benefits of hierarchical modeling.</li>
-                    <li>The **Half-Cauchy prior with scale $A=25$** (right) constrains the posterior, gracefully cutting
+                    <li>The <strong>Half-Cauchy prior with scale $A=25$</strong> (right) constrains the posterior, gracefully cutting
                         off the unrealistic upper tail while remaining flat and non-restrictive in the high-likelihood
                         region ($\tau < 50$). It regularizes the model without distorting the data's message.</li>
                 </ul>
