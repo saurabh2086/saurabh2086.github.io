@@ -118,6 +118,15 @@
                 Back to Index
             </a>
             <span class="text-bayesian-border">|</span>
+            <a href="ch5_section6.html"
+                class="inline-flex items-center text-sm font-semibold text-bayesian-slate hover:text-bayesian-navy transition-colors ui-text">
+                Section 5.6
+                <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 5l7 7-7 7"></path>
+                </svg>
+            </a>
+            <span class="text-bayesian-border">|</span>
             <a href="../../index.html"
                 class="inline-flex items-center text-sm font-semibold text-bayesian-slate hover:text-bayesian-navy transition-colors ui-text">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -617,26 +626,130 @@
                     model.
                 </p>
 
-                <div class="theorem-block my-8">
-                    <h4 class="text-sm font-bold text-bayesian-navy uppercase tracking-wider mb-3 ui-text">The
-                        Limitations of Extremes</h4>
-                    <ul class="list-disc pl-6 space-y-2 text-bayesian-text">
-                        <li>
-                            The separate analyses of the eight schools imply: <em>"the probability is $\frac{1}{2}$ that
-                                the true effect in A is more than $28.4$"</em>, a doubtful statement, considering the
-                            results for the other seven schools.
-                        </li>
-                        <li>
-                            On the other hand, the pooled model implies: <em>"the probability is $\frac{1}{2}$ that the
-                                true effect in A is less than $7.7$"</em>, which, despite the non-significant $\chi^2$
-                            test, seems an inaccurate summary of our knowledge.
-                        </li>
-                        <li>
-                            The pooled model also implies: <em>"the probability is $\frac{1}{2}$ that the true effect in
-                                A is less than the true effect in C"</em>, which is also difficult to justify given the
-                            data in Table 5.2.
-                        </li>
-                    </ul>
+                <!-- The Limitations of Extremes Explainer Card (Feynman Style + Graphical Illustration) -->
+                <div class="academic-card p-6 my-8 bg-white shadow-soft not-prose">
+                    <h4 class="font-semibold text-bayesian-navy ui-text mb-4 text-lg">
+                        The Limitations of Extremes: Why Both Models Fail
+                    </h4>
+                    
+                    <p class="text-sm text-bayesian-text mb-8 leading-relaxed">
+                        To see the danger of absolute thinking, let's critique the two extremes. Under the separate analysis, 
+                        the estimate for school A is $28.4 \pm 14.9$. Under complete pooling, it is $7.7 \pm 4.1$. Both models 
+                        make claims that are scientifically hard to justify.
+                    </p>
+
+                    <!-- Point 1 -->
+                    <div class="mb-10">
+                        <div class="p-4 bg-bayesian-surfaceAlt rounded-lg border border-bayesian-border mb-4">
+                            <span class="font-bold text-bayesian-navy text-sm block mb-2 ui-text">1. Separate (No Pooling) is Too Noisy</span>
+                            <p class="text-xs text-bayesian-text leading-relaxed mb-2">
+                                <strong>The claim:</strong> There is a 50% probability that the true coaching effect in School A ($\theta_A$) is 
+                                <em>even greater</em> than the observed $28.4$ points.
+                            </p>
+                            <p class="text-xs text-bayesian-slate leading-relaxed border-t border-slate-200 pt-2 italic">
+                                <strong>Why it's wrong:</strong> It treats School A in total isolation, ignoring the other seven schools. Since they all cluster much lower (pooled average of 7.7), School A's high score is almost certainly a positive statistical fluke. Ignoring this context leads to excessive optimism.
+                            </p>
+                        </div>
+                        
+                        <!-- Graph 1 -->
+                        <div class="flex justify-center p-4 bg-bayesian-surfaceAlt border border-bayesian-border rounded-lg">
+                            <svg class="w-full max-w-[600px] h-auto" viewBox="0 0 600 130" xmlns="http://www.w3.org/2000/svg">
+                                <rect width="600" height="130" fill="#f8fafc" rx="8" />
+                                <g transform="translate(10, 5)">
+                                    <line x1="30" y1="80" x2="570" y2="80" stroke="#cbd5e1" stroke-width="1" />
+                                    <path d="M 170,80 C 230,80 290,20 350,20 C 410,20 470,80 530,80" fill="none" stroke="#64748b" stroke-width="1.5" />
+                                    <path d="M 350,20 C 410,20 470,80 530,80 L 350,80 Z" fill="rgba(239, 68, 68, 0.08)" />
+                                    <line x1="350" y1="20" x2="350" y2="80" stroke="#ef4444" stroke-dasharray="2,2" stroke-width="1" />
+                                    <circle cx="228" cy="80" r="3.5" fill="#0051d5" opacity="0.6" />
+                                    <circle cx="162" cy="80" r="3.5" fill="#0051d5" opacity="0.6" />
+                                    <circle cx="222" cy="80" r="3.5" fill="#0051d5" opacity="0.6" />
+                                    <circle cx="174" cy="80" r="3.5" fill="#0051d5" opacity="0.6" />
+                                    <circle cx="186" cy="80" r="3.5" fill="#0051d5" opacity="0.6" />
+                                    <circle cx="288" cy="80" r="3.5" fill="#0051d5" opacity="0.6" />
+                                    <circle cx="252" cy="80" r="3.5" fill="#0051d5" opacity="0.6" />
+                                    <text x="350" y="95" class="font-sans text-[10px] fill-slate-500" text-anchor="middle">y_A = 28.4</text>
+                                    <text x="440" y="50" class="ui-text text-[9px] font-semibold fill-red-600" text-anchor="middle">Pr(θ_A > 28.4) = 50%</text>
+                                    <path d="M 162,85 L 162,95 L 288,95 L 288,85" fill="none" stroke="#0051d5" stroke-width="0.8" opacity="0.5" />
+                                    <text x="225" y="106" class="ui-text text-[9px] font-semibold fill-blue-700" text-anchor="middle">Other 7 Schools cluster here (mean = 7.7)</text>
+                                </g>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Point 2 -->
+                    <div class="mb-10">
+                        <div class="p-4 bg-bayesian-surfaceAlt rounded-lg border border-bayesian-border mb-4">
+                            <span class="font-bold text-bayesian-navy text-sm block mb-2 ui-text">2. Complete Pooling is Too Rigid</span>
+                            <p class="text-xs text-bayesian-text leading-relaxed mb-2">
+                                <strong>The claim:</strong> There is a 50% probability that School A's true effect is 
+                                <em>less than</em> the overall average of $7.7$ points.
+                            </p>
+                            <p class="text-xs text-bayesian-slate leading-relaxed border-t border-slate-200 pt-2 italic">
+                                <strong>Why it's wrong:</strong> It wipes out local data entirely. Even if School A got lucky, an observed 28-point boost is strong evidence that School A's true effect is above average. Forcing it down to 7.7 is too conservative and ignores real signal.
+                            </p>
+                        </div>
+                        
+                        <!-- Graph 2 -->
+                        <div class="flex justify-center p-4 bg-bayesian-surfaceAlt border border-bayesian-border rounded-lg">
+                            <svg class="w-full max-w-[600px] h-auto" viewBox="0 0 600 135" xmlns="http://www.w3.org/2000/svg">
+                                <rect width="600" height="135" fill="#f8fafc" rx="8" />
+                                <g transform="translate(10, 5)">
+                                    <line x1="30" y1="80" x2="570" y2="80" stroke="#cbd5e1" stroke-width="1" />
+                                    <path d="M 126,80 C 166,80 206,20 226,20 C 246,20 286,80 326,80" fill="none" stroke="#0051d5" stroke-width="2" />
+                                    <line x1="226" y1="20" x2="226" y2="80" stroke="#0051d5" stroke-dasharray="2,2" stroke-width="1" />
+                                    <text x="226" y="120" class="font-sans text-[10px] fill-blue-700" text-anchor="middle">Pooled Estimate = 7.7</text>
+                                    <circle cx="350" cy="80" r="4.5" fill="#ef4444" />
+                                    <text x="350" y="95" class="font-sans text-[10px] fill-red-600" text-anchor="middle">Observed y_A = +28.4</text>
+                                    <circle cx="162" cy="80" r="4.5" fill="#ea580c" />
+                                    <text x="162" y="95" class="font-sans text-[10px] fill-orange-600" text-anchor="middle">Observed y_C = -3.0</text>
+                                    <text x="280" y="50" class="ui-text text-[9px] font-semibold fill-blue-700" text-anchor="middle">Pr(θ_A &lt; 7.7) = 50%</text>
+                                </g>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Point 3 -->
+                    <div>
+                        <div class="p-4 bg-bayesian-surfaceAlt rounded-lg border border-bayesian-border mb-4">
+                            <span class="font-bold text-bayesian-navy text-sm block mb-2 ui-text">3. The Relational Paradox</span>
+                            <p class="text-xs text-bayesian-text leading-relaxed mb-2">
+                                <strong>The claim:</strong> There is a 50% probability that School C (observed effect of $-3$) actually has a 
+                                <em>larger</em> true coaching effect than School A (observed effect of $+28$).
+                            </p>
+                            <p class="text-xs text-bayesian-slate leading-relaxed border-t border-slate-200 pt-2 italic">
+                                <strong>Why it's wrong:</strong> Complete pooling forces all schools to be identical ($\theta_A = \theta_C = 7.7$). This results in the absurd conclusion that the last-place school and first-place school are equally likely to be superior, contradicting physical reality.
+                            </p>
+                        </div>
+                        
+                        <!-- Graph 3 -->
+                        <div class="flex justify-center p-4 bg-bayesian-surfaceAlt border border-bayesian-border rounded-lg">
+                            <svg class="w-full max-w-[600px] h-auto" viewBox="0 0 600 110" xmlns="http://www.w3.org/2000/svg">
+                                <rect width="600" height="110" fill="#f8fafc" rx="8" />
+                                <g transform="translate(10, 5)">
+                                    <!-- Track C -->
+                                    <rect x="30" y="20" width="540" height="20" fill="rgba(226, 232, 240, 0.4)" rx="3" />
+                                    <line x1="30" y1="30" x2="570" y2="30" stroke="#e2e8f0" stroke-dasharray="4,4" />
+                                    <text x="45" y="34" class="ui-text text-[10px] font-bold fill-orange-700">Track C</text>
+                                    <circle cx="162" cy="30" r="6" fill="#ea580c" />
+                                    <text x="162" y="34" class="ui-text text-[9px] font-bold fill-white" text-anchor="middle">C</text>
+                                    <text x="162" y="15" class="font-sans text-[9px] fill-orange-600" text-anchor="middle">Finished here (y_C = -3)</text>
+                                    
+                                    <!-- Track A -->
+                                    <rect x="30" y="55" width="540" height="20" fill="rgba(226, 232, 240, 0.4)" rx="3" />
+                                    <line x1="30" y1="65" x2="570" y2="65" stroke="#e2e8f0" stroke-dasharray="4,4" />
+                                    <text x="45" y="69" class="ui-text text-[10px] font-bold fill-red-700">Track A</text>
+                                    <circle cx="350" cy="65" r="6" fill="#ef4444" />
+                                    <text x="350" y="69" class="ui-text text-[9px] font-bold fill-white" text-anchor="middle">A</text>
+                                    <text x="350" y="88" class="font-sans text-[9px] fill-red-600" text-anchor="middle">Finished here (y_A = 28)</text>
+
+                                    <!-- Connection / Question -->
+                                    <path d="M 168,30 L 220,47.5 L 344,65" fill="none" stroke="#ef4444" stroke-width="1" stroke-dasharray="2,2" />
+                                    <rect x="180" y="38" width="130" height="16" fill="#ffffff" rx="4" stroke="#e2e8f0" stroke-width="1" />
+                                    <text x="245" y="49" class="ui-text text-[9px] font-bold fill-red-600" text-anchor="middle">Pr(θ_A &lt; θ_C) = 50% ?</text>
+                                </g>
+                            </svg>
+                        </div>
+                    </div>
                 </div>
 
                 <p class="mb-6">
@@ -645,6 +758,474 @@
                     under the hierarchical model provides exactly that.
                 </p>
             </div>
+        </section>
+
+        <!-- Section: Posterior simulation under the hierarchical model -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-semibold mb-6 border-b pb-2 border-bayesian-border ui-text">
+                Posterior simulation under the hierarchical model
+            </h2>
+            <div class="prose max-w-none text-bayesian-text">
+                <p class="mb-6">
+                    Consequently, we compute the posterior distribution of $\theta_1, \ldots, \theta_8$, based on the normal model presented in <a href="ch5_section4.html" class="text-bayesian-blue hover:underline">Section 5.4</a>. (More discussion of the reasonableness of applying this model in this problem appears in Sections 6.5 and 17.4.) We draw from the posterior distribution for the Bayesian model by simulating the random variables $\tau$, $\mu$, and $\theta$, in that order, from their posterior distribution, as discussed at the end of the previous section. The sampling standard deviations, $\sigma_j$, are assumed known and equal to the values in Table 5.2, and we assume independent uniform prior densities on $\mu$ and $\tau$.
+                </p>
+            </div>
+        </section>
+
+        <!-- Section: Results -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-semibold mb-6 border-b pb-2 border-bayesian-border ui-text">
+                Results
+            </h2>
+            <div class="prose max-w-none text-bayesian-text">
+                <p class="mb-6">
+                    The marginal posterior density function, $p(\tau \mid y)$ from equation (5.21), is plotted in Figure 5.5. Values of $\tau$ near zero are most plausible; zero is the most likely value, values of $\tau$ larger than 10 are less than half as likely as $\tau = 0$, and $Pr(\tau > 25) \approx 0$. Inference regarding the marginal distributions of the other model parameters and the joint distribution are obtained from the simulated values. In the normal hierarchical model, however, we learn a great deal by considering the conditional posterior distributions given $\tau$ (and averaged over $\mu$).
+                </p>
+
+                <!-- Figure 5.5: Marginal Posterior Density p(tau | y) -->
+                <div class="academic-card p-6 my-8 bg-white shadow-soft not-prose">
+                    <h4 class="font-semibold text-bayesian-navy ui-text mb-2 text-base">Figure 5.5: Marginal Posterior Density of $\tau$</h4>
+                    <p class="text-xs text-bayesian-slate mb-4 leading-relaxed">
+                        The marginal posterior density $p(\tau \mid y)$ for the standard deviation of the population of school effects $\theta_j$.
+                    </p>
+                    <div class="my-4 p-4 bg-bayesian-surfaceAlt border border-bayesian-border rounded text-xs md:text-sm text-center overflow-x-auto text-bayesian-navy">
+                        $$p(\tau \mid y) \propto V_\mu^{1/2} \prod_{j=1}^J (\sigma_j^2 + \tau^2)^{-1/2} \exp\left( - \frac{(y_j - \hat{\mu})^2}{2(\sigma_j^2 + \tau^2)} \right)$$
+                        <span class="text-[10px] text-bayesian-slate block mt-2 font-sans">where $\hat{\mu} = \frac{\sum_{j=1}^J y_j / (\sigma_j^2 + \tau^2)}{\sum_{j=1}^J 1 / (\sigma_j^2 + \tau^2)}$ and $V_\mu = \left(\sum_{j=1}^J 1 / (\sigma_j^2 + \tau^2)\right)^{-1}$</span>
+                    </div>
+                    <div class="flex justify-center p-4 bg-bayesian-surfaceAlt border border-bayesian-border rounded-lg">
+                        <svg class="w-full max-w-[500px] h-auto" viewBox="0 0 500 220" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Background Grid Lines -->
+                            <line x1="50" y1="20" x2="50" y2="180" stroke="#e2e8f0" stroke-width="1" />
+                            <line x1="130" y1="20" x2="130" y2="180" stroke="#e2e8f0" stroke-width="1" />
+                            <line x1="210" y1="20" x2="210" y2="180" stroke="#e2e8f0" stroke-width="1" />
+                            <line x1="290" y1="20" x2="290" y2="180" stroke="#e2e8f0" stroke-width="1" />
+                            <line x1="370" y1="20" x2="370" y2="180" stroke="#e2e8f0" stroke-width="1" />
+                            <line x1="450" y1="20" x2="450" y2="180" stroke="#e2e8f0" stroke-width="1" />
+                            
+                            <line x1="50" y1="180" x2="450" y2="180" stroke="#94a3b8" stroke-width="1.5" />
+                            <line x1="50" y1="20" x2="50" y2="180" stroke="#94a3b8" stroke-width="1.5" />
+
+                            <!-- Curve for p(tau|y) - based on BDA3 Figure 5.5 curve -->
+                             <path d="M 50.0,30.0 L 54.0,30.1 L 58.0,30.3 L 62.0,30.7 L 66.0,31.2 L 70.0,31.9 L 74.0,32.7 L 78.0,33.7 L 82.0,34.9 L 86.0,36.2 L 90.0,37.6 L 94.0,39.2 L 98.0,41.0 L 102.0,42.9 L 106.0,44.9 L 110.0,47.1 L 114.0,49.4 L 118.0,51.8 L 122.0,54.4 L 126.0,57.0 L 130.0,59.8 L 134.0,62.6 L 138.0,65.5 L 142.0,68.5 L 146.0,71.6 L 150.0,74.7 L 154.0,77.8 L 158.0,80.9 L 162.0,84.1 L 166.0,87.3 L 170.0,90.4 L 174.0,93.6 L 178.0,96.7 L 182.0,99.8 L 186.0,102.8 L 190.0,105.8 L 194.0,108.8 L 198.0,111.6 L 202.0,114.5 L 206.0,117.2 L 210.0,119.9 L 214.0,122.5 L 218.0,125.0 L 222.0,127.5 L 226.0,129.8 L 230.0,132.1 L 234.0,134.3 L 238.0,136.4 L 242.0,138.5 L 246.0,140.5 L 250.0,142.3 L 254.0,144.2 L 258.0,145.9 L 262.0,147.6 L 266.0,149.1 L 270.0,150.7 L 274.0,152.1 L 278.0,153.5 L 282.0,154.8 L 286.0,156.1 L 290.0,157.3 L 294.0,158.4 L 298.0,159.5 L 302.0,160.5 L 306.0,161.5 L 310.0,162.5 L 314.0,163.4 L 318.0,164.2 L 322.0,165.0 L 326.0,165.8 L 330.0,166.5 L 334.0,167.2 L 338.0,167.8 L 342.0,168.4 L 346.0,169.0 L 350.0,169.6 L 354.0,170.1 L 358.0,170.6 L 362.0,171.1 L 366.0,171.5 L 370.0,172.0 L 374.0,172.4 L 378.0,172.7 L 382.0,173.1 L 386.0,173.4 L 390.0,173.8 L 394.0,174.1 L 398.0,174.4 L 402.0,174.7 L 406.0,174.9 L 410.0,175.2 L 414.0,175.4 L 418.0,175.6 L 422.0,175.8 L 426.0,176.0 L 430.0,176.2 L 434.0,176.4 L 438.0,176.6 L 442.0,176.7 L 446.0,176.9 L 450.0,177.0" 
+                                   fill="none" stroke="#0051d5" stroke-width="2.5" />
+
+                             <!-- Shading under the curve -->
+                             <path d="M 50.0,180.0 L 50.0,30.0 L 54.0,30.1 L 58.0,30.3 L 62.0,30.7 L 66.0,31.2 L 70.0,31.9 L 74.0,32.7 L 78.0,33.7 L 82.0,34.9 L 86.0,36.2 L 90.0,37.6 L 94.0,39.2 L 98.0,41.0 L 102.0,42.9 L 106.0,44.9 L 110.0,47.1 L 114.0,49.4 L 118.0,51.8 L 122.0,54.4 L 126.0,57.0 L 130.0,59.8 L 134.0,62.6 L 138.0,65.5 L 142.0,68.5 L 146.0,71.6 L 150.0,74.7 L 154.0,77.8 L 158.0,80.9 L 162.0,84.1 L 166.0,87.3 L 170.0,90.4 L 174.0,93.6 L 178.0,96.7 L 182.0,99.8 L 186.0,102.8 L 190.0,105.8 L 194.0,108.8 L 198.0,111.6 L 202.0,114.5 L 206.0,117.2 L 210.0,119.9 L 214.0,122.5 L 218.0,125.0 L 222.0,127.5 L 226.0,129.8 L 230.0,132.1 L 234.0,134.3 L 238.0,136.4 L 242.0,138.5 L 242.0,138.5 L 246.0,140.5 L 250.0,142.3 L 254.0,144.2 L 258.0,145.9 L 262.0,147.6 L 266.0,149.1 L 270.0,150.7 L 274.0,152.1 L 278.0,153.5 L 282.0,154.8 L 286.0,156.1 L 290.0,157.3 L 294.0,158.4 L 298.0,159.5 L 302.0,160.5 L 306.0,161.5 L 310.0,162.5 L 314.0,163.4 L 318.0,164.2 L 322.0,165.0 L 326.0,165.8 L 330.0,166.5 L 334.0,167.2 L 338.0,167.8 L 342.0,168.4 L 346.0,169.0 L 350.0,169.6 L 354.0,170.1 L 358.0,170.6 L 362.0,171.1 L 366.0,171.5 L 370.0,172.0 L 374.0,172.4 L 378.0,172.7 L 382.0,173.1 L 386.0,173.4 L 390.0,173.8 L 394.0,174.1 L 398.0,174.4 L 402.0,174.7 L 406.0,174.9 L 410.0,175.2 L 414.0,175.4 L 418.0,175.6 L 422.0,175.8 L 426.0,176.0 L 430.0,176.2 L 434.0,176.4 L 438.0,176.6 L 442.0,176.7 L 446.0,176.9 L 450.0,177.0 L 450.0,180.0 Z" 
+                                   fill="rgba(0, 81, 213, 0.05)" />
+
+                            <!-- Axis labels -->
+                            <text x="50" y="195" class="font-sans text-[10px] fill-slate-500" text-anchor="middle">0</text>
+                            <text x="130" y="195" class="font-sans text-[10px] fill-slate-500" text-anchor="middle">5</text>
+                            <text x="210" y="195" class="font-sans text-[10px] fill-slate-500" text-anchor="middle">10</text>
+                            <text x="290" y="195" class="font-sans text-[10px] fill-slate-500" text-anchor="middle">15</text>
+                            <text x="370" y="195" class="font-sans text-[10px] fill-slate-500" text-anchor="middle">20</text>
+                            <text x="450" y="195" class="font-sans text-[10px] fill-slate-500" text-anchor="middle">25</text>
+                            <text x="250" y="212" class="ui-text text-[11px] font-semibold fill-slate-700" text-anchor="middle">Between-School Standard Deviation, &tau;</text>
+
+                            <text x="20" y="100" class="ui-text text-[11px] font-semibold fill-slate-700" text-anchor="middle" transform="rotate(-90 20 100)">Posterior Density, p(&tau; | y)</text>
+                        </svg>
+                    </div>
+                    <div class="mt-4 text-center">
+                        <a href="generate_tau_density.py" target="_blank" class="inline-flex items-center gap-1.5 text-xs font-semibold text-bayesian-blue hover:underline ui-text">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                            </svg>
+                            View Python Script for Density Calculation
+                        </a>
+                    </div>
+                </div>
+
+                <p class="mb-6">
+                    The conditional posterior means $E(\theta_j \mid \tau, y)$ (averaging over $\mu$) are displayed as functions of $\tau$ in Figure 5.6; the vertical axis displays the scale for the $\theta_j$'s. Comparing Figure 5.6 to Figure 5.5, which has the same scale on the horizontal axis, we see that for most of the likely values of $\tau$, the estimated effects are relatively close together; as $\tau$ becomes larger, corresponding to more variability among schools, the estimates become more like the raw values in Table 5.2.
+                </p>
+
+                <!-- Figure 5.6: Conditional posterior means E(theta_j | tau, y) -->
+                <div class="academic-card p-6 my-8 bg-white shadow-soft not-prose">
+                    <h4 class="font-semibold text-bayesian-navy ui-text mb-2 text-base">Figure 5.6: Conditional Posterior Means of School Effects</h4>
+                    <p class="text-xs text-bayesian-slate mb-6 leading-relaxed">
+                        Conditional posterior means $E(\theta_j \mid \tau, y)$ as functions of the between-school standard deviation $\tau$. School C crosses others due to its higher measurement error.
+                    </p>
+                    <div class="flex justify-center p-4 bg-bayesian-surfaceAlt border border-bayesian-border rounded-lg">
+                        <svg class="w-full max-w-[600px] h-auto" viewBox="0 0 600 320" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Background Grid Lines -->
+                            <line x1="60" y1="20" x2="60" y2="280" stroke="#e2e8f0" stroke-width="1" />
+                            <line x1="160" y1="20" x2="160" y2="280" stroke="#e2e8f0" stroke-width="1" />
+                            <line x1="260" y1="20" x2="260" y2="280" stroke="#e2e8f0" stroke-width="1" />
+                            <line x1="360" y1="20" x2="360" y2="280" stroke="#e2e8f0" stroke-width="1" />
+                            <line x1="460" y1="20" x2="460" y2="280" stroke="#e2e8f0" stroke-width="1" />
+                            <line x1="560" y1="20" x2="560" y2="280" stroke="#e2e8f0" stroke-width="1" />
+
+                            <line x1="60" y1="280" x2="560" y2="280" stroke="#94a3b8" stroke-width="1.5" />
+                            <line x1="60" y1="20" x2="60" y2="280" stroke="#94a3b8" stroke-width="1.5" />
+
+                            <!-- Y-Axis labels (theta values from -10 to 30) -->
+                            <line x1="55" y1="280" x2="60" y2="280" stroke="#94a3b8" stroke-width="1.5" />
+                            <text x="48" y="283" class="font-sans text-[10px] fill-slate-500" text-anchor="end">-10</text>
+                            
+                            <line x1="55" y1="215" x2="60" y2="215" stroke="#94a3b8" stroke-width="1.5" />
+                            <text x="48" y="218" class="font-sans text-[10px] fill-slate-500" text-anchor="end">0</text>
+
+                            <line x1="55" y1="150" x2="60" y2="150" stroke="#94a3b8" stroke-width="1.5" />
+                            <text x="48" y="153" class="font-sans text-[10px] fill-slate-500" text-anchor="end">10</text>
+
+                            <line x1="55" y1="85" x2="60" y2="85" stroke="#94a3b8" stroke-width="1.5" />
+                            <text x="48" y="88" class="font-sans text-[10px] fill-slate-500" text-anchor="end">20</text>
+
+                            <line x1="55" y1="20" x2="60" y2="20" stroke="#94a3b8" stroke-width="1.5" />
+                            <text x="48" y="23" class="font-sans text-[10px] fill-slate-500" text-anchor="end">30</text>
+
+                            <!-- Horizontal line at 7.7 (pooled estimate) -->
+                            <line x1="60" y1="165" x2="560" y2="165" stroke="#64748b" stroke-dasharray="3,3" stroke-width="1" />
+                            <text x="555" y="160" class="font-sans text-[9px] fill-slate-400" text-anchor="end">Pooled Mean = 7.7</text>
+
+                            <!-- School trajectories -->
+                            <path d="M 60.0,165.6 L 85.0,164.5 L 110.0,161.4 L 135.0,156.6 L 160.0,150.5 L 185.0,143.5 L 210.0,136.0 L 235.0,128.4 L 260.0,120.9 L 285.0,113.7 L 310.0,106.9 L 335.0,100.6 L 360.0,94.8 L 385.0,89.5 L 410.0,84.6 L 435.0,80.3 L 460.0,76.3 L 485.0,72.8 L 510.0,69.5 L 535.0,66.6 L 560.0,64.0" fill="none" stroke="#ef4444" stroke-width="2" />
+                            <text x="565" y="66" class="ui-text text-[10px] font-bold fill-red-600">A</text>
+
+                            <path d="M 60.0,165.6 L 85.0,165.5 L 110.0,165.1 L 135.0,164.5 L 160.0,163.9 L 185.0,163.4 L 210.0,163.1 L 235.0,162.8 L 260.0,162.6 L 285.0,162.5 L 310.0,162.5 L 335.0,162.5 L 360.0,162.5 L 385.0,162.5 L 410.0,162.6 L 435.0,162.6 L 460.0,162.7 L 485.0,162.8 L 510.0,162.8 L 535.0,162.9 L 560.0,162.9" fill="none" stroke="#3b82f6" stroke-width="1.5" />
+                            <text x="565" y="165" class="ui-text text-[10px] font-bold fill-blue-600">B</text>
+
+                            <path d="M 60.0,165.6 L 85.0,165.9 L 110.0,166.7 L 135.0,168.1 L 160.0,170.1 L 185.0,172.5 L 210.0,175.3 L 235.0,178.3 L 260.0,181.5 L 285.0,184.8 L 310.0,188.0 L 335.0,191.2 L 360.0,194.2 L 385.0,197.0 L 410.0,199.6 L 435.0,202.1 L 460.0,204.4 L 485.0,206.5 L 510.0,208.4 L 535.0,210.2 L 560.0,211.8" fill="none" stroke="#ea580c" stroke-dasharray="3,1" stroke-width="2" />
+                            <text x="565" y="214" class="ui-text text-[10px] font-bold fill-orange-600">C</text>
+
+                            <path d="M 60.0,165.6 L 85.0,165.6 L 110.0,165.4 L 135.0,165.3 L 160.0,165.2 L 185.0,165.2 L 210.0,165.3 L 235.0,165.5 L 260.0,165.8 L 285.0,166.1 L 310.0,166.4 L 335.0,166.7 L 360.0,167.0 L 385.0,167.3 L 410.0,167.6 L 435.0,167.8 L 460.0,168.1 L 485.0,168.3 L 510.0,168.5 L 535.0,168.7 L 560.0,168.8" fill="none" stroke="#06b6d4" stroke-width="1.5" />
+                            <text x="565" y="171" class="ui-text text-[10px] font-bold fill-cyan-600">D</text>
+
+                            <path d="M 60.0,165.6 L 85.0,166.6 L 110.0,169.4 L 135.0,173.5 L 160.0,178.1 L 185.0,182.9 L 210.0,187.3 L 235.0,191.3 L 260.0,194.9 L 285.0,197.9 L 310.0,200.5 L 335.0,202.7 L 360.0,204.6 L 385.0,206.2 L 410.0,207.6 L 435.0,208.7 L 460.0,209.7 L 485.0,210.6 L 510.0,211.4 L 535.0,212.1 L 560.0,212.6" fill="none" stroke="#8b5cf6" stroke-width="1.5" />
+                            <text x="565" y="225" class="ui-text text-[10px] font-bold fill-purple-600">E</text>
+
+                            <path d="M 60.0,165.6 L 85.0,166.0 L 110.0,167.0 L 135.0,168.6 L 160.0,170.8 L 185.0,173.2 L 210.0,175.8 L 235.0,178.4 L 260.0,180.9 L 285.0,183.2 L 310.0,185.4 L 335.0,187.3 L 360.0,189.1 L 385.0,190.7 L 410.0,192.1 L 435.0,193.3 L 460.0,194.4 L 485.0,195.4 L 510.0,196.3 L 535.0,197.0 L 560.0,197.7" fill="none" stroke="#ec4899" stroke-width="1.5" />
+                            <text x="565" y="199" class="ui-text text-[10px] font-bold fill-pink-500">F</text>
+
+                            <path d="M 60.0,165.6 L 85.0,164.5 L 110.0,161.5 L 135.0,157.0 L 160.0,151.6 L 185.0,146.0 L 210.0,140.6 L 235.0,135.6 L 260.0,131.0 L 285.0,127.1 L 310.0,123.6 L 335.0,120.7 L 360.0,118.1 L 385.0,115.9 L 410.0,114.0 L 435.0,112.4 L 460.0,111.0 L 485.0,109.8 L 510.0,108.7 L 535.0,107.8 L 560.0,106.9" fill="none" stroke="#10b981" stroke-width="1.5" />
+                            <text x="565" y="109" class="ui-text text-[10px] font-bold fill-emerald-600">G</text>
+
+                            <path d="M 60.0,165.6 L 85.0,165.3 L 110.0,164.6 L 135.0,163.4 L 160.0,161.9 L 185.0,160.3 L 210.0,158.6 L 235.0,156.9 L 260.0,155.3 L 285.0,153.8 L 310.0,152.3 L 335.0,151.0 L 360.0,149.8 L 385.0,148.7 L 410.0,147.7 L 435.0,146.7 L 460.0,145.9 L 485.0,145.1 L 510.0,144.5 L 535.0,143.8 L 560.0,143.3" fill="none" stroke="#f59e0b" stroke-width="1.5" />
+                            <text x="565" y="145" class="ui-text text-[10px] font-bold fill-amber-600">H</text>
+
+                            <!-- Labels and Ticks -->
+                            <text x="310" y="312" class="ui-text text-[11px] font-semibold fill-slate-700" text-anchor="middle">Between-School Standard Deviation, &tau;</text>
+                            <text x="60" y="295" class="font-sans text-[10px] fill-slate-500" text-anchor="middle">0</text>
+                            <text x="160" y="295" class="font-sans text-[10px] fill-slate-500" text-anchor="middle">5</text>
+                            <text x="260" y="295" class="font-sans text-[10px] fill-slate-500" text-anchor="middle">10</text>
+                            <text x="360" y="295" class="font-sans text-[10px] fill-slate-500" text-anchor="middle">15</text>
+                            <text x="460" y="295" class="font-sans text-[10px] fill-slate-500" text-anchor="middle">20</text>
+                            <text x="560" y="295" class="font-sans text-[10px] fill-slate-500" text-anchor="middle">25</text>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Shrinkage Explainer Box (Feynman Style) -->
+                <details class="academic-card p-6 mb-8 cursor-pointer not-prose">
+                    <summary class="flex items-center justify-between font-semibold text-bayesian-blue ui-text select-none">
+                        <span class="flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                            </svg>
+                            Why Do the Trajectories Cross? (The Shrinkage Paradox)
+                        </span>
+                        <span class="text-xs text-bayesian-slate">Click to toggle explanation &darr;</span>
+                    </summary>
+                    <div class="mt-4 text-sm text-bayesian-text leading-relaxed space-y-4 cursor-default" onclick="event.stopPropagation()">
+                        <p>
+                            In Figure 5.6, you will notice that the line for <strong>School C</strong> (dashed orange line) crosses the lines for <strong>School E</strong> (purple) and <strong>School F</strong> (pink) as $\tau$ decreases toward 0. This seems counter-intuitive at first: if School C started with the lowest observed estimate ($-3.0$) and School E started higher ($-0.6$), how does School C end up <em>above</em> School E at intermediate values of $\tau$?
+                        </p>
+                        <p>
+                            The answer lies in the **measurement precision** (the standard errors $\sigma_j$ in Table 5.2):
+                        </p>
+                        <ul class="list-disc pl-6 mb-4 space-y-2 text-xs md:text-sm">
+                            <li><strong>School C:</strong> Observed effect of $-3.0$ but with a very large standard error of $16.3$. The model has very little confidence in this number.</li>
+                            <li><strong>School E:</strong> Observed effect of $-0.6$ with a much smaller standard error of $8.5$. The model has relatively high confidence in this number.</li>
+                        </ul>
+                        <p>
+                            When the between-school standard deviation $\tau$ is small, the model forces all estimates to pool strongly toward the overall average of $7.7$.
+                        </p>
+                        <p>
+                            Because School C's data is so noisy (large standard error), the model discounts it rapidly, pulling its estimate toward the pooled average of $7.7$ very quickly. On the other hand, because School E's estimate is much more precise, the model resists pooling it, allowing its estimate to stick closer to its observed value of $-0.6$ for longer. 
+                        </p>
+                        <p>
+                            As we decrease $\tau$, School C zooms upward toward $7.7$ much faster than School E does, crossing it in the process. This is the hallmark of Bayesian shrinkage: **noisy estimates shrink faster than precise ones**.
+                        </p>
+                    </div>
+                </details>
+
+                <p class="mb-6">
+                    The lines in Figure 5.7 show the conditional standard deviations, $sd(\theta_j \mid \tau, y)$, as a function of $\tau$. As $\tau$ increases, the population distribution allows the eight effects to be more different from each other, and hence the posterior uncertainty in each individual $\theta_j$ increases, approaching the standard deviations in Table 5.2 in the limit of $\tau \to \infty$. (The posterior means and standard deviations for the components $\theta_j$, given $\tau$, are computed using the mean and variance formulas (2.7) and (2.8), averaging over $\mu$; see Exercise 5.12.)
+                </p>
+
+                <!-- Figure 5.7: Conditional posterior standard deviations sd(theta_j | tau, y) -->
+                <div class="academic-card p-6 my-8 bg-white shadow-soft not-prose">
+                    <h4 class="font-semibold text-bayesian-navy ui-text mb-2 text-base">Figure 5.7: Conditional Posterior Standard Deviations of School Effects</h4>
+                    <p class="text-xs text-bayesian-slate mb-6 leading-relaxed">
+                        Conditional posterior standard deviations $sd(\theta_j \mid \tau, y)$ as functions of the between-school standard deviation $\tau$.
+                    </p>
+                    <div class="flex justify-center p-4 bg-bayesian-surfaceAlt border border-bayesian-border rounded-lg">
+                        <svg class="w-full max-w-[600px] h-auto" viewBox="0 0 600 320" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Background Grid Lines -->
+                            <line x1="60" y1="20" x2="60" y2="280" stroke="#e2e8f0" stroke-width="1" />
+                            <line x1="160" y1="20" x2="160" y2="280" stroke="#e2e8f0" stroke-width="1" />
+                            <line x1="260" y1="20" x2="260" y2="280" stroke="#e2e8f0" stroke-width="1" />
+                            <line x1="360" y1="20" x2="360" y2="280" stroke="#e2e8f0" stroke-width="1" />
+                            <line x1="460" y1="20" x2="460" y2="280" stroke="#e2e8f0" stroke-width="1" />
+                            <line x1="560" y1="20" x2="560" y2="280" stroke="#e2e8f0" stroke-width="1" />
+
+                            <line x1="60" y1="280" x2="560" y2="280" stroke="#94a3b8" stroke-width="1.5" />
+                            <line x1="60" y1="20" x2="60" y2="280" stroke="#94a3b8" stroke-width="1.5" />
+
+                            <!-- Y-Axis labels (standard deviation values from 0 to 20) -->
+                            <line x1="55" y1="280" x2="60" y2="280" stroke="#94a3b8" stroke-width="1.5" />
+                            <text x="48" y="283" class="font-sans text-[10px] fill-slate-500" text-anchor="end">0</text>
+                            
+                            <line x1="55" y1="215" x2="60" y2="215" stroke="#94a3b8" stroke-width="1.5" />
+                            <text x="48" y="218" class="font-sans text-[10px] fill-slate-500" text-anchor="end">5</text>
+
+                            <line x1="55" y1="150" x2="60" y2="150" stroke="#94a3b8" stroke-width="1.5" />
+                            <text x="48" y="153" class="font-sans text-[10px] fill-slate-500" text-anchor="end">10</text>
+
+                            <line x1="55" y1="85" x2="60" y2="85" stroke="#94a3b8" stroke-width="1.5" />
+                            <text x="48" y="88" class="font-sans text-[10px] fill-slate-500" text-anchor="end">15</text>
+
+                            <line x1="55" y1="20" x2="60" y2="20" stroke="#94a3b8" stroke-width="1.5" />
+                            <text x="48" y="23" class="font-sans text-[10px] fill-slate-500" text-anchor="end">20</text>
+
+                            <!-- School standard deviation curves -->
+                            <path d="M 60.0,227.0 L 85.0,224.6 L 110.0,218.1 L 135.0,209.1 L 160.0,199.0 L 185.0,188.7 L 210.0,178.8 L 235.0,169.6 L 260.0,161.2 L 285.0,153.6 L 310.0,146.9 L 335.0,140.9 L 360.0,135.6 L 385.0,130.9 L 410.0,126.8 L 435.0,123.2 L 460.0,119.9 L 485.0,117.1 L 510.0,114.5 L 535.0,112.3 L 560.0,110.2" fill="none" stroke="#ef4444" stroke-width="1.5" />
+                            <text x="565" y="112" class="ui-text text-[10px] font-bold fill-red-600">A</text>
+
+                            <path d="M 60.0,227.0 L 85.0,225.0 L 110.0,219.7 L 135.0,212.6 L 160.0,204.9 L 185.0,197.6 L 210.0,191.0 L 235.0,185.2 L 260.0,180.2 L 285.0,176.0 L 310.0,172.4 L 335.0,169.3 L 360.0,166.8 L 385.0,164.6 L 410.0,162.7 L 435.0,161.1 L 460.0,159.8 L 485.0,158.6 L 510.0,157.6 L 535.0,156.7 L 560.0,155.9" fill="none" stroke="#3b82f6" stroke-width="1.5" />
+                            <text x="565" y="157" class="ui-text text-[10px] font-bold fill-blue-600">B</text>
+
+                            <path d="M 60.0,227.0 L 85.0,224.5 L 110.0,217.8 L 135.0,208.5 L 160.0,198.0 L 185.0,187.2 L 210.0,176.6 L 235.0,166.7 L 260.0,157.5 L 285.0,149.1 L 310.0,141.5 L 335.0,134.7 L 360.0,128.6 L 385.0,123.2 L 410.0,118.3 L 435.0,114.0 L 460.0,110.1 L 485.0,106.7 L 510.0,103.6 L 535.0,100.9 L 560.0,98.4" fill="none" stroke="#ea580c" stroke-width="1.5" />
+                            <text x="565" y="100" class="ui-text text-[10px] font-bold fill-orange-600">C</text>
+
+                            <path d="M 60.0,227.0 L 85.0,224.9 L 110.0,219.3 L 135.0,211.7 L 160.0,203.5 L 185.0,195.5 L 210.0,188.2 L 235.0,181.7 L 260.0,176.1 L 285.0,171.2 L 310.0,167.1 L 335.0,163.6 L 360.0,160.5 L 385.0,158.0 L 410.0,155.8 L 435.0,153.8 L 460.0,152.2 L 485.0,150.8 L 510.0,149.5 L 535.0,148.4 L 560.0,147.5" fill="none" stroke="#06b6d4" stroke-width="1.5" />
+                            <text x="565" y="148" class="ui-text text-[10px] font-bold fill-cyan-600">D</text>
+
+                            <path d="M 60.0,227.0 L 85.0,225.3 L 110.0,221.0 L 135.0,215.2 L 160.0,209.1 L 185.0,203.4 L 210.0,198.4 L 235.0,194.1 L 260.0,190.6 L 285.0,187.6 L 310.0,185.2 L 335.0,183.1 L 360.0,181.5 L 385.0,180.0 L 410.0,178.8 L 435.0,177.8 L 460.0,177.0 L 485.0,176.2 L 510.0,175.6 L 535.0,175.0 L 560.0,174.5" fill="none" stroke="#8b5cf6" stroke-width="1.5" />
+                            <text x="565" y="175" class="ui-text text-[10px] font-bold fill-purple-600">E</text>
+
+                            <path d="M 60.0,227.0 L 85.0,224.8 L 110.0,219.1 L 135.0,211.3 L 160.0,202.8 L 185.0,194.6 L 210.0,186.9 L 235.0,180.1 L 260.0,174.2 L 285.0,169.0 L 310.0,164.6 L 335.0,160.8 L 360.0,157.6 L 385.0,154.8 L 410.0,152.4 L 435.0,150.3 L 460.0,148.5 L 485.0,147.0 L 510.0,145.6 L 535.0,144.4 L 560.0,143.4" fill="none" stroke="#ec4899" stroke-width="1.5" />
+                            <text x="565" y="144" class="ui-text text-[10px] font-bold fill-pink-500">F</text>
+
+                            <path d="M 60.0,227.0 L 85.0,225.0 L 110.0,219.6 L 135.0,212.3 L 160.0,204.6 L 185.0,197.0 L 210.0,190.2 L 235.0,184.3 L 260.0,179.1 L 285.0,174.7 L 310.0,171.0 L 335.0,167.9 L 360.0,165.2 L 385.0,162.9 L 410.0,161.0 L 435.0,159.3 L 460.0,157.9 L 485.0,156.6 L 510.0,155.5 L 535.0,154.6 L 560.0,153.7" fill="none" stroke="#10b981" stroke-width="1.5" />
+                            <text x="565" y="154" class="ui-text text-[10px] font-bold fill-emerald-600">G</text>
+
+                            <path d="M 60.0,227.0 L 85.0,224.5 L 110.0,217.7 L 135.0,208.1 L 160.0,197.3 L 185.0,186.0 L 210.0,175.0 L 235.0,164.4 L 260.0,154.6 L 285.0,145.5 L 310.0,137.2 L 335.0,129.7 L 360.0,122.9 L 385.0,116.7 L 410.0,111.2 L 435.0,106.3 L 460.0,101.8 L 485.0,97.9 L 510.0,94.3 L 535.0,91.0 L 560.0,88.1" fill="none" stroke="#f59e0b" stroke-width="1.5" />
+                            <text x="565" y="90" class="ui-text text-[10px] font-bold fill-amber-600">H</text>
+
+                            <!-- Labels and Ticks -->
+                            <text x="310" y="312" class="ui-text text-[11px] font-semibold fill-slate-700" text-anchor="middle">Between-School Standard Deviation, &tau;</text>
+                            <text x="60" y="295" class="font-sans text-[10px] fill-slate-500" text-anchor="middle">0</text>
+                            <text x="160" y="295" class="font-sans text-[10px] fill-slate-500" text-anchor="middle">5</text>
+                            <text x="260" y="295" class="font-sans text-[10px] fill-slate-500" text-anchor="middle">10</text>
+                            <text x="360" y="295" class="font-sans text-[10px] fill-slate-500" text-anchor="middle">15</text>
+                            <text x="460" y="295" class="font-sans text-[10px] fill-slate-500" text-anchor="middle">20</text>
+                            <text x="560" y="295" class="font-sans text-[10px] fill-slate-500" text-anchor="middle">25</text>
+                        </svg>
+                    </div>
+                </div>
+
+                <p class="mb-6">
+                    The general conclusion from an examination of Figures 5.5–5.7 is that an effect as large as 28.4 points in any school is unlikely. For the likely values of $\tau$, the estimates in all schools are substantially less than 28 points. For example, even at $\tau = 10$, the probability that the effect in school A is less than 28 points is $\Phi[(28 - 14.5)/9.1] = 93\%$, where $\Phi$ is the standard normal cumulative distribution function; the corresponding probabilities for the effects being less than 28 points in the other schools are 99.5%, 99.2%, 98.5%, 99.96%, 99.8%, 97%, and 98%.
+                </p>
+                <p class="mb-6">
+                    Of substantial importance, we do not obtain an accurate summary of the data if we condition on the posterior mode of $\tau$. The technique of conditioning on a modal value (for example, the maximum likelihood estimate) of a hyperparameter such as $\tau$ is often used in practice (at least as an approximation), but it ignores the uncertainty conveyed by the posterior distribution of the hyperparameter. At $\tau = 0$, the inference is that all experiments have the same size effect, 7.7 points, and the same standard error, 4.1 points. Figures 5.5–5.7 certainly suggest that this answer represents too much pulling together of the estimates in the eight schools. The problem is especially acute in this example because the posterior mode of $\tau$ is on the boundary of its parameter space. A joint posterior modal estimate of $(\theta_1, \ldots, \theta_J, \mu, \tau)$ suffers from even worse problems in general.
+                </p>
+            </div>
+        </section>
+
+        <!-- Section: Discussion -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-semibold mb-6 border-b pb-2 border-bayesian-border ui-text">
+                Discussion
+            </h2>
+            <div class="prose max-w-none text-bayesian-text">
+                <p class="mb-6">
+                    Table 5.3 summarizes the 200 simulated effect estimates for all eight schools. In one sense, these results are similar to the pooled 95% interval $[8 \pm 8]$, in that the eight Bayesian 95% intervals largely overlap and are median-centered between 5 and 10. In a second sense, the results in the table differ from the pooled estimate in a direction toward the eight independent answers: the 95% Bayesian intervals are each almost twice as wide as the one common interval and suggest substantially greater probabilities of effects larger than 16 points, especially in school A, and greater probabilities of negative effects, especially in school C. If greater precision were required in the posterior intervals, one could simulate more simulation draws; we use only 200 draws here to illustrate that a small simulation gives adequate inference for many practical purposes.
+                </p>
+
+                <!-- Table 5.3: Posterior Quantiles -->
+                <div class="academic-card p-6 my-8 bg-white shadow-soft not-prose">
+                    <h4 class="font-semibold text-bayesian-navy ui-text mb-4 text-base">Table 5.3: Summary of Posterior Simulations</h4>
+                    <p class="text-xs text-bayesian-slate mb-6 leading-relaxed">
+                        Summary of 200 simulations of the treatment effects in the eight schools (quantiles of $\theta_j$).
+                    </p>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse text-xs md:text-sm">
+                            <thead>
+                                <tr class="border-b border-bayesian-border bg-slate-50">
+                                    <th class="py-2.5 px-4 font-semibold text-bayesian-navy ui-text">School</th>
+                                    <th class="py-2.5 px-4 font-semibold text-bayesian-navy ui-text text-right">2.5%</th>
+                                    <th class="py-2.5 px-4 font-semibold text-bayesian-navy ui-text text-right">25%</th>
+                                    <th class="py-2.5 px-4 font-semibold text-bayesian-navy ui-text text-right">Median</th>
+                                    <th class="py-2.5 px-4 font-semibold text-bayesian-navy ui-text text-right">75%</th>
+                                    <th class="py-2.5 px-4 font-semibold text-bayesian-navy ui-text text-right">97.5%</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                <tr>
+                                    <td class="py-2.5 px-4 font-bold text-bayesian-navy">A</td>
+                                    <td class="py-2.5 px-4 text-right text-slate-600">-2</td>
+                                    <td class="py-2.5 px-4 text-right text-slate-600">7</td>
+                                    <td class="py-2.5 px-4 text-right font-semibold text-bayesian-navy">10</td>
+                                    <td class="py-2.5 px-4 text-right text-slate-600">16</td>
+                                    <td class="py-2.5 px-4 text-right text-slate-600">31</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-2.5 px-4 font-bold text-bayesian-navy">B</td>
+                                    <td class="py-2.5 px-4 text-right text-slate-600">-5</td>
+                                    <td class="py-2.5 px-4 text-right text-slate-600">3</td>
+                                    <td class="py-2.5 px-4 text-right font-semibold text-bayesian-navy">8</td>
+                                    <td class="py-2.5 px-4 text-right text-slate-600">12</td>
+                                    <td class="py-2.5 px-4 text-right text-slate-600">23</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-2.5 px-4 font-bold text-bayesian-navy">C</td>
+                                    <td class="py-2.5 px-4 text-right text-slate-600">-11</td>
+                                    <td class="py-2.5 px-4 text-right text-slate-600">2</td>
+                                    <td class="py-2.5 px-4 text-right font-semibold text-bayesian-navy">7</td>
+                                    <td class="py-2.5 px-4 text-right text-slate-600">11</td>
+                                    <td class="py-2.5 px-4 text-right text-slate-600">19</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-2.5 px-4 font-bold text-bayesian-navy">D</td>
+                                    <td class="py-2.5 px-4 text-right text-slate-600">-7</td>
+                                    <td class="py-2.5 px-4 text-right text-slate-600">4</td>
+                                    <td class="py-2.5 px-4 text-right font-semibold text-bayesian-navy">8</td>
+                                    <td class="py-2.5 px-4 text-right text-slate-600">11</td>
+                                    <td class="py-2.5 px-4 text-right text-slate-600">21</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-2.5 px-4 font-bold text-bayesian-navy">E</td>
+                                    <td class="py-2.5 px-4 text-right text-slate-600">-9</td>
+                                    <td class="py-2.5 px-4 text-right text-slate-600">1</td>
+                                    <td class="py-2.5 px-4 text-right font-semibold text-bayesian-navy">5</td>
+                                    <td class="py-2.5 px-4 text-right text-slate-600">10</td>
+                                    <td class="py-2.5 px-4 text-right text-slate-600">18</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-2.5 px-4 font-bold text-bayesian-navy">F</td>
+                                    <td class="py-2.5 px-4 text-right text-slate-600">-7</td>
+                                    <td class="py-2.5 px-4 text-right text-slate-600">2</td>
+                                    <td class="py-2.5 px-4 text-right font-semibold text-bayesian-navy">6</td>
+                                    <td class="py-2.5 px-4 text-right text-slate-600">10</td>
+                                    <td class="py-2.5 px-4 text-right text-slate-600">28</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-2.5 px-4 font-bold text-bayesian-navy">G</td>
+                                    <td class="py-2.5 px-4 text-right text-slate-600">-1</td>
+                                    <td class="py-2.5 px-4 text-right text-slate-600">7</td>
+                                    <td class="py-2.5 px-4 text-right font-semibold text-bayesian-navy">10</td>
+                                    <td class="py-2.5 px-4 text-right text-slate-600">15</td>
+                                    <td class="py-2.5 px-4 text-right text-slate-600">26</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-2.5 px-4 font-bold text-bayesian-navy">H</td>
+                                    <td class="py-2.5 px-4 text-right text-slate-600">-6</td>
+                                    <td class="py-2.5 px-4 text-right text-slate-600">3</td>
+                                    <td class="py-2.5 px-4 text-right font-semibold text-bayesian-navy">8</td>
+                                    <td class="py-2.5 px-4 text-right text-slate-600">13</td>
+                                    <td class="py-2.5 px-4 text-right text-slate-600">33</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <p class="mb-6">
+                    The ordering of the effects in the eight schools as suggested by Table 5.3 is essentially the same as would be obtained by the eight separate estimates. However, there are differences in the details; for example, the Bayesian probability that the effect in school A is as large as 28 points is less than 10%, which is substantially less than the 50% probability based on the separate estimate for school A.
+                </p>
+                <p class="mb-6">
+                    As an illustration of the simulation-based posterior results, 200 simulations of school A’s effect are shown in Figure 5.8a. Having simulated the parameter $\theta$, it is easy to ask more complicated questions of this model. For example, what is the posterior distribution of $\max\{\theta_j\}$, the effect of the most successful of the eight coaching programs? Figure 5.8b displays a histogram of 200 values from this posterior distribution and shows that only 22 draws are larger than 28.4; thus, $Pr(\max\{\theta_j\} > 28.4) \approx 22/200 = 11\%$. Since Figure 5.8a gives the marginal posterior distribution of the effect in school A, and Figure 5.8b gives the marginal posterior distribution of the largest effect no matter which school it is in, the latter figure has larger values. For another example, we can estimate $Pr(\theta_1 > \theta_3 \mid y)$, the posterior probability that the coaching program is more effective in school A than in school C, by the proportion of simulated draws of $\theta$ for which $\theta_1 > \theta_3$; the result is $141/200 = 0.705$.
+                </p>
+
+                <!-- Figure 5.8: Histograms -->
+                <div class="academic-card p-6 my-8 bg-white shadow-soft not-prose">
+                    <h4 class="font-semibold text-bayesian-navy ui-text mb-4 text-base">Figure 5.8: Posteriors of School A and the Maximum Effect</h4>
+                    <p class="text-xs text-bayesian-slate mb-6 leading-relaxed">
+                        Histograms of two quantities of interest computed from the 200 simulation draws: (a) the effect in school A, $\theta_1$; (b) the largest effect, $\max\{\theta_j\}$.
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 p-4 bg-bayesian-surfaceAlt border border-bayesian-border rounded-lg">
+                        <!-- Histogram (a): School A -->
+                        <div class="flex flex-col items-center">
+                            <span class="text-xs font-semibold text-bayesian-navy mb-2 ui-text">(a) School A Effect ($\theta_1$)</span>
+                            <svg class="w-full max-w-[280px] h-auto" viewBox="0 0 280 160" xmlns="http://www.w3.org/2000/svg">
+                                <line x1="30" y1="130" x2="260" y2="130" stroke="#94a3b8" stroke-width="1.5" />
+                                <line x1="30" y1="20" x2="30" y2="130" stroke="#94a3b8" stroke-width="1.5" />
+                                
+                                <!-- X-Axis Labels (from -20 to 60) -->
+                                <text x="30" y="142" class="font-sans text-[8px] fill-slate-500" text-anchor="middle">-20</text>
+                                <text x="87.5" y="142" class="font-sans text-[8px] fill-slate-500" text-anchor="middle">0</text>
+                                <text x="145" y="142" class="font-sans text-[8px] fill-slate-500" text-anchor="middle">20</text>
+                                <text x="202.5" y="142" class="font-sans text-[8px] fill-slate-500" text-anchor="middle">40</text>
+                                <text x="260" y="142" class="font-sans text-[8px] fill-slate-500" text-anchor="middle">60</text>
+
+                                <!-- Histogram Bars (Simulation approximation) -->
+                                <rect x="58.75" y="128" width="10" height="2" fill="#3b82f6" rx="1" />
+                                <rect x="70.25" y="124" width="10" height="6" fill="#3b82f6" rx="1" />
+                                <rect x="81.75" y="112" width="10" height="18" fill="#3b82f6" rx="1" />
+                                <rect x="93.25" y="90" width="10" height="40" fill="#3b82f6" rx="1" />
+                                <rect x="104.75" y="72" width="10" height="58" fill="#3b82f6" rx="1" />
+                                <rect x="116.25" y="58" width="10" height="72" fill="#3b82f6" rx="1" />
+                                <rect x="127.75" y="65" width="10" height="65" fill="#3b82f6" rx="1" />
+                                <rect x="139.25" y="78" width="10" height="52" fill="#3b82f6" rx="1" />
+                                <rect x="150.75" y="92" width="10" height="38" fill="#3b82f6" rx="1" />
+                                <rect x="162.25" y="105" width="10" height="25" fill="#3b82f6" rx="1" />
+                                <rect x="173.75" y="115" width="10" height="15" fill="#3b82f6" rx="1" />
+                                <rect x="185.25" y="122" width="10" height="8" fill="#3b82f6" rx="1" />
+                                <rect x="196.75" y="126" width="10" height="4" fill="#3b82f6" rx="1" />
+                                <rect x="208.25" y="129" width="10" height="1" fill="#3b82f6" rx="1" />
+                            </svg>
+                        </div>
+                        <!-- Histogram (b): max{theta_j} -->
+                        <div class="flex flex-col items-center">
+                            <span class="text-xs font-semibold text-bayesian-navy mb-2 ui-text">(b) Largest Effect ($\max\{\theta_j\}$)</span>
+                            <svg class="w-full max-w-[280px] h-auto" viewBox="0 0 280 160" xmlns="http://www.w3.org/2000/svg">
+                                <line x1="30" y1="130" x2="260" y2="130" stroke="#94a3b8" stroke-width="1.5" />
+                                <line x1="30" y1="20" x2="30" y2="130" stroke="#94a3b8" stroke-width="1.5" />
+                                
+                                <!-- X-Axis Labels (from 0 to 60) -->
+                                <text x="30" y="142" class="font-sans text-[8px] fill-slate-500" text-anchor="middle">0</text>
+                                <text x="106.6" y="142" class="font-sans text-[8px] fill-slate-500" text-anchor="middle">20</text>
+                                <text x="183.3" y="142" class="font-sans text-[8px] fill-slate-500" text-anchor="middle">40</text>
+                                <text x="260" y="142" class="font-sans text-[8px] fill-slate-500" text-anchor="middle">60</text>
+
+                                <!-- Histogram Bars (Simulation approximation - shifted right compared to A) -->
+                                <rect x="53.0" y="128" width="12" height="2" fill="#ef4444" rx="1" />
+                                <rect x="68.0" y="122" width="12" height="8" fill="#ef4444" rx="1" />
+                                <rect x="83.0" y="105" width="12" height="25" fill="#ef4444" rx="1" />
+                                <rect x="98.0" y="85" width="12" height="45" fill="#ef4444" rx="1" />
+                                <rect x="113.0" y="70" width="12" height="60" fill="#ef4444" rx="1" />
+                                <rect x="128.0" y="60" width="12" height="70" fill="#ef4444" rx="1" />
+                                <rect x="143.0" y="65" width="12" height="65" fill="#ef4444" rx="1" />
+                                <rect x="158.0" y="75" width="12" height="55" fill="#ef4444" rx="1" />
+                                <rect x="173.0" y="90" width="12" height="40" fill="#ef4444" rx="1" />
+                                <rect x="188.0" y="105" width="12" height="25" fill="#ef4444" rx="1" />
+                                <rect x="203.0" y="115" width="12" height="15" fill="#ef4444" rx="1" />
+                                <rect x="218.0" y="122" width="12" height="8" fill="#ef4444" rx="1" />
+                                <rect x="233.0" y="126" width="12" height="4" fill="#ef4444" rx="1" />
+                                <rect x="248.0" y="129" width="12" height="1" fill="#ef4444" rx="1" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="mb-6">
+                    To sum up, the Bayesian analysis of this example not only allows straightforward inferences about many parameters that may be of interest, but the hierarchical model is flexible enough to adapt to the data, thereby providing posterior inferences that account for the partial pooling as well as the uncertainty in the hyperparameters.
+                </p>
+
+                <!-- Next Section Navigation -->
+                <div class="mt-12 pt-6 border-t border-bayesian-border flex justify-end">
+                    <a href="ch5_section6.html" class="inline-flex items-center px-5 py-2.5 bg-bayesian-blue text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors shadow-soft ui-text text-sm">
+                        Next: Section 5.6 (Meta-Analysis)
+                        <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </section>
+
 
 
 
