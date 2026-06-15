@@ -193,6 +193,48 @@
                         Independence is a much stronger condition than exchangeability. It allows us to multiply probabilities directly.
                     </p>
                 </div>
+
+                <!-- Covariance Block -->
+                <div class="theorem-block">
+                    <h3 class="text-lg font-bold text-bayesian-blue mb-2 ui-text uppercase tracking-wider text-sm">First Principle: Covariance of Binary Indicators</h3>
+                    <p class="mb-3">
+                        To mathematically quantify dependency, we calculate the covariance of two binary random variables $y_1, y_2 \in \{0, 1\}$. By definition, $E[y_i] = 1 \cdot P(y_i = 1) + 0 \cdot P(y_i = 0) = P(y_i = 1)$. Similarly, since the only non-zero product of the variables is $y_1 y_2 = 1 \times 1 = 1$, we have $E[y_1 y_2] = P(y_1 = 1, y_2 = 1)$. Thus, the covariance simplifies directly to:
+                    </p>
+                    <div class="code-block mb-4">
+                        $$\begin{aligned}
+                        \mathrm{Cov}(y_1, y_2) &= E[y_1 y_2] - E[y_1]E[y_2] \\[4pt]
+                        &= P(y_1=1, y_2=1) - P(y_1=1)P(y_2=1)
+                        \end{aligned}$$
+                    </div>
+                    
+                    <h4 class="font-semibold text-bayesian-navy ui-text text-base mb-2">Derivation for Drawing Without Replacement (Population size $N$, known fraction $\theta$)</h4>
+                    <p class="mb-3 text-base text-bayesian-text">
+                        If a box contains $N$ balls, out of which a fraction $\theta$ are black (total $N\theta$ black balls), we draw two balls without replacement:
+                    </p>
+                    <ol class="list-decimal pl-6 mb-4 space-y-2 text-base text-bayesian-text">
+                        <li>
+                            The marginal probability of drawing a black ball on any draw is $E[y_1] = E[y_2] = \theta$.
+                        </li>
+                        <li>
+                            The expected value of their product is the joint probability of drawing two black balls:
+                            $$E[y_1 y_2] = P(y_1=1, y_2=1) = P(y_1=1)P(y_2=1 \mid y_1=1) = \theta \cdot \frac{N\theta - 1}{N - 1}$$
+                        </li>
+                        <li>
+                            Plugging these into the covariance formula yields:
+                            $$\begin{aligned}
+                            \mathrm{Cov}(y_1, y_2) &= E[y_1 y_2] - E[y_1]E[y_2] \\[6pt]
+                            &= \theta \cdot \frac{N\theta - 1}{N - 1} - \theta^2 \\[6pt]
+                            &= \theta \left( \frac{N\theta - 1 - \theta(N - 1)}{N - 1} \right) \\[6pt]
+                            &= \theta \left( \frac{N\theta - 1 - N\theta + \theta}{N - 1} \right) \\[6pt]
+                            &= \theta \left( \frac{\theta - 1}{N - 1} \right) \\[6pt]
+                            &= -\frac{\theta(1 - \theta)}{N - 1}
+                            \end{aligned}$$
+                        </li>
+                    </ol>
+                    <p class="text-base text-bayesian-slate italic">
+                        If $y_1$ and $y_2$ are independent, $P(y_1=1, y_2=1) = P(y_1=1)P(y_2=1)$, yielding a covariance of zero. A non-zero covariance indicates statistical dependence.
+                    </p>
+                </div>
             </div>
             
             <div class="mt-8 p-5 rounded border border-bayesian-border bg-bayesian-surfaceAlt">
