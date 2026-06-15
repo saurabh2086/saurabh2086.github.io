@@ -46,6 +46,7 @@
                     },
                     boxShadow: {
                         'soft': '0 4px 12px rgba(15, 23, 42, 0.05)',
+                        'premium': '0 12px 30px rgba(19, 27, 46, 0.08)'
                     }
                 }
             }
@@ -107,17 +108,34 @@
 <body class="antialiased">
 
     <!-- Container constrained to 720px for optimal reading -->
-    <div class="max-w-[720px] mx-auto px-4 py-16">
+    <div class="max-w-[880px] mx-auto px-4 py-16">
 
         <!-- Navigation -->
         <nav class="mb-8 flex items-center gap-6">
-            <a href="../../index.html" class="inline-flex items-center text-sm font-semibold text-bayesian-slate hover:text-bayesian-navy transition-colors ui-text">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            <a href="../../index.html"
+                class="inline-flex items-center text-sm font-semibold text-bayesian-slate hover:text-bayesian-navy transition-colors ui-text">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
                 Back to Index
             </a>
             <span class="text-bayesian-border">|</span>
-            <a href="../../index.html" class="inline-flex items-center text-sm font-semibold text-bayesian-slate hover:text-bayesian-navy transition-colors ui-text">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+            <a href="ch5_question1.html"
+                class="inline-flex items-center text-sm font-semibold text-bayesian-slate hover:text-bayesian-navy transition-colors ui-text">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+                Exercise 5.1
+            </a>
+            <span class="text-bayesian-border">|</span>
+            <a href="../../index.html"
+                class="inline-flex items-center text-sm font-semibold text-bayesian-slate hover:text-bayesian-navy transition-colors ui-text">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
+                    </path>
+                </svg>
                 Home
             </a>
         </nav>
@@ -126,14 +144,14 @@
         <header class="mb-16">
             <div class="flex flex-wrap gap-2 mb-6">
                 <div class="px-3 py-1 bg-bayesian-surfaceAlt border border-bayesian-border text-bayesian-slate rounded text-xs font-semibold tracking-wide uppercase ui-text">
-                    Chapter 5 &bull; Exercise 2
+                    Bayesian Data Analysis &bull; Chapter 5
                 </div>
                 <div class="px-3 py-1 bg-amber-50 border border-amber-200 text-amber-800 rounded text-xs font-semibold tracking-wide uppercase ui-text">
                     Personal Study Notes
                 </div>
             </div>
-            <h1 class="text-5xl font-bold mb-6 tracking-tight leading-tight ui-text">
-                Exchangeability with Unknown Parameters
+            <h1 class="text-4xl font-bold mb-6 tracking-tight leading-tight ui-text">
+                Exercise 5.2 Exchangeability with Unknown Parameters
             </h1>
             <p class="text-xl text-bayesian-slate leading-relaxed">
                 Exploring how our learning process inherently links observations together, even when the physical sampling process replaces them.
@@ -259,7 +277,7 @@
         </section>
 
         <!-- Summary Insight -->
-        <section>
+        <section class="mb-16">
             <h2 class="text-2xl font-semibold mb-6 border-b pb-2 border-bayesian-border ui-text">
                 The "Why" Behind the Math
             </h2>
