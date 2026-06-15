@@ -183,7 +183,9 @@
                         </div>
                         <div>
                             <h4 class="font-semibold text-bayesian-navy ui-text">(ii) Are they Independent?</h4>
-                            <p><strong>No.</strong> Because we don't know the composition, $y_1$ is informative. If $y_1$ is Black, we increase our estimate of the number of black balls in the box. This makes us more likely to predict that $y_2$ will also be Black. Our beliefs are linked.</p>
+                            <p><strong>No.</strong> Because we don't know the composition, $y_1$ is informative. If $y_1$ is Black, we increase our estimate of the proportion of black balls $\theta$. Mathematically, using the law of total covariance:
+                            $$\mathrm{Cov}(y_1, y_2) = E[\mathrm{Cov}(y_1, y_2 \mid \theta)] + \mathrm{Var}(E[y_1 \mid \theta]) = 0 + \mathrm{Var}(\theta) = \mathrm{Var}(\theta)$$
+                            Since the parameter is unknown, $\mathrm{Var}(\theta) > 0$, giving a positive covariance and indicating dependency.</p>
                         </div>
                         <div>
                             <h4 class="font-semibold text-bayesian-navy ui-text">(iii) Can we Act Independent?</h4>
@@ -209,7 +211,9 @@
                         </div>
                         <div>
                             <h4 class="font-semibold text-bayesian-navy ui-text">(ii) Are they Independent?</h4>
-                            <p><strong>No.</strong> They are dependent for <em>two</em> reasons now. First, the <strong>learning effect</strong>: $y_1$ gives us clues about the initial unknown proportion. Second, the <strong>physical effect</strong>: $y_1$ literally alters the composition of the box for the next draw.</p>
+                            <p><strong>No.</strong> They are dependent for two reasons: the physical depletion of the box, and the epistemic learning about $\theta$. Mathematically:
+                            $$\mathrm{Cov}(y_1, y_2) = \mathrm{Var}(\theta) - \frac{E[\theta(1-\theta)]}{N-1}$$
+                            Here we see the positive learning effect ($\mathrm{Var}(\theta)$) competing with the negative physical depletion effect ($-\frac{E[\theta(1-\theta)]}{N-1}$). The non-zero covariance confirms dependency.</p>
                         </div>
                         <div>
                             <h4 class="font-semibold text-bayesian-navy ui-text">(iii) Can we Act Independent?</h4>
@@ -235,7 +239,9 @@
                         </div>
                         <div>
                             <h4 class="font-semibold text-bayesian-navy ui-text">(ii) Are they Independent?</h4>
-                            <p><strong>No.</strong> Because the population is vast, the <em>physical effect</em> of removing a single ball is negligible (as seen in Question 1c). However, the <strong>learning effect</strong> remains! Because the true proportion is unknown, drawing $y_1$ still shifts our belief about that underlying proportion.</p>
+                            <p><strong>No.</strong> Because the population is vast, the physical effect of removing a single ball is negligible ($-\frac{E[\theta(1-\theta)]}{N-1} \to 0$). However, the learning effect remains! Mathematically:
+                            $$\lim_{N\to\infty} \mathrm{Cov}(y_1, y_2) = \mathrm{Var}(\theta) > 0$$
+                            Because the covariance converges to the positive variance $\mathrm{Var}(\theta)$, the draws remain dependent.</p>
                         </div>
                         <div>
                             <h4 class="font-semibold text-bayesian-navy ui-text">(iii) Can we Act Independent?</h4>
@@ -260,6 +266,63 @@
                     In frequentist statistics, if you draw with replacement, the events are considered independent because the physical mechanism isolates them. But in Bayesian statistics, if the underlying parameter is unknown, your observations are <strong>never</strong> marginally independent. The very act of observing data is what allows you to learn. If observations were truly independent, past data would tell you absolutely nothing about future data!
                 </p>
             </div>
+        </section>
+
+        <!-- Key Derivation -->
+        <section class="mt-16">
+            <h2 class="text-3xl font-semibold mb-6 border-b pb-3 border-bayesian-border ui-text">
+                Key Derivation: One Formula for Every Case
+            </h2>
+            <p class="mb-6">
+                A single identity — the <strong>law of total covariance</strong> — produces the covariance for all six scenarios across Questions 1 and 2. Let $y_i = 1$ for black, $0$ for white, and let $\theta$ be the black fraction. Conditioning on $\theta$ splits the dependence into two named pieces:
+            </p>
+            <div class="theorem-block">
+                <div class="code-block mb-0">
+                    $$\mathrm{Cov}(y_1, y_2) = \underbrace{E\big[\mathrm{Cov}(y_1,y_2 \mid \theta)\big]}_{\text{physical (depletion)}} \;+\; \underbrace{\mathrm{Cov}\big(E[y_1\mid\theta],\, E[y_2\mid\theta]\big)}_{\text{learning}} $$
+                    $$= \; E\big[\mathrm{Cov}(y_1,y_2 \mid \theta)\big] \;+\; \mathrm{Var}(\theta)$$
+                </div>
+            </div>
+            <p class="mb-4">
+                The second term is $\mathrm{Var}(\theta)$ because $E[y_i \mid \theta] = \theta$, so $\mathrm{Cov}(\theta,\theta) = \mathrm{Var}(\theta)$ — this is the <strong>learning</strong> effect. The first term is the <strong>physical</strong> effect, which depends on the draw mechanism:
+            </p>
+            <div class="academic-card p-6 mb-6">
+                <ul class="list-disc pl-6 space-y-2 text-lg">
+                    <li><strong>With replacement:</strong> draws are conditionally independent, so $\mathrm{Cov}(y_1,y_2\mid\theta) = 0$.</li>
+                    <li><strong>Without replacement</strong> (box of $N$ balls): $\mathrm{Cov}(y_1,y_2\mid\theta) = -\dfrac{\theta(1-\theta)}{N-1}$, so the term is $-\dfrac{E[\theta(1-\theta)]}{N-1}$.</li>
+                </ul>
+            </div>
+
+            <h3 class="text-xl font-semibold text-bayesian-navy mb-3 ui-text">The case $\theta$ unknown (Question 2)</h3>
+            <p class="mb-4">Detailed expansion of the with-replacement case (2a), where the physical term is zero:</p>
+            <div class="theorem-block">
+                <div class="code-block mb-0">
+                    $$\begin{aligned}
+                    \mathrm{Cov}(y_1, y_2) &= E[y_1 y_2] - E[y_1]\,E[y_2] \\[4pt]
+                    &= E\big[\,E[y_1\mid\theta]\,E[y_2\mid\theta]\,\big] - \big(E[\theta]\big)^2 \\[4pt]
+                    &= E[\theta^2] - \big(E[\theta]\big)^2 = \mathrm{Var}(\theta)
+                    \end{aligned}$$
+                </div>
+            </div>
+            <div class="academic-card p-6 mb-6">
+                <ul class="list-disc pl-6 space-y-2 text-lg">
+                    <li><strong>(a) With replacement:</strong> $\mathrm{Cov} = \mathrm{Var}(\theta)$ — dependent (learning only).</li>
+                    <li><strong>(b) Without replacement, box of $N$:</strong> $\mathrm{Cov} = \mathrm{Var}(\theta) - \dfrac{E[\theta(1-\theta)]}{N-1}$ — both effects (learning $+$ depletion).</li>
+                    <li><strong>(c) Without replacement, many balls ($N\to\infty$):</strong> depletion $\to 0$, so $\mathrm{Cov} \to \mathrm{Var}(\theta)$ — dependent, learning survives.</li>
+                </ul>
+            </div>
+
+            <h3 class="text-xl font-semibold text-bayesian-navy mb-3 ui-text">The case $\theta$ known (Question 1)</h3>
+            <p class="mb-4">When $\theta$ is known it is a constant, so $\mathrm{Var}(\theta) = 0$ and only the physical term survives:</p>
+            <div class="academic-card p-6 mb-4">
+                <ul class="list-disc pl-6 space-y-2 text-lg">
+                    <li><strong>(a) With replacement:</strong> $\mathrm{Cov} = 0$ — strictly independent.</li>
+                    <li><strong>(b) Without replacement, $N=2$, $\theta=\tfrac12$:</strong> $\mathrm{Cov} = -\dfrac{1}{4}$ — strongly dependent.</li>
+                    <li><strong>(c) Without replacement, $N$ huge:</strong> $\mathrm{Cov} = -\dfrac{\theta(1-\theta)}{N-1} \to 0$ — act independent.</li>
+                </ul>
+            </div>
+            <p class="text-base text-bayesian-slate italic">
+                The whole pair of problems collapses to one line: $\mathrm{Cov} = \mathrm{Var}(\theta) - \frac{E[\theta(1-\theta)]}{N-1}$ (with replacement drops the second term). Population size $N$ only shrinks the <strong>physical</strong> term; only knowing $\theta$ removes the <strong>learning</strong> term $\mathrm{Var}(\theta)$. That single distinction is why 1(c) is independent and 2(c) is not. The deeper reason it all coheres is <strong>de Finetti's theorem</strong>: an exchangeable sequence is a mixture of i.i.d. sequences, and mixing over the unknown $\theta$ is exactly what couples the observations and lets data teach us.
+            </p>
         </section>
 
         <!-- References & Study Disclaimer -->
