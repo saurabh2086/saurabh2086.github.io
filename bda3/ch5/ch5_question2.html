@@ -202,13 +202,37 @@
                     <div class="space-y-4">
                         <div>
                             <h4 class="font-semibold text-bayesian-navy ui-text">(i) Are they Exchangeable?</h4>
-                            <p><strong>Yes.</strong> The order in which we learn about the box doesn't matter. The joint distribution $p(y_1, y_2)$ is symmetric because it is derived by integrating over all possible unknown compositions. Therefore, $p(y_1, y_2) = p(y_2, y_1)$.</p>
+                            <p class="mb-3"><strong>Yes.</strong> The joint probability is symmetric because it can be represented as a mixture over the unknown parameter $\theta$ (by the Law of Total Probability):</p>
+                            <div class="code-block mb-3">
+                                $$p(y_1, y_2) = \int p(y_1, y_2 \mid \theta) p(\theta) d\theta$$
+                            </div>
+                            <p class="mb-3 text-base text-bayesian-text">
+                                Since drawing is with replacement, the draws are conditionally independent given $\theta$, meaning $p(y_1, y_2 \mid \theta) = p(y_1 \mid \theta)p(y_2 \mid \theta)$. By commutativity of multiplication:
+                                $$p(y_1, y_2) = \int p(y_1 \mid \theta)p(y_2 \mid \theta) p(\theta) d\theta = \int p(y_2 \mid \theta)p(y_1 \mid \theta) p(\theta) d\theta = p(y_2, y_1)$$
+                            </p>
                         </div>
                         <div>
                             <h4 class="font-semibold text-bayesian-navy ui-text">(ii) Are they Independent?</h4>
-                            <p><strong>No.</strong> Because we don't know the composition, $y_1$ is informative. If $y_1$ is Black, we increase our estimate of the proportion of black balls $\theta$. Mathematically, using the law of total covariance:
-                            $$\mathrm{Cov}(y_1, y_2) = E[\mathrm{Cov}(y_1, y_2 \mid \theta)] + \mathrm{Var}(E[y_1 \mid \theta]) = 0 + \mathrm{Var}(\theta) = \mathrm{Var}(\theta)$$
-                            Since the parameter is unknown, $\mathrm{Var}(\theta) > 0$, giving a positive covariance and indicating dependency.</p>
+                            <p class="mb-3">
+                                <strong>No.</strong> Knowing the first draw ($y_1$) updates our knowledge about the unknown proportion $\theta$, which in turn changes our prediction for the second draw ($y_2$). Mathematically, we derive the marginal covariance by taking expectations over $\theta$:
+                            </p>
+                            <ol class="list-decimal pl-6 mb-3 space-y-2 text-base text-bayesian-text">
+                                <li>
+                                    The marginal expectation is:
+                                    $$E[y_i] = E_{\theta}[E[y_i \mid \theta]] = E_{\theta}[\theta] = E[\theta]$$
+                                </li>
+                                <li>
+                                    Since the draws are conditionally independent given $\theta$, the expected value of their product is:
+                                    $$E[y_1 y_2] = E_{\theta}[E[y_1 y_2 \mid \theta]] = E_{\theta}[E[y_1 \mid \theta]E[y_2 \mid \theta]] = E_{\theta}[\theta^2] = E[\theta^2]$$
+                                </li>
+                                <li>
+                                    The covariance is:
+                                    $$\mathrm{Cov}(y_1, y_2) = E[y_1 y_2] - E[y_1]E[y_2] = E[\theta^2] - (E[\theta])^2 = \mathrm{Var}(\theta)$$
+                                </li>
+                            </ol>
+                            <p class="text-base text-bayesian-slate italic">
+                                Since $\theta$ is unknown, it has a non-degenerate probability distribution, so $\mathrm{Var}(\theta) > 0$. The strictly positive covariance confirms dependency.
+                            </p>
                         </div>
                         <div>
                             <h4 class="font-semibold text-bayesian-navy ui-text">(iii) Can we Act Independent?</h4>
@@ -230,13 +254,46 @@
                     <div class="space-y-4">
                         <div>
                             <h4 class="font-semibold text-bayesian-navy ui-text">(i) Are they Exchangeable?</h4>
-                            <p><strong>Yes.</strong> Symmetry holds. Before any balls are drawn, any specific sequence (like Black, then White) is just as likely as its permutation (White, then Black). The lack of knowledge preserves the symmetry of our ignorance.</p>
+                            <p class="mb-3"><strong>Yes.</strong> By the Law of Total Probability, we can represent the joint probability as an expectation over the unknown composition $\theta$:</p>
+                            <div class="code-block mb-3">
+                                $$p(y_1, y_2) = \int p(y_1, y_2 \mid \theta) p(\theta) d\theta$$
+                            </div>
+                            <p class="mb-3 text-base text-bayesian-text">
+                                We proved in Exercise 5.1 that for any *known* composition $\theta$, the joint probability under drawing without replacement is symmetric, i.e., $p(y_1, y_2 \mid \theta) = p(y_2, y_1 \mid \theta)$. Therefore:
+                                $$p(y_1, y_2) = \int p(y_2, y_1 \mid \theta) p(\theta) d\theta = p(y_2, y_1)$$
+                            </p>
                         </div>
                         <div>
                             <h4 class="font-semibold text-bayesian-navy ui-text">(ii) Are they Independent?</h4>
-                            <p><strong>No.</strong> They are dependent for two reasons: the physical depletion of the box, and the epistemic learning about $\theta$. Mathematically:
-                            $$\mathrm{Cov}(y_1, y_2) = \mathrm{Var}(\theta) - \frac{E[\theta(1-\theta)]}{N-1}$$
-                            Here we see the positive learning effect ($\mathrm{Var}(\theta)$) competing with the negative physical depletion effect ($-\frac{E[\theta(1-\theta)]}{N-1}$). The non-zero covariance confirms dependency.</p>
+                            <p class="mb-3">
+                                <strong>No.</strong> Two sources of dependency exist: the negative physical depletion of the box, and the positive epistemic learning about $\theta$. We derive the exact covariance by taking expectations over $\theta$:
+                            </p>
+                            <ol class="list-decimal pl-6 mb-3 space-y-2 text-base text-bayesian-text">
+                                <li>
+                                    The marginal expectation is $E[y_i] = E_{\theta}[\theta] = E[\theta]$.
+                                </li>
+                                <li>
+                                    For a given composition $\theta$, the conditional expectation of the product is:
+                                    $$E[y_1 y_2 \mid \theta] = P(y_1=1, y_2=1 \mid \theta) = \theta \cdot \frac{N\theta - 1}{N - 1}$$
+                                </li>
+                                <li>
+                                    Taking the expectation over the distribution of $\theta$:
+                                    $$E[y_1 y_2] = E_{\theta}\left[ \theta \cdot \frac{N\theta - 1}{N - 1} \right] = \frac{N E[\theta^2] - E[\theta]}{N - 1}$$
+                                </li>
+                                <li>
+                                    Subtracting the product of the expectations gives the covariance:
+                                    $$\begin{aligned}
+                                    \mathrm{Cov}(y_1, y_2) &= E[y_1 y_2] - E[y_1]E[y_2] \\[6pt]
+                                    &= \frac{N E[\theta^2] - E[\theta] - (N - 1)(E[\theta])^2}{N - 1} \\[6pt]
+                                    &= \frac{N \left(E[\theta^2] - (E[\theta])^2\right) - \left(E[\theta] - (E[\theta])^2\right)}{N - 1} \\[6pt]
+                                    &= \frac{N \mathrm{Var}(\theta) - E[\theta](1 - E[\theta])}{N - 1} \\[6pt]
+                                    &= \mathrm{Var}(\theta) - \frac{E[\theta(1 - \theta)]}{N - 1}
+                                    \end{aligned}$$
+                                </li>
+                            </ol>
+                            <p class="text-base text-bayesian-slate italic">
+                                Here, the covariance is a sum of the positive learning effect $\mathrm{Var}(\theta) > 0$ and the negative depletion effect $-\frac{E[\theta(1-\theta)]}{N - 1} < 0$. The non-zero covariance indicates they are dependent.
+                            </p>
                         </div>
                         <div>
                             <h4 class="font-semibold text-bayesian-navy ui-text">(iii) Can we Act Independent?</h4>
@@ -258,13 +315,23 @@
                     <div class="space-y-4">
                         <div>
                             <h4 class="font-semibold text-bayesian-navy ui-text">(i) Are they Exchangeable?</h4>
-                            <p><strong>Yes.</strong> Symmetry holds universally across all these variations.</p>
+                            <p class="mb-3"><strong>Yes.</strong> Just as in Scenario B, the joint probability is symmetric because the conditional symmetry $p(y_1, y_2 \mid \theta) = p(y_2, y_1 \mid \theta)$ holds for any composition $\theta$, meaning:</p>
+                            <div class="code-block mb-3">
+                                $$p(y_1, y_2) = \int p(y_1, y_2 \mid \theta) p(\theta) d\theta = \int p(y_2, y_1 \mid \theta) p(\theta) d\theta = p(y_2, y_1)$$
+                            </div>
                         </div>
                         <div>
                             <h4 class="font-semibold text-bayesian-navy ui-text">(ii) Are they Independent?</h4>
-                            <p><strong>No.</strong> Because the population is vast, the physical effect of removing a single ball is negligible ($-\frac{E[\theta(1-\theta)]}{N-1} \to 0$). However, the learning effect remains! Mathematically:
-                            $$\lim_{N\to\infty} \mathrm{Cov}(y_1, y_2) = \mathrm{Var}(\theta) > 0$$
-                            Because the covariance converges to the positive variance $\mathrm{Var}(\theta)$, the draws remain dependent.</p>
+                            <p class="mb-3"><strong>No.</strong> Because the population is vast, the physical depletion effect is negligible ($N \to \infty$). However, because $\theta$ is unknown, we still learn from $y_1$ and update our beliefs about $y_2$. Mathematically, taking the limit as $N \to \infty$ of the covariance derived in Scenario B:</p>
+                            <div class="code-block mb-3">
+                                $$\begin{aligned}
+                                \lim_{N\to\infty} \mathrm{Cov}(y_1, y_2) &= \lim_{N\to\infty} \left( \mathrm{Var}(\theta) - \frac{E[\theta(1 - \theta)]}{N - 1} \right) \\[6pt]
+                                &= \mathrm{Var}(\theta) - 0 = \mathrm{Var}(\theta)
+                                \end{aligned}$$
+                            </div>
+                            <p class="text-base text-bayesian-slate italic">
+                                Since the covariance converges to the positive variance $\mathrm{Var}(\theta) > 0$ and does not vanish, the draws remain dependent even in an infinite population.
+                            </p>
                         </div>
                         <div>
                             <h4 class="font-semibold text-bayesian-navy ui-text">(iii) Can we Act Independent?</h4>
