@@ -352,6 +352,9 @@
                             <div class="code-block mb-2">
                                 $$\mathrm{Cov}(y_1, y_2) = E[y_1 y_2] - E[y_1]E[y_2] = 0 - \left(\frac{1}{2}\right)\left(\frac{1}{2}\right) = -0.25$$
                             </div>
+                            <p class="text-base text-bayesian-text mb-3">
+                                Note that the expectation $E[y_1 y_2] = P(y_1=1, y_2=1) = 0$ because there is only one black ball in the box, meaning we can never draw two black balls without replacement. Thus, the product $y_1 y_2$ is always zero in all possible draw configurations.
+                            </p>
                             <p class="text-base text-bayesian-text">
                                 The non-zero covariance (specifically negative, due to physical depletion) mathematically validates their strong mutual dependence.
                             </p>
