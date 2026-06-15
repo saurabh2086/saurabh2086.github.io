@@ -198,7 +198,16 @@
                 <div class="theorem-block">
                     <h3 class="text-lg font-bold text-bayesian-blue mb-2 ui-text uppercase tracking-wider text-sm">First Principle: Covariance of Binary Indicators</h3>
                     <p class="mb-3">
-                        To mathematically quantify dependency, we calculate the covariance of two binary random variables $y_1, y_2 \in \{0, 1\}$. By definition, $E[y_i] = 1 \cdot P(y_i = 1) + 0 \cdot P(y_i = 0) = P(y_i = 1)$. Similarly, since the only non-zero product of the variables is $y_1 y_2 = 1 \times 1 = 1$, we have $E[y_1 y_2] = P(y_1 = 1, y_2 = 1)$. Thus, the covariance simplifies directly to:
+                        To mathematically quantify dependency, we calculate the covariance of two binary random variables $y_1, y_2 \in \{0, 1\}$. By definition, the marginal expectations are $E[y_i] = 1 \cdot P(y_i = 1) + 0 \cdot P(y_i = 0) = P(y_i = 1)$.
+                    </p>
+                    <p class="mb-3">
+                        The expectation of the product $E[y_1 y_2]$ is defined by summing over the joint distribution:
+                        $$E[y_1 y_2] = \sum_{y_1} \sum_{y_2} y_1 y_2 p(y_1, y_2) = \sum_{y_2} y_2 p(y_2) \left( \sum_{y_1} y_1 p(y_1 \mid y_2) \right)$$
+                        For binary indicators $y_1, y_2 \in \{0, 1\}$, the only non-zero product in the summation is when $y_1 = 1$ and $y_2 = 1$. Thus, the double sum simplifies directly to:
+                        $$E[y_1 y_2] = 1 \cdot 1 \cdot P(y_1=1, y_2=1) = P(y_1=1, y_2=1)$$
+                    </p>
+                    <p class="mb-3">
+                        Therefore, the covariance simplifies directly to:
                     </p>
                     <div class="code-block mb-4">
                         $$\begin{aligned}
