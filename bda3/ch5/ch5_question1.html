@@ -265,15 +265,18 @@
                     <div class="space-y-4">
                         <div>
                             <h4 class="font-semibold text-bayesian-navy ui-text">(i) Are they Exchangeable?</h4>
-                            <p class="mb-3"><strong>Yes.</strong> We show that the joint probability is symmetric, i.e., $p(y_1, y_2) = p(y_2, y_1)$ for all $y_1, y_2 \in \{0, 1\}$ (where $1$ is black and $0$ is white). Since drawing is with replacement:</p>
+                            <p class="mb-3"><strong>Yes.</strong> We show that the joint probability is symmetric, i.e., $p(y_1, y_2) = p(y_2, y_1)$ for all $y_1, y_2 \in \{0, 1\}$ (where $1$ is black and $0$ is white). Using the general product rule $p(y_1, y_2) = p(y_1)p(y_2 \mid y_1)$:</p>
                             <div class="code-block mb-3">
                                 $$\begin{aligned}
-                                p(y_1=1, y_2=1) &= p(y_1=1)p(y_2=1) = \frac{1}{2} \times \frac{1}{2} = \frac{1}{4} \\[4pt]
-                                p(y_1=0, y_2=0) &= p(y_1=0)p(y_2=0) = \frac{1}{2} \times \frac{1}{2} = \frac{1}{4} \\[4pt]
-                                p(y_1=1, y_2=0) &= p(y_1=1)p(y_2=0) = \frac{1}{2} \times \frac{1}{2} = \frac{1}{4} \\[4pt]
-                                p(y_1=0, y_2=1) &= p(y_1=0)p(y_2=1) = \frac{1}{2} \times \frac{1}{2} = \frac{1}{4}
+                                p(y_1=1, y_2=1) &= p(y_1=1)p(y_2=1 \mid y_1=1) = \frac{1}{2} \times \frac{1}{2} = \frac{1}{4} \\[4pt]
+                                p(y_1=0, y_2=0) &= p(y_1=0)p(y_2=0 \mid y_1=0) = \frac{1}{2} \times \frac{1}{2} = \frac{1}{4} \\[4pt]
+                                p(y_1=1, y_2=0) &= p(y_1=1)p(y_2=0 \mid y_1=1) = \frac{1}{2} \times \frac{1}{2} = \frac{1}{4} \\[4pt]
+                                p(y_1=0, y_2=1) &= p(y_1=0)p(y_2=1 \mid y_1=0) = \frac{1}{2} \times \frac{1}{2} = \frac{1}{4}
                                 \end{aligned}$$
                             </div>
+                            <p class="text-base text-bayesian-slate italic mb-3">
+                                Note: Since drawing is with replacement, the second draw is independent of the first, so $p(y_2 \mid y_1) = p(y_2) = \frac{1}{2}$ in all cases.
+                            </p>
                             <p class="mb-3">
                                 Verifying the symmetry $p(y_1, y_2) = p(y_2, y_1)$ for all pairs:
                             </p>
@@ -364,10 +367,10 @@
                             <p class="mb-3"><strong>Yes.</strong> For $N = 2,000,000$ balls ($B = 1,000,000$ black, $W = 1,000,000$ white), drawing without replacement gives:</p>
                             <div class="code-block mb-3">
                                 $$\begin{aligned}
-                                p(y_1=1, y_2=1) &= \frac{1,000,000}{2,000,000} \times \frac{999,999}{1,999,999} = \frac{999,999}{3,999,998} \\[4pt]
-                                p(y_1=0, y_2=0) &= \frac{1,000,000}{2,000,000} \times \frac{999,999}{1,999,999} = \frac{999,999}{3,999,998} \\[4pt]
-                                p(y_1=1, y_2=0) &= \frac{1,000,000}{2,000,000} \times \frac{1,000,000}{1,999,999} = \frac{1,000,000}{3,999,998} \\[4pt]
-                                p(y_1=0, y_2=1) &= \frac{1,000,000}{2,000,000} \times \frac{1,000,000}{1,999,999} = \frac{1,000,000}{3,999,998}
+                                p(y_1=1, y_2=1) &= p(y_1=1)p(y_2=1 \mid y_1=1) = \frac{1,000,000}{2,000,000} \times \frac{999,999}{1,999,999} = \frac{999,999}{3,999,998} \\[4pt]
+                                p(y_1=0, y_2=0) &= p(y_1=0)p(y_2=0 \mid y_1=0) = \frac{1,000,000}{2,000,000} \times \frac{999,999}{1,999,999} = \frac{999,999}{3,999,998} \\[4pt]
+                                p(y_1=1, y_2=0) &= p(y_1=1)p(y_2=0 \mid y_1=1) = \frac{1,000,000}{2,000,000} \times \frac{1,000,000}{1,999,999} = \frac{1,000,000}{3,999,998} \\[4pt]
+                                p(y_1=0, y_2=1) &= p(y_1=0)p(y_2=1 \mid y_1=0) = \frac{1,000,000}{2,000,000} \times \frac{1,000,000}{1,999,999} = \frac{1,000,000}{3,999,998}
                                 \end{aligned}$$
                             </div>
                             <p class="mb-3">
