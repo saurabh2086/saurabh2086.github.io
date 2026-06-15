@@ -362,7 +362,10 @@
                                 $$\mathrm{Cov}(y_1, y_2) = E[y_1 y_2] - E[y_1]E[y_2] = 0 - \left(\frac{1}{2}\right)\left(\frac{1}{2}\right) = -0.25$$
                             </div>
                             <p class="text-base text-bayesian-text mb-3">
-                                Note that the expectation $E[y_1 y_2] = P(y_1=1, y_2=1) = 0$ because there is only one black ball in the box, meaning we can never draw two black balls without replacement. Thus, the product $y_1 y_2$ is always zero in all possible draw configurations.
+                                To see why the expected value of the product is $E[y_1 y_2] = 0$, we expand the expectation over all four possible joint configurations:
+                                $$E[y_1 y_2] = (1 \times 1)P(y_1=1, y_2=1) + (1 \times 0)P(y_1=1, y_2=0) + (0 \times 1)P(y_1=0, y_2=1) + (0 \times 0)P(y_1=0, y_2=0)$$
+                                Since any configuration containing a White ball ($y_i = 0$) results in a product of $0$, they contribute nothing to the expectation. The only configuration with a product of $1$ is $(1, 1)$, which has a probability of $0$ (drawing two Black balls without replacement from a box with only one Black ball is impossible). Thus:
+                                $$E[y_1 y_2] = 1(0) + 0\left(\frac{1}{2}\right) + 0\left(\frac{1}{2}\right) + 0(0) = 0$$
                             </p>
                             <p class="text-base text-bayesian-text">
                                 The non-zero covariance (specifically negative, due to physical depletion) mathematically validates their strong mutual dependence.
