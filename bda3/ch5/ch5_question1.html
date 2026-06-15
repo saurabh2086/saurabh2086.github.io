@@ -293,9 +293,27 @@
                     <div class="space-y-4">
                         <div>
                             <h4 class="font-semibold text-bayesian-navy ui-text">(i) Are they Exchangeable?</h4>
-                            <p><strong>Yes!</strong> This is counter-intuitive, but let's check symmetry: $p(y_1=B, y_2=W) = p(B)p(W|B) = \frac{1}{2} \times 1 = \frac{1}{2}$. <br/>
-                            $p(y_1=W, y_2=B) = p(W)p(B|W) = \frac{1}{2} \times 1 = \frac{1}{2}$. <br/>
-                            Since $p(y_1, y_2) = p(y_2, y_1)$, they are perfectly exchangeable.</p>
+                            <p class="mb-3"><strong>Yes.</strong> To prove exchangeability, we must show that the joint probability is symmetric, i.e., $p(y_1, y_2) = p(y_2, y_1)$ for all possible outcomes of $y_1, y_2 \in \{0, 1\}$ (where $1$ is black and $0$ is white). Let's expand the joint probabilities for all 4 combinations:</p>
+                            <div class="code-block mb-3">
+                                $$\begin{aligned}
+                                p(y_1=1, y_2=1) &= p(y_1=1)p(y_2=1 \mid y_1=1) = \frac{1}{2} \times 0 = 0 \\[4pt]
+                                p(y_1=0, y_2=0) &= p(y_1=0)p(y_2=0 \mid y_1=0) = \frac{1}{2} \times 0 = 0 \\[4pt]
+                                p(y_1=1, y_2=0) &= p(y_1=1)p(y_2=0 \mid y_1=1) = \frac{1}{2} \times 1 = \frac{1}{2} \\[4pt]
+                                p(y_1=0, y_2=1) &= p(y_1=0)p(y_2=1 \mid y_1=0) = \frac{1}{2} \times 1 = \frac{1}{2}
+                                \end{aligned}$$
+                            </div>
+                            <p class="mb-3">
+                                Now let's verify if the symmetry $p(y_1, y_2) = p(y_2, y_1)$ holds for each case:
+                            </p>
+                            <ul class="list-disc pl-6 space-y-1 text-base text-bayesian-text mb-3">
+                                <li>For $(1, 1)$: $p(y_1=1, y_2=1) = p(y_2=1, y_1=1) = 0$</li>
+                                <li>For $(0, 0)$: $p(y_1=0, y_2=0) = p(y_2=0, y_1=0) = 0$</li>
+                                <li>For $(1, 0)$: $p(y_1=1, y_2=0) = \frac{1}{2}$ and $p(y_2=1, y_1=0) = p(y_1=0, y_2=1) = \frac{1}{2}$</li>
+                                <li>For $(0, 1)$: $p(y_1=0, y_2=1) = \frac{1}{2}$ and $p(y_2=0, y_1=1) = p(y_1=1, y_2=0) = \frac{1}{2}$</li>
+                            </ul>
+                            <p class="text-base text-bayesian-slate italic">
+                                Since the joint probability is invariant to permutations in all cases, the sequence is exchangeable.
+                            </p>
                         </div>
                         <div>
                             <h4 class="font-semibold text-bayesian-navy ui-text">(ii) Are they Independent?</h4>
