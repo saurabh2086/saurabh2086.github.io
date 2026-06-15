@@ -292,9 +292,15 @@
                         </div>
                         <div>
                             <h4 class="font-semibold text-bayesian-navy ui-text">(ii) Are they Independent?</h4>
-                            <p><strong>Yes.</strong> Because we put the ball back (replacement), the state of the box is identical for the second draw. Mathematically, the covariance is exactly zero:
-                            $$\mathrm{Cov}(y_1, y_2) = P(y_1=1, y_2=1) - P(y_1=1)P(y_2=1) = \frac{1}{4} - \left(\frac{1}{2}\right)\left(\frac{1}{2}\right) = 0$$
-                            Knowing $y_1$ gives absolutely zero information about $y_2$.</p>
+                            <p class="mb-2">
+                                <strong>Yes.</strong> Philosophically, independence means that observing the outcome of the first draw ($y_1$) tells us absolutely nothing about the outcome of the second draw ($y_2$), which mathematically means $p(y_2 \mid y_1) = p(y_2)$. We can measure this dependency using the covariance:
+                            </p>
+                            <div class="code-block mb-2">
+                                $$\mathrm{Cov}(y_1, y_2) = E[y_1 y_2] - E[y_1]E[y_2] = \frac{1}{4} - \left(\frac{1}{2}\right)\left(\frac{1}{2}\right) = 0$$
+                            </div>
+                            <p class="text-base text-bayesian-text">
+                                Since the covariance is exactly zero, the state of the box remains unchanged between draws due to replacement, confirming perfect independence.
+                            </p>
                         </div>
                         <div>
                             <h4 class="font-semibold text-bayesian-navy ui-text">(iii) Can we Act Independent?</h4>
@@ -340,9 +346,15 @@
                         </div>
                         <div>
                             <h4 class="font-semibold text-bayesian-navy ui-text">(ii) Are they Independent?</h4>
-                            <p><strong>No.</strong> Knowing $y_1$ gives you perfect information about $y_2$. Mathematically, the covariance is negative:
-                            $$\mathrm{Cov}(y_1, y_2) = P(y_1=1, y_2=1) - P(y_1=1)P(y_2=1) = 0 - \left(\frac{1}{2}\right)\left(\frac{1}{2}\right) = -0.25$$
-                            Since the covariance is non-zero (specifically, negative due to physical depletion), they are highly dependent.</p>
+                            <p class="mb-2">
+                                <strong>No.</strong> Philosophically, if they were independent, knowing the outcome of the first draw ($y_1$) would tell us nothing about the second ($y_2$). However, because we do not replace the ball, $y_1$ gives us perfect information about $y_2$ (e.g., if $y_1 = 1$, then $y_2$ must be $0$). We measure this strong dependency via the covariance:
+                            </p>
+                            <div class="code-block mb-2">
+                                $$\mathrm{Cov}(y_1, y_2) = E[y_1 y_2] - E[y_1]E[y_2] = 0 - \left(\frac{1}{2}\right)\left(\frac{1}{2}\right) = -0.25$$
+                            </div>
+                            <p class="text-base text-bayesian-text">
+                                The non-zero covariance (specifically negative, due to physical depletion) mathematically validates their strong mutual dependence.
+                            </p>
                         </div>
                         <div>
                             <h4 class="font-semibold text-bayesian-navy ui-text">(iii) Can we Act Independent?</h4>
@@ -388,9 +400,15 @@
                         </div>
                         <div>
                             <h4 class="font-semibold text-bayesian-navy ui-text">(ii) Are they Independent?</h4>
-                            <p><strong>Technically No.</strong> Because we don't replace the ball, $y_1$ slightly alters the box. With $N = 2,000,000$ and $\theta = 0.5$:
-                            $$\mathrm{Cov}(y_1, y_2) = -\frac{\theta(1-\theta)}{N-1} = -\frac{0.25}{1,999,999} \approx -1.25 \times 10^{-7}$$
-                            Because the covariance is not strictly zero, they are not mathematically independent.</p>
+                            <p class="mb-2">
+                                <strong>Technically No.</strong> Philosophically, drawing without replacement means the first draw ($y_1$) physically depletes the box, meaning it slightly changes our beliefs about the second draw ($y_2$). We can measure this small dependency using the covariance:
+                            </p>
+                            <div class="code-block mb-2">
+                                $$\mathrm{Cov}(y_1, y_2) = -\frac{\theta(1-\theta)}{N-1} = -\frac{0.25}{1,999,999} \approx -1.25 \times 10^{-7}$$
+                            </div>
+                            <p class="text-base text-bayesian-text">
+                                Because the covariance is not strictly zero, they are not mathematically independent. However, because $N$ is so large, this covariance is extremely close to zero.
+                            </p>
                         </div>
                         <div>
                             <h4 class="font-semibold text-bayesian-navy ui-text">(iii) Can we Act Independent?</h4>
