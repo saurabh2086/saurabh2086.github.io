@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,8 +11,10 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400;1,6..72,600&display=swap" rel="stylesheet">
-    
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400;1,6..72,600&display=swap"
+        rel="stylesheet">
+
     <script>
         tailwind.config = {
             theme: {
@@ -35,7 +38,7 @@
             }
         }
     </script>
-    
+
     <!-- jStat for Beta Distribution -->
     <script src="https://cdn.jsdelivr.net/npm/jstat@latest/dist/jstat.min.js"></script>
     <!-- Chart.js for Visualization -->
@@ -58,16 +61,20 @@
             --border: #e2e8f0;
             --radius: 8px;
         }
-        * { box-sizing: border-box; }
-        body { 
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
             font-family: 'Newsreader', serif;
-            background-color: var(--bg); 
-            color: var(--text-main); 
-            margin: 0; 
-            padding: 2rem; 
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            padding: 2rem;
             min-height: 100vh;
         }
-        
+
         /* Article Styles */
         .article-container {
             font-family: 'Newsreader', serif;
@@ -80,156 +87,440 @@
             font-size: 1.25rem;
             color: #334155;
         }
-        .article-container h1, .article-container h2, .article-container h3, .simulator-wrapper h2, .simulator-wrapper h3, .simulator-wrapper label { font-family: 'Inter', sans-serif; color: #131b2e; }
-        .article-container h1 { font-size: 2.5rem; color: #0f172a; line-height: 1.2; margin-bottom: 1.5rem; font-weight: 800; }
-        .article-container h2, .article-container h3 { color: #0f172a; margin-top: 2.5rem; margin-bottom: 1rem; font-weight: 700; }
-        .article-container p { margin-bottom: 1.5rem; }
-        .article-container ul, .article-container ol { margin-bottom: 1.5rem; padding-left: 1.5rem; }
-        .article-container li { margin-bottom: 0.5rem; }
-        .article-container strong { color: #0f172a; font-weight: 700; }
-        .article-container code { background: #f1f5f9; padding: 0.2rem 0.4rem; border-radius: 4px; font-size: 0.9em; color: #0051d5; font-family: monospace; }
-        .article-container pre code { background: transparent; padding: 0; color: inherit; font-size: 0.9rem; }
-        .article-container pre { background: #1e293b; color: #f8fafc; font-family: monospace; font-size: 0.95rem; line-height: 1.6; padding: 1.5rem; border-radius: 4px; overflow-x: auto; margin-bottom: 1.5rem; }
-        
+
+        .article-container h1,
+        .article-container h2,
+        .article-container h3,
+        .simulator-wrapper h2,
+        .simulator-wrapper h3,
+        .simulator-wrapper label {
+            font-family: 'Inter', sans-serif;
+            color: #131b2e;
+        }
+
+        .article-container h1 {
+            font-size: 2.5rem;
+            color: #0f172a;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            font-weight: 800;
+        }
+
+        .article-container h2,
+        .article-container h3 {
+            color: #0f172a;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .article-container p {
+            margin-bottom: 1.5rem;
+        }
+
+        .article-container ul,
+        .article-container ol {
+            margin-bottom: 1.5rem;
+            padding-left: 1.5rem;
+        }
+
+        .article-container li {
+            margin-bottom: 0.5rem;
+        }
+
+        .article-container strong {
+            color: #0f172a;
+            font-weight: 700;
+        }
+
+        .article-container code {
+            background: #f1f5f9;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.9em;
+            color: #0051d5;
+            font-family: monospace;
+        }
+
+        .article-container pre code {
+            background: transparent;
+            padding: 0;
+            color: inherit;
+            font-size: 0.9rem;
+        }
+
+        .article-container pre {
+            background: #1e293b;
+            color: #f8fafc;
+            font-family: monospace;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            padding: 1.5rem;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin-bottom: 1.5rem;
+        }
+
         /* Simulator Styles */
-        .simulator-wrapper { max-width: 1400px; margin: 3rem auto; }
-        .container { display: grid; grid-template-columns: 1.2fr 1.5fr; gap: 2rem; }
-        @media (max-width: 900px) { 
-            .container { grid-template-columns: 1fr; } 
+        .simulator-wrapper {
+            max-width: 1400px;
+            margin: 3rem auto;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 1.2fr 1.5fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 900px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+
             .article-container {
-            font-family: 'Newsreader', serif;
- padding: 2rem; }
+                font-family: 'Newsreader', serif;
+                padding: 2rem;
+            }
         }
-        
-        .card { 
-            background: var(--card-bg); 
-            padding: 2rem; 
-            border-radius: var(--radius); 
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01); 
-            border: 1px solid rgba(255,255,255,0.5);
+
+        .card {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: var(--radius);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+            border: 1px solid rgba(255, 255, 255, 0.5);
         }
-        
-        .card h2 { font-family: 'Inter', sans-serif; font-size: 1.5rem; margin-top: 0; border-bottom: 2px solid var(--border); padding-bottom: 1rem; color: #0f172a; }
-        
-        .section-group { margin-bottom: 1.5rem; background: #f8fafc; padding: 1.25rem; border-radius: 12px; border: 1px solid var(--border); }
-        .section-group h3 { font-family: 'Inter', sans-serif; margin: 0 0 1.25rem 0; font-size: 1.1rem; color: #334155; display: flex; align-items: center; justify-content: space-between; font-weight: 600; }
-        .badge { background: #dbeafe; color: #1e40af; font-size: 0.8rem; padding: 0.2rem 0.6rem; border-radius: 9999px; font-weight: 600; }
-        
-        .input-row { display: flex; gap: 1.5rem; margin-bottom: 1rem; }
-        .input-row:last-child { margin-bottom: 0; }
-        .input-group { flex: 1; display: flex; flex-direction: column; }
-        
-        .simulator-wrapper label { font-family: 'Inter', sans-serif; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem; display: flex; justify-content: space-between; white-space: nowrap; }
-        .val-display { font-variant-numeric: tabular-nums; font-weight: 700; color: var(--primary-dark); background: #eff6ff; padding: 0.1rem 0.4rem; border-radius: 4px; }
-        
+
+        .card h2 {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.5rem;
+            margin-top: 0;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 1rem;
+            color: #0f172a;
+        }
+
+        .section-group {
+            margin-bottom: 1.5rem;
+            background: #f8fafc;
+            padding: 1.25rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .section-group h3 {
+            font-family: 'Inter', sans-serif;
+            margin: 0 0 1.25rem 0;
+            font-size: 1.1rem;
+            color: #334155;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-weight: 600;
+        }
+
+        .badge {
+            background: #dbeafe;
+            color: #1e40af;
+            font-size: 0.8rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 9999px;
+            font-weight: 600;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .input-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .input-group {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .simulator-wrapper label {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            white-space: nowrap;
+        }
+
+        .val-display {
+            font-variant-numeric: tabular-nums;
+            font-weight: 700;
+            color: var(--primary-dark);
+            background: #eff6ff;
+            padding: 0.1rem 0.4rem;
+            border-radius: 4px;
+        }
+
         /* Custom Sliders */
-        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
-        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 18px; width: 18px; border-radius: 50%; background: var(--primary); cursor: pointer; margin-top: -6px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); border: 2px solid white; transition: transform 0.1s; }
-        input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.1); }
-        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 6px; cursor: pointer; background: #cbd5e1; border-radius: 4px; }
-        input[type=range]:focus { outline: none; }
-        
-        .results-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem; }
-        .stat-box { background: white; padding: 1.25rem; border-radius: 12px; text-align: center; border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
-        .stat-label { font-size: 0.75rem; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
-        .stat-value { font-size: 1.8rem; font-weight: 800; margin-top: 0.5rem; }
-        .stat-box.mean .stat-value { color: #0ea5e9; }
-        .stat-box.low .stat-value { color: #ef4444; }
-        .stat-box.high .stat-value { color: #22c55e; }
-        
-        .chart-container { position: relative; height: 400px; width: 100%; background: white; border-radius: 12px; padding: 1rem; border: 1px solid var(--border); }
-        .alert { background: #fffbeb; border-left: 4px solid #f59e0b; padding: 1rem; border-radius: 8px; font-size: 0.9rem; color: #92400e; margin-bottom: 1.5rem; line-height: 1.5; }
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 18px;
+            width: 18px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            margin-top: -6px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            border: 2px solid white;
+            transition: transform 0.1s;
+        }
+
+        input[type=range]::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+        }
+
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 6px;
+            cursor: pointer;
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        input[type=range]:focus {
+            outline: none;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-box {
+            background: white;
+            padding: 1.25rem;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: #64748b;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-top: 0.5rem;
+        }
+
+        .stat-box.mean .stat-value {
+            color: #0ea5e9;
+        }
+
+        .stat-box.low .stat-value {
+            color: #ef4444;
+        }
+
+        .stat-box.high .stat-value {
+            color: #22c55e;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+            width: 100%;
+            background: white;
+            border-radius: 12px;
+            padding: 1rem;
+            border: 1px solid var(--border);
+        }
+
+        .alert {
+            background: #fffbeb;
+            border-left: 4px solid #f59e0b;
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: #92400e;
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
     </style>
 </head>
+
 <body class="antialiased">
 
     <div id="content-wrapper">
         <div class="article-container">
-            <h1>The Broken System: Why Your Child's Exam Score is a Statistical Lottery</h1>
-<p>Every term, thousands of parents stare at report cards and make drastic decisions based on a single number. A 90 drops to a 75, triggering panicked parent-teacher conferences, a sudden influx of weekend tuition, and tears at the dinner table. The entire system is built on a foundational, unquestioned assumption: that an exam score is a precise, scientific measurement of a child's intellect.</p>
-<p>If the score drops, the knowledge must have dropped.</p>
-<p>But when you subject this grading architecture to rigorous statistical scrutiny, the facade crumbles. An exam is not a precision instrument. It is a single, highly volatile sample drawn from a chaotic probability distribution. By modeling the underlying mechanics of how these tests are actually designed, we uncovered a startling truth: the grading system is mathematically broken. The final number printed on the report card is governed far less by consistent mastery, and far more by sheer statistical luck.</p>
-<p>To prove it, we built a Monte Carlo simulation. We modeled the exact structure of a standard Singapore Primary 3 Math Weighted Assessment (WA) to test what happens when you hold a student's ability perfectly constant, and let the system's inherent variance do the rest.</p>
-<h3>The Anatomy of a Trap</h3>
-<p>To understand the volatility, you have to look at how the trap is set. A standard Primary 3 Math WA is engineered into three tiers of escalating difficulty. We analyzed a standard 40-mark paper:</p>
-<ul>
-<li><strong>Basic:</strong> 10 questions, 1 mark each (Total: 10 marks). Straightforward, foundational calculations.</li>
-<li><strong>Intermediate:</strong> 10 questions, 2 marks each (Total: 20 marks). Standard word problems requiring two to three steps.</li>
-<li><strong>Advanced:</strong> 2 questions, 5 marks each (Total: 10 marks). High-stakes, non-routine heuristics designed to separate the top percentiles.</li>
-</ul>
-<h3>Patient Zero: The "Consistent" Student</h3>
-<p>We engineered a hypothetical test subject: a consistently "Good Student." This child hasn't changed their study habits. They aren't sleep-deprived. Their underlying baseline of competence remains mathematically identical across every single exam they take.</p>
-<p>To model this reality, we defined their true ability using a mean accuracy ($\mu$) and a standard deviation ($\sigma$) for each section. Because accuracy is physically bounded between 0% and 100%, we govern their performance using a <strong>Beta Distribution</strong>. (For the statistically inclined, the $\alpha$ and $\beta$ parameters are derived directly from the mean and standard deviation):</p>
-<p>$$ \nu = \frac{\mu(1-\mu)}{\sigma^2} - 1 $$
-$$ \alpha = \mu \times \nu $$
-$$ \beta = (1-\mu) \times \nu $$</p>
-<p>We locked in our student's unchanging biological baseline:</p>
-<ol>
-<li><p><strong>Basic Section:</strong> Highly competent. Careless mistakes are extremely rare.</p>
-<ul>
-<li>Mean ($\mu$): 95%</li>
-<li>Standard Deviation ($\sigma$): 5%</li>
-</ul>
-</li>
-<li><p><strong>Intermediate Section:</strong> Solid foundation, though occasionally tripped up by complex phrasing.</p>
-<ul>
-<li>Mean ($\mu$): 85%</li>
-<li>Standard Deviation ($\sigma$): 10%</li>
-</ul>
-</li>
-<li><p><strong>Advanced Section:</strong> Like most 9-year-olds, they find non-routine heuristics unpredictable. Sometimes they "see the trick" instantly; other times, they draw a total blank. This creates a high-variance blind spot.</p>
-<ul>
-<li>Mean ($\mu$): 70%</li>
-<li>Standard Deviation ($\sigma$): 10%</li>
-</ul>
-</li>
-</ol>
-<p><em>*A Note on Statistical Independence: In reality, performance across sections might be correlated (e.g., panicking on a difficult heuristics question might induce a careless mistake on a basic question). However, to purely isolate the structural variance of the exam design, we deliberately opted out of modeling covariance, treating each section as an independent event. It is worth noting that if we did model this compounding covariance, it would only exacerbate the overall volatility and widen the variance even further.</em></p>
-<h3>The Startling Results: Shattering the Illusion</h3>
-<p>If we subject this exact same student to 10,000 Weighted Assessments of the exact same difficulty, what do their scores look like?</p>
-<p>The results of our Monte Carlo simulation completely shatter the illusion of precision. Here is what the raw data reveals:</p>
-<ul>
-<li><strong>Expected Mean Score:</strong> ~83.8%</li>
-<li><strong>94% HDI (Credible Interval):</strong> 73% to 95%</li>
-<li><strong>Lower 10% Risk Boundary:</strong> ~76.4%</li>
-</ul>
-<p>Let the magnitude of those numbers sink in.</p>
-<p>Our subject possesses the exact same underlying intellect in simulation #1 as they do in simulation #10,000. Yet, depending entirely on the random draw of the morning, their score naturally swings anywhere from a <strong>73% (an AL4)</strong> to a <strong>95% (an AL1)</strong>.</p>
-<p>How can a systemic measurement tool be this volatile? We traced the instability back to two major culprits: the heavy weighting of the <strong>Intermediate Section</strong> and the unpredictable nature of the <strong>Advanced Section</strong>.</p>
-<p>Statistically, the variance of a score is calculated as the square of the marks multiplied by the variance of the accuracy ($Var = \text{marks}^2 \times \sigma^2$). When we run the autopsy on the variance distribution, the imbalance is staggering:</p>
-<ul>
-<li>Variance generated by Basic (10 marks): $10^2 \times 0.05^2 = \mathbf{0.25}$</li>
-<li>Variance generated by Intermediate (20 marks): $20^2 \times 0.10^2 = \mathbf{4.00}$</li>
-<li>Variance generated by Advanced (10 marks): $10^2 \times 0.10^2 = \mathbf{1.00}$</li>
-</ul>
-<p>While the Intermediate section generates the highest total variance ($4.00$) simply because it makes up half the paper, the Advanced section remains uniquely volatile. Even though it is only worth 10 marks—just 25% of the total paper—it injects <strong>four times as much statistical noise</strong> into the final grade as the entire foundational Basic section.</p>
-<p>Because these high-stakes heuristic questions are fundamentally "hit or miss", they cease to be a reliable measure of a student's foundational math skills. Instead, they act as a massive variance-inflator. The child's final grade is being hijacked by whether or not their brain happens to instantly recognize a niche pattern at 8:30 AM on a Tuesday, completely masking their true, overall competence.</p>
+            <h1>Why Your Child's Exam Score is a Statistical Lottery</h1>
+            <p>Every term, thousands of parents stare at report cards and make drastic decisions based on a single
+                number. A 90 drops to a 75, triggering panicked parent-teacher conferences, a sudden influx of weekend
+                tuition, and tears at the dinner table. The entire system is built on a foundational, unquestioned
+                assumption: that an exam score is a precise, scientific measurement of a child's intellect.</p>
+            <p>If the score drops, the knowledge must have dropped.</p>
+            <p>But when you subject this grading architecture to rigorous statistical scrutiny, the facade crumbles. An
+                exam is not a precision instrument. It is a single, highly volatile sample drawn from a chaotic
+                probability distribution. By modeling the underlying mechanics of how these tests are actually designed,
+                we uncovered a startling truth: the grading system is mathematically broken. The final number printed on
+                the report card is governed far less by consistent mastery, and far more by sheer statistical luck.</p>
+            <p>To prove it, we built a Monte Carlo simulation. We modeled the exact structure of a standard Singapore
+                Primary 3 Math Weighted Assessment (WA) to test what happens when you hold a student's ability perfectly
+                constant, and let the system's inherent variance do the rest.</p>
+            <h3>The Anatomy of a Trap</h3>
+            <p>To understand the volatility, you have to look at how the trap is set. A standard Primary 3 Math WA is
+                engineered into three tiers of escalating difficulty. We analyzed a standard 40-mark paper:</p>
+            <ul>
+                <li><strong>Basic:</strong> 10 questions, 1 mark each (Total: 10 marks). Straightforward, foundational
+                    calculations.</li>
+                <li><strong>Intermediate:</strong> 10 questions, 2 marks each (Total: 20 marks). Standard word problems
+                    requiring two to three steps.</li>
+                <li><strong>Advanced:</strong> 2 questions, 5 marks each (Total: 10 marks). High-stakes, non-routine
+                    heuristics designed to separate the top percentiles.</li>
+            </ul>
+            <h3>Patient Zero: The "Consistent" Student</h3>
+            <p>We engineered a hypothetical test subject: a consistently "Good Student." This child hasn't changed their
+                study habits. They aren't sleep-deprived. Their underlying baseline of competence remains mathematically
+                identical across every single exam they take.</p>
+            <p>To model this reality, we defined their true ability using a mean accuracy ($\mu$) and a standard
+                deviation ($\sigma$) for each section. Because accuracy is physically bounded between 0% and 100%, we
+                govern their performance using a <strong>Beta Distribution</strong>. (For the statistically inclined,
+                the $\alpha$ and $\beta$ parameters are derived directly from the mean and standard deviation):</p>
+            <p>$$ \nu = \frac{\mu(1-\mu)}{\sigma^2} - 1 $$
+                $$ \alpha = \mu \times \nu $$
+                $$ \beta = (1-\mu) \times \nu $$</p>
+            <p>We locked in our student's unchanging biological baseline:</p>
+            <ol>
+                <li>
+                    <p><strong>Basic Section:</strong> Highly competent. Careless mistakes are extremely rare.</p>
+                    <ul>
+                        <li>Mean ($\mu$): 95%</li>
+                        <li>Standard Deviation ($\sigma$): 5%</li>
+                    </ul>
+                </li>
+                <li>
+                    <p><strong>Intermediate Section:</strong> Solid foundation, though occasionally tripped up by
+                        complex phrasing.</p>
+                    <ul>
+                        <li>Mean ($\mu$): 85%</li>
+                        <li>Standard Deviation ($\sigma$): 10%</li>
+                    </ul>
+                </li>
+                <li>
+                    <p><strong>Advanced Section:</strong> Like most 9-year-olds, they find non-routine heuristics
+                        unpredictable. Sometimes they "see the trick" instantly; other times, they draw a total blank.
+                        This creates a high-variance blind spot.</p>
+                    <ul>
+                        <li>Mean ($\mu$): 70%</li>
+                        <li>Standard Deviation ($\sigma$): 10%</li>
+                    </ul>
+                </li>
+            </ol>
+            <p><em>*A Note on Statistical Independence: In reality, performance across sections might be correlated
+                    (e.g., panicking on a difficult heuristics question might induce a careless mistake on a basic
+                    question). However, to purely isolate the structural variance of the exam design, we deliberately
+                    opted out of modeling covariance, treating each section as an independent event. It is worth noting
+                    that if we did model this compounding covariance, it would only exacerbate the overall volatility
+                    and widen the variance even further.</em></p>
+            <h3>The Startling Results: Shattering the Illusion</h3>
+            <p>If we subject this exact same student to 10,000 Weighted Assessments of the exact same difficulty, what
+                do their scores look like?</p>
+            <p>The results of our Monte Carlo simulation completely shatter the illusion of precision. Here is what the
+                raw data reveals:</p>
+            <ul>
+                <li><strong>Expected Mean Score:</strong> ~83.8%</li>
+                <li><strong>94% HDI (Credible Interval):</strong> 73% to 95%</li>
+                <li><strong>Lower 10% Risk Boundary:</strong> ~76.4%</li>
+            </ul>
+            <p>Let the magnitude of those numbers sink in.</p>
+            <p>Our subject possesses the exact same underlying intellect in simulation #1 as they do in simulation
+                #10,000. Yet, depending entirely on the random draw of the morning, their score naturally swings
+                anywhere from a <strong>73% (an AL4)</strong> to a <strong>95% (an AL1)</strong>.</p>
+            <p>How can a systemic measurement tool be this volatile? We traced the instability back to two major
+                culprits: the heavy weighting of the <strong>Intermediate Section</strong> and the unpredictable nature
+                of the <strong>Advanced Section</strong>.</p>
+            <p>Statistically, the variance of a score is calculated as the square of the marks multiplied by the
+                variance of the accuracy ($Var = \text{marks}^2 \times \sigma^2$). When we run the autopsy on the
+                variance distribution, the imbalance is staggering:</p>
+            <ul>
+                <li>Variance generated by Basic (10 marks): $10^2 \times 0.05^2 = \mathbf{0.25}$</li>
+                <li>Variance generated by Intermediate (20 marks): $20^2 \times 0.10^2 = \mathbf{4.00}$</li>
+                <li>Variance generated by Advanced (10 marks): $10^2 \times 0.10^2 = \mathbf{1.00}$</li>
+            </ul>
+            <p>While the Intermediate section generates the highest total variance ($4.00$) simply because it makes up
+                half the paper, the Advanced section remains uniquely volatile. Even though it is only worth 10
+                marks—just 25% of the total paper—it injects <strong>four times as much statistical noise</strong> into
+                the final grade as the entire foundational Basic section.</p>
+            <p>Because these high-stakes heuristic questions are fundamentally "hit or miss", they cease to be a
+                reliable measure of a student's foundational math skills. Instead, they act as a massive
+                variance-inflator. The child's final grade is being hijacked by whether or not their brain happens to
+                instantly recognize a niche pattern at 8:30 AM on a Tuesday, completely masking their true, overall
+                competence.</p>
 
-<h3>The Broken System</h3>
-<p>If an engineering firm built a measuring tool with a margin of error of $\pm 9\%$, they would be laughed out of the industry. You do not use a blurry, warped ruler to cut microchips.</p>
-<p>Yet, our education apparatus does exactly this every single day. We use a highly volatile, structurally flawed sampling process to categorize 9-year-olds into rigid Achievement Level (AL) bands. We treat an 84 (AL3) and an 85 (AL2) as a profound difference in intellectual ability, when the mathematics explicitly prove it is nothing more than statistical noise.</p>
-<p>We scold the child who scored 76%, and we celebrate the child who scored 94%, remaining willfully blind to the mathematical reality that they could possess the exact same underlying mastery of the subject.</p>
-<p>Our exams are not broken because they are too difficult. They are broken because they masquerade a chaotic, high-variance lottery as an absolute, precise measure of a child's intellectual worth. It is time we stop worshipping the single exam score and start acknowledging the systemic volatility hiding behind it.</p>
+            <h3>The Broken System</h3>
+            <p>If an engineering firm built a measuring tool with a margin of error of $\pm 9\%$, they would be laughed
+                out of the industry. You do not use a blurry, warped ruler to cut microchips.</p>
+            <p>Yet, our education apparatus does exactly this every single day. We use a highly volatile, structurally
+                flawed sampling process to categorize 9-year-olds into rigid Achievement Level (AL) bands. We treat an
+                84 (AL3) and an 85 (AL2) as a profound difference in intellectual ability, when the mathematics
+                explicitly prove it is nothing more than statistical noise.</p>
+            <p>We scold the child who scored 76%, and we celebrate the child who scored 94%, remaining willfully blind
+                to the mathematical reality that they could possess the exact same underlying mastery of the subject.
+            </p>
+            <p>Our exams are not broken because they are too difficult. They are broken because they masquerade a
+                chaotic, high-variance lottery as an absolute, precise measure of a child's intellectual worth. It is
+                time we stop worshipping the single exam score and start acknowledging the systemic volatility hiding
+                behind it.</p>
 
-<h3>Interactive Scenarios: The Butterfly Effect of Exam Variance</h3>
-<p>To truly grasp the volatility of this system, we have built an interactive <strong>Monte Carlo Variance Engine</strong> directly into this report. You can run the exact same simulations we did, in real-time.</p>
-<p>We challenge you to test these two specific scenarios and watch how a genuinely competent student is systematically set up to fail:</p>
-<p><strong>Scenario 1: The "Slightly Off" Day</strong><br>
-Drop the student's expected accuracy by just 10% across all sections (Basic: 85%, Intermediate: 75%, Advanced: 60%), keeping the standard deviations untouched. <br>
-<em>The result?</em> Watch the "Lower 10% Risk" boundary plummet into the low 60s. A student who fundamentally grasps the vast majority of the curriculum is suddenly pushed to the brink of failing the exam entirely, victimized purely by structural variance.</p>
-<p><strong>Scenario 2: The High-Variance Heuristic (Hit or Miss)</strong><br>
-Keep the original expected accuracies intact (95%, 85%, 70%), but artificially inflate the Standard Deviation of the Advanced section to <strong>25%</strong>. This models a student who either completely cracks the underlying pattern to a heuristic question or draws an absolute blank.<br>
-<em>The result?</em> The probability density curve flattens and violently expands. The left tail of the distribution bleeds deep into AL5 territory. Despite being highly competent in basic and intermediate mathematics, the sheer structural noise introduced by just two advanced questions completely destabilizes their final grade.</p>
+            <h3>Interactive Scenarios: The Butterfly Effect of Exam Variance</h3>
+            <p>To truly grasp the volatility of this system, we have built an interactive <strong>Monte Carlo Variance
+                    Engine</strong> directly into this report. You can run the exact same simulations we did, in
+                real-time.</p>
+            <p>We challenge you to test these two specific scenarios and watch how a genuinely competent student is
+                systematically set up to fail:</p>
+            <p><strong>Scenario 1: The "Slightly Off" Day</strong><br>
+                Drop the student's expected accuracy by just 10% across all sections (Basic: 85%, Intermediate: 75%,
+                Advanced: 60%), keeping the standard deviations untouched. <br>
+                <em>The result?</em> Watch the "Lower 10% Risk" boundary plummet into the low 60s. A student who
+                fundamentally grasps the vast majority of the curriculum is suddenly pushed to the brink of failing the
+                exam entirely, victimized purely by structural variance.
+            </p>
+            <p><strong>Scenario 2: The High-Variance Heuristic (Hit or Miss)</strong><br>
+                Keep the original expected accuracies intact (95%, 85%, 70%), but artificially inflate the Standard
+                Deviation of the Advanced section to <strong>25%</strong>. This models a student who either completely
+                cracks the underlying pattern to a heuristic question or draws an absolute blank.<br>
+                <em>The result?</em> The probability density curve flattens and violently expands. The left tail of the
+                distribution bleeds deep into AL5 territory. Despite being highly competent in basic and intermediate
+                mathematics, the sheer structural noise introduced by just two advanced questions completely
+                destabilizes their final grade.
+            </p>
 
         </div>
-        
+
 
         <div class="simulator-wrapper">
             <div class="container">
                 <!-- Controls Sidebar -->
                 <div class="controls card">
                     <h2>Student & Exam Profile</h2>
-                    
+
                     <!-- Basic -->
                     <div class="section-group">
                         <h3>Basic Questions <span class="badge" id="basic-marks-badge">10 Marks</span></h3>
@@ -240,12 +531,14 @@ Keep the original expected accuracies intact (95%, 85%, 70%), but artificially i
                             </div>
                             <div class="input-group">
                                 <label>Marks / Question <span id="basic-m-val" class="val-display">1</span></label>
-                                <input type="range" id="basic-m" class="param-input" min="0.5" max="10" value="1" step="0.5">
+                                <input type="range" id="basic-m" class="param-input" min="0.5" max="10" value="1"
+                                    step="0.5">
                             </div>
                         </div>
                         <div class="input-row">
                             <div class="input-group">
-                                <label>Expected Accuracy <span id="basic-mean-val" class="val-display">95%</span></label>
+                                <label>Expected Accuracy <span id="basic-mean-val"
+                                        class="val-display">95%</span></label>
                                 <input type="range" id="basic-mean" class="param-input" min="1" max="99" value="95">
                             </div>
                             <div class="input-group">
@@ -265,12 +558,14 @@ Keep the original expected accuracies intact (95%, 85%, 70%), but artificially i
                             </div>
                             <div class="input-group">
                                 <label>Marks / Question <span id="inter-m-val" class="val-display">2</span></label>
-                                <input type="range" id="inter-m" class="param-input" min="0.5" max="10" value="2" step="0.5">
+                                <input type="range" id="inter-m" class="param-input" min="0.5" max="10" value="2"
+                                    step="0.5">
                             </div>
                         </div>
                         <div class="input-row">
                             <div class="input-group">
-                                <label>Expected Accuracy <span id="inter-mean-val" class="val-display">85%</span></label>
+                                <label>Expected Accuracy <span id="inter-mean-val"
+                                        class="val-display">85%</span></label>
                                 <input type="range" id="inter-mean" class="param-input" min="1" max="99" value="85">
                             </div>
                             <div class="input-group">
@@ -290,7 +585,8 @@ Keep the original expected accuracies intact (95%, 85%, 70%), but artificially i
                             </div>
                             <div class="input-group">
                                 <label>Marks / Question <span id="adv-m-val" class="val-display">5</span></label>
-                                <input type="range" id="adv-m" class="param-input" min="0.5" max="10" value="5" step="0.5">
+                                <input type="range" id="adv-m" class="param-input" min="0.5" max="10" value="5"
+                                    step="0.5">
                             </div>
                         </div>
                         <div class="input-row">
@@ -305,14 +601,16 @@ Keep the original expected accuracies intact (95%, 85%, 70%), but artificially i
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Results Area -->
                 <div class="results card">
                     <h2>Monte Carlo Simulation (10,000 runs)</h2>
                     <div class="alert">
-                        <strong>What am I looking at?</strong> This models a single student with a <em>consistent</em> underlying ability profile taking the same exam format 10,000 times. The spread below shows how much their grade fluctuates purely due to natural test-day variance and statistical luck.
+                        <strong>What am I looking at?</strong> This models a single student with a <em>consistent</em>
+                        underlying ability profile taking the same exam format 10,000 times. The spread below shows how
+                        much their grade fluctuates purely due to natural test-day variance and statistical luck.
                     </div>
-                    
+
                     <div class="results-grid">
                         <div class="stat-box mean">
                             <div class="stat-label">Average Expected Score</div>
@@ -331,7 +629,7 @@ Keep the original expected accuracies intact (95%, 85%, 70%), but artificially i
                             <div class="stat-value" style="color: #dc2626;" id="res-p10">--</div>
                         </div>
                     </div>
-                    
+
                     <div class="chart-container">
                         <canvas id="distChart"></canvas>
                     </div>
@@ -345,12 +643,12 @@ Keep the original expected accuracies intact (95%, 85%, 70%), but artificially i
         // Render Math with KaTeX
         renderMathInElement(document.getElementById('content-wrapper'), {
             delimiters: [
-                {left: '$$', right: '$$', display: true},
-                {left: '$', right: '$', display: false}
+                { left: '$$', right: '$$', display: true },
+                { left: '$', right: '$', display: false }
             ],
-            throwOnError : false
+            throwOnError: false
         });
-        
+
         // ---- SIMULATOR LOGIC ----
         const nSimulations = 10000;
         let chart = null;
@@ -368,17 +666,17 @@ Keep the original expected accuracies intact (95%, 85%, 70%), but artificially i
             const sections = ['basic', 'inter', 'adv'];
             let totalMarks = 0;
             let totalScores = new Float32Array(nSimulations);
-            
+
             for (let sec of sections) {
                 let q = parseFloat(document.getElementById(`${sec}-q`).value);
                 let m = parseFloat(document.getElementById(`${sec}-m`).value);
                 let marks = q * m;
                 let mean = parseFloat(document.getElementById(`${sec}-mean`).value) / 100;
                 let stdDev = parseFloat(document.getElementById(`${sec}-std`).value) / 100;
-                
+
                 totalMarks += marks;
                 let params = getBetaParams(mean, stdDev);
-                
+
                 for (let i = 0; i < nSimulations; i++) {
                     let acc = params ? jStat.beta.sample(params.alpha, params.beta) : mean;
                     if (acc < 0) acc = 0;
@@ -386,25 +684,25 @@ Keep the original expected accuracies intact (95%, 85%, 70%), but artificially i
                     totalScores[i] += acc * marks;
                 }
             }
-            
+
             let percentageScores = new Float32Array(nSimulations);
             let sum = 0;
             if (totalMarks === 0) totalMarks = 1;
-            
+
             for (let i = 0; i < nSimulations; i++) {
                 let pct = (totalScores[i] / totalMarks) * 100;
                 percentageScores[i] = pct;
                 sum += pct;
             }
-            
+
             percentageScores.sort();
             let simMean = sum / nSimulations;
-            
+
             let credMass = 0.94;
             let intervalCount = Math.floor(credMass * nSimulations);
             let minWidth = Infinity;
             let hdiLow = 0, hdiHigh = 0;
-            
+
             for (let i = 0; i <= nSimulations - intervalCount; i++) {
                 let width = percentageScores[i + intervalCount - 1] - percentageScores[i];
                 if (width < minWidth) {
@@ -413,13 +711,13 @@ Keep the original expected accuracies intact (95%, 85%, 70%), but artificially i
                     hdiHigh = percentageScores[i + intervalCount - 1];
                 }
             }
-            
+
             let p10 = percentageScores[Math.floor(nSimulations * 0.10)];
             document.getElementById('res-mean').innerText = simMean.toFixed(1) + '%';
             document.getElementById('res-p5').innerText = hdiLow.toFixed(1) + '%';
             document.getElementById('res-p95').innerText = hdiHigh.toFixed(1) + '%';
             document.getElementById('res-p10').innerText = p10.toFixed(1) + '%';
-            
+
             drawChart(percentageScores, simMean, hdiLow, hdiHigh, p10);
         }
 
@@ -436,19 +734,19 @@ Keep the original expected accuracies intact (95%, 85%, 70%), but artificially i
 
         function drawChart(scores, mean, hdiLow, hdiHigh, p10) {
             const ctx = document.getElementById('distChart').getContext('2d');
-            
+
             let startIdx = Math.max(0, Math.floor(scores[0]) - 5);
-            let endIdx = Math.min(100, Math.ceil(scores[scores.length-1]) + 5);
-            
+            let endIdx = Math.min(100, Math.ceil(scores[scores.length - 1]) + 5);
+
             let simStdDev = Math.sqrt(scores.reduce((sq, n) => sq + Math.pow(n - mean, 2), 0) / (scores.length - 1));
             let bandwidth = 1.06 * simStdDev * Math.pow(scores.length, -0.2);
             if (bandwidth < 0.5) bandwidth = 0.5;
-            
+
             const dataPts = [];
-            for(let x = startIdx; x <= endIdx; x += 0.5) {
-                dataPts.push({x: x, y: gaussianKDE(x, scores, bandwidth)});
+            for (let x = startIdx; x <= endIdx; x += 0.5) {
+                dataPts.push({ x: x, y: gaussianKDE(x, scores, bandwidth) });
             }
-            
+
             if (chart) chart.destroy();
             chart = new Chart(ctx, {
                 type: 'line',
@@ -469,15 +767,15 @@ Keep the original expected accuracies intact (95%, 85%, 70%), but artificially i
                     responsive: true,
                     maintainAspectRatio: false,
                     scales: {
-                        y: { display: false }, 
-                        x: { 
+                        y: { display: false },
+                        x: {
                             type: 'linear',
                             min: startIdx,
                             max: endIdx,
                             grid: { display: false },
-                            ticks: { 
-                                color: '#64748b', 
-                                callback: function(value) { return value + '%'; }
+                            ticks: {
+                                color: '#64748b',
+                                callback: function (value) { return value + '%'; }
                             }
                         }
                     },
@@ -518,9 +816,9 @@ Keep the original expected accuracies intact (95%, 85%, 70%), but artificially i
                     const val = e.target.value;
                     let displayVal = val;
                     if (id.includes('mean') || id.includes('std')) displayVal += '%';
-                    
+
                     document.getElementById(id + '-val').innerText = displayVal;
-                    
+
                     if (id.includes('-q') || id.includes('-m')) {
                         const sec = id.split('-')[0];
                         const q = parseFloat(document.getElementById(`${sec}-q`).value);
@@ -539,4 +837,5 @@ Keep the original expected accuracies intact (95%, 85%, 70%), but artificially i
         }, 100);
     </script>
 </body>
+
 </html>

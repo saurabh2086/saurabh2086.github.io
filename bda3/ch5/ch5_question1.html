@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Exchangeability and Independence</title>
+    <title>Exchangeability and Independence — Let's Figure It Out (θ known)</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -46,7 +46,6 @@
                     },
                     boxShadow: {
                         'soft': '0 4px 12px rgba(15, 23, 42, 0.05)',
-                        'premium': '0 12px 30px rgba(19, 27, 46, 0.08)'
                     }
                 }
             }
@@ -80,6 +79,19 @@
             border-radius: 0 4px 4px 0;
         }
 
+        .derivation {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-left: 3px solid #75859d;
+            padding: 0.75rem 1.5rem;
+            margin-bottom: 1.5rem;
+            border-radius: 0 4px 4px 0;
+            overflow-x: auto;
+        }
+
+        .theorem-block { overflow-x: auto; }
+        mjx-container { max-width: 100%; }
+
         .academic-card {
             background-color: #ffffff;
             border: 1px solid #e2e8f0;
@@ -91,7 +103,15 @@
             box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
             transform: translateY(-2px);
         }
-        
+
+        .label {
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            font-size: 0.78rem;
+        }
+
         .code-block {
             background-color: #1e293b;
             color: #f8fafc;
@@ -102,41 +122,23 @@
             border-radius: 4px;
             overflow-x: auto;
         }
+
+        table.rigtable { width: 100%; border-collapse: collapse; font-size: 1rem; }
+        table.rigtable th, table.rigtable td { border: 1px solid #e2e8f0; padding: 0.6rem 0.8rem; text-align: left; vertical-align: top; }
+        table.rigtable th { background-color: #f8fafc; font-family: 'Inter', sans-serif; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; color: #131b2e; }
     </style>
 </head>
 
 <body class="antialiased">
 
-    <!-- Container constrained to 720px for optimal reading -->
-    <div class="max-w-[880px] mx-auto px-4 py-16">
+    <!-- Container constrained for optimal reading -->
+    <div class="max-w-[960px] mx-auto px-6 py-16">
 
         <!-- Navigation -->
-        <nav class="mb-8 flex items-center gap-6">
-            <a href="../../index.html"
-                class="inline-flex items-center text-sm font-semibold text-bayesian-slate hover:text-bayesian-navy transition-colors ui-text">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                </svg>
+        <nav class="mb-8">
+            <a href="../../index.html" class="inline-flex items-center text-sm font-semibold text-bayesian-slate hover:text-bayesian-navy transition-colors ui-text">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
                 Back to Index
-            </a>
-            <span class="text-bayesian-border">|</span>
-            <a href="ch5_question2.html"
-                class="inline-flex items-center text-sm font-semibold text-bayesian-slate hover:text-bayesian-navy transition-colors ui-text">
-                Exercise 5.2
-                <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                </svg>
-            </a>
-            <span class="text-bayesian-border">|</span>
-            <a href="../../index.html"
-                class="inline-flex items-center text-sm font-semibold text-bayesian-slate hover:text-bayesian-navy transition-colors ui-text">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
-                    </path>
-                </svg>
-                Home
             </a>
         </nav>
 
@@ -144,344 +146,218 @@
         <header class="mb-16">
             <div class="flex flex-wrap gap-2 mb-6">
                 <div class="px-3 py-1 bg-bayesian-surfaceAlt border border-bayesian-border text-bayesian-slate rounded text-xs font-semibold tracking-wide uppercase ui-text">
-                    Bayesian Data Analysis &bull; Chapter 5
+                    Chapter 5 &bull; Question 1
                 </div>
                 <div class="px-3 py-1 bg-amber-50 border border-amber-200 text-amber-800 rounded text-xs font-semibold tracking-wide uppercase ui-text">
-                    Personal Study Notes
+                    Let's Figure It Out
                 </div>
             </div>
-            <h1 class="text-4xl font-bold mb-6 tracking-tight leading-tight ui-text">
-                Exercise 5.1 Exchangeability vs. Independence
+            <h1 class="text-5xl font-bold mb-6 tracking-tight leading-tight ui-text">
+                Two Balls Out of a Box
             </h1>
             <p class="text-xl text-bayesian-slate leading-relaxed">
-                Deconstructing the fundamental assumptions of statistical modeling through three intuitive thought experiments.
+                Suppose I know exactly what's in the box. I pull out two balls and ask a simple question: does the first one tell me anything about the second? It sounds trivial, and in one case it is. But by chasing the arithmetic honestly we'll stumble onto something strange — a negative number that, later on, turns out to be impossible to fake. That little surprise is the whole reason de Finetti's theorem has to be careful.
             </p>
         </header>
 
-        <!-- The First Principles Section -->
+        <!-- Definitions -->
         <section class="mb-16">
-            <h2 class="text-2xl font-semibold mb-6 border-b pb-2 border-bayesian-border ui-text">
-                The Definitions: First Principles
-            </h2>
-            
-            <div class="space-y-6">
-                <!-- Exchangeability Block -->
-                <div class="theorem-block">
-                    <h3 class="text-lg font-bold text-bayesian-blue mb-2 ui-text uppercase tracking-wider text-sm">Definition: Exchangeability</h3>
-                    <p class="mb-3">
-                        <strong>The "Symmetry" Principle.</strong> A sequence of random variables is exchangeable if their joint probability distribution is invariant to permutations of their indices.
-                    </p>
-                    <div class="code-block mb-3">
-                        $$p(y_1, y_2) = p(y_2, y_1)$$
-                    </div>
-                    <p class="text-base text-bayesian-slate italic">
-                        It means the "labels" (1st, 2nd) carry no information. The order in which we observe the data doesn't affect our belief about the underlying distribution.
-                    </p>
-                </div>
-
-                <!-- Independence Block -->
-                <div class="theorem-block">
-                    <h3 class="text-lg font-bold text-bayesian-blue mb-2 ui-text uppercase tracking-wider text-sm">Definition: Independence</h3>
-                    <p class="mb-3">
-                        <strong>The "Information Isolation" Principle.</strong> Two variables are independent if knowing the outcome of one tells you absolutely nothing about the outcome of the other.
-                    </p>
-                    <div class="code-block mb-3">
-                        $$p(y_1, y_2) = p(y_1)p(y_2)$$
-                        $$p(y_2 | y_1) = p(y_2)$$
-                    </div>
-                    <p class="text-base text-bayesian-slate italic">
-                        Independence is a much stronger condition than exchangeability. It allows us to multiply probabilities directly.
-                    </p>
-                </div>
-
-                <!-- Covariance Block -->
-                <div class="theorem-block">
-                    <h3 class="text-lg font-bold text-bayesian-blue mb-2 ui-text uppercase tracking-wider text-sm">First Principle: Covariance of Binary Indicators</h3>
-                    <p class="mb-3">
-                        To mathematically quantify dependency, we calculate the covariance of two binary random variables $y_1, y_2 \in \{0, 1\}$. By definition, the marginal expectations are $E[y_i] = 1 \cdot P(y_i = 1) + 0 \cdot P(y_i = 0) = P(y_i = 1)$.
-                    </p>
-                    <p class="mb-3">
-                        The expectation of the product $E[y_1 y_2]$ is defined by summing over the joint distribution:
-                        $$E[y_1 y_2] = \sum_{y_1} \sum_{y_2} y_1 y_2 p(y_1, y_2) = \sum_{y_2} y_2 p(y_2) \left( \sum_{y_1} y_1 p(y_1 \mid y_2) \right)$$
-                        For binary indicators $y_1, y_2 \in \{0, 1\}$, the only non-zero product in the summation is when $y_1 = 1$ and $y_2 = 1$. Thus, the double sum simplifies directly to:
-                        $$E[y_1 y_2] = 1 \cdot 1 \cdot P(y_1=1, y_2=1) = P(y_1=1, y_2=1)$$
-                    </p>
-                    <p class="mb-3">
-                        Therefore, the covariance simplifies directly to:
-                    </p>
-                    <div class="code-block mb-4">
-                        $$\begin{aligned}
-                        \mathrm{Cov}(y_1, y_2) &= E[y_1 y_2] - E[y_1]E[y_2] \\[4pt]
-                        &= P(y_1=1, y_2=1) - P(y_1=1)P(y_2=1)
-                        \end{aligned}$$
-                    </div>
-                    
-                    <h4 class="font-semibold text-bayesian-navy ui-text text-base mb-2">Derivation for Drawing Without Replacement (Population size $N$, known fraction $\theta$)</h4>
-                    <p class="mb-3 text-base text-bayesian-text">
-                        If a box contains $N$ balls, out of which a fraction $\theta$ are black (total $N\theta$ black balls), we draw two balls without replacement:
-                    </p>
-                    <ol class="list-decimal pl-6 mb-4 space-y-2 text-base text-bayesian-text">
-                        <li>
-                            The marginal probability of drawing a black ball on any draw is $E[y_1] = E[y_2] = \theta$.
-                        </li>
-                        <li>
-                            The expected value of their product is the joint probability of drawing two black balls:
-                            $$E[y_1 y_2] = P(y_1=1, y_2=1) = P(y_1=1)P(y_2=1 \mid y_1=1) = \theta \cdot \frac{N\theta - 1}{N - 1}$$
-                        </li>
-                        <li>
-                            Plugging these into the covariance formula yields:
-                            $$\begin{aligned}
-                            \mathrm{Cov}(y_1, y_2) &= E[y_1 y_2] - E[y_1]E[y_2] \\[6pt]
-                            &= \theta \cdot \frac{N\theta - 1}{N - 1} - \theta^2 \\[6pt]
-                            &= \theta \left( \frac{N\theta - 1 - \theta(N - 1)}{N - 1} \right) \\[6pt]
-                            &= \theta \left( \frac{N\theta - 1 - N\theta + \theta}{N - 1} \right) \\[6pt]
-                            &= \theta \left( \frac{\theta - 1}{N - 1} \right) \\[6pt]
-                            &= -\frac{\theta(1 - \theta)}{N - 1}
-                            \end{aligned}$$
-                        </li>
-                    </ol>
-                    <p class="text-base text-bayesian-slate italic">
-                        If $y_1$ and $y_2$ are independent, $P(y_1=1, y_2=1) = P(y_1=1)P(y_2=1)$, yielding a covariance of zero. A non-zero covariance indicates statistical dependence.
-                    </p>
-                </div>
-            </div>
-            
-            <div class="mt-8 p-5 rounded border border-bayesian-border bg-bayesian-surfaceAlt">
-                <p>
-                    <strong>The Golden Rule:</strong> Independent and identically distributed (i.i.d.) implies exchangeability. However, exchangeability <em>does not</em> imply independence!
-                </p>
-            </div>
-        </section>
-
-        <!-- Problem Breakdown Section -->
-        <section class="mb-16">
-            <h2 class="text-2xl font-semibold mb-6 border-b pb-2 border-bayesian-border ui-text">
-                Analyzing the Scenarios
+            <h2 class="text-3xl font-semibold mb-8 border-b pb-3 border-bayesian-border ui-text">
+                1. First, Let's Agree on What the Words Mean
             </h2>
 
-            <div class="space-y-10">
-                
-                <!-- Scenario A -->
-                <div class="academic-card p-8">
-                    <div class="mb-6">
-                        <span class="inline-block w-8 h-8 rounded bg-bayesian-surfaceAlt border border-bayesian-border text-center leading-8 font-bold text-bayesian-navy ui-text mb-4">A</span>
-                        <h3 class="text-xl font-semibold text-bayesian-navy mb-4 ui-text">With Replacement (Small Population)</h3>
-                        <p class="text-lg mb-6 bg-bayesian-surfaceAlt p-4 rounded border border-bayesian-border italic">
-                            "A box has one black ball and one white ball. We pick a ball $y_1$ at random, <strong>put it back</strong>, and pick another ball $y_2$ at random."
-                        </p>
-                    </div>
-                    
-                    <div class="space-y-4">
-                        <div>
-                            <h4 class="font-semibold text-bayesian-navy ui-text">(i) Are they Exchangeable?</h4>
-                            <p class="mb-3"><strong>Yes.</strong> We show that the joint probability is symmetric, i.e., $p(y_1, y_2) = p(y_2, y_1)$ for all $y_1, y_2 \in \{0, 1\}$ (where $1$ is black and $0$ is white). Using the general product rule $p(y_1, y_2) = p(y_1)p(y_2 \mid y_1)$:</p>
-                            <div class="code-block mb-3">
-                                $$\begin{aligned}
-                                p(y_1=1, y_2=1) &= p(y_1=1)p(y_2=1 \mid y_1=1) = \frac{1}{2} \times \frac{1}{2} = \frac{1}{4} \\[4pt]
-                                p(y_1=0, y_2=0) &= p(y_1=0)p(y_2=0 \mid y_1=0) = \frac{1}{2} \times \frac{1}{2} = \frac{1}{4} \\[4pt]
-                                p(y_1=1, y_2=0) &= p(y_1=1)p(y_2=0 \mid y_1=1) = \frac{1}{2} \times \frac{1}{2} = \frac{1}{4} \\[4pt]
-                                p(y_1=0, y_2=1) &= p(y_1=0)p(y_2=1 \mid y_1=0) = \frac{1}{2} \times \frac{1}{2} = \frac{1}{4}
-                                \end{aligned}$$
-                            </div>
-                            <p class="text-base text-bayesian-slate italic mb-3">
-                                Note: Since drawing is with replacement, the second draw is independent of the first, so $p(y_2 \mid y_1) = p(y_2) = \frac{1}{2}$ in all cases.
-                            </p>
-                            <p class="mb-3">
-                                Verifying the symmetry $p(y_1, y_2) = p(y_2, y_1)$ for all pairs:
-                            </p>
-                            <ul class="list-disc pl-6 space-y-1 text-base text-bayesian-text mb-3">
-                                <li>For $(1, 1)$: $p(y_1=1, y_2=1) = p(y_2=1, y_1=1) = \frac{1}{4}$</li>
-                                <li>For $(0, 0)$: $p(y_1=0, y_2=0) = p(y_2=0, y_1=0) = \frac{1}{4}$</li>
-                                <li>For $(1, 0)$: $p(y_1=1, y_2=0) = \frac{1}{4}$ and $p(y_2=1, y_1=0) = p(y_1=0, y_2=1) = \frac{1}{4}$</li>
-                                <li>For $(0, 1)$: $p(y_1=0, y_2=1) = \frac{1}{4}$ and $p(y_2=0, y_1=1) = p(y_1=1, y_2=0) = \frac{1}{4}$</li>
-                            </ul>
-                            <p class="text-base text-bayesian-slate italic">
-                                Since the joint probability is invariant to permutations in all cases, the sequence is exchangeable.
-                            </p>
-                        </div>
-                        <div>
-                            <h4 class="font-semibold text-bayesian-navy ui-text">(ii) Are they Independent?</h4>
-                            <p class="mb-2">
-                                <strong>Yes.</strong> Philosophically, independence means that observing the outcome of the first draw ($y_1$) tells us absolutely nothing about the outcome of the second draw ($y_2$), which mathematically means $p(y_2 \mid y_1) = p(y_2)$. We can measure this dependency using the covariance:
-                            </p>
-                            <div class="code-block mb-2">
-                                $$\mathrm{Cov}(y_1, y_2) = E[y_1 y_2] - E[y_1]E[y_2] = \frac{1}{4} - \left(\frac{1}{2}\right)\left(\frac{1}{2}\right) = 0$$
-                            </div>
-                            <p class="text-base text-bayesian-text">
-                                Since the covariance is exactly zero, the state of the box remains unchanged between draws due to replacement, confirming perfect independence.
-                            </p>
-                        </div>
-                        <div>
-                            <h4 class="font-semibold text-bayesian-navy ui-text">(iii) Can we Act Independent?</h4>
-                            <p><strong>Yes.</strong> We don't just "act" like they are independent; they are mathematically strictly independent. We can blindly use the multiplication rule.</p>
-                        </div>
-                    </div>
-                </div>
+            <p class="mb-6">Before we can argue about anything we'd better nail down the words, because half of all confusion in this subject is people using "independent" and "exchangeable" as if they were the same thing. They are not. Let each draw be a number $y_i$ that is $1$ if the ball is black and $0$ if it's white, and let $p(\cdot)$ be the probability of whatever combination we're talking about. Here are the four ideas we need, and that's all we need.</p>
 
-                <!-- Scenario B -->
-                <div class="academic-card p-8 relative">
-                    <div class="mb-6">
-                        <span class="inline-block w-8 h-8 rounded bg-bayesian-surfaceAlt border border-bayesian-border text-center leading-8 font-bold text-bayesian-navy ui-text mb-4">B</span>
-                        <h3 class="text-xl font-semibold text-bayesian-navy mb-4 ui-text">Without Replacement (Small Population)</h3>
-                        <p class="text-lg mb-6 bg-bayesian-surfaceAlt p-4 rounded border border-bayesian-border italic">
-                            "A box has one black ball and one white ball. We pick a ball $y_1$ at random, <strong>we do not put it back</strong>, then we pick ball $y_2$."
-                        </p>
-                    </div>
-                    
-                    <div class="space-y-4">
-                        <div>
-                            <h4 class="font-semibold text-bayesian-navy ui-text">(i) Are they Exchangeable?</h4>
-                            <p class="mb-3"><strong>Yes.</strong> To prove exchangeability, we must show that the joint probability is symmetric, i.e., $p(y_1, y_2) = p(y_2, y_1)$ for all possible outcomes of $y_1, y_2 \in \{0, 1\}$ (where $1$ is black and $0$ is white). Let's expand the joint probabilities for all 4 combinations:</p>
-                            <div class="code-block mb-3">
-                                $$\begin{aligned}
-                                p(y_1=1, y_2=1) &= p(y_1=1)p(y_2=1 \mid y_1=1) = \frac{1}{2} \times 0 = 0 \\[4pt]
-                                p(y_1=0, y_2=0) &= p(y_1=0)p(y_2=0 \mid y_1=0) = \frac{1}{2} \times 0 = 0 \\[4pt]
-                                p(y_1=1, y_2=0) &= p(y_1=1)p(y_2=0 \mid y_1=1) = \frac{1}{2} \times 1 = \frac{1}{2} \\[4pt]
-                                p(y_1=0, y_2=1) &= p(y_1=0)p(y_2=1 \mid y_1=0) = \frac{1}{2} \times 1 = \frac{1}{2}
-                                \end{aligned}$$
-                            </div>
-                            <p class="mb-3">
-                                Now let's verify if the symmetry $p(y_1, y_2) = p(y_2, y_1)$ holds for each case:
-                            </p>
-                            <ul class="list-disc pl-6 space-y-1 text-base text-bayesian-text mb-3">
-                                <li>For $(1, 1)$: $p(y_1=1, y_2=1) = p(y_2=1, y_1=1) = 0$</li>
-                                <li>For $(0, 0)$: $p(y_1=0, y_2=0) = p(y_2=0, y_1=0) = 0$</li>
-                                <li>For $(1, 0)$: $p(y_1=1, y_2=0) = \frac{1}{2}$ and $p(y_2=1, y_1=0) = p(y_1=0, y_2=1) = \frac{1}{2}$</li>
-                                <li>For $(0, 1)$: $p(y_1=0, y_2=1) = \frac{1}{2}$ and $p(y_2=0, y_1=1) = p(y_1=1, y_2=0) = \frac{1}{2}$</li>
-                            </ul>
-                            <p class="text-base text-bayesian-slate italic">
-                                Since the joint probability is invariant to permutations in all cases, the sequence is exchangeable.
-                            </p>
-                        </div>
-                        <div>
-                            <h4 class="font-semibold text-bayesian-navy ui-text">(ii) Are they Independent?</h4>
-                            <p class="mb-2">
-                                <strong>No.</strong> Philosophically, if they were independent, knowing the outcome of the first draw ($y_1$) would tell us nothing about the second ($y_2$). However, because we do not replace the ball, $y_1$ gives us perfect information about $y_2$ (e.g., if $y_1 = 1$, then $y_2$ must be $0$). We measure this strong dependency via the covariance:
-                            </p>
-                            <div class="code-block mb-2">
-                                $$\mathrm{Cov}(y_1, y_2) = E[y_1 y_2] - E[y_1]E[y_2] = 0 - \left(\frac{1}{2}\right)\left(\frac{1}{2}\right) = -0.25$$
-                            </div>
-                            <p class="text-base text-bayesian-text mb-3">
-                                To see why the expected value of the product is $E[y_1 y_2] = 0$, we expand the expectation over all four possible joint configurations:
-                                $$E[y_1 y_2] = (1 \times 1)P(y_1=1, y_2=1) + (1 \times 0)P(y_1=1, y_2=0) + (0 \times 1)P(y_1=0, y_2=1) + (0 \times 0)P(y_1=0, y_2=0)$$
-                                Since any configuration containing a White ball ($y_i = 0$) results in a product of $0$, they contribute nothing to the expectation. The only configuration with a product of $1$ is $(1, 1)$, which has a probability of $0$ (drawing two Black balls without replacement from a box with only one Black ball is impossible). Thus:
-                                $$E[y_1 y_2] = 1(0) + 0\left(\frac{1}{2}\right) + 0\left(\frac{1}{2}\right) + 0(0) = 0$$
-                            </p>
-                            <p class="text-base text-bayesian-text">
-                                The non-zero covariance (specifically negative, due to physical depletion) mathematically validates their strong mutual dependence.
-                            </p>
-                        </div>
-                        <div>
-                            <h4 class="font-semibold text-bayesian-navy ui-text">(iii) Can we Act Independent?</h4>
-                            <p><strong>Absolutely Not.</strong> If we acted as if they were independent, we would calculate $p(y_1=B, y_2=B) = \frac{1}{2} \times \frac{1}{2} = \frac{1}{4}$. But in reality, this outcome is impossible ($p=0$). Assuming independence here creates fatal modeling errors.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Scenario C -->
-                <div class="academic-card p-8">
-                    <div class="mb-6">
-                        <span class="inline-block w-8 h-8 rounded bg-bayesian-surfaceAlt border border-bayesian-border text-center leading-8 font-bold text-bayesian-navy ui-text mb-4">C</span>
-                        <h3 class="text-xl font-semibold text-bayesian-navy mb-4 ui-text">Without Replacement (Vast Population)</h3>
-                        <p class="text-lg mb-6 bg-bayesian-surfaceAlt p-4 rounded border border-bayesian-border italic">
-                            "A box has a million black balls and a million white balls. We pick a ball $y_1$ at random, <strong>we do not put it back</strong>, then we pick ball $y_2$."
-                        </p>
-                    </div>
-                    
-                    <div class="space-y-4">
-                        <div>
-                            <h4 class="font-semibold text-bayesian-navy ui-text">(i) Are they Exchangeable?</h4>
-                            <p class="mb-3"><strong>Yes.</strong> For $N = 2,000,000$ balls ($B = 1,000,000$ black, $W = 1,000,000$ white), drawing without replacement gives:</p>
-                            <div class="code-block mb-3">
-                                $$\begin{aligned}
-                                p(y_1=1, y_2=1) &= p(y_1=1)p(y_2=1 \mid y_1=1) = \frac{1,000,000}{2,000,000} \times \frac{999,999}{1,999,999} = \frac{999,999}{3,999,998} \\[4pt]
-                                p(y_1=0, y_2=0) &= p(y_1=0)p(y_2=0 \mid y_1=0) = \frac{1,000,000}{2,000,000} \times \frac{999,999}{1,999,999} = \frac{999,999}{3,999,998} \\[4pt]
-                                p(y_1=1, y_2=0) &= p(y_1=1)p(y_2=0 \mid y_1=1) = \frac{1,000,000}{2,000,000} \times \frac{1,000,000}{1,999,999} = \frac{1,000,000}{3,999,998} \\[4pt]
-                                p(y_1=0, y_2=1) &= p(y_1=0)p(y_2=1 \mid y_1=0) = \frac{1,000,000}{2,000,000} \times \frac{1,000,000}{1,999,999} = \frac{1,000,000}{3,999,998}
-                                \end{aligned}$$
-                            </div>
-                            <p class="mb-3">
-                                Verifying the symmetry $p(y_1, y_2) = p(y_2, y_1)$ for all pairs:
-                            </p>
-                            <ul class="list-disc pl-6 space-y-1 text-base text-bayesian-text mb-3">
-                                <li>For $(1, 1)$: $p(y_1=1, y_2=1) = p(y_2=1, y_1=1) = \frac{999,999}{3,999,998}$</li>
-                                <li>For $(0, 0)$: $p(y_1=0, y_2=0) = p(y_2=0, y_1=0) = \frac{999,999}{3,999,998}$</li>
-                                <li>For $(1, 0)$: $p(y_1=1, y_2=0) = \frac{1,000,000}{3,999,998}$ and $p(y_2=1, y_1=0) = p(y_1=0, y_2=1) = \frac{1,000,000}{3,999,998}$</li>
-                                <li>For $(0, 1)$: $p(y_1=0, y_2=1) = \frac{1,000,000}{3,999,998}$ and $p(y_2=0, y_1=1) = p(y_1=1, y_2=0) = \frac{1,000,000}{3,999,998}$</li>
-                            </ul>
-                            <p class="text-base text-bayesian-slate italic">
-                                Just as in Scenario B, the joint distribution is fully symmetric under index permutation, proving that they are exchangeable.
-                            </p>
-                        </div>
-                        <div>
-                            <h4 class="font-semibold text-bayesian-navy ui-text">(ii) Are they Independent?</h4>
-                            <p class="mb-2">
-                                <strong>Technically No.</strong> Philosophically, drawing without replacement means the first draw ($y_1$) physically depletes the box, meaning it slightly changes our beliefs about the second draw ($y_2$). We can measure this small dependency using the covariance:
-                            </p>
-                            <div class="code-block mb-2">
-                                $$\mathrm{Cov}(y_1, y_2) = -\frac{\theta(1-\theta)}{N-1} = -\frac{0.25}{1,999,999} \approx -1.25 \times 10^{-7}$$
-                            </div>
-                            <p class="text-base text-bayesian-text">
-                                Because the covariance is not strictly zero, they are not mathematically independent. However, because $N$ is so large, this covariance is extremely close to zero.
-                            </p>
-                        </div>
-                        <div>
-                            <h4 class="font-semibold text-bayesian-navy ui-text">(iii) Can we Act Independent?</h4>
-                            <p><strong>Yes!</strong> This is the essence of asymptotic approximation. The tiny dependency ($0.5$ vs $0.4999997$) is entirely negligible for any practical inference. In large populations, "without replacement" converges to "with replacement" behavior. We can act as if they are i.i.d.</p>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </section>
-
-        <!-- Summary Insight -->
-        <section class="mb-16">
-            <h2 class="text-2xl font-semibold mb-6 border-b pb-2 border-bayesian-border ui-text">
-                The "Why" Behind the Math
-            </h2>
-            <div class="prose max-w-none text-bayesian-text">
-                <p class="mb-4">
-                    In Bayesian statistics, <strong>exchangeability</strong> is the fundamental assumption we need to build hierarchical models and apply <a href="https://en.wikipedia.org/wiki/De_Finetti%27s_theorem" target="_blank" class="text-bayesian-blue underline decoration-1 underline-offset-2">de Finetti's theorem</a>. De Finetti proved that if observations are exchangeable, we can model them as if they are <em>independent and identically distributed (i.i.d.)</em> conditional on some underlying, unobserved parameters.
-                </p>
-                <p>
-                    Scenario (B) highlights why exchangeability is more robust than independence: it captures the symmetry of our ignorance. Even when data are highly dependent, if we have no prior reason to distinguish between the order of observations, we can leverage exchangeability to define a joint prior distribution.
-                </p>
-            </div>
-        </section>
-
-        <!-- Key Derivation -->
-        <section class="mt-16">
-            <h2 class="text-2xl font-semibold mb-6 border-b pb-2 border-bayesian-border ui-text">
-                Quantifying It: The Covariance
-            </h2>
-            <p class="mb-6">
-                Each "independent or not?" answer can be made exact by computing $\mathrm{Cov}(y_1, y_2)$. Let $y_i = 1$ for black, $0$ for white. Here the black fraction $\theta$ is <strong>known</strong>, so there is nothing to learn — any dependence can only come from the physical draw mechanism.
-            </p>
-            <p class="mb-4">For a box of $N$ balls with known black fraction $\theta$, drawing <strong>without replacement</strong>:</p>
             <div class="theorem-block">
-                <div class="code-block mb-0">
+                <div class="label text-bayesian-blue mb-2">Definition 1 — Finite exchangeability</div>
+                <p class="mb-3">The draws $y_1, \dots, y_n$ are <strong>exchangeable</strong> if shuffling their order doesn't change the probability of anything. For every reordering $\pi$,</p>
+                $$p(y_1, \dots, y_n) = p(y_{\pi(1)}, \dots, y_{\pi(n)}).$$
+                <p class="mt-3 mb-0 text-base text-bayesian-slate">In plain words: the labels "first" and "second" are bookkeeping. Nature doesn't care which one we wrote down first.</p>
+            </div>
+
+            <div class="theorem-block">
+                <div class="label text-bayesian-blue mb-2">Definition 2 — Infinite exchangeability</div>
+                <p class="mb-0">Now imagine you could keep drawing forever, and <em>every</em> finite batch you ever look at is exchangeable. That's <strong>infinite exchangeability</strong>, and it's a genuinely stronger demand than the finite kind. Keep an eye on this one — it's the fine print that de Finetti's theorem insists on, and we'll see exactly why it matters.</p>
+            </div>
+
+            <div class="theorem-block">
+                <div class="label text-bayesian-blue mb-2">Definition 3 — Independence</div>
+                <p class="mb-3">The draws are <strong>independent</strong> if the probability of the whole batch is just the probabilities multiplied together:</p>
+                $$p(y_1, \dots, y_n) = \prod_{i=1}^n p(y_i).$$
+                <p class="mt-3 mb-0 text-base text-bayesian-slate">Same thing as saying $p(y_2 \mid y_1) = p(y_2)$: knowing the first draw tells you absolutely nothing new about the second. Nothing.</p>
+            </div>
+
+            <div class="theorem-block">
+                <div class="label text-bayesian-blue mb-2">Definition 4 — Independence once you're told $\theta$</div>
+                <p class="mb-3">And here's the sneaky one. The draws are <strong>independent given $\theta$</strong> if, <em>once somebody whispers the value of $\theta$ in your ear</em>, the multiplication rule comes back:</p>
+                $$p(y_1, \dots, y_n \mid \theta) = \prod_{i=1}^n p(y_i \mid \theta).$$
+            </div>
+
+            <div class="mt-8 p-5 rounded border border-bayesian-border bg-bayesian-surfaceAlt">
+                <p class="mb-2"><strong>How these stack up.</strong> Each arrow below is true, and — this is the important part — not one of them runs backward:</p>
+                $$\text{i.i.d.} \;\Longrightarrow\; \text{independent} \;\Longrightarrow\; \text{exchangeable}.$$
+                <p class="mb-0 text-base text-bayesian-slate mt-2">So exchangeable is the weakest, most forgiving condition of the three. In a minute (scenario b) we'll meet a pair that's exchangeable but not independent. Over in Question 2 we'll meet pairs that aren't independent yet <em>are</em> built out of independent pieces. Keeping these straight is the entire game.</p>
+            </div>
+        </section>
+
+        <!-- Setup -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-semibold mb-6 border-b pb-3 border-bayesian-border ui-text">
+                2. The Box
+            </h2>
+            <p class="mb-4">Here's our gadget. A box with $N$ balls in it, $K$ of them black, the rest white. And the key thing for this whole page: <strong>we know $N$ and $K$.</strong> No mystery about what's inside. Call the fraction of black balls</p>
+            $$\theta \,=\, \frac{K}{N} \in [0,1], \qquad \theta \text{ is a plain number we already know.}$$
+            <p class="mb-0">We pull two balls and write down $y_1$, then $y_2$. The three scenarios are all the same box — the only thing we change is the drawing procedure. And notice this, because it's going to organize everything: since we already know $\theta$, there is <strong>nothing left to learn</strong> from the data. So if the two draws turn out to be related at all, it can only be because the physical act of pulling a ball did something to the box. That's the only suspect we have.</p>
+        </section>
+
+        <!-- Scenario A -->
+        <section class="mb-12">
+            <div class="academic-card p-8">
+                <div class="mb-6">
+                    <span class="inline-block w-8 h-8 rounded bg-bayesian-surfaceAlt border border-bayesian-border text-center leading-8 font-bold text-bayesian-navy ui-text mb-4">A</span>
+                    <h3 class="text-2xl font-semibold text-bayesian-navy mb-4 ui-text">Put It Back</h3>
+                    <p class="text-lg mb-2 bg-bayesian-surfaceAlt p-4 rounded border border-bayesian-border italic">
+                        Pull $y_1$, <strong>drop it back in</strong>, shake, then pull $y_2$.
+                    </p>
+                </div>
+
+                <p class="mb-3">This is the easy one, so let's warm up on it. Start with a <em>single</em> pull. Because you put the ball back, the box for the second pull is identical to the first, and each pull is just a coin with weight $\theta$:</p>
+                <div class="derivation">
+                    $$P(y_i = 1) = \theta, \qquad P(y_i = 0) = 1-\theta.$$
+                </div>
+                <p class="mb-3">Here's a slick way to write those two facts as one formula. Notice that</p>
+                <div class="derivation">
+                    $$p(y_i) = \theta^{\,y_i}(1-\theta)^{\,1-y_i}$$
+                </div>
+                <p class="mb-3">does exactly the right thing: plug in $y_i=1$ and you get $\theta^1(1-\theta)^0=\theta$; plug in $y_i=0$ and you get $\theta^0(1-\theta)^1=1-\theta$. The exponents are just switches that turn each factor on or off. Now, because the draws are independent (you restored the box), the probability of the <em>pair</em> is the product of the two single-draw probabilities:</p>
+                <div class="derivation">
+                    $$p(y_1, y_2) = \big[\theta^{\,y_1}(1-\theta)^{\,1-y_1}\big]\big[\theta^{\,y_2}(1-\theta)^{\,1-y_2}\big] = \theta^{\,y_1+y_2}\,(1-\theta)^{\,2-y_1-y_2},$$
+                </div>
+                <p class="mb-3">where in the last step we just added the exponents. If you'd rather see it as a plain table, it's the same four numbers: $p(1,1)=\theta^2$, $\ p(1,0)=p(0,1)=\theta(1-\theta)$, $\ p(0,0)=(1-\theta)^2$.</p>
+
+                <h4 class="font-semibold text-bayesian-navy ui-text mt-6">(i) Exchangeable?</h4>
+                <p><strong>Sure.</strong> Look at the formula — it only cares about the <em>sum</em> $y_1 + y_2$, and a sum doesn't notice which order you added the numbers. So $p(y_1,y_2)=p(y_2,y_1)$, and you could keep this up forever, so it's even infinitely exchangeable.</p>
+
+                <h4 class="font-semibold text-bayesian-navy ui-text mt-4">(ii) Independent?</h4>
+                <p><strong>Yes, honestly independent.</strong> The formula splits cleanly into one piece for the first ball and one for the second, $p(y_1,y_2)=p(y_1)p(y_2)$ — which is the definition, no fudging.</p>
+
+                <h4 class="font-semibold text-bayesian-navy ui-text mt-4">(iii) Now compute the covariance</h4>
+                <p class="mb-2">Covariance just measures whether two things tend to move together. First the easy marginal, $E[y_i] = 1\cdot\theta + 0\cdot(1-\theta) = \theta$. The piece worth proving rather than asserting is the product $E[y_1 y_2]$. Use the same trick we'll lean on throughout: since each $y_i$ is $0$ or $1$, the product is $1$ <em>only</em> when both balls are black, so its average is just the probability of two blacks. Write it as a sum over the four outcomes and watch three vanish:</p>
+                <div class="derivation">
                     $$\begin{aligned}
-                    \mathrm{Cov}(y_1, y_2) &= E[y_1 y_2] - E[y_1]\,E[y_2] \\[4pt]
-                    &= \theta\cdot\frac{N\theta - 1}{N - 1} - \theta^2 \\[4pt]
-                    &= -\,\frac{\theta(1-\theta)}{N - 1}
+                    E[y_1 y_2] &= \sum_{a\in\{0,1\}}\sum_{b\in\{0,1\}} a\,b\;p(y_1=a,\,y_2=b)\\[4pt]
+                    &= 1\cdot p(1,1) \qquad(\text{only the }a=b=1\text{ term survives})\\[4pt]
+                    &= p(y_1=1)\,p(y_2=1) \qquad(\text{independent})\\[4pt]
+                    &= \theta\cdot\theta = \theta^2.
                     \end{aligned}$$
                 </div>
+                <p class="mb-2">Now drop both pieces into the covariance:</p>
+                <div class="derivation">
+                    $$\mathrm{Cov}(y_1,y_2) = E[y_1y_2]-E[y_1]E[y_2] = \theta^2 - \theta\cdot\theta = 0.$$
+                </div>
+                <p class="mb-0 text-base text-bayesian-slate">Zero, exactly as it should be — there's no link between the draws, so use the multiplication rule and don't lose sleep.</p>
             </div>
-            <p class="mb-4 text-base text-bayesian-slate">
-                Here $E[y_1 y_2] = P(\text{both black}) = \dfrac{N\theta}{N}\cdot\dfrac{N\theta - 1}{N - 1}$. The covariance is <strong>negative</strong>: removing a black ball makes a second black ball less likely (depletion).
-            </p>
-            <div class="academic-card p-6 mb-4">
-                <p class="mb-3"><strong>Plugging in each scenario</strong> (here $\theta = \tfrac12$):</p>
-                <ul class="list-disc pl-6 space-y-2 text-lg">
-                    <li><strong>(a) With replacement:</strong> no depletion, $\mathrm{Cov} = 0$ — strictly independent.</li>
-                    <li><strong>(b) Without replacement, $N=2$:</strong> $\mathrm{Cov} = -\dfrac{(1/2)(1/2)}{2-1} = -\dfrac14$ — strongly dependent.</li>
-                    <li><strong>(c) Without replacement, $N=2{,}000{,}000$:</strong> $\mathrm{Cov} = -\dfrac{1/4}{1{,}999{,}999} \approx -1.3\times10^{-7}$ — negligible, so we can act independent.</li>
-                </ul>
+        </section>
+
+        <!-- Scenario B -->
+        <section class="mb-12">
+            <div class="academic-card p-8">
+                <div class="mb-6">
+                    <span class="inline-block w-8 h-8 rounded bg-bayesian-surfaceAlt border border-bayesian-border text-center leading-8 font-bold text-bayesian-navy ui-text mb-4">B</span>
+                    <h3 class="text-2xl font-semibold text-bayesian-navy mb-4 ui-text">Keep It Out</h3>
+                    <p class="text-lg mb-2 bg-bayesian-surfaceAlt p-4 rounded border border-bayesian-border italic">
+                        Pull $y_1$, <strong>set it aside</strong>, then pull $y_2$ from what's left.
+                    </p>
+                </div>
+
+                <p class="mb-3">Now it gets interesting, because the first ball you remove actually changes the box. Let's just write down the probability of each of the four outcomes, step by step, using "probability of the first times probability of the second given the first":</p>
+                <div class="derivation">
+                    $$\begin{aligned}
+                    p(1,1) &= \tfrac{K}{N}\cdot\tfrac{K-1}{N-1}, &\quad p(1,0) &= \tfrac{K}{N}\cdot\tfrac{N-K}{N-1},\\[4pt]
+                    p(0,1) &= \tfrac{N-K}{N}\cdot\tfrac{K}{N-1}, &\quad p(0,0) &= \tfrac{N-K}{N}\cdot\tfrac{N-K-1}{N-1}.
+                    \end{aligned}$$
+                </div>
+
+                <h4 class="font-semibold text-bayesian-navy ui-text mt-6">(i) Exchangeable?</h4>
+                <p class="mb-2"><strong>Yes — and this surprises people.</strong> "How can it be order-independent when removing a ball clearly changes things?" Fair question. So let's just check it. Compare the two mixed outcomes:</p>
+                <div class="derivation">
+                    $$p(1,0)=\frac{K(N-K)}{N(N-1)} = p(0,1).$$
+                </div>
+                <p>They're equal! And the all-black and all-white cases are obviously symmetric. So shuffling the order changes nothing. Let me push one step further and check that the second draw, all by itself, is black with the same chance as the first:</p>
+                <div class="derivation">
+                    $$P(y_2=1) = \tfrac{K}{N}\tfrac{K-1}{N-1} + \tfrac{N-K}{N}\tfrac{K}{N-1} = \frac{K\big[(K-1)+(N-K)\big]}{N(N-1)} = \frac{K(N-1)}{N(N-1)} = \frac{K}{N} = \theta.$$
+                </div>
+                <p>Beautiful — $E[y_1]=E[y_2]=\theta$, even though the draws lean on each other. That's exchangeability for you: symmetric, but not independent.</p>
+
+                <h4 class="font-semibold text-bayesian-navy ui-text mt-4">(ii) Independent?</h4>
+                <p><strong>No, not at all.</strong> If the first ball came out black, there's one fewer black left, so the chance the second is black drops from $\tfrac{K}{N}$ to $\tfrac{K-1}{N-1}$. Those aren't equal, so the first draw genuinely tells you something. They're tied together.</p>
+
+                <h4 class="font-semibold text-bayesian-navy ui-text mt-4">(iii) Put a number on it — the covariance</h4>
+                <p class="mb-2">Let's grind it out and see how strong the link is. Plug $E[y_1y_2]=p(1,1)=\tfrac{K}{N}\tfrac{K-1}{N-1}$ and $E[y_i]=\theta=\tfrac{K}{N}$ into the covariance and simplify:</p>
+                <div class="derivation">
+                    $$\begin{aligned}
+                    \mathrm{Cov}(y_1,y_2) &= \frac{K}{N}\cdot\frac{K-1}{N-1} - \left(\frac{K}{N}\right)^2
+                    = \frac{K}{N}\left(\frac{K-1}{N-1}-\frac{K}{N}\right)\\[6pt]
+                    &= \frac{K}{N}\cdot\frac{N(K-1)-K(N-1)}{N(N-1)}
+                    = \frac{K}{N}\cdot\frac{K-N}{N(N-1)}\\[6pt]
+                    &= -\,\frac{K(N-K)}{N^2(N-1)}
+                    = -\,\frac{\theta(1-\theta)}{N-1}.
+                    \end{aligned}$$
+                </div>
+                <p class="mb-0">And there's the surprise I promised: the covariance is <strong>negative</strong>. It makes perfect physical sense — grab a black ball and you've used one up, so the second is a touch <em>less</em> likely to be black. The draws repel each other a little. <span class="text-bayesian-slate">Quick check with the tiniest box, $N=2,\ K=1\ (\theta=\tfrac12)$: the formula says $-\tfrac14$, and indeed two blacks is flat-out impossible there, which is as anti-correlated as you can get. Good.</span> Tuck that minus sign away; it comes back to haunt us in Question 2.</p>
             </div>
-            <p class="text-base text-bayesian-slate italic">
-                Notice the dependence vanishes as $N \to \infty$. This is the entire content of (c): a vast population washes out the only source of dependence available when $\theta$ is known. The moment $\theta$ becomes <strong>unknown</strong> (Question 2), a second, <em>positive</em> term $\mathrm{Var}(\theta)$ appears that no population size can remove.
-            </p>
+        </section>
+
+        <!-- Scenario C -->
+        <section class="mb-12">
+            <div class="academic-card p-8">
+                <div class="mb-6">
+                    <span class="inline-block w-8 h-8 rounded bg-bayesian-surfaceAlt border border-bayesian-border text-center leading-8 font-bold text-bayesian-navy ui-text mb-4">C</span>
+                    <h3 class="text-2xl font-semibold text-bayesian-navy mb-4 ui-text">Keep It Out — But the Box Is Enormous</h3>
+                    <p class="text-lg mb-2 bg-bayesian-surfaceAlt p-4 rounded border border-bayesian-border italic">
+                        Same as (B), but now there are <strong>heaps</strong> of each color — say a million black and a million white — and we still know $\theta$.
+                    </p>
+                </div>
+
+                <h4 class="font-semibold text-bayesian-navy ui-text">(i) Exchangeable?</h4>
+                <p><strong>Yes</strong> — none of the algebra in (B) cared how big $N$ was, so it still goes through.</p>
+
+                <h4 class="font-semibold text-bayesian-navy ui-text mt-4">(ii) Independent, and what happens to the covariance?</h4>
+                <p class="mb-2"><strong>Strictly speaking, still no.</strong> But here's the thing — we already <em>have</em> the exact answer from (B), and all we have to do is watch what it does as the box gets huge:</p>
+                <div class="derivation">
+                    $$\mathrm{Cov}(y_1,y_2) = -\,\frac{\theta(1-\theta)}{N-1} \;\xrightarrow[\;N\to\infty\;]{}\; 0.$$
+                </div>
+                <p class="mb-0">With a million of each, $N=2{,}000{,}000,\ \theta=\tfrac12$, and the covariance is $-\dfrac{1/4}{1{,}999{,}999} \approx -1.25\times10^{-7}$. Removing one ball nudges the odds from $0.5$ to $0.499999\ldots$ — who cares? So you may happily <strong>pretend the draws are independent</strong>. When the box is gigantic, "keep it out" and "put it back" become the same thing for all practical purposes.</p>
+            </div>
+        </section>
+
+        <!-- Synthesis -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-semibold mb-6 border-b pb-3 border-bayesian-border ui-text">
+                3. What We Found, and the Loose Thread
+            </h2>
+
+            <table class="rigtable mb-8">
+                <thead>
+                    <tr><th>Scenario ($\theta$ known)</th><th>Exchangeable</th><th>Independent</th><th>$\mathrm{Cov}(y_1,y_2)$</th><th>Pretend independent?</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>(a) Put it back</td><td>Yes</td><td>Yes</td><td>$0$</td><td>Yes (for real)</td></tr>
+                    <tr><td>(b) Keep it out</td><td>Yes</td><td>No</td><td>$-\dfrac{\theta(1-\theta)}{N-1}$</td><td>No</td></tr>
+                    <tr><td>(c) Keep it out, huge box</td><td>Yes</td><td>No (strictly)</td><td>$\to 0$</td><td>Yes (close enough)</td></tr>
+                </tbody>
+            </table>
+
+            <p class="mb-4">So all three are exchangeable, but only the first is truly independent. That's our concrete proof that <strong>exchangeable does not mean independent</strong> — they really are different ideas. And the only knob we turned was the size of the box, which only ever weakens the <em>physical</em> link from removing a ball.</p>
+
+            <div class="theorem-block">
+                <div class="label text-bayesian-blue mb-2">Hang on to this one thing</div>
+                <p class="mb-2">In case (b) the covariance came out <strong>negative</strong>. That seems like a small thing. It isn't. In Question 2 we'll prove that any sequence you build by picking a $\theta$ at random and then drawing independently must have</p>
+                $$\mathrm{Cov}(y_1,y_2) = \mathrm{Var}(\theta) \;\ge\; 0.$$
+                <p class="mb-0">A variance can't be negative. So our perfectly nice, perfectly exchangeable "keep it out" box is something that simply <strong>cannot be built that way</strong> — and that means it can't be stretched into an infinite exchangeable sequence either. <em>That</em> is the whole reason de Finetti's theorem has to demand infinite exchangeability and not just the finite kind. And notice the escape hatch: blow the box up to infinity (case c) and the troublesome minus sign melts to zero, so the construction becomes legal again.</p>
+            </div>
+
+            <p class="mb-0">On to <a href="ch5_question2.html" class="text-bayesian-blue hover:underline font-semibold">Question 2</a>, where we stop knowing what's in the box. The covariance flips positive, and the whole setup quietly turns into a hierarchical model — with de Finetti's theorem doing the magic.</p>
         </section>
 
         <!-- References & Study Disclaimer -->

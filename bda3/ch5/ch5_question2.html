@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Exchangeability with Unknown Parameters</title>
+    <title>Unknown Boxes, de Finetti & Hierarchical Models — Let's Figure It Out (θ unknown)</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -46,7 +46,6 @@
                     },
                     boxShadow: {
                         'soft': '0 4px 12px rgba(15, 23, 42, 0.05)',
-                        'premium': '0 12px 30px rgba(19, 27, 46, 0.08)'
                     }
                 }
             }
@@ -80,6 +79,28 @@
             border-radius: 0 4px 4px 0;
         }
 
+        .derivation {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-left: 3px solid #75859d;
+            padding: 0.75rem 1.5rem;
+            margin-bottom: 1.5rem;
+            border-radius: 0 4px 4px 0;
+            overflow-x: auto;
+        }
+
+        .theorem-block, .keystone { overflow-x: auto; }
+        mjx-container { max-width: 100%; }
+
+        .keystone {
+            background-color: #f3f7ff;
+            border: 1px solid #c7dbff;
+            border-left: 4px solid #0051d5;
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 1.5rem;
+            border-radius: 0 6px 6px 0;
+        }
+
         .academic-card {
             background-color: #ffffff;
             border: 1px solid #e2e8f0;
@@ -91,7 +112,15 @@
             box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
             transform: translateY(-2px);
         }
-        
+
+        .label {
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            font-size: 0.78rem;
+        }
+
         .code-block {
             background-color: #1e293b;
             color: #f8fafc;
@@ -102,41 +131,23 @@
             border-radius: 4px;
             overflow-x: auto;
         }
+
+        table.rigtable { width: 100%; border-collapse: collapse; font-size: 1rem; }
+        table.rigtable th, table.rigtable td { border: 1px solid #e2e8f0; padding: 0.6rem 0.8rem; text-align: left; vertical-align: top; }
+        table.rigtable th { background-color: #f8fafc; font-family: 'Inter', sans-serif; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; color: #131b2e; }
     </style>
 </head>
 
 <body class="antialiased">
 
-    <!-- Container constrained to 720px for optimal reading -->
-    <div class="max-w-[880px] mx-auto px-4 py-16">
+    <!-- Container constrained for optimal reading -->
+    <div class="max-w-[960px] mx-auto px-6 py-16">
 
         <!-- Navigation -->
-        <nav class="mb-8 flex items-center gap-6">
-            <a href="../../index.html"
-                class="inline-flex items-center text-sm font-semibold text-bayesian-slate hover:text-bayesian-navy transition-colors ui-text">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                </svg>
+        <nav class="mb-8">
+            <a href="../../index.html" class="inline-flex items-center text-sm font-semibold text-bayesian-slate hover:text-bayesian-navy transition-colors ui-text">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
                 Back to Index
-            </a>
-            <span class="text-bayesian-border">|</span>
-            <a href="ch5_question1.html"
-                class="inline-flex items-center text-sm font-semibold text-bayesian-slate hover:text-bayesian-navy transition-colors ui-text">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                </svg>
-                Exercise 5.1
-            </a>
-            <span class="text-bayesian-border">|</span>
-            <a href="../../index.html"
-                class="inline-flex items-center text-sm font-semibold text-bayesian-slate hover:text-bayesian-navy transition-colors ui-text">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
-                    </path>
-                </svg>
-                Home
             </a>
         </nav>
 
@@ -144,275 +155,227 @@
         <header class="mb-16">
             <div class="flex flex-wrap gap-2 mb-6">
                 <div class="px-3 py-1 bg-bayesian-surfaceAlt border border-bayesian-border text-bayesian-slate rounded text-xs font-semibold tracking-wide uppercase ui-text">
-                    Bayesian Data Analysis &bull; Chapter 5
+                    Chapter 5 &bull; Question 2
                 </div>
                 <div class="px-3 py-1 bg-amber-50 border border-amber-200 text-amber-800 rounded text-xs font-semibold tracking-wide uppercase ui-text">
-                    Personal Study Notes
+                    Let's Figure It Out
                 </div>
             </div>
-            <h1 class="text-4xl font-bold mb-6 tracking-tight leading-tight ui-text">
-                Exercise 5.2 Exchangeability with Unknown Parameters
+            <h1 class="text-5xl font-bold mb-6 tracking-tight leading-tight ui-text">
+                Now We Don't Know What's in the Box
             </h1>
             <p class="text-xl text-bayesian-slate leading-relaxed">
-                Exploring how our learning process inherently links observations together, even when the physical sampling process replaces them.
+                Same box, same two draws — except this time nobody told us how many balls are black. That one change does something marvelous. The draws become tied together not because of any physics, but purely because of our own ignorance. We'll pin that down to a single number, $\mathrm{Cov}(y_1,y_2)=\mathrm{Var}(\theta)$, and then watch de Finetti's theorem turn "I'll treat these as exchangeable" into a full-blown hierarchical model, whether you asked for one or not.
             </p>
         </header>
 
-        <!-- The First Principles Section -->
+        <!-- The new ingredient -->
         <section class="mb-16">
-            <h2 class="text-2xl font-semibold mb-6 border-b pb-2 border-bayesian-border ui-text">
-                The Core Principle: Marginal vs. Conditional
+            <h2 class="text-3xl font-semibold mb-6 border-b pb-3 border-bayesian-border ui-text">
+                1. The One New Ingredient
             </h2>
-            
-            <div class="space-y-6">
-                <!-- Learning Block -->
-                <div class="theorem-block">
-                    <h3 class="text-lg font-bold text-bayesian-blue mb-2 ui-text uppercase tracking-wider text-sm">The Learning Effect</h3>
-                    <p class="mb-3">
-                        When the underlying parameters (e.g., the proportion of black balls $\theta$) are <strong>unknown</strong>, observing the first piece of data $y_1$ teaches us something about $\theta$. This newly acquired knowledge inherently changes our predictions for $y_2$.
-                    </p>
-                    <div class="code-block mb-3">
-                        $$p(y_2 | y_1) \neq p(y_2)$$
-                    </div>
-                    <p class="text-base text-bayesian-slate italic">
-                        Even if the physical process is entirely isolated (like drawing with replacement), our epistemological state links the two events. They are <strong>conditionally independent</strong> given $\theta$, but <strong>marginally dependent</strong> because $\theta$ is unknown.
-                    </p>
-                </div>
+            <p class="mb-4">Back in <a href="ch5_question1.html" class="text-bayesian-blue hover:underline font-semibold">Question 1</a> the fraction $\theta$ was a number we knew. Now we don't know it. So what do we do? We admit the ignorance and treat $\theta$ itself as a random thing, with some distribution $p(\theta)$ spread over $[0,1]$ describing what we believe before drawing. And here's the nice part: <em>once</em> you fix a value of $\theta$, you're right back in Question 1.</p>
+            <p class="mb-3">So the recipe for the whole experiment has two steps:</p>
+            <div class="keystone">
+                $$\theta \sim p(\theta), \qquad y_i \mid \theta \;\sim\; \text{(draw from a box whose black fraction is } \theta).$$
+                <p class="mb-0 mt-3 text-base text-bayesian-slate">Write $E[\theta]$ for the average we expect and $\mathrm{Var}(\theta)$ for how unsure we are. Everything — literally the whole question of whether the draws are independent — is going to come down to that one number, $\mathrm{Var}(\theta)$, and whether it's zero.</p>
             </div>
+            <p class="mb-0">Here's the idea to hold in your head before we do any algebra. Even though the two draws are independent <em>once you know</em> $\theta$, they are tangled up when you don't — because the first ball is a little clue about $\theta$, and $\theta$ is what governs the second ball. Knowledge leaks from $y_1$ to $y_2$ through $\theta$. Let's make that exact.</p>
         </section>
 
-        <!-- Problem Breakdown Section -->
+        <!-- Tools -->
         <section class="mb-16">
-            <h2 class="text-2xl font-semibold mb-6 border-b pb-2 border-bayesian-border ui-text">
-                Analyzing the Scenarios
+            <h2 class="text-3xl font-semibold mb-6 border-b pb-3 border-bayesian-border ui-text">
+                2. Two Little Tools (and We'll Prove Them)
             </h2>
+            <p class="mb-6">We need two facts. I don't want you to take them on faith, so let's actually derive them — they're both short.</p>
 
-            <div class="space-y-10">
-                
-                <!-- Scenario A -->
-                <div class="academic-card p-8">
-                    <div class="mb-6">
-                        <span class="inline-block w-8 h-8 rounded bg-bayesian-surfaceAlt border border-bayesian-border text-center leading-8 font-bold text-bayesian-navy ui-text mb-4">A</span>
-                        <h3 class="text-xl font-semibold text-bayesian-navy mb-4 ui-text">With Replacement (Unknown Composition)</h3>
-                        <p class="text-lg mb-6 bg-bayesian-surfaceAlt p-4 rounded border border-bayesian-border italic">
-                            "A box has $n$ black and white balls but we <strong>do not know how many</strong> of each color. We pick a ball $y_1$ at random, <strong>put it back</strong>, and pick another ball $y_2$ at random."
-                        </p>
-                    </div>
-                    
-                    <div class="space-y-4">
-                        <div>
-                            <h4 class="font-semibold text-bayesian-navy ui-text">(i) Are they Exchangeable?</h4>
-                            <p class="mb-3"><strong>Yes.</strong> The joint probability is symmetric because it can be represented as a mixture over the unknown parameter $\theta$ (by the Law of Total Probability):</p>
-                            <div class="code-block mb-3">
-                                $$p(y_1, y_2) = \int p(y_1, y_2 \mid \theta) p(\theta) d\theta$$
-                            </div>
-                            <p class="mb-3 text-base text-bayesian-text">
-                                Since drawing is with replacement, the draws are conditionally independent given $\theta$, meaning $p(y_1, y_2 \mid \theta) = p(y_1 \mid \theta)p(y_2 \mid \theta)$. By commutativity of multiplication:
-                                $$p(y_1, y_2) = \int p(y_1 \mid \theta)p(y_2 \mid \theta) p(\theta) d\theta = \int p(y_2 \mid \theta)p(y_1 \mid \theta) p(\theta) d\theta = p(y_2, y_1)$$
-                            </p>
-                        </div>
-                        <div>
-                            <h4 class="font-semibold text-bayesian-navy ui-text">(ii) Are they Independent?</h4>
-                            <p class="mb-3">
-                                <strong>No.</strong> Knowing the first draw ($y_1$) updates our knowledge about the unknown proportion $\theta$, which in turn changes our prediction for the second draw ($y_2$). Mathematically, we derive the marginal covariance by taking expectations over $\theta$:
-                            </p>
-                            <ol class="list-decimal pl-6 mb-3 space-y-2 text-base text-bayesian-text">
-                                <li>
-                                    The marginal expectation is:
-                                    $$E[y_i] = E_{\theta}[E[y_i \mid \theta]] = E_{\theta}[\theta] = E[\theta]$$
-                                </li>
-                                <li>
-                                    Since the draws are conditionally independent given $\theta$, the expected value of their product is:
-                                    $$E[y_1 y_2] = E_{\theta}[E[y_1 y_2 \mid \theta]] = E_{\theta}[E[y_1 \mid \theta]E[y_2 \mid \theta]] = E_{\theta}[\theta^2] = E[\theta^2]$$
-                                </li>
-                                <li>
-                                    The covariance is:
-                                    $$\mathrm{Cov}(y_1, y_2) = E[y_1 y_2] - E[y_1]E[y_2] = E[\theta^2] - (E[\theta])^2 = \mathrm{Var}(\theta)$$
-                                </li>
-                            </ol>
-                            <p class="text-base text-bayesian-slate italic">
-                                Since $\theta$ is unknown, it has a non-degenerate probability distribution, so $\mathrm{Var}(\theta) > 0$. The strictly positive covariance confirms dependency.
-                            </p>
-                        </div>
-                        <div>
-                            <h4 class="font-semibold text-bayesian-navy ui-text">(iii) Can we Act Independent?</h4>
-                            <p><strong>No.</strong> Acting as if they are independent implies that observing $y_1$ teaches us absolutely nothing about the box. If we did that, we would never be able to learn or update our posterior distribution.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Scenario B -->
-                <div class="academic-card p-8 relative">
-                    <div class="mb-6">
-                        <span class="inline-block w-8 h-8 rounded bg-bayesian-surfaceAlt border border-bayesian-border text-center leading-8 font-bold text-bayesian-navy ui-text mb-4">B</span>
-                        <h3 class="text-xl font-semibold text-bayesian-navy mb-4 ui-text">Without Replacement (Unknown Composition)</h3>
-                        <p class="text-lg mb-6 bg-bayesian-surfaceAlt p-4 rounded border border-bayesian-border italic">
-                            "A box has $n$ black and white balls but we <strong>do not know how many</strong> of each color. We pick a ball $y_1$ at random, <strong>we do not put it back</strong>, then we pick ball $y_2$."
-                        </p>
-                    </div>
-                    
-                    <div class="space-y-4">
-                        <div>
-                            <h4 class="font-semibold text-bayesian-navy ui-text">(i) Are they Exchangeable?</h4>
-                            <p class="mb-3"><strong>Yes.</strong> By the Law of Total Probability, we can represent the joint probability as an expectation over the unknown composition $\theta$:</p>
-                            <div class="code-block mb-3">
-                                $$p(y_1, y_2) = \int p(y_1, y_2 \mid \theta) p(\theta) d\theta$$
-                            </div>
-                            <p class="mb-3 text-base text-bayesian-text">
-                                We proved in Exercise 5.1 that for any *known* composition $\theta$, the joint probability under drawing without replacement is symmetric, i.e., $p(y_1, y_2 \mid \theta) = p(y_2, y_1 \mid \theta)$. Therefore:
-                                $$p(y_1, y_2) = \int p(y_2, y_1 \mid \theta) p(\theta) d\theta = p(y_2, y_1)$$
-                            </p>
-                        </div>
-                        <div>
-                            <h4 class="font-semibold text-bayesian-navy ui-text">(ii) Are they Independent?</h4>
-                            <p class="mb-3">
-                                <strong>No.</strong> Two sources of dependency exist: the negative physical depletion of the box, and the positive epistemic learning about $\theta$. We derive the exact covariance by taking expectations over $\theta$:
-                            </p>
-                            <ol class="list-decimal pl-6 mb-3 space-y-2 text-base text-bayesian-text">
-                                <li>
-                                    The marginal expectation is $E[y_i] = E_{\theta}[\theta] = E[\theta]$.
-                                </li>
-                                <li>
-                                    For a given composition $\theta$, the conditional expectation of the product is:
-                                    $$E[y_1 y_2 \mid \theta] = P(y_1=1, y_2=1 \mid \theta) = \theta \cdot \frac{N\theta - 1}{N - 1}$$
-                                </li>
-                                <li>
-                                    Taking the expectation over the distribution of $\theta$:
-                                    $$E[y_1 y_2] = E_{\theta}\left[ \theta \cdot \frac{N\theta - 1}{N - 1} \right] = \frac{N E[\theta^2] - E[\theta]}{N - 1}$$
-                                </li>
-                                <li>
-                                    Subtracting the product of the expectations gives the covariance:
-                                    $$\begin{aligned}
-                                    \mathrm{Cov}(y_1, y_2) &= E[y_1 y_2] - E[y_1]E[y_2] \\[6pt]
-                                    &= \frac{N E[\theta^2] - E[\theta] - (N - 1)(E[\theta])^2}{N - 1} \\[6pt]
-                                    &= \frac{N \left(E[\theta^2] - (E[\theta])^2\right) - \left(E[\theta] - (E[\theta])^2\right)}{N - 1} \\[6pt]
-                                    &= \frac{N \mathrm{Var}(\theta) - E[\theta](1 - E[\theta])}{N - 1} \\[6pt]
-                                    &= \mathrm{Var}(\theta) - \frac{E[\theta(1 - \theta)]}{N - 1}
-                                    \end{aligned}$$
-                                </li>
-                            </ol>
-                            <p class="text-base text-bayesian-slate italic">
-                                Here, the covariance is a sum of the positive learning effect $\mathrm{Var}(\theta) > 0$ and the negative depletion effect $-\frac{E[\theta(1-\theta)]}{N - 1} < 0$. The non-zero covariance indicates they are dependent.
-                            </p>
-                        </div>
-                        <div>
-                            <h4 class="font-semibold text-bayesian-navy ui-text">(iii) Can we Act Independent?</h4>
-                            <p><strong>Absolutely Not.</strong> The observations are highly intertwined both epistemologically (learning) and physically (depletion).</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Scenario C -->
-                <div class="academic-card p-8">
-                    <div class="mb-6">
-                        <span class="inline-block w-8 h-8 rounded bg-bayesian-surfaceAlt border border-bayesian-border text-center leading-8 font-bold text-bayesian-navy ui-text mb-4">C</span>
-                        <h3 class="text-xl font-semibold text-bayesian-navy mb-4 ui-text">Without Replacement (Unknown Vast Population)</h3>
-                        <p class="text-lg mb-6 bg-bayesian-surfaceAlt p-4 rounded border border-bayesian-border italic">
-                            "Same as (b) but we know that there are <strong>many balls</strong> of each color in the box."
-                        </p>
-                    </div>
-                    
-                    <div class="space-y-4">
-                        <div>
-                            <h4 class="font-semibold text-bayesian-navy ui-text">(i) Are they Exchangeable?</h4>
-                            <p class="mb-3"><strong>Yes.</strong> Just as in Scenario B, the joint probability is symmetric because the conditional symmetry $p(y_1, y_2 \mid \theta) = p(y_2, y_1 \mid \theta)$ holds for any composition $\theta$, meaning:</p>
-                            <div class="code-block mb-3">
-                                $$p(y_1, y_2) = \int p(y_1, y_2 \mid \theta) p(\theta) d\theta = \int p(y_2, y_1 \mid \theta) p(\theta) d\theta = p(y_2, y_1)$$
-                            </div>
-                        </div>
-                        <div>
-                            <h4 class="font-semibold text-bayesian-navy ui-text">(ii) Are they Independent?</h4>
-                            <p class="mb-3"><strong>No.</strong> Because the population is vast, the physical depletion effect is negligible ($N \to \infty$). However, because $\theta$ is unknown, we still learn from $y_1$ and update our beliefs about $y_2$. Mathematically, taking the limit as $N \to \infty$ of the covariance derived in Scenario B:</p>
-                            <div class="code-block mb-3">
-                                $$\begin{aligned}
-                                \lim_{N\to\infty} \mathrm{Cov}(y_1, y_2) &= \lim_{N\to\infty} \left( \mathrm{Var}(\theta) - \frac{E[\theta(1 - \theta)]}{N - 1} \right) \\[6pt]
-                                &= \mathrm{Var}(\theta) - 0 = \mathrm{Var}(\theta)
-                                \end{aligned}$$
-                            </div>
-                            <p class="text-base text-bayesian-slate italic">
-                                Since the covariance converges to the positive variance $\mathrm{Var}(\theta) > 0$ and does not vanish, the draws remain dependent even in an infinite population.
-                            </p>
-                        </div>
-                        <div>
-                            <h4 class="font-semibold text-bayesian-navy ui-text">(iii) Can we Act Independent?</h4>
-                            <p><strong>No.</strong> This is the crucial distinction from Question 1. Even though the population is infinite, we cannot treat the draws as independent because we must use them to learn the underlying parameter. If we acted independently, Bayesian inference would be impossible.</p>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </section>
-
-        <!-- Summary Insight -->
-        <section class="mb-16">
-            <h2 class="text-2xl font-semibold mb-6 border-b pb-2 border-bayesian-border ui-text">
-                The "Why" Behind the Math
-            </h2>
-            <div class="prose max-w-none text-bayesian-text">
-                <p class="mb-4">
-                    This question contrasts perfectly with Question 1 to highlight the difference between <strong>physical independence</strong> and <strong>statistical independence</strong> in a Bayesian framework.
-                </p>
-                <p>
-                    In frequentist statistics, if you draw with replacement, the events are considered independent because the physical mechanism isolates them. But in Bayesian statistics, if the underlying parameter is unknown, your observations are <strong>never</strong> marginally independent. The very act of observing data is what allows you to learn. If observations were truly independent, past data would tell you absolutely nothing about future data!
-                </p>
-            </div>
-        </section>
-
-        <!-- Key Derivation -->
-        <section class="mt-16">
-            <h2 class="text-2xl font-semibold mb-6 border-b pb-2 border-bayesian-border ui-text">
-                Key Derivation: One Formula for Every Case
-            </h2>
-            <p class="mb-6">
-                A single identity — the <strong>law of total covariance</strong> — produces the covariance for all six scenarios across Questions 1 and 2. Let $y_i = 1$ for black, $0$ for white, and let $\theta$ be the black fraction. Conditioning on $\theta$ splits the dependence into two named pieces:
-            </p>
             <div class="theorem-block">
-                <div class="code-block mb-0">
-                    $$\mathrm{Cov}(y_1, y_2) = \underbrace{E\big[\mathrm{Cov}(y_1,y_2 \mid \theta)\big]}_{\text{physical (depletion)}} \;+\; \underbrace{\mathrm{Cov}\big(E[y_1\mid\theta],\, E[y_2\mid\theta]\big)}_{\text{learning}} $$
-                    $$= \; E\big[\mathrm{Cov}(y_1,y_2 \mid \theta)\big] \;+\; \mathrm{Var}(\theta)$$
-                </div>
-            </div>
-            <p class="mb-4">
-                The second term is $\mathrm{Var}(\theta)$ because $E[y_i \mid \theta] = \theta$, so $\mathrm{Cov}(\theta,\theta) = \mathrm{Var}(\theta)$ — this is the <strong>learning</strong> effect. The first term is the <strong>physical</strong> effect, which depends on the draw mechanism:
-            </p>
-            <div class="academic-card p-6 mb-6">
-                <ul class="list-disc pl-6 space-y-2 text-lg">
-                    <li><strong>With replacement:</strong> draws are conditionally independent, so $\mathrm{Cov}(y_1,y_2\mid\theta) = 0$.</li>
-                    <li><strong>Without replacement</strong> (box of $N$ balls): $\mathrm{Cov}(y_1,y_2\mid\theta) = -\dfrac{\theta(1-\theta)}{N-1}$, so the term is $-\dfrac{E[\theta(1-\theta)]}{N-1}$.</li>
-                </ul>
+                <div class="label text-bayesian-blue mb-2">Tool 1 — the average of an average</div>
+                <p class="mb-2">The claim is $\;E[X] = E\big[\,E[X\mid\theta]\,\big].$ All this says is: to get the overall average, first average for each fixed $\theta$, then average those over $\theta$. Two stages of bookkeeping:</p>
+                $$E[X] = \sum_\theta \Big(\textstyle\sum_x x\, p(x\mid\theta)\Big) p(\theta) = \sum_\theta E[X\mid\theta]\,p(\theta) = E\big[E[X\mid\theta]\big].$$
             </div>
 
-            <h3 class="text-xl font-semibold text-bayesian-navy mb-3 ui-text">The case $\theta$ unknown (Question 2)</h3>
-            <p class="mb-4">Detailed expansion of the with-replacement case (2a), where the physical term is zero:</p>
             <div class="theorem-block">
-                <div class="code-block mb-0">
+                <div class="label text-bayesian-blue mb-2">Tool 2 — splitting the covariance in two</div>
+                <p class="mb-2">This is the workhorse. It says the covariance splits into a piece from <em>inside</em> each $\theta$ and a piece from the <em>spread between</em> different $\theta$'s:</p>
+                $$\mathrm{Cov}(X,Y) = \underbrace{E\big[\mathrm{Cov}(X,Y\mid\theta)\big]}_{\text{the physics}} + \underbrace{\mathrm{Cov}\big(E[X\mid\theta],\,E[Y\mid\theta]\big)}_{\text{the learning}}.$$
+                <p class="mb-2 mt-3"><strong>Let's prove it.</strong> Start from the definition $\mathrm{Cov}(X,Y)=E[XY]-E[X]E[Y]$, and crack open $E[XY]$ by conditioning on $\theta$:</p>
+                <div class="derivation">
                     $$\begin{aligned}
-                    \mathrm{Cov}(y_1, y_2) &= E[y_1 y_2] - E[y_1]\,E[y_2] \\[4pt]
-                    &= E\big[\,E[y_1\mid\theta]\,E[y_2\mid\theta]\,\big] - \big(E[\theta]\big)^2 \\[4pt]
-                    &= E[\theta^2] - \big(E[\theta]\big)^2 = \mathrm{Var}(\theta)
+                    E[XY] &= E\big[E[XY\mid\theta]\big] = E\big[\,\mathrm{Cov}(X,Y\mid\theta) + E[X\mid\theta]\,E[Y\mid\theta]\,\big]\\[4pt]
+                    &= E\big[\mathrm{Cov}(X,Y\mid\theta)\big] + E\big[E[X\mid\theta]\,E[Y\mid\theta]\big].
                     \end{aligned}$$
                 </div>
+                <p class="mb-2">Then subtract $E[X]E[Y] = E\big[E[X\mid\theta]\big]\,E\big[E[Y\mid\theta]\big]$. The leftover two terms are exactly the covariance of the conditional means:</p>
+                <div class="derivation">
+                    $$\mathrm{Cov}(X,Y) = E\big[\mathrm{Cov}(X,Y\mid\theta)\big] + \Big(E\big[E[X\mid\theta]E[Y\mid\theta]\big] - E\big[E[X\mid\theta]\big]E\big[E[Y\mid\theta]\big]\Big). \qquad\blacksquare$$
+                </div>
+                <p class="mb-0 text-base text-bayesian-slate">I gave the two pieces nicknames on purpose. The first is the <strong>physics</strong> — the within-each-box sampling effect, averaged out. The second is the <strong>learning</strong> — how much the average draw wiggles as $\theta$ wiggles. Watch how cleanly these map onto our two scenarios.</p>
             </div>
-            <div class="academic-card p-6 mb-6">
-                <ul class="list-disc pl-6 space-y-2 text-lg">
-                    <li><strong>(a) With replacement:</strong> $\mathrm{Cov} = \mathrm{Var}(\theta)$ — dependent (learning only).</li>
-                    <li><strong>(b) Without replacement, box of $N$:</strong> $\mathrm{Cov} = \mathrm{Var}(\theta) - \dfrac{E[\theta(1-\theta)]}{N-1}$ — both effects (learning $+$ depletion).</li>
-                    <li><strong>(c) Without replacement, many balls ($N\to\infty$):</strong> depletion $\to 0$, so $\mathrm{Cov} \to \mathrm{Var}(\theta)$ — dependent, learning survives.</li>
-                </ul>
+        </section>
+
+        <!-- Scenario A -->
+        <section class="mb-12">
+            <div class="academic-card p-8">
+                <div class="mb-6">
+                    <span class="inline-block w-8 h-8 rounded bg-bayesian-surfaceAlt border border-bayesian-border text-center leading-8 font-bold text-bayesian-navy ui-text mb-4">A</span>
+                    <h3 class="text-2xl font-semibold text-bayesian-navy mb-4 ui-text">Put It Back, but $\theta$ Is a Mystery</h3>
+                </div>
+
+                <p class="mb-2">Once $\theta$ is fixed, putting the ball back means the two draws are independent coins, so $E[y_i\mid\theta]=\theta$. The one step that really deserves proof — and it's the engine of this whole result — is the product term $E[y_1 y_2\mid\theta]$. Let's not wave at it; let's compute it.</p>
+                <p class="mb-2">Here's the trick that makes it easy: since each $y_i$ is either $0$ or $1$, the product $y_1 y_2$ is also just $0$ or $1$, and it equals $1$ <em>only</em> when both balls come out black. So its average is simply the probability that both are black. Write the expectation out as a sum over the four possible outcomes and watch three of them die:</p>
+                <div class="derivation">
+                    $$\begin{aligned}
+                    E[y_1 y_2 \mid \theta] &= \sum_{a\in\{0,1\}}\sum_{b\in\{0,1\}} a\,b\;P(y_1=a,\,y_2=b \mid \theta)\\[4pt]
+                    &= 1\cdot P(y_1=1,\,y_2=1\mid\theta) \qquad(\text{only the }a=b=1\text{ term survives})\\[4pt]
+                    &= P(y_1=1\mid\theta)\,P(y_2=1\mid\theta) \qquad(\text{independent given }\theta)\\[4pt]
+                    &= \theta\cdot\theta = \theta^2.
+                    \end{aligned}$$
+                </div>
+                <p class="mb-2">That's the key fact: $E[y_1 y_2 \mid \theta] = \theta^2$. Now the rest is just turning the crank with our two tools:</p>
+                <div class="derivation">
+                    $$\begin{aligned}
+                    E[y_1 y_2] &= E\big[E[y_1 y_2\mid\theta]\big] = E[\theta^2],\\[4pt]
+                    E[y_i] &= E\big[E[y_i\mid\theta]\big] = E[\theta],\\[6pt]
+                    \mathrm{Cov}(y_1,y_2) &= E[\theta^2] - \big(E[\theta]\big)^2 = \boxed{\,\mathrm{Var}(\theta)\,}.
+                    \end{aligned}$$
+                </div>
+                <p class="mb-2 text-base text-bayesian-slate">(The "physics" term is now visibly zero: $\mathrm{Cov}(y_1,y_2\mid\theta) = E[y_1y_2\mid\theta] - E[y_1\mid\theta]E[y_2\mid\theta] = \theta^2 - \theta^2 = 0$, exactly as putting the ball back demands.)</p>
+                <p class="mb-2">Stop and admire that. There is <em>no physics here at all</em> — you put the ball back, the box is untouched — and yet the covariance isn't zero. It's the variance of your own uncertainty.</p>
+                <p class="mb-2"><strong>(i) Exchangeable?</strong> Yes — the joint $p(y_1,y_2)=\int \theta^{y_1+y_2}(1-\theta)^{2-y_1-y_2}p(\theta)\,d\theta$ only sees the sum $y_1+y_2$.</p>
+                <p class="mb-2"><strong>(ii) Independent?</strong> Only if $\mathrm{Var}(\theta)=0$, i.e. only if you actually knew $\theta$. Since you don't, $\mathrm{Cov}=\mathrm{Var}(\theta)>0$ — a positive link conjured out of pure ignorance.</p>
+                <p class="mb-0"><strong>(iii) Pretend independent?</strong> No — to do that is to freeze $\theta$ at a guess and slam the door on learning anything from the data.</p>
+            </div>
+        </section>
+
+        <!-- Scenario B -->
+        <section class="mb-12">
+            <div class="academic-card p-8">
+                <div class="mb-6">
+                    <span class="inline-block w-8 h-8 rounded bg-bayesian-surfaceAlt border border-bayesian-border text-center leading-8 font-bold text-bayesian-navy ui-text mb-4">B</span>
+                    <h3 class="text-2xl font-semibold text-bayesian-navy mb-4 ui-text">Keep It Out, and $\theta$ Is a Mystery</h3>
+                </div>
+
+                <p class="mb-2">Now both effects are in play at once. For a fixed $\theta$ we're exactly in Question 1(b), so the physics term is $\mathrm{Cov}(y_1,y_2\mid\theta)=-\dfrac{\theta(1-\theta)}{N-1}$ and the means are still $\theta$. Feed those into Tool 2:</p>
+                <div class="derivation">
+                    $$\begin{aligned}
+                    \mathrm{Cov}(y_1,y_2) &= E\!\left[-\frac{\theta(1-\theta)}{N-1}\right] + \mathrm{Cov}(\theta,\theta)\\[6pt]
+                    &= \mathrm{Var}(\theta) \;-\; \frac{E[\theta(1-\theta)]}{N-1}.
+                    \end{aligned}$$
+                </div>
+                <p class="mb-2"><strong>(i) Exchangeable?</strong> Yes — it's symmetric for each $\theta$, and averaging over $p(\theta)$ keeps it symmetric.</p>
+                <p class="mb-0"><strong>(ii)–(iii) Independent?</strong> No — and now you can literally see the tug-of-war: a positive <strong>learning</strong> pull, $\mathrm{Var}(\theta)$, fighting a negative <strong>depletion</strong> push. In a small box the depletion can win and drag the whole thing negative. Doesn't matter which wins — they're linked, so you can't treat them as independent.</p>
+            </div>
+        </section>
+
+        <!-- Scenario C -->
+        <section class="mb-12">
+            <div class="academic-card p-8">
+                <div class="mb-6">
+                    <span class="inline-block w-8 h-8 rounded bg-bayesian-surfaceAlt border border-bayesian-border text-center leading-8 font-bold text-bayesian-navy ui-text mb-4">C</span>
+                    <h3 class="text-2xl font-semibold text-bayesian-navy mb-4 ui-text">Keep It Out, Huge Box, $\theta$ Still a Mystery</h3>
+                </div>
+                <p class="mb-2">Let the box get enormous. The depletion push dies away, but the learning pull doesn't budge:</p>
+                <div class="derivation">
+                    $$\mathrm{Cov}(y_1,y_2) = \mathrm{Var}(\theta) - \frac{E[\theta(1-\theta)]}{N-1} \;\xrightarrow[\;N\to\infty\;]{}\; \mathrm{Var}(\theta) \,>\,0.$$
+                </div>
+                <p class="mb-0"><strong>This is the punchline of the whole problem, so let's say it slowly.</strong> Put this next to Question 1(c). Same gigantic box. There, we knew $\theta$, so $\mathrm{Var}(\theta)=0$, and the covariance went to zero — independent. Here we <em>don't</em> know $\theta$, so $\mathrm{Var}(\theta)$ stays stubbornly positive. A big box washes away the physics, but it does <strong>nothing</strong> about your ignorance. Only knowing $\theta$ can do that. So 1(c) gets to be (almost) independent and 2(c) never does — and the single thing that separates them is whether you know what's in the box.</p>
+            </div>
+        </section>
+
+        <!-- Master formula -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-semibold mb-6 border-b pb-3 border-bayesian-border ui-text">
+                3. All Six Cases in One Line
+            </h2>
+            <p class="mb-4">Every single scenario from both pages is hiding inside one formula. "Put it back" just drops the second term; a huge box sends it to zero:</p>
+            <div class="code-block mb-6">
+                $$\mathrm{Cov}(y_1,y_2) \;=\; \underbrace{\mathrm{Var}(\theta)}_{\text{learning}} \;-\; \underbrace{\frac{E[\theta(1-\theta)]}{N-1}\,\cdot\,\mathbb{1}\{\text{without replacement}\}}_{\text{depletion}}$$
+            </div>
+            <table class="rigtable mb-4">
+                <thead>
+                    <tr><th>Scenario</th><th>$\theta$</th><th>$\mathrm{Cov}(y_1,y_2)$</th><th>Independent?</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>1(a) put it back</td><td>known</td><td>$0$</td><td>Yes</td></tr>
+                    <tr><td>1(b) keep it out</td><td>known</td><td>$-\dfrac{\theta(1-\theta)}{N-1}$</td><td>No</td></tr>
+                    <tr><td>1(c) keep it out, huge box</td><td>known</td><td>$\to 0$</td><td>Almost</td></tr>
+                    <tr><td>2(a) put it back</td><td>unknown</td><td>$\mathrm{Var}(\theta)$</td><td>No</td></tr>
+                    <tr><td>2(b) keep it out</td><td>unknown</td><td>$\mathrm{Var}(\theta)-\dfrac{E[\theta(1-\theta)]}{N-1}$</td><td>No</td></tr>
+                    <tr><td>2(c) keep it out, huge box</td><td>unknown</td><td>$\to \mathrm{Var}(\theta)$</td><td>No</td></tr>
+                </tbody>
+            </table>
+            <p class="mb-0 text-base text-bayesian-slate">Two separate knobs. The box size $N$ only touches the depletion term. Knowing $\theta$ only touches the learning term. To get true independence you have to zero out <em>both</em> — and that essentially never happens unless you already know the answer.</p>
+        </section>
+
+        <!-- de Finetti -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-semibold mb-6 border-b pb-3 border-bayesian-border ui-text">
+                4. de Finetti's Theorem — the Surprise Run in Reverse
+            </h2>
+            <p class="mb-4">Up to now I sneaked in a prior $p(\theta)$ and a conditional-coin-flip story, and we computed away. de Finetti's theorem does something far more impressive: it runs the whole thing <em>backward</em>. You don't have to assume any of that machinery. Just say "I'm willing to treat my observations as exchangeable, forever" — and the theorem hands you the parameter, the prior, and the independence-given-$\theta$ structure, all for free.</p>
+
+            <div class="theorem-block">
+                <div class="label text-bayesian-blue mb-2">The theorem (for our coin-flip / black-or-white case)</div>
+                <p class="mb-2">Take any infinitely exchangeable sequence of $0$/$1$ draws $y_1, y_2, \dots$. Then there is one and only one distribution $p(\theta)$ on $[0,1]$ for which, for every $n$ (with $s=\sum_i y_i$ blacks),</p>
+                $$p(y_1,\dots,y_n) = \int_0^1 \prod_{i=1}^n \theta^{y_i}(1-\theta)^{1-y_i}\; p(\theta)\,d\theta = \int_0^1 \theta^{s}(1-\theta)^{n-s}\,p(\theta)\,d\theta.$$
+                <p class="mb-0">And $\theta$ isn't some abstract gadget — it's literally the long-run fraction of black you'd see if you drew forever, $\theta = \displaystyle\lim_{n\to\infty}\frac{1}{n}\sum_{i=1}^n y_i$, and $p(\theta)$ is just the distribution of that limit.</p>
             </div>
 
-            <h3 class="text-xl font-semibold text-bayesian-navy mb-3 ui-text">The case $\theta$ known (Question 1)</h3>
-            <p class="mb-4">When $\theta$ is known it is a constant, so $\mathrm{Var}(\theta) = 0$ and only the physical term survives:</p>
-            <div class="academic-card p-6 mb-4">
-                <ul class="list-disc pl-6 space-y-2 text-lg">
-                    <li><strong>(a) With replacement:</strong> $\mathrm{Cov} = 0$ — strictly independent.</li>
-                    <li><strong>(b) Without replacement, $N=2$, $\theta=\tfrac12$:</strong> $\mathrm{Cov} = -\dfrac{1}{4}$ — strongly dependent.</li>
-                    <li><strong>(c) Without replacement, $N$ huge:</strong> $\mathrm{Cov} = -\dfrac{\theta(1-\theta)}{N-1} \to 0$ — act independent.</li>
-                </ul>
+            <p class="mb-4">Read it again slowly, because it's saying three astonishing things:</p>
+            <ol class="list-decimal pl-6 space-y-2 mb-6">
+                <li><strong>A parameter has to exist.</strong> We never put $\theta$ in by hand — the theorem builds it for us, as the long-run frequency. Exchangeability alone guarantees that limit is there.</li>
+                <li><strong>Given $\theta$, the draws are independent coins.</strong> The thing inside the integral is a plain product — exactly Definition 4 from the last page.</li>
+                <li><strong>That $p(\theta)$ is a genuine prior.</strong> It's the one and only mixing distribution — your uncertainty about the long-run frequency, before any data.</li>
+            </ol>
+
+            <div class="keystone">
+                <div class="label text-bayesian-blue mb-2">Why it has to be <em>infinite</em> exchangeability — and our negative number proves it</div>
+                <p class="mb-2">Remember the minus sign we tucked away in Question 1? Time to collect. Anything built the de Finetti way — pick $\theta$, then draw independently — must have, by Tool 2,</p>
+                $$\mathrm{Cov}(y_1,y_2) = \mathrm{Var}(\theta) \ge 0.$$
+                <p class="mb-2">But the finite "keep it out" box was perfectly exchangeable and had $\mathrm{Cov}=-\dfrac{\theta(1-\theta)}{N-1}<0$. A negative number can never equal a variance. So that box, nice as it is, <strong>cannot have been built by mixing independent draws</strong> — which means it can't be stretched into an infinite exchangeable sequence at all. Plain finite exchangeability is genuinely weaker, and that's the exact gap de Finetti's theorem closes by demanding the infinite version. (And the huge-box limit is precisely where that pesky negative term dies and the theorem becomes usable again.)</p>
+                <p class="mb-0 text-base text-bayesian-slate">If you want it concrete: the two-ball box has $\mathrm{Cov}=-\tfrac14$. No prior $p(\theta)$ on Earth can make two conditionally-independent draws anti-correlated. It simply can't be done.</p>
             </div>
-            <p class="text-base text-bayesian-slate italic">
-                The whole pair of problems collapses to one line: $\mathrm{Cov} = \mathrm{Var}(\theta) - \frac{E[\theta(1-\theta)]}{N-1}$ (with replacement drops the second term). Population size $N$ only shrinks the <strong>physical</strong> term; only knowing $\theta$ removes the <strong>learning</strong> term $\mathrm{Var}(\theta)$. That single distinction is why 1(c) is independent and 2(c) is not. The deeper reason it all coheres is <strong>de Finetti's theorem</strong>: an exchangeable sequence is a mixture of i.i.d. sequences, and mixing over the unknown $\theta$ is exactly what couples the observations and lets data teach us.
-            </p>
+        </section>
+
+        <!-- Hierarchical models -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-semibold mb-6 border-b pb-3 border-bayesian-border ui-text">
+                5. So Why Are We Allowed to Use Hierarchical Models?
+            </h2>
+            <p class="mb-4">Now look at the theorem's formula and look at how we actually write down a Bayesian model, and notice they're the very same thing wearing different clothes:</p>
+            <div class="keystone">
+                $$\underbrace{p(y_1,\dots,y_n) = \int_0^1 \Big[\textstyle\prod_i p(y_i\mid\theta)\Big]\,p(\theta)\,d\theta}_{\text{what de Finetti gives you}} \;\;\Longleftrightarrow\;\; \underbrace{\theta\sim p(\theta),\quad y_i\mid\theta \overset{\text{iid}}{\sim} p(y\mid\theta)}_{\text{a hierarchical model}}$$
+            </div>
+            <p class="mb-4">They're identical. And that's a strong statement: <strong>the moment you're willing to call your observations exchangeable, you've already signed up for a hierarchical model with a parameter $\theta$ and a prior $p(\theta)$.</strong> The prior isn't some optional Bayesian decoration you could argue away — the theorem says it has to be there. That's our license, in this chapter, for treating a bunch of rats, or schools, or factories as draws from one shared population.</p>
+
+            <p class="mb-4">And now the role of <em>not knowing</em> $\theta$ snaps into focus. That dependence we worked so hard to compute, $\mathrm{Cov}(y_1,y_2)=\mathrm{Var}(\theta)$, is not a nuisance — it's the actual pipe through which learning flows:</p>
+            <div class="derivation">
+                $$p(\theta \mid y_1) \;\propto\; p(y_1\mid\theta)\,p(\theta) \;\neq\; p(\theta) \quad\Longrightarrow\quad p(y_2\mid y_1) \neq p(y_2).$$
+            </div>
+            <p class="mb-6">If the draws were truly independent — $\theta$ known, $\mathrm{Var}(\theta)=0$ — then seeing $y_1$ wouldn't move your belief about $\theta$ one inch, and data would teach you nothing. Turn it around: <strong>the draws are dependent precisely because $\theta$ is unknown, and that dependence is exactly what lets one observation inform the next.</strong> Pooling information across exchangeable units works <em>because</em> they're linked, and they're linked <em>because</em> there's a shared unknown.</p>
+
+            <div class="academic-card p-6">
+                <div class="label text-bayesian-navy mb-3">A concrete one to hold — the Beta–Binomial</div>
+                <p class="mb-2">Put $p(\theta)=\mathrm{Beta}(\alpha,\beta)$. Then $E[\theta]=\frac{\alpha}{\alpha+\beta}$, and the covariance between two draws is just</p>
+                <div class="derivation mb-3">
+                    $$\mathrm{Cov}(y_1,y_2) = \mathrm{Var}(\theta) = \frac{\alpha\beta}{(\alpha+\beta)^2(\alpha+\beta+1)} \;>\;0.$$
+                </div>
+                <p class="mb-0 text-base text-bayesian-slate">Take a flat prior $\mathrm{Beta}(1,1)$ and you get $\mathrm{Var}(\theta)=\tfrac{1}{12}\approx0.083$ — that's a real, sizable link, manufactured from nothing but "I don't know." Then as data pile in, the posterior on $\theta$ tightens, $\mathrm{Var}(\theta\mid\text{data})\to 0$, and future draws drift toward independence. That's the rat-tumor model of this chapter in a nutshell: a $\mathrm{Beta}$ population prior whose knobs are themselves learned across a whole set of exchangeable experiments.</p>
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-semibold mb-6 border-b pb-3 border-bayesian-border ui-text">
+                6. The Whole Story in One Breath
+            </h2>
+            <div class="prose max-w-none text-bayesian-text">
+                <p class="mb-0">
+                    Calling your observations exchangeable is really just a statement about the symmetry of your own ignorance. By de Finetti, that one modest judgment forces a parameter $\theta$ into existence (the long-run frequency), hands you a prior $p(\theta)$, and makes the draws independent once $\theta$ is known — which is to say, it hands you a hierarchical model. While $\theta$ stays unknown the draws are linked, $\mathrm{Cov}(y_1,y_2)=\mathrm{Var}(\theta)>0$, and that very link is what lets one draw update your belief about $\theta$ and therefore about the next draw. Hand someone the true $\theta$ and the link vanishes — back to independence. And no pile of extra data and no enormous box can ever substitute for knowing $\theta$ — which is the whole reason that, whenever the parameter is unknown, the right tool is a hierarchical model and not a shrug toward independence.
+                </p>
+            </div>
         </section>
 
         <!-- References & Study Disclaimer -->
