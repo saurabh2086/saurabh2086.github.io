@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rock, Paper, Scissors — A Bayesian Game-Theoretic Formulation</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400;1,6..72,600&display=swap" rel="stylesheet">
+
+    <!-- Highlight.js for code syntax highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', (event) => { hljs.highlightAll(); });</script>
+
+    <!-- MathJax for LaTeX rendering -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bayesian: {
+                            bg: '#f7f9fb',
+                            text: '#191c1e',
+                            navy: '#131b2e',
+                            blue: '#0051d5',
+                            slate: '#75859d',
+                            surface: '#ffffff',
+                            surfaceAlt: '#f8fafc',
+                            border: '#e2e8f0'
+                        }
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 12px rgba(15, 23, 42, 0.05)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Newsreader', serif;
+            background-color: #f7f9fb;
+            color: #191c1e;
+            font-size: 1.25rem;
+            line-height: 1.7;
+        }
+
+        h1, h2, h3, h4, h5, h6, .ui-text {
+            font-family: 'Inter', sans-serif;
+            color: #131b2e;
+        }
+
+        .math-inline {
+            font-family: 'Newsreader', serif;
+            font-size: 1.3rem;
+        }
+
+        .theorem-block {
+            background-color: #f8fafc;
+            border-left: 2px solid #0051d5;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            border-radius: 0 4px 4px 0;
+            overflow-x: auto;
+        }
+
+        .derivation {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-left: 3px solid #75859d;
+            padding: 0.75rem 1.5rem;
+            margin-bottom: 1.5rem;
+            border-radius: 0 4px 4px 0;
+            overflow-x: auto;
+        }
+
+        mjx-container { max-width: 100%; }
+
+        .academic-card {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .academic-card:hover {
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .label {
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            font-size: 0.78rem;
+        }
+
+        table.rigtable { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+        table.rigtable th, table.rigtable td { border: 1px solid #e2e8f0; padding: 0.5rem 0.6rem; text-align: center; }
+        table.rigtable th { background-color: #f8fafc; font-family: 'Inter', sans-serif; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; color: #131b2e; }
+        table.rigtable td.highlight-cell { background-color: #f0fdf4; font-weight: 600; }
+        table.rigtable td.school-lbl { font-family: 'Inter', sans-serif; font-weight: 600; text-align: left; }
+
+        .code-block {
+            background-color: #1e293b;
+            color: #f8fafc;
+            font-family: monospace;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            padding: 1rem;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+
+        /* Flowchart connection arrows */
+        .flow-arrow {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 30px;
+            color: #75859d;
+        }
+    </style>
+</head>
+
+<body class="antialiased">
+
+    <!-- Container constrained for optimal reading -->
+    <div class="max-w-[960px] mx-auto px-6 py-16">
+
+        <!-- Navigation -->
+        <nav class="mb-8">
+            <a href="../index.html" class="inline-flex items-center text-sm font-semibold text-bayesian-slate hover:text-bayesian-navy transition-colors ui-text">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                Back to Index
+            </a>
+        </nav>
+
+        <!-- Header -->
+        <header class="mb-16">
+            <div class="flex flex-wrap gap-2 mb-6">
+                <div class="px-3 py-1 bg-bayesian-surfaceAlt border border-bayesian-border text-bayesian-slate rounded text-xs font-semibold tracking-wide uppercase ui-text">
+                    Non-Fiction &bull; Bayesian Game Theory
+                </div>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-4 leading-tight">
+                Rock, Paper, Scissors: A Bayesian Game-Theoretic Formulation
+            </h1>
+            <p class="text-xl text-bayesian-slate italic font-normal">
+                A first-principles construction of a Bayesian, game-theoretic RPS agent. Nothing is assumed that we haven't already earned. The math is kept whole — I just refuse to write down a symbol before we've built the thing it names.
+            </p>
+        </header>
+
+        <!-- Section 1: Intro -->
+        <section class="mb-12">
+            <h2 class="text-3xl font-semibold mb-6 border-b pb-3 border-bayesian-border ui-text">
+                The Objective: Exploiting Non-Random Behavior
+            </h2>
+            <div class="prose max-w-none text-bayesian-text">
+                <p class="mb-6">
+                    Let's start honest. We want to play Rock, Paper, Scissors against a person and win <em>more than we lose</em>. Not once — that's luck. On average, over many rounds.
+                </p>
+                <p class="mb-6">
+                    Now here's the first thing worth noticing, and it's the whole game in a nutshell: <strong>if the other person is truly random, you cannot win.</strong> It doesn't matter how clever you are. If they flip a perfectly fair three-sided coin, then whatever you throw, you win a third, lose a third, tie a third. Your average score is exactly zero, forever. No strategy beats zero. That's not a limitation of <em>you</em> — it's a law.
+                </p>
+                <p class="mb-6">
+                    So the only way this project makes any sense at all is if the human is <strong>not</strong> random. And here's the beautiful empirical fact: <strong>people can't be random.</strong> Ask someone to type a "random" string of R, P, S and they'll unconsciously avoid repeats, favor a hand, fall into little rhythms. That failure — their inability to be a fair coin — is the <em>entire</em> crack of light we're going to pry the win out of. Hold onto that. Everything we build is a machine for finding and squeezing that crack.
+                </p>
+            </div>
+        </section>
+
+        <!-- Section 2: Brick 1 -->
+        <section class="mb-12">
+            <h2 class="text-3xl font-semibold mb-6 border-b pb-3 border-bayesian-border ui-text">
+                The Action Space and Game Dynamics
+            </h2>
+            <div class="prose max-w-none text-bayesian-text">
+                <p class="mb-6">
+                    There are three things you can do. Write the set:
+                </p>
+                <div class="derivation">
+                    $$A = \{R, P, S\}$$
+                </div>
+                <p class="mb-6">
+                    That's it. $A$ is our <strong>action set</strong>. Three elements. Rock, Paper, Scissors.
+                </p>
+                <p class="mb-6">
+                    And there's a rule about who beats whom, and it goes in a <em>circle</em>:
+                </p>
+                <div class="derivation">
+                    $$R \succ S \succ P \succ R$$
+                </div>
+                <p class="mb-6">
+                    Rock smashes Scissors, Scissors cut Paper, Paper covers Rock, and then it bites its own tail — Rock loses to Paper. Read the arrow $\succ$ as "beats."
+                </p>
+                <p class="mb-6">
+                    Notice the circle has no beginning and no winner. This isn't a decoration; it's the reason the whole rest of the document has to exist. Let me show you why.
+                </p>
+            </div>
+        </section>
+
+        <!-- Section 3: Brick 2 -->
+        <section class="mb-12">
+            <h2 class="text-3xl font-semibold mb-6 border-b pb-3 border-bayesian-border ui-text">
+                The Probability Simplex and Mixed Strategies
+            </h2>
+            <div class="prose max-w-none text-bayesian-text">
+                <p class="mb-6">
+                    Suppose you tried to be simple. "I'll just play Rock. It's a good hand, it smashes things."
+                </p>
+                <p class="mb-6">
+                    The moment your opponent notices, they play Paper every time, and you lose every time. Okay, so a fixed move is suicide. What about the <em>best</em> move? Here's the trick question: <strong>there is no best move.</strong> Because of the circle, every single move beats one thing and loses to one thing. Rock is exactly as good and as bad as Paper is exactly as good and as bad as Scissors. There is no move you can point to and say "that one's the winner." In the language of game theory: RPS has <strong>no dominant strategy.</strong>
+                </p>
+                <p class="mb-6">
+                    So if no single move is the answer, what could the answer possibly be? It has to be a <em>mixture</em> — how often you throw each hand. A recipe like "Rock 50% of the time, Paper 30%, Scissors 20%." That recipe is a list of three numbers that are each at least zero and add up to one. Collect all possible recipes into one object:
+                </p>
+                <div class="derivation">
+                    $$\Delta(A) = \Big\{ (x_R, x_P, x_S)\ :\ x_i \ge 0,\ \ x_R + x_P + x_S = 1 \Big\}$$
+                </div>
+                <p class="mb-6">
+                    This is the <strong>probability simplex</strong> over $A$. Don't be scared of the word — picture it. It's a flat triangle. The three <em>corners</em> are the pure moves ("always Rock" and so on). The dead <em>center</em>,
+                </p>
+                <div class="derivation">
+                    $$u = \left(\tfrac13, \tfrac13, \tfrac13\right),$$
+                </div>
+                <p class="mb-6">
+                    is perfect randomness — the fair three-sided coin from our initial formulation. Every honest way to play RPS is a single point somewhere in this triangle. Our agent's job, every round, is to pick a point in this triangle. That is the core formulation: <strong>we don't choose a move, we choose a point in the triangle, then let a die pick the move for us.</strong>
+                </p>
+                <p class="mb-6">
+                    Why go to the trouble of a distribution instead of just deciding? Because a distribution can do two jobs at once: it can <em>lean</em> toward the hand that beats what we expect (that's how we win) and it can <em>stay spread out</em> so the opponent can't predict us (that's how we avoid losing). A single move can only do the first. Keep both jobs in mind — they'll fight later, and refereeing that fight is most of the cleverness.
+                </p>
+            </div>
+        </section>
+
+        <!-- Section 4: Brick 3 -->
+        <section class="mb-12">
+            <h2 class="text-3xl font-semibold mb-6 border-b pb-3 border-bayesian-border ui-text">
+                Opponent Representation: The History-to-Recipe Function
+            </h2>
+            <div class="prose max-w-none text-bayesian-text">
+                <p class="mb-6">
+                    Back to the crack of light. The human isn't random — good — but what <em>are</em> they, then? Here is the modeling leap, and it's worth saying slowly because everything sits on it.
+                </p>
+                <p class="mb-6">
+                    We are going to pretend the person is a <strong>machine that takes the history of the game and spits out a recipe.</strong> Not a move — a <em>recipe</em>, a point in our triangle. Feed it everything that's happened so far, and out comes "here's how likely I am to throw each hand next":
+                </p>
+                <div class="derivation">
+                    $$q_t = f(h_t)$$
+                </div>
+                <p class="mb-6">
+                    Let me name the parts:
+                </p>
+                <ul class="list-disc pl-6 space-y-2 mb-6">
+                    <li>$t$ is which round we're on: $t = 1, 2, 3, \dots$</li>
+                    <li>$h_t$ is the <strong>history</strong> before round $t$ — the whole list of what both of us threw and who won, up to now.</li>
+                    <li>$f$ is the person's hidden <strong>decision function</strong> — their mind, as far as this game can see it.</li>
+                    <li>$q_t \in \Delta(A)$ is the recipe their mind produces this round — a point in the triangle.</li>
+                </ul>
+                <p class="mb-6">
+                    Now, the subtle and important thing. Their actual <em>throw</em> is still random — they don't throw $q_t$, they throw a single hand <em>drawn from</em> $q_t$, like rolling the loaded die that $q_t$ describes. So there are two layers of randomness we must never confuse:
+                </p>
+                <ol class="list-decimal pl-6 space-y-2 mb-6">
+                    <li>The recipe $q_t$ — this is <strong>fixed</strong> given the history. It's the signal. It's what we want to know.</li>
+                    <li>The throw drawn from it — this is <strong>noise</strong>, the jiggle around the signal.</li>
+                </ol>
+                <p class="mb-6">
+                    This split is a gift. It means beating the person reduces to one clean scientific task: <strong>figure out their function $f$.</strong> Learn the machine, and you can predict the recipe, and if you can predict the recipe you can lean against it. That's the plan. Everything from here is "how do we actually learn $f$ from watching them play?"
+                </p>
+            </div>
+        </section>
+
+        <!-- Section 5: Brick 4 -->
+        <section class="mb-12">
+            <h2 class="text-3xl font-semibold mb-6 border-b pb-3 border-bayesian-border ui-text">
+                Memory Depth Constraints and Context Cardinality
+            </h2>
+            <div class="prose max-w-none text-bayesian-text">
+                <p class="mb-6">
+                    Here's a wall we hit immediately, and it's a good wall because getting past it teaches us something true about people.
+                </p>
+                <p class="mb-6">
+                    The history $h_t$ grows forever. Round 500 has a history 499 moves long. If the person's function $f$ genuinely depended on <em>all</em> of it, then every round presents a brand-new, never-before-seen situation, and you can never gather two examples of "the same situation" to learn from. Learning is comparison; with infinite inputs there's nothing to compare. $f$ would be unlearnable in principle.
+                </p>
+                <p class="mb-6">
+                    But think about a real person. Do you actually remember your 300th throw while making your 301st? Of course not. You remember the <em>last few</em>. So we make the assumption that lets learning back in the door, and it also happens to be <em>true</em> about humans: the function only looks at a short <strong>window</strong> of recent history.
+                </p>
+                <div class="derivation">
+                    $$q_t = f\big(\phi_k(h_t)\big), \qquad \phi_k(h_t) = (\text{the last } k \text{ moves})$$
+                </div>
+                <p class="mb-6">
+                    $\phi_k$ ("phi-kay") is a little machine that throws away all but the recent past and hands $f$ only what fits in short-term memory. We call $k$ the <strong>memory depth</strong> — how many rounds back the person's habit reaches. This depth acts as a crucial hyperparameter that affects behavior:
+                </p>
+                <ul class="list-disc pl-6 space-y-2 mb-6">
+                    <li>$k = 0$: the person ignores history entirely. They just have a favorite hand. (Some people really are like this.)</li>
+                    <li>$k = 1$: they react to the last round — "I just lost, I'll switch." The famous <em>win-stay, lose-shift</em> reflex lives here.</li>
+                    <li>$k = 2, 3, \dots$: longer little rituals and patterns.</li>
+                </ul>
+                <p class="mb-6">
+                    And now watch the cost, because it's the reason we can't just crank $k$ up to be safe. A depth-$k$ habit has to specify a recipe for <em>every possible recent past</em>. How many recent pasts are there? Both players' last $k$ moves, three options each:
+                </p>
+                <div class="derivation">
+                    $$\text{number of contexts} = |A|^{2k} = 3^{2k}$$
+                </div>
+                <p class="mb-6">
+                    Let that sink in:
+                </p>
+                <div class="derivation">
+                    $$k=1 \to 9, \quad k=2 \to 81, \quad k=3 \to 729, \quad k=5 \to 59{,}049, \quad k=10 \to 3^{20} \approx 3.5\ \text{billion.}$$
+                </div>
+                <p class="mb-6">
+                    A whole match is maybe fifty to a few hundred rounds. At $k=10$ you would see almost every situation <em>once or never</em> — you'd have nothing to average, nothing to learn. So even if a person truly had ten-move memory, you couldn't fit it from one match. The <em>learnable</em> depth is small, $k$ around 2 or 3, no matter how deep the person really is. Reality caps our ambition, and it's better to know that up front than to be fooled by a model too big to feed.
+                </p>
+            </div>
+        </section>
+
+        <!-- Section 6: Brick 5 -->
+        <section class="mb-12">
+            <h2 class="text-3xl font-semibold mb-6 border-b pb-3 border-bayesian-border ui-text">
+                Hypothesis Management: The Committee of Experts
+            </h2>
+            <div class="prose max-w-none text-bayesian-text">
+                <p class="mb-6">
+                    We just said $k$ matters a lot. Awkwardly, <strong>we don't know $k$.</strong> Different people have different depths, and nobody wears a sign. What do you do when you don't know a number that matters? You do <em>not</em> pick one and pray. You run <em>all the plausible values at once</em> and let the evidence vote.
+                </p>
+                <p class="mb-6">
+                    So build a <strong>committee of experts</strong>, one for each depth:
+                </p>
+                <div class="derivation">
+                    $$\text{Expert}_0,\ \text{Expert}_1,\ \dots,\ \text{Expert}_{10}.$$
+                </div>
+                <p class="mb-6">
+                    Expert $k$ is a specialist who stubbornly believes "this person has memory depth exactly $k$" and makes its predictions on that assumption. Expert 0 watches only overall favorites. Expert 1 watches reactions to the last round. Expert 5 hunts for five-long rituals (and will mostly find noise, and will be <em>punished</em> for it — we'll get to how). We haven't yet said how to weigh them; we've just agreed not to bet the match on a single guess about $k$.
+                </p>
+            </div>
+        </section>
+
+        <!-- Section 7: Brick 6 -->
+        <section class="mb-12">
+            <h2 class="text-3xl font-semibold mb-6 border-b pb-3 border-bayesian-border ui-text">
+                Prior Beliefs on Memory Depth
+            </h2>
+            <div class="prose max-w-none text-bayesian-text">
+                <p class="mb-6">
+                    The committee needs starting opinions — how much we trust each expert <em>before</em> the match begins. This is a <strong>prior</strong> over $k$. We want it to say something sensible and human: "most people are shallow, a few run deep, nobody's infinitely deep." A mode around 2, a tail that thins out toward 10.
+                </p>
+                <p class="mb-6">
+                    A clean off-the-shelf shape that does exactly this is the (truncated) <strong>Poisson</strong> with rate $2.5$:
+                </p>
+                <div class="derivation">
+                    $$P(k) \propto \frac{2.5^{\,k}}{k!}, \qquad k \in \{0, 1, \dots, 10\}$$
+                </div>
+                <p class="mb-6">
+                    Compute it and you get:
+                </p>
+                <div class="overflow-x-auto my-6">
+                    <table class="rigtable max-w-[650px] mx-auto">
+                        <thead>
+                            <tr>
+                                <th>$k$</th>
+                                <th>0</th>
+                                <th>1</th>
+                                <th>2</th>
+                                <th>3</th>
+                                <th>4</th>
+                                <th>5</th>
+                                <th>6</th>
+                                <th>7</th>
+                                <th>8</th>
+                                <th>9</th>
+                                <th>10</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="font-semibold text-bayesian-navy">$P(k)$</td>
+                                <td>.082</td>
+                                <td>.205</td>
+                                <td class="highlight-cell">.257</td>
+                                <td>.214</td>
+                                <td>.134</td>
+                                <td>.067</td>
+                                <td>.028</td>
+                                <td>.010</td>
+                                <td>.003</td>
+                                <td>.001</td>
+                                <td>.0002</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="mb-6">
+                    The peak is at $k=2$, about 93% of our belief sits at depth 5 or less, and there's a thin whisper of "maybe deep" trailing out to 10. That's the whole statement: <em>probably shallow, possibly deep, never bottomless.</em> Nothing sacred about 2.5 — if a particular opponent keeps surprising us with deep patterns, the data will drag our belief upward on its own. That leads us to how individual experts learn and adapt.
+                </p>
+            </div>
+        </section>
+
+        <!-- Section 8: Brick 7 -->
+        <section class="mb-12">
+            <h2 class="text-3xl font-semibold mb-6 border-b pb-3 border-bayesian-border ui-text">
+                Dirichlet Counting: Learning within Contexts
+            </h2>
+            <div class="prose max-w-none text-bayesian-text">
+                <p class="mb-6">
+                    Zoom into one expert, say Expert 1, watching one particular situation — call it a <strong>context</strong> $c$, e.g. "last round I threw Rock and you threw Paper." Every time that exact context comes around, the expert watches what the human throws and <strong>tallies it.</strong> Rock this many times, Paper this many, Scissors this many. Counting. That's the whole idea; the rest is doing it honestly.
+                </p>
+                <p class="mb-6">
+                    Two honesty problems, two fixes.
+                </p>
+                <p class="mb-6">
+                    <strong>Problem one: the empty tally.</strong> The very first time a context appears, the tally is $(0,0,0)$ and naive counting says "probability zero for everything," which is nonsense. Worse, after one Rock it would scream "100% Rock!" — wildly overconfident from a single data point. The fix is old and wise: <strong>start every count at 1 instead of 0.</strong> Pretend you've already seen one of each. This is a <em>prior</em>, and in the proper machinery it's a <strong>Dirichlet distribution</strong> with parameter $\alpha = (1,1,1)$, the natural partner of counting (its "conjugate"). With tallies $n_c = (n_R, n_P, n_S)$ in context $c$, the expert's estimate of the human's recipe is:
+                </p>
+                <div class="derivation">
+                    $$\hat q_k(i \mid c) = \frac{n_{c,i} + 1}{N_c + 3}, \qquad N_c = n_R + n_P + n_S$$
+                </div>
+                <p class="mb-6">
+                    Read what this does. Empty tally $\Rightarrow$ every hand $\tfrac{1}{3}$ — pure uniform, the humble center of the triangle, "I know nothing so I assume nothing." Then, throw by throw, the fraction slides away from the center toward whatever the person actually favors, and the more data the sharper it gets. It <em>earns</em> its confidence. Beautiful: ignorance defaults to Nash, knowledge defaults to exploitation, and the crossover is automatic.
+                </p>
+                <p class="mb-6">
+                    Our <strong>second problem</strong> concerns time.
+                </p>
+            </div>
+        </section>
+
+        <!-- Section 9: Brick 8 -->
+        <section class="mb-12">
+            <h2 class="text-3xl font-semibold mb-6 border-b pb-3 border-bayesian-border ui-text">
+                Tracking Drift: The Fading Memory Update
+            </h2>
+            <div class="prose max-w-none text-bayesian-text">
+                <p class="mb-6">
+                    Plain counting has a flaw: it treats a throw from round 3 as seriously as a throw from round 80. But people <em>shift</em> — they get bored of a habit, they notice they're losing and change tack, they warm up. A count that never forgets will keep insisting on a pattern that died fifty rounds ago.
+                </p>
+                <p class="mb-6">
+                    So we make memory <strong>fade.</strong> Every round, before adding the new tally, gently shrink all the old ones by a constant factor $\gamma$ (gamma) a hair below 1:
+                </p>
+                <div class="derivation">
+                    $$n_{c,i} \ \leftarrow\ \gamma\, n_{c,i} \ +\ \mathbb{1}\big[\text{human just threw } i \text{ in context } c\big]$$
+                </div>
+                <p class="mb-6">
+                    That indicator $\mathbb{1}[\cdot]$ is just "add 1 if it happened, 0 if it didn't." The effect is that a throw from $s$ rounds ago is now worth only $\gamma^s$ — recent throws count almost fully, ancient ones decay to dust. How long is our effective memory? Sum the fading weights:
+                </p>
+                <div class="derivation">
+                    $$N_{\text{eff}} = 1 + \gamma + \gamma^2 + \dots = \frac{1}{1-\gamma}$$
+                </div>
+                <p class="mb-6">
+                    We fix $\gamma = 0.9$, giving $N_{\text{eff}} = 1/(1-0.9) = 10$. So each context effectively remembers its last ~10 relevant throws and quietly forgets the rest. Set $\gamma = 1$ and you never forget (good only if the person truly never changes); smaller $\gamma$ forgets faster. $0.9$ is a comfortable "track a drifting human without twitching at every fluke."
+                </p>
+                <p class="mb-6">
+                    And here's a bonus we'll cash in at the very end: because the counts can never pile up past about 10, no expert can ever become <em>infinitely</em> sure. There's a permanent floor of doubt baked in. Remember that; it turns out to be exactly the thing that keeps us safe.
+                </p>
+            </div>
+        </section>
+
+        <!-- Section 10: Brick 9 -->
+        <section class="mb-12">
+            <h2 class="text-3xl font-semibold mb-6 border-b pb-3 border-bayesian-border ui-text">
+                Prequential Scoring: Scoreboard-Based Trust Weights
+            </h2>
+            <div class="prose max-w-none text-bayesian-text">
+                <p class="mb-6">
+                    We have a committee, and starting opinions about each member (our depth prior), and each member learns by fading counts. But every round only <em>one</em> prediction goes out the door — so how do we combine eleven experts into one belief? We make them <strong>compete on a live scoreboard</strong>, and the rule is the fairest one imaginable: <em>before</em> each round, every expert privately writes down how likely it thinks each human move is; <em>after</em> the human throws, we check who called it.
+                </p>
+                <p class="mb-6">
+                    Let $\ell_\tau^k$ be the probability Expert $k$ had assigned to the move the human <em>actually</em> made in round $\tau$ — computed before seeing it, so no cheating:
+                </p>
+                <div class="derivation">
+                    $$\ell_\tau^k = \hat q_k\big(m_\tau^{\text{hu}} \mid c_\tau^k\big)$$
+                </div>
+                <p class="mb-6">
+                    An expert that keeps saying "Rock is likely" right before the human throws Rock racks up big $\ell$'s; a deluded deep expert chasing phantom patterns keeps guessing near $\tfrac13$ and falls behind. Multiply each expert's calls together (equivalently, add up the logs — kinder to a computer), start from the prior, and you get the committee's updated trust in each depth:
+                </p>
+                <div class="derivation">
+                    $$P(k \mid \text{data}) \ \propto\ P(k)\,\exp\!\Big(\textstyle\sum_{\tau} \gamma^{\,t-\tau} \log \ell_\tau^k\Big)$$
+                </div>
+                <p class="mb-6">
+                    Two things to admire here.
+                </p>
+                <div class="theorem-block mb-6">
+                    <div class="label text-bayesian-blue mb-2">1. No Exam Day</div>
+                    <p class="mb-0">
+                        We never had to hold out a special test set. <em>Every</em> round is a fair test, because the prediction was locked in before the outcome was known. (Statisticians call this "prequential." It's just: predict, then check, forever.)
+                    </p>
+                </div>
+                <div class="theorem-block mb-6">
+                    <div class="label text-bayesian-slate mb-2">2. Occam's Razor Falls Out For Free</div>
+                    <p class="mb-0">
+                        A deep, greedy expert has to spend its evidence on zillions of rarely-seen contexts, where it's stuck guessing $\tfrac13$; it can't build a good score unless the person <em>really</em> has deep structure worth the complexity. Simplicity wins by default and only yields to complexity that pays for itself. Nobody imposed that — it dropped out of honest bookkeeping.
+                    </p>
+                </div>
+                <p class="mb-6">
+                    Notice the same $\gamma = 0.9$ discount rides along here (the $\gamma^{t-\tau}$), so an expert that shone early but stopped fitting can be <em>dethroned</em> when the human changes. The whole machine forgets at one consistent rate — inside each expert, and across the committee.
+                </p>
+                <p class="mb-6">
+                    Finally, blend the committee into one prediction by trusting each expert as much as its scoreboard says:
+                </p>
+                <div class="derivation">
+                    $$\hat q_t = \sum_{k=0}^{10} P(k \mid \text{data})\ \hat q_k\big(\cdot \mid \phi_k(h_t)\big)$$
+                </div>
+                <p class="mb-6">
+                    There it is: our single best guess of the human's recipe this round, a point in the triangle, assembled from a committee that argued it out.
+                </p>
+            </div>
+        </section>
+
+        <!-- Section 11: Brick 10 -->
+        <section class="mb-12">
+            <h2 class="text-3xl font-semibold mb-6 border-b pb-3 border-bayesian-border ui-text">
+                Outcome-Based Coordinates: The Win-Stay/Lose-Shift Expert
+            </h2>
+            <div class="prose max-w-none text-bayesian-text">
+                <p class="mb-6">
+                    So far every expert reads the same thing — <em>which hands</em> got thrown. But there's another kind of pattern in people that has nothing to do with the specific hands and everything to do with <em>how the last round felt</em>: after a <strong>win</strong> people tend to stick with what worked; after a <strong>loss</strong> they tend to switch. "Win-stay, lose-shift." It's one of the most reliable human tells in the whole game. Let's give the committee an expert that hunts for it — but carefully, because the obvious way adds nothing.
+                </p>
+                <p class="mb-6">
+                    <strong>The trap: the outcome is not new information.</strong> Your first instinct is "just glue the result (Win / Tie / Loss) onto the context." But look at what a context already holds. A depth-$k$ context lists <em>both</em> players' last moves — and the outcome of a round is a fixed, deterministic function of the two hands thrown:
+                </p>
+                <div class="derivation">
+                    $$o_\tau = g\big(m_\tau^{\text{ag}}, m_\tau^{\text{hu}}\big)$$
+                </div>
+                <p class="mb-6">
+                    If you already know both hands, you already know who won. Appending the outcome to a full move-pair context is writing down a fact you could already deduce — extra columns, zero extra information. That expert would be no wiser than before.
+                </p>
+                <p class="mb-6">
+                    <strong>The real trick: change coordinates.</strong> Win-stay/lose-shift isn't clumsy in the <em>data</em>; it's clumsy in the <em>language</em> we've been using. We've been predicting the human's <strong>absolute</strong> hand (R, P, or S). But "stick with a winner, switch after a loss" says nothing about R, P, S — it talks about the next move <em>relative to their own last one</em>. So let's speak that language. Describe the next move not as one of three absolute hands but as one of three <strong>transitions</strong> from their previous throw:
+                </p>
+                <div class="derivation">
+                    $$\mathcal{T} = \{\ \texttt{repeat},\ \ \texttt{shift}^{+},\ \ \texttt{shift}^{-}\ \}$$
+                </div>
+                <p class="mb-6">
+                    where $\texttt{repeat}$ = throw the same hand again, $\texttt{shift}^{+}$ = jump to the hand that <em>beats</em> your own last hand, $\texttt{shift}^{-}$ = jump to the hand your last hand beat. Now watch the pattern collapse into almost nothing:
+                </p>
+                <div class="derivation">
+                    $$\text{after a win} \to \texttt{repeat}, \qquad \text{after a loss} \to \texttt{shift}.$$
+                </div>
+                <p class="mb-6">
+                    That's the entire behavior, in two words, in the right coordinate system. The same reflex that would be smeared across nine absolute contexts is captured here by a couple of numbers.
+                </p>
+                <p class="mb-6">
+                    <strong>Build it exactly like the others.</strong> The win-stay/lose-shift expert keeps a little tally, but indexed by the <em>outcome of the last round</em> $o \in \{W, T, L\}$, and it counts <em>transitions</em> instead of absolute moves — same Dirichlet "one of each" start, same $\gamma = 0.9$ fading:
+                </p>
+                <div class="derivation">
+                    $$\hat g(\cdot \mid o) \in \Delta(\mathcal{T}), \qquad \hat g(\text{transition} \mid o) = \frac{n_{o,\text{transition}} + 1}{N_o + 3}$$
+                </div>
+                <p class="mb-6">
+                    To let it stand shoulder-to-shoulder with the depth experts, translate its transition-guess back into ordinary R/P/S using the human's actual last hand $x$:
+                </p>
+                <div class="derivation">
+                    $$\hat q_{\text{wsls}}(m \mid x, o) = \hat g\big(\ \tau(x \to m)\ \mid o\ \big)$$
+                </div>
+                <p class="mb-6">
+                    where $\tau(x \to m)$ is just "which transition turns hand $x$ into hand $m$."
+                </p>
+                <p class="mb-6">
+                    <strong>Then let the scoreboard referee it — no new machinery.</strong> It joins the exact prequential committee as one more member: it predicts before each round, gets graded on the move that actually came, and earns or loses trust like everyone else:
+                </p>
+                <div class="derivation">
+                    $$\hat q_t = \sum_{k=0}^{10} P(k \mid \text{data})\,\hat q_k(\cdot \mid \phi_k) \;+\; P(\text{wsls} \mid \text{data})\,\hat q_{\text{wsls}}(\cdot \mid x, o)$$
+                </div>
+                <p class="mb-6">
+                    And here's why the coordinate change earned its keep — count the knobs each expert must learn:
+                </p>
+                <div class="derivation">
+                    $$\text{win-stay/lose-shift: } 3 \text{ outcomes} \times 2 = 6 \text{ numbers}, \qquad \text{depth-1 absolute: } 9 \text{ contexts} \times 2 = 18.$$
+                </div>
+                <p class="mb-6">
+                    Fewer numbers means it learns <em>faster</em>. If the person really is win-stay/lose-shift, this lean expert locks on in a handful of rounds and its prequential score shoots past the bulkier absolute experts, so the committee starts trusting it almost immediately. And if the person <em>isn't</em>? It quietly guesses near $\tfrac13$, earns nothing, and Occam's razor lets it fade. We lose nothing by offering it and gain a fast, sharp reader of the single most common human reflex. That is the main takeaway here: <strong>the win came from a better question asked in the right language — not from more data.</strong>
+                </p>
+            </div>
+        </section>
+
+        <!-- Section 12: Brick 11 -->
+        <section class="mb-12">
+            <h2 class="text-3xl font-semibold mb-6 border-b pb-3 border-bayesian-border ui-text">
+                Expected Utility: Quantifying Opponent Imbalance
+            </h2>
+            <div class="prose max-w-none text-bayesian-text">
+                <p class="mb-6">
+                    We can predict their recipe $\hat q_t$. Now, what beats it? Suppose we throw a single hand $m$. We win when they throw the thing $m$ beats, we lose when they throw the thing that beats $m$, ties count zero. So the expected score of throwing $m$ is just:
+                </p>
+                <div class="derivation">
+                    $$v_t(m) = \hat q_t(m \text{ beats}) - \hat q_t(m \text{ loses to})$$
+                </div>
+                <p class="mb-6">
+                    Concretely, if we throw Rock: Rock beats Scissors and loses to Paper, so $v_t(R) = \hat q_t(S) - \hat q_t(P)$. Do the same for Paper and Scissors and you've got a score for each of your three options.
+                </p>
+                <p class="mb-6">
+                    And look what that formula is <em>telling</em> you: your reward from a hand is exactly <em>how lopsided</em> the person is between the thing you beat and the thing that beats you. If they're perfectly balanced ($\hat q_t = u$), every $v_t(m) = 0$ — back to the iron law of our initial formulation, no free lunch against a fair coin. Every point of profit you ever make is a direct measurement of their imbalance. The counting machine finds the imbalance; this formula turns it into money.
+                </p>
+                <p class="mb-6">
+                    The greedy move is obvious: throw whichever hand has the biggest $v_t(m)$. and if the human were a fixed target, we'd stop here. But they're not — and greed has a fatal tell.
+                </p>
+            </div>
+        </section>
+
+        <!-- Section 13: Brick 12 -->
+        <section class="mb-12">
+            <h2 class="text-3xl font-semibold mb-6 border-b pb-3 border-bayesian-border ui-text">
+                Uncertainty-Guided Action Selection: Thompson Blending
+            </h2>
+            <div class="prose max-w-none text-bayesian-text">
+                <p class="mb-6">
+                    If we <em>always</em> throw the greedy best answer, we become a machine as predictable as the one we're hunting. A sharp opponent notices "this thing always plays the hand that counters my favorite," and simply counters <em>us</em>. We'd have become the sucker who always throws Rock. The exploiter gets exploited.
+                </p>
+                <p class="mb-6">
+                    So we need to stay a little unpredictable. The clumsy way is to add a knob — "randomize this much" — and spend our lives tuning it. The elegant way, and the one that fits everything we've built, is to let our <strong>own uncertainty</strong> be the source of the randomness. This is <strong>Thompson sampling</strong>, and it's almost embarrassingly simple:
+                </p>
+                <blockquote class="pl-4 border-l-2 border-bayesian-blue italic text-base text-bayesian-slate mb-6">
+                    Don't act on your average belief. Act on a belief drawn from your belief.
+                </blockquote>
+                <p class="mb-6">
+                    Concretely, each round:
+                </p>
+                <ol class="list-decimal pl-6 space-y-2 mb-6">
+                    <li><strong>Draw a plausible human recipe from each expert's doubt:</strong>
+                        <div class="math-inline">$\tilde q^{(k)} \sim \text{Dir}(n_c + \alpha)$ for each expert $k$, where $c = \phi_k(h_t)$</div>
+                    </li>
+                    <li><strong>Integrate out the expert uncertainty by averaging them weighted by trust:</strong>
+                        <div class="math-inline">$\tilde q = \sum_k P(k \mid \text{data})\,\tilde q^{(k)}$</div>
+                    </li>
+                    <li><strong>Find the hand that maximizes the expected value against that draw:</strong>
+                        <div class="math-inline">$m^* = \arg\max_m \big[\tilde q(m \text{ beats}) - \tilde q(m \text{ loses to})\big]$</div>
+                    </li>
+                </ol>
+                <div class="theorem-block mb-6">
+                    <div class="label text-bayesian-blue mb-2">Implementation Note: Argmax vs. Sampling</div>
+                    <p class="text-sm mb-0">
+                        In a standard single-trial Thompson sampling step, the agent plays the action $m^*$ that maximizes expected value (the <code>argmax</code>) against a single drawn recipe. To show the agent's decision-making state in the user interface, the application runs this entire draw-and-maximize process $2000$ times to estimate the mixed action probability distribution $a_t$ (where $a_t(m)$ is the frequency that hand $m$ wins the argmax). The agent's final hand is then sampled from $a_t$. This Monte Carlo approach is mathematically equivalent to playing the <code>argmax</code> of a single draw, but allows the UI's progress bars to render the agent's full action probability cloud in real-time.
+                    </p>
+                </div>
+                <p class="mb-6">
+                    Sit with why this is exactly right. When we're <strong>ignorant</strong> — early game, or a context we've barely seen — the Dirichlet is fat and vague, so our draws $\tilde q$ scatter all over the triangle, so our throws come out nearly <em>uniform</em>. We automatically play it safe and unpredictable precisely when we don't know enough to do otherwise. When we've <strong>figured them out</strong> — a context seen many times with a clear lean — the Dirichlet is tight, our draws all point the same way, and we throw the exploiting hand almost every time. <strong>The confidence of our attack is tuned, for free, to how much we actually know.</strong> No knob. The randomness isn't bolted on; it <em>is</em> our honesty about our own ignorance.
+                </p>
+                <p class="mb-6">
+                    And here is where count decay pays off. Because $\gamma = 0.9$ caps every count at about 10, the Dirichlet can <em>never</em> get infinitely tight. There's always a sliver of doubt, so Thompson sampling <em>never</em> goes fully deterministic — we keep a permanent, gentle unpredictability, forever. That residual jitter is our shield against being read. The same $\gamma$ that lets us track a changing opponent is what keeps us from ever becoming a readable machine. One knob, two jobs, no contradiction.
+                </p>
+                <p class="mb-6 text-sm text-bayesian-slate italic">
+                    (Honest footnote: this shields us against being predictable out of our own ignorance. A truly devious opponent actively modeling <em>us</em> is a harder animal. If one shows up and the $\gamma$-floor isn't enough, we can nudge every throw a touch toward dead-center uniform, $a_t = (1-\epsilon)\,a_t^{\text{TS}} + \epsilon\,u$ — but we leave that off until a real opponent proves we need it. Don't add complexity you don't need.)
+                </p>
+            </div>
+        </section>
+
+        <!-- Section 14: Brick 13 -->
+        <section class="mb-12">
+            <h2 class="text-3xl font-semibold mb-6 border-b pb-3 border-bayesian-border ui-text">
+                Architectural Summary: The Predictive Pipeline
+            </h2>
+            <div class="prose max-w-none text-bayesian-text">
+                <p class="mb-6">
+                    Every piece is placed. Here's the assembled pipeline representing one complete round:
+                </p>
+
+                <!-- Flowchart visual list -->
+                <div class="space-y-2 mb-8">
+                    <div class="academic-card p-4 text-center bg-white shadow-soft">
+                        <span class="label text-bayesian-blue">Step 1: Input</span>
+                        <p class="text-sm font-semibold mt-1">Read the current history $h_t$</p>
+                    </div>
+                    <div class="flow-arrow">▼</div>
+                    <div class="academic-card p-4 text-center bg-white shadow-soft">
+                        <span class="label text-bayesian-blue">Step 2: Context Chunking</span>
+                        <p class="text-sm font-semibold mt-1">Extract the recent-memory context $\phi_k(h_t)$ for every expert $k = 0 \dots 10$</p>
+                    </div>
+                    <div class="flow-arrow">▼</div>
+                    <div class="academic-card p-4 text-center bg-white shadow-soft">
+                        <span class="label text-bayesian-blue">Step 3: Predictions</span>
+                        <p class="text-sm font-semibold mt-1">Each Expert $k$ retrieves its decayed counts $n_{c}$ to produce its candidate recipe $\hat{q}_k$</p>
+                        <p class="text-xs text-bayesian-slate mt-1">(Win-Stay/Lose-Shift expert reads the last round's outcome to produce its relative transition recipe $\hat{q}_{\text{wsls}}$)</p>
+                    </div>
+                    <div class="flow-arrow">▼</div>
+                    <div class="academic-card p-4 text-center bg-white shadow-soft">
+                        <span class="label text-bayesian-blue">Step 4: Scoreboard Grading</span>
+                        <p class="text-sm font-semibold mt-1">Update trust weights $P(k \mid \text{data})$ based on past prequential log-likelihood performance</p>
+                    </div>
+                    <div class="flow-arrow">▼</div>
+                    <div class="academic-card p-4 text-center bg-white shadow-soft">
+                        <span class="label text-bayesian-blue">Step 5: Thompson Action selection</span>
+                        <p class="text-sm font-semibold mt-1">Sample a candidate recipe $\tilde q^{(k)} \sim \text{Dir}(n_c + \alpha)$ for each expert $k$, then average them weighted by trust: $\tilde q = \sum_k P(k \mid \text{data})\,\tilde q^{(k)}$</p>
+                    </div>
+                    <div class="flow-arrow">▼</div>
+                    <div class="academic-card p-4 text-center bg-white shadow-soft">
+                        <span class="label text-bayesian-blue">Step 6: Optimal Play</span>
+                        <p class="text-sm font-semibold mt-1">Estimate the action distribution $a_t$ by repeating Step 5 $2000$ times to find the frequency that each hand $m$ maximizes the expected score, then sample the final move $m_t \sim a_t$</p>
+                    </div>
+                    <div class="flow-arrow">▼</div>
+                    <div class="academic-card p-4 text-center bg-white shadow-soft">
+                        <span class="label text-bayesian-blue">Step 7: Observance & Update</span>
+                        <p class="text-sm font-semibold mt-1">Observe human move $m_t^{\text{hu}}$ and scale counts $n_{c,i} \leftarrow \gamma n_{c,i} + \mathbb{1}[\text{human } i]$</p>
+                    </div>
+                </div>
+
+                <p class="mb-6">
+                    Trace one idea all the way through and you'll feel how tight it is. <em>We can't beat a coin</em> (our starting premise) forced us to <em>bet on the human being patterned</em>, which forced <em>learning their function</em>, which — because infinity is unlearnable — forced <em>finite memory</em>, whose <em>unknown depth</em> forced a <em>committee</em> with <em>humble priors</em> that <em>learn by fading counts</em> and are <em>graded by prediction</em>; we sharpened that committee with a member that <em>reads wins and losses in the right coordinates</em>, blended everyone into <em>one guess</em>, turned that into <em>value</em>, and finally spent it through <em>Thompson sampling</em> so that our attack is as bold as our knowledge and no bolder. Nothing is arbitrary. Each section is standing on the one below it, and every one of them traces back to that first, humbling law: <em>you cannot beat a fair coin — so pray they aren't one, and be ready the instant they aren't.</em>
+                </p>
+            </div>
+        </section>
+
+        <!-- Section 15: The Knobs -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-semibold mb-6 border-b pb-3 border-bayesian-border ui-text">
+                Summary of Model Parameters
+            </h2>
+            <div class="overflow-x-auto my-6">
+                <table class="rigtable">
+                    <thead>
+                        <tr>
+                            <th>Section</th>
+                            <th>Piece</th>
+                            <th>Setting</th>
+                            <th>Why</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="font-semibold text-bayesian-navy">Hypothesis Management</td>
+                            <td>Committee of depths</td>
+                            <td>One expert per $k = 0 \dots 10$</td>
+                            <td>Don't guess the depth; let evidence vote.</td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold text-bayesian-navy">Prior Beliefs</td>
+                            <td>Prior on depth</td>
+                            <td>$\text{Poisson}(2.5)$</td>
+                            <td>Probably shallow, possibly deep, never bottomless.</td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold text-bayesian-navy">Dirichlet Counting</td>
+                            <td>Starting count</td>
+                            <td>$\alpha = (1,1,1)$</td>
+                            <td>Empty knowledge = Nash center.</td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold text-bayesian-navy">Tracking Drift</td>
+                            <td>Forgetting</td>
+                            <td>$\gamma = 0.9$ ($N_{\text{eff}}=10$)</td>
+                            <td>Track drift; also caps confidence $\Rightarrow$ permanent unpredictability.</td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold text-bayesian-navy">Prequential Scoring</td>
+                            <td>Expert grading</td>
+                            <td>Prequential, $\gamma$-discounted</td>
+                            <td>Fair test every round; Occam for free.</td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold text-bayesian-navy">Outcome Coordinates</td>
+                            <td>Win-Stay/Lose-Shift Expert</td>
+                            <td>Transition basis, outcome-indexed</td>
+                            <td>Reads the commonest human reflex, cheaply.</td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold text-bayesian-navy">Thompson Blending</td>
+                            <td>Action rule</td>
+                            <td>Thompson sampling</td>
+                            <td>Attack calibrated to knowledge; no tuning knob.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="text-base text-bayesian-slate italic mb-0">
+                Where we are: The entire model, including the win-stay/lose-shift expert, is fully implemented and active in the agent. It runs side-by-side with the depth experts in the prequential committee, automatically adjusting its influence based on live scoreboard performance.
+            </p>
+        </section>
+
+        <!-- References & Study Disclaimer -->
+        <section class="mt-20 pt-8 border-t border-bayesian-border">
+            <div class="p-6 bg-bayesian-surfaceAlt border border-bayesian-border rounded-lg text-sm text-bayesian-text leading-relaxed">
+                <h4 class="font-bold text-bayesian-navy text-base mb-3 ui-text">References & Study Disclaimer</h4>
+                <p class="mb-4">
+                    This page represents personal study notes and derivations written to clarify my own understanding of hierarchical Bayesian models and reinforcement learning concepts in game theory. The content is inspired by:
+                </p>
+                <blockquote class="pl-4 border-l-2 border-bayesian-slate italic mb-4 text-bayesian-slate">
+                    Gelman, A., Carlin, J. B., Stern, H. S., Dunson, D. B., Vehtari, A., & Rubin, D. B. (2013). <em>Bayesian Data Analysis</em> (3rd ed.). CRC Press.
+                </blockquote>
+                <p class="mb-0">
+                    For other related articles, explore the <a href="rps_agent.html" class="text-bayesian-blue hover:underline font-semibold">Interactive Rock Paper Scissors Agent</a> demo or check the homepage index.
+                </p>
+            </div>
+        </section>
+
+    </div>
+
+</body>
+</html>

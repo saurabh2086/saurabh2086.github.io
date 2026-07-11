@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hierarchical Models & Multiple Comparisons — BDA3 Chapter 5, Exercise 3</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400;1,6..72,600&display=swap" rel="stylesheet">
+
+    <!-- Chart.js for interactive densities plot -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Highlight.js for code syntax highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', (event) => { hljs.highlightAll(); });</script>
+
+    <!-- MathJax for LaTeX rendering -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bayesian: {
+                            bg: '#f7f9fb',
+                            text: '#191c1e',
+                            navy: '#131b2e',
+                            blue: '#0051d5',
+                            slate: '#75859d',
+                            surface: '#ffffff',
+                            surfaceAlt: '#f8fafc',
+                            border: '#e2e8f0'
+                        }
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 12px rgba(15, 23, 42, 0.05)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Newsreader', serif;
+            background-color: #f7f9fb;
+            color: #191c1e;
+            font-size: 1.25rem;
+            line-height: 1.7;
+        }
+
+        h1, h2, h3, h4, h5, h6, .ui-text {
+            font-family: 'Inter', sans-serif;
+            color: #131b2e;
+        }
+
+        .math-inline {
+            font-family: 'Newsreader', serif;
+            font-size: 1.3rem;
+        }
+
+        .theorem-block {
+            background-color: #f8fafc;
+            border-left: 2px solid #0051d5;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            border-radius: 0 4px 4px 0;
+            overflow-x: auto;
+        }
+
+        .derivation {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-left: 3px solid #75859d;
+            padding: 0.75rem 1.5rem;
+            margin-bottom: 1.5rem;
+            border-radius: 0 4px 4px 0;
+            overflow-x: auto;
+        }
+
+        mjx-container { max-width: 100%; }
+
+        .academic-card {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .academic-card:hover {
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .label {
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            font-size: 0.78rem;
+        }
+
+        table.rigtable { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+        table.rigtable th, table.rigtable td { border: 1px solid #e2e8f0; padding: 0.5rem 0.6rem; text-align: center; }
+        table.rigtable th { background-color: #f8fafc; font-family: 'Inter', sans-serif; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; color: #131b2e; }
+        table.rigtable td.highlight-cell { background-color: #f0fdf4; font-weight: 600; }
+        table.rigtable td.school-lbl { font-family: 'Inter', sans-serif; font-weight: 600; text-align: left; }
+    </style>
+</head>
+
+<body class="antialiased">
+
+    <!-- Container constrained for optimal reading -->
+    <div class="max-w-[960px] mx-auto px-6 py-16">
+
+        <!-- Navigation -->
+        <nav class="mb-8">
+            <a href="../../index.html" class="inline-flex items-center text-sm font-semibold text-bayesian-slate hover:text-bayesian-navy transition-colors ui-text">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                Back to Index
+            </a>
+        </nav>
+
+        <!-- Header -->
+        <header class="mb-16">
+            <div class="flex flex-wrap gap-2 mb-6">
+                <div class="px-3 py-1 bg-bayesian-surfaceAlt border border-bayesian-border text-bayesian-slate rounded text-xs font-semibold tracking-wide uppercase ui-text">
+                    Chapter 5 &bull; Question 3
+                </div>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-4 leading-tight">
+                Hierarchical Models and Multiple Comparisons
+            </h1>
+            <p class="text-xl text-bayesian-slate italic font-normal">
+                Why treating groups in isolation leads to overconfidence, and how Bayesian hierarchical models borrow strength to make fair comparisons.
+            </p>
+        </header>
+
+        <!-- Problem Statement -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-semibold mb-6 border-b pb-3 border-bayesian-border ui-text">
+                1. The Background and Problem Statement
+            </h2>
+            <div class="prose max-w-none text-bayesian-text">
+                <p class="mb-4">
+                    Suppose you are looking at the results of coaching programs in <strong>eight different schools</strong> (the famous <em>8 Schools</em> dataset from Section 5.5). For each school $j$, you are given an estimated coaching effect $y_j$ and its associated standard error $\sigma_j$:
+                </p>
+                <div class="my-6 overflow-x-auto">
+                    <table class="rigtable max-w-[600px] mx-auto">
+                        <thead>
+                            <tr>
+                                <th>School ($j$)</th>
+                                <th>A</th>
+                                <th>B</th>
+                                <th>C</th>
+                                <th>D</th>
+                                <th>E</th>
+                                <th>F</th>
+                                <th>G</th>
+                                <th>H</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="school-lbl">Effect ($y_j$)</td>
+                                <td>28</td>
+                                <td>8</td>
+                                <td>-3</td>
+                                <td>7</td>
+                                <td>-1</td>
+                                <td>1</td>
+                                <td>18</td>
+                                <td>12</td>
+                            </tr>
+                            <tr>
+                                <td class="school-lbl">Std. Error ($\sigma_j$)</td>
+                                <td>15</td>
+                                <td>10</td>
+                                <td>16</td>
+                                <td>11</td>
+                                <td>9</td>
+                                <td>11</td>
+                                <td>10</td>
+                                <td>18</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="mb-4">
+                    Look closely at School A. Its measured improvement is $+28$ points. School G is second at $+18$. School C has a negative result of $-3$. 
+                </p>
+                <p class="mb-4 text-bayesian-navy font-semibold">
+                    The core question: Can we declare that School A's coaching program is definitely the best?
+                </p>
+                <p class="mb-4">
+                    In traditional statistics, comparing all these schools simultaneously leads to the classical <strong>multiple comparisons problem</strong>: if you run a bunch of pairwise t-tests, you risk finding false positives by chance alone. To avoid this, you usually use conservative adjustments like Bonferroni, which essentially penalize your statistical power.
+                </p>
+                <p class="mb-0">
+                    A Bayesian hierarchical model handles this naturally by assuming the schools are <strong>exchangeable</strong>. Instead of treating each school as completely independent ($\tau = \infty$, no-pooling) or completely identical ($\tau = 0$, complete pooling), we model them as draws from a shared population distribution.
+                </p>
+            </div>
+        </section>
+
+        <!-- Mathematical Architecture -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-semibold mb-6 border-b pb-3 border-bayesian-border ui-text">
+                2. The Hierarchical Tug-of-War
+            </h2>
+            <div class="prose max-w-none text-bayesian-text">
+                <p class="mb-4">
+                    Let's build the model from first principles. We assume that the observed data $y_j$ is a noisy measurement of the true, unobserved coaching effect $\theta_j$ in school $j$:
+                </p>
+                <div class="derivation">
+                    $$y_j \mid \theta_j \sim N(\theta_j, \sigma_j^2)$$
+                </div>
+                <p class="mb-4">
+                    Since the schools are exchangeable, we assume the true effects $\theta_j$ are drawn from a common normal population distribution governed by a population mean $\mu$ and between-school standard deviation $\tau$:
+                </p>
+                <div class="derivation">
+                    $$\theta_j \mid \mu, \tau \sim N(\mu, \tau^2)$$
+                </div>
+
+                <h3 class="text-2xl font-semibold text-bayesian-navy mt-8 mb-4 ui-text">Case 1: If we know the hyperparameters ($\mu$, $\tau$)</h3>
+                <p class="mb-4">
+                    If someone handed you the true population mean $\mu$ and standard deviation $\tau$, finding the posterior of $\theta_j$ would be a simple application of Bayes' rule for normal distributions. The posterior distribution for each group is independent:
+                </p>
+                <div class="derivation">
+                    $$\theta_j \mid \mu, \tau, y \sim N(\hat{\theta}_j, V_j)$$
+                </div>
+                <p class="mb-4">
+                    where the conditional posterior mean $\hat{\theta}_j$ and variance $V_j$ are:
+                </p>
+                <div class="derivation">
+                    $$\hat{\theta}_j = E(\theta_j \mid \mu, \tau, y) = \frac{\frac{1}{\sigma_j^2} y_j + \frac{1}{\tau^2} \mu}{\frac{1}{\sigma_j^2} + \frac{1}{\tau^2}}$$
+                    $$V_j = \text{Var}(\theta_j \mid \mu, \tau, y) = \frac{1}{\frac{1}{\sigma_j^2} + \frac{1}{\tau^2}}$$
+                </div>
+                <div class="theorem-block mb-6">
+                    <div class="label text-bayesian-blue mb-2">The Intuition: Precision Weighting</div>
+                    <p class="mb-0">
+                        This is a beautiful weighted average. The weights are the <strong>precisions</strong> (inverse variances). The local precision is $1/\sigma_j^2$ and the population precision is $1/\tau^2$.
+                        If local data is highly noisy ($\sigma_j^2$ is large), the local precision is small, and $\hat{\theta}_j$ is pulled strongly toward the population mean $\mu$ (<strong>shrinkage</strong>). 
+                        If the population variance $\tau^2$ is small, the population precision is huge, forcing all school estimates to pool closely around $\mu$.
+                    </p>
+                </div>
+
+                <h3 class="text-2xl font-semibold text-bayesian-navy mt-8 mb-4 ui-text">Case 2: If we don't know the population mean $\mu$</h3>
+                <p class="mb-4">
+                    Of course, we never know $\mu$ and $\tau$. If we assign a uniform prior to $\mu$ given $\tau$ ($p(\mu \mid \tau) \propto 1$), we must propagate our uncertainty about $\mu$. 
+                </p>
+                <p class="mb-4">
+                    By integrating over the distribution of $\mu$ given $\tau$ and $y$, the conditional posterior mean and variance of $\theta_j$ become:
+                </p>
+                <div class="derivation">
+                    $$\hat{\theta}_j(\tau) = E(\theta_j \mid \tau, y) = \frac{\frac{1}{\sigma_j^2} y_j + \frac{1}{\tau^2} \hat{\mu}}{\frac{1}{\sigma_j^2} + \frac{1}{\tau^2}}$$
+                    $$V_j(\tau) = \text{Var}(\theta_j \mid \tau, y) = \frac{1}{\frac{1}{\sigma_j^2} + \frac{1}{\tau^2}} + \left( \frac{\frac{1}{\tau^2}}{\frac{1}{\sigma_j^2} + \frac{1}{\tau^2}} \right)^2 V_\mu$$
+                </div>
+                <p class="mb-4">
+                    where the estimated population mean $\hat{\mu}$ and its variance $V_\mu$ are:
+                </p>
+                <div class="derivation">
+                    $$\hat{\mu} = E(\mu \mid \tau, y) = \frac{\sum_{k=1}^J \frac{1}{\sigma_k^2 + \tau^2} y_k}{\sum_{k=1}^J \frac{1}{\sigma_k^2 + \tau^2}}$$
+                    $$V_\mu = \text{Var}(\mu \mid \tau, y) = \frac{1}{\sum_{k=1}^J \frac{1}{\sigma_k^2 + \tau^2}}$$
+                </div>
+
+                <div class="theorem-block">
+                    <div class="label text-bayesian-slate mb-2">Why did the variance increase?</div>
+                    <p class="mb-0">
+                        The variance formula $V_j(\tau)$ has two terms. The first term $\frac{1}{1/\sigma_j^2 + 1/\tau^2}$ is the variance we would have if we knew $\mu$ exactly. The second term, $\left( \frac{1/\tau^2}{1/\sigma_j^2 + 1/\tau^2} \right)^2 V_\mu$, is the <strong>inflation factor</strong> representing our ignorance about the true population mean $\mu$. The less information we have about $\mu$ (larger $V_\mu$), or the more we rely on $\mu$ (larger weight on the population prior), the more our uncertainty about $\theta_j$ is amplified.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Solution to Part A -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-semibold mb-6 border-b pb-3 border-bayesian-border ui-text">
+                3. Part (a): The Fully Bayesian Hierarchical Model
+            </h2>
+            <div class="prose max-w-none text-bayesian-text">
+                <p class="mb-6">
+                    In the full hierarchical model, we also do not know $\tau$. We assign a uniform prior $p(\tau) \propto 1$, compute the marginal posterior $p(\tau \mid y)$ numerically on a grid, and draw simulations. Drawing 1000 samples from the posterior distribution of $(\theta_1, \dots, \theta_8)$, we can estimate the probabilities of interest.
+                </p>
+
+                <h3 class="text-xl font-bold text-bayesian-navy mb-4 ui-text">Simulation Results: Hierarchical Model (Partial Pooling)</h3>
+                <div class="overflow-x-auto my-6">
+                    <table class="rigtable">
+                        <thead>
+                            <tr>
+                                <th>School</th>
+                                <th class="highlight-cell">Pr(Best)</th>
+                                <th>A</th>
+                                <th>B</th>
+                                <th>C</th>
+                                <th>D</th>
+                                <th>E</th>
+                                <th>F</th>
+                                <th>G</th>
+                                <th>H</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="school-lbl">A</td>
+                                <td class="highlight-cell">0.25</td>
+                                <td>-</td>
+                                <td>0.64</td>
+                                <td>0.67</td>
+                                <td>0.66</td>
+                                <td>0.73</td>
+                                <td>0.69</td>
+                                <td>0.53</td>
+                                <td>0.61</td>
+                            </tr>
+                            <tr>
+                                <td class="school-lbl">B</td>
+                                <td class="highlight-cell">0.10</td>
+                                <td>0.36</td>
+                                <td>-</td>
+                                <td>0.55</td>
+                                <td>0.53</td>
+                                <td>0.62</td>
+                                <td>0.61</td>
+                                <td>0.37</td>
+                                <td>0.49</td>
+                            </tr>
+                            <tr>
+                                <td class="school-lbl">C</td>
+                                <td class="highlight-cell">0.10</td>
+                                <td>0.33</td>
+                                <td>0.45</td>
+                                <td>-</td>
+                                <td>0.46</td>
+                                <td>0.58</td>
+                                <td>0.53</td>
+                                <td>0.36</td>
+                                <td>0.45</td>
+                            </tr>
+                            <tr>
+                                <td class="school-lbl">D</td>
+                                <td class="highlight-cell">0.09</td>
+                                <td>0.34</td>
+                                <td>0.47</td>
+                                <td>0.54</td>
+                                <td>-</td>
+                                <td>0.61</td>
+                                <td>0.58</td>
+                                <td>0.37</td>
+                                <td>0.47</td>
+                            </tr>
+                            <tr>
+                                <td class="school-lbl">E</td>
+                                <td class="highlight-cell">0.05</td>
+                                <td>0.27</td>
+                                <td>0.38</td>
+                                <td>0.42</td>
+                                <td>0.39</td>
+                                <td>-</td>
+                                <td>0.48</td>
+                                <td>0.28</td>
+                                <td>0.38</td>
+                            </tr>
+                            <tr>
+                                <td class="school-lbl">F</td>
+                                <td class="highlight-cell">0.08</td>
+                                <td>0.31</td>
+                                <td>0.39</td>
+                                <td>0.47</td>
+                                <td>0.42</td>
+                                <td>0.52</td>
+                                <td>-</td>
+                                <td>0.31</td>
+                                <td>0.40</td>
+                            </tr>
+                            <tr>
+                                <td class="school-lbl">G</td>
+                                <td class="highlight-cell">0.21</td>
+                                <td>0.47</td>
+                                <td>0.63</td>
+                                <td>0.64</td>
+                                <td>0.63</td>
+                                <td>0.72</td>
+                                <td>0.69</td>
+                                <td>-</td>
+                                <td>0.60</td>
+                            </tr>
+                            <tr>
+                                <td class="school-lbl">H</td>
+                                <td class="highlight-cell">0.12</td>
+                                <td>0.39</td>
+                                <td>0.51</td>
+                                <td>0.55</td>
+                                <td>0.53</td>
+                                <td>0.62</td>
+                                <td>0.60</td>
+                                <td>0.40</td>
+                                <td>-</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="mb-0 text-base text-bayesian-slate italic">
+                    Note: The columns show Pr(row school > column school | y). Under this model, School A is the best with a probability of 0.25, and School G is second with 0.21.
+                </p>
+            </div>
+        </section>
+
+        <!-- Interactive Visualization and Computation -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-semibold mb-6 border-b pb-3 border-bayesian-border ui-text">
+                4. Visualizing Posterior Distributions & Computation Details
+            </h2>
+            <div class="prose max-w-none text-bayesian-text">
+                <p class="mb-4">
+                    To make the hierarchical model concrete, let's visualize the posterior density curves for each of the eight schools. The plot below is generated dynamically by running a 10,000-run Monte Carlo simulation directly in your browser.
+                </p>
+
+                <!-- Chart container -->
+                <div class="academic-card p-6 mb-8 bg-white">
+                    <h3 class="text-lg font-semibold text-bayesian-navy mb-4 ui-text">Posterior Densities $p(\theta_j \mid y)$ (Partial Pooling)</h3>
+                    <div style="position: relative; height:450px; width:100%">
+                        <canvas id="densitiesChart"></canvas>
+                    </div>
+                    <p class="text-sm text-bayesian-slate mt-4 italic text-center">
+                        Notice how the distributions for all schools are heavily overlapping and pulled toward the population mean ($\approx 7.7$). Even School A (the furthest right) has substantial probability mass below 10.
+                    </p>
+                </div>
+
+                <h3 class="text-2xl font-semibold text-bayesian-navy mb-4 ui-text">How the "Best" School is Computed</h3>
+                <p class="mb-4">
+                    To find the probability that a given school $j$ has the most effective coaching program, we cannot simply compare the posterior means. We must account for the full joint uncertainty.
+                </p>
+                <p class="mb-4">
+                    In each simulation draw $s \in \{1, \dots, S\}$, we obtain a vector of simulated effects $(\theta_{1}^{(s)}, \dots, \theta_{8}^{(s)})$. We check which school has the maximum value in that specific draw:
+                </p>
+                <div class="derivation">
+                    $$j^* = \arg\max_{j} \theta_{j}^{(s)}$$
+                </div>
+                <p class="mb-4">
+                    The estimated posterior probability that school $j$ is the best is the proportion of simulation draws where it wins:
+                </p>
+                <div class="derivation">
+                    $$\text{Pr}(\theta_j = \max_k \theta_k \mid y) \approx \frac{1}{S} \sum_{s=1}^S \mathbb{I}\left(j = \arg\max_{k} \theta_{k}^{(s)}\right)$$
+                </div>
+                <p class="mb-4">
+                    This simulation-based approach elegantly handles the multiple comparisons problem: a school with a high but highly uncertain estimate (like School A) will only "win" in some draws, while in other draws its effect will be simulated much lower, allowing other schools (like G) to win.
+                </p>
+
+                <h3 class="text-2xl font-semibold text-bayesian-navy mb-4 ui-text">The Python Implementation</h3>
+                <p class="mb-4">
+                    Below is the standard Python code using `numpy` and `scipy` to perform the grid sampling for $\tau$, sample the hyperparameters, and simulate the joint posterior of the school effects.
+                </p>
+
+                <div class="code-block mb-8">
+<pre style="margin: 0; font-family: monospace;"><code class="language-python">import numpy as np
+import scipy.stats as stats
+
+# 1. Dataset (Eight Schools)
+y = np.array([28, 8, -3, 7, -1, 1, 18, 12])
+sigma = np.array([15, 10, 16, 11, 9, 11, 10, 18])
+J = len(y)
+
+# 2. Grid Sampling for tau (Uniform Prior p(tau) &prop; 1)
+tau_grid = np.linspace(0.001, 40, 200)
+
+def compute_p_tau(tau):
+    # Precision weights for this tau
+    prec = 1.0 / (sigma**2 + tau**2)
+    V_mu = 1.0 / np.sum(prec)
+    mu_hat = np.sum(y * prec) * V_mu
+    
+    # Log marginal posterior (Equation 5.21 in BDA3)
+    log_p = 0.5 * np.log(V_mu) - 0.5 * np.sum(np.log(sigma**2 + tau**2)) \
+            - 0.5 * np.sum((y - mu_hat)**2 / (sigma**2 + tau**2))
+    return np.exp(log_p)
+
+# Compute and normalize the grid densities
+p_tau_grid = np.array([compute_p_tau(t) for t in tau_grid])
+p_tau_grid /= np.sum(p_tau_grid)
+
+# 3. Simulate from Posterior
+n_samples = 10000
+tau_draws = np.random.choice(tau_grid, size=n_samples, p=p_tau_grid)
+theta_draws = np.zeros((n_samples, J))
+
+for i in range(n_samples):
+    tau = tau_draws[i]
+    
+    # Draw mu from p(mu | tau, y)
+    prec = 1.0 / (sigma**2 + tau**2)
+    V_mu = 1.0 / np.sum(prec)
+    mu_hat = np.sum(y * prec) * V_mu
+    mu = np.random.normal(mu_hat, np.sqrt(V_mu))
+    
+    # Draw theta_j from p(theta_j | mu, tau, y)
+    V_j = 1.0 / (1.0 / sigma**2 + 1.0 / tau**2)
+    theta_hat_j = V_j * (y / sigma**2 + mu / tau**2)
+    theta_draws[i, :] = np.random.normal(theta_hat_j, np.sqrt(V_j))
+
+# 4. Compute Pr(Best) for each school
+best_indices = np.argmax(theta_draws, axis=1)
+pr_best = np.bincount(best_indices, minlength=J) / n_samples
+
+for school_idx, prob in enumerate(pr_best):
+    print(f"School {chr(65 + school_idx)}: Pr(Best) = {prob:.3f}")
+</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Solution to Part B -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-semibold mb-6 border-b pb-3 border-bayesian-border ui-text">
+                5. Part (b): The No-Pooling Alternative ($\tau = \infty$)
+            </h2>
+            <div class="prose max-w-none text-bayesian-text">
+                <p class="mb-4">
+                    In the simpler model, we assume schools are completely independent ($\tau = \infty$). This is equivalent to saying there is no common population binding them; we estimate each school's effect $\theta_j$ purely from its own sample data:
+                </p>
+                <div class="derivation">
+                    $$\theta_j \mid y \sim N(y_j, \sigma_j^2) \quad \text{independently}$$
+                </div>
+                <p class="mb-4">
+                    Because the distributions are independent normals, the pairwise probability that School $i$ is better than School $j$ can be calculated analytically:
+                </p>
+                <div class="derivation">
+                    $$\text{Pr}(\theta_i > \theta_j \mid y) = \Phi\left(\frac{y_i - y_j}{\sqrt{\sigma_i^2 + \sigma_j^2}}\right)$$
+                </div>
+                <p class="mb-6">
+                    where $\Phi$ is the standard normal cumulative distribution function (CDF). The probability that any school is the absolute best is calculated via a single-dimensional numerical integral.
+                </p>
+
+                <h3 class="text-xl font-bold text-bayesian-navy mb-4 ui-text">Analytical Results: Separate Model (No Pooling)</h3>
+                <div class="overflow-x-auto my-6">
+                    <table class="rigtable">
+                        <thead>
+                            <tr>
+                                <th>School</th>
+                                <th class="highlight-cell">Pr(Best)</th>
+                                <th>A</th>
+                                <th>B</th>
+                                <th>C</th>
+                                <th>D</th>
+                                <th>E</th>
+                                <th>F</th>
+                                <th>G</th>
+                                <th>H</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="school-lbl">A</td>
+                                <td class="highlight-cell">0.556</td>
+                                <td>-</td>
+                                <td>0.87</td>
+                                <td>0.92</td>
+                                <td>0.88</td>
+                                <td>0.95</td>
+                                <td>0.93</td>
+                                <td>0.72</td>
+                                <td>0.76</td>
+                            </tr>
+                            <tr>
+                                <td class="school-lbl">B</td>
+                                <td class="highlight-cell">0.034</td>
+                                <td>0.13</td>
+                                <td>-</td>
+                                <td>0.71</td>
+                                <td>0.53</td>
+                                <td>0.73</td>
+                                <td>0.68</td>
+                                <td>0.24</td>
+                                <td>0.42</td>
+                            </tr>
+                            <tr>
+                                <td class="school-lbl">C</td>
+                                <td class="highlight-cell">0.028</td>
+                                <td>0.08</td>
+                                <td>0.29</td>
+                                <td>-</td>
+                                <td>0.31</td>
+                                <td>0.46</td>
+                                <td>0.43</td>
+                                <td>0.14</td>
+                                <td>0.27</td>
+                            </tr>
+                            <tr>
+                                <td class="school-lbl">D</td>
+                                <td class="highlight-cell">0.034</td>
+                                <td>0.12</td>
+                                <td>0.47</td>
+                                <td>0.69</td>
+                                <td>-</td>
+                                <td>0.70</td>
+                                <td>0.65</td>
+                                <td>0.23</td>
+                                <td>0.40</td>
+                            </tr>
+                            <tr>
+                                <td class="school-lbl">E</td>
+                                <td class="highlight-cell">0.004</td>
+                                <td>0.05</td>
+                                <td>0.27</td>
+                                <td>0.54</td>
+                                <td>0.30</td>
+                                <td>-</td>
+                                <td>0.47</td>
+                                <td>0.09</td>
+                                <td>0.26</td>
+                            </tr>
+                            <tr>
+                                <td class="school-lbl">F</td>
+                                <td class="highlight-cell">0.013</td>
+                                <td>0.07</td>
+                                <td>0.32</td>
+                                <td>0.57</td>
+                                <td>0.35</td>
+                                <td>0.53</td>
+                                <td>-</td>
+                                <td>0.13</td>
+                                <td>0.29</td>
+                            </tr>
+                            <tr>
+                                <td class="school-lbl">G</td>
+                                <td class="highlight-cell">0.170</td>
+                                <td>0.28</td>
+                                <td>0.76</td>
+                                <td>0.86</td>
+                                <td>0.77</td>
+                                <td>0.91</td>
+                                <td>0.87</td>
+                                <td>-</td>
+                                <td>0.61</td>
+                            </tr>
+                            <tr>
+                                <td class="school-lbl">H</td>
+                                <td class="highlight-cell">0.162</td>
+                                <td>0.24</td>
+                                <td>0.58</td>
+                                <td>0.73</td>
+                                <td>0.60</td>
+                                <td>0.74</td>
+                                <td>0.71</td>
+                                <td>0.39</td>
+                                <td>-</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Solution to Part C & D -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-semibold mb-6 border-b pb-3 border-bayesian-border ui-text">
+                6. Part (c) & (d): What the Physics of Shrinkage Tells Us
+            </h2>
+            <div class="prose max-w-none text-bayesian-text">
+                <h3 class="text-2xl font-semibold text-bayesian-navy mb-4 ui-text">Part (c): Shrinkage vs. No-Pooling</h3>
+                <p class="mb-4">
+                    Compare the two tables. The separate model ($\tau = \infty$) yields extremely bold, overconfident claims. It estimates the probability that <strong>School A is the best at 55.6%</strong>. 
+                    Why? Because it takes School A's measured $+28$ points entirely at face value.
+                </p>
+                <p class="mb-4">
+                    But when we allow the schools to speak to each other under the hierarchical model, we realize that $+28$ is highly likely an outlier inflated by noise ($\sigma_A = 15$). The group estimates shrink toward the population mean $\hat{\mu} \approx 7.7$. Under the full model, School A's probability of being the best <strong>drops to 25%</strong>, and School G (which has a slightly smaller estimate $+18$ but less noise $\sigma_G = 10$) remains a close competitor with a 21% probability of being the best. 
+                </p>
+                <p class="mb-4">
+                    The hierarchical model's conservative results are a much more realistic reflection of the truth: the data suggests coaching effects are relatively similar across schools.
+                </p>
+
+                <div class="academic-card p-6 mb-8">
+                    <div class="label text-bayesian-navy mb-2">The Counterintuitive Swap: School E vs. School C</div>
+                    <p class="mb-2">
+                        Something fascinating happens when we compare School E and School C. Let's look at their raw data:
+                    </p>
+                    <ul class="list-disc pl-6 space-y-1 mb-4">
+                        <li>School E: $y_E = -1$, $\sigma_E = 9$ (very little noise)</li>
+                        <li>School C: $y_C = -3$, $\sigma_C = 16$ (highly noisy)</li>
+                    </ul>
+                    <p class="mb-2">
+                        Under the separate model ($\tau = \infty$), School E is cleaner and slightly higher than C ($-1 > -3$), so the probability that <strong>School E is better than School C is 0.54</strong> (E beats C).
+                    </p>
+                    <p class="mb-0">
+                        Under the hierarchical model, however, the probability that <strong>School C is better than School E rises to 0.58</strong> (C beats E)! 
+                        Why? Because School C's measurement is highly noisy ($\sigma_C = 16$), so it gets pulled heavily toward the positive population average ($\hat{\mu} \approx 7.7$). School E, having low noise ($\sigma_E = 9$), resists shrinkage and stays closer to its measured negative value of $-1$. Thus, the posterior estimate for C becomes larger than E. This is the power of the model: it understands that a noisy negative measurement is more likely to be a fluke than a precise negative one.
+                    </p>
+                </div>
+
+                <h3 class="text-2xl font-semibold text-bayesian-navy mb-4 ui-text">Part (d): Complete Pooling ($\tau = 0$)</h3>
+                <p class="mb-4">
+                    If we set the between-school standard deviation $\tau$ to exactly $0$, we assume that all coaching programs are absolutely identical:
+                </p>
+                <div class="derivation">
+                    $$\theta_1 = \theta_2 = \dots = \theta_8 = \mu$$
+                </div>
+                <p class="mb-4">
+                    In this limit, there is no variation between schools. Consequently:
+                </p>
+                <ul class="list-disc pl-6 space-y-2 mb-0">
+                    <li>The probability that any school $j$ is the best of the eight is degenerate and equal: $\text{Pr}(\text{best}) = \frac{1}{8} = 12.5\%$.</li>
+                    <li>The pairwise probabilities are also degenerate: $\text{Pr}(\theta_i > \theta_j \mid y) = 0.5$ (or undefined if we treat them as strictly identical values, but practically there is no difference between them).</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- References & Study Disclaimer -->
+        <section class="mt-20 pt-8 border-t border-bayesian-border">
+            <div class="p-6 bg-bayesian-surfaceAlt border border-bayesian-border rounded-lg text-sm text-bayesian-text leading-relaxed">
+                <h4 class="font-bold text-bayesian-navy text-base mb-3 ui-text">References & Study Disclaimer</h4>
+                <p class="mb-4">
+                    This page represents personal study notes and derivations written to clarify my own understanding of hierarchical Bayesian models. The content is based on:
+                </p>
+                <blockquote class="pl-4 border-l-2 border-bayesian-slate italic mb-4 text-bayesian-slate">
+                    Gelman, A., Carlin, J. B., Stern, H. S., Dunson, D. B., Vehtari, A., & Rubin, D. B. (2013). <em>Bayesian Data Analysis</em> (3rd ed.). CRC Press.
+                </blockquote>
+                <p class="mb-0">
+                    For official materials, including a copy of the textbook PDF for non-commercial use, please visit the official <a href="http://www.stat.columbia.edu/~gelman/book/" target="_blank" rel="noopener noreferrer" class="text-bayesian-blue hover:underline">Columbia University BDA Page</a> or explore Aki Vehtari's <a href="https://avehtari.github.io/BDA_course_Aalto/" target="_blank" rel="noopener noreferrer" class="text-bayesian-blue hover:underline">Aalto BDA Course Portal</a>. Any typos or mathematical errors on this page are my own.
+                </p>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        (function() {
+            // Data
+            const y = [28, 8, -3, 7, -1, 1, 18, 12];
+            const sigma = [15, 10, 16, 11, 9, 11, 10, 18];
+            const J = 8;
+            const schoolNames = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+            const colors = [
+                'rgba(0, 81, 213, 1)',   // School A
+                'rgba(219, 39, 119, 1)',  // School B
+                'rgba(5, 150, 105, 1)',  // School C
+                'rgba(217, 119, 6, 1)',  // School D
+                'rgba(124, 58, 237, 1)', // School E
+                'rgba(225, 29, 72, 1)',  // School F
+                'rgba(13, 148, 136, 1)', // School G
+                'rgba(71, 85, 105, 1)'   // School H
+            ];
+
+            // Normal distribution random helper (Box-Muller)
+            function randomNormal(mean, stdDev) {
+                let u1 = Math.random();
+                let u2 = Math.random();
+                if (u1 === 0) u1 = 0.0001;
+                let randStdNormal = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
+                return mean + stdDev * randStdNormal;
+            }
+
+            // 1. Grid sampling of tau
+            const grid_size = 200;
+            const tau_min = 0.001;
+            const tau_max = 40.0;
+            const tau_grid = [];
+            const p_grid = [];
+            let sum_p = 0;
+
+            function log_p_tau(tau) {
+                let sum_prec = 0;
+                let sum_weighted_y = 0;
+                for (let j = 0; j < J; j++) {
+                    let v = sigma[j]*sigma[j] + tau*tau;
+                    sum_prec += 1.0 / v;
+                    sum_weighted_y += y[j] / v;
+                }
+                let V_mu = 1.0 / sum_prec;
+                let mu_hat = sum_weighted_y * V_mu;
+                
+                let log_p = 0.5 * Math.log(V_mu);
+                for (let j = 0; j < J; j++) {
+                    let v = sigma[j]*sigma[j] + tau*tau;
+                    log_p += -0.5 * Math.log(v) - (y[j] - mu_hat) * (y[j] - mu_hat) / (2.0 * v);
+                }
+                return log_p;
+            }
+
+            // Fill grid
+            for (let i = 0; i < grid_size; i++) {
+                let tau = tau_min + (tau_max - tau_min) * i / (grid_size - 1);
+                tau_grid.push(tau);
+                p_grid.push(log_p_tau(tau));
+            }
+
+            // Exponentiate with subtraction of max to prevent overflow
+            let max_log_p = Math.max(...p_grid);
+            for (let i = 0; i < grid_size; i++) {
+                p_grid[i] = Math.exp(p_grid[i] - max_log_p);
+                sum_p += p_grid[i];
+            }
+            for (let i = 0; i < grid_size; i++) {
+                p_grid[i] /= sum_p;
+            }
+
+            // CDF for sampling
+            const cdf = [];
+            let cum = 0;
+            for (let i = 0; i < grid_size; i++) {
+                cum += p_grid[i];
+                cdf.push(cum);
+            }
+
+            function sampleTau() {
+                let u = Math.random();
+                for (let i = 0; i < grid_size; i++) {
+                    if (u <= cdf[i]) {
+                        return grid_size - 1 === i ? tau_grid[i] : (tau_grid[i] + tau_grid[i+1]) / 2;
+                    }
+                }
+                return tau_grid[grid_size - 1];
+            }
+
+            // 2. Run simulation
+            const n_samples = 10000;
+            const theta_samples = Array.from({length: J}, () => []);
+
+            for (let s = 0; s < n_samples; s++) {
+                let tau = sampleTau();
+                
+                // Draw mu
+                let sum_prec = 0;
+                let sum_weighted_y = 0;
+                for (let j = 0; j < J; j++) {
+                    let v = sigma[j]*sigma[j] + tau*tau;
+                    sum_prec += 1.0 / v;
+                    sum_weighted_y += y[j] / v;
+                }
+                let V_mu = 1.0 / sum_prec;
+                let mu_hat = sum_weighted_y * V_mu;
+                let mu = randomNormal(mu_hat, Math.sqrt(V_mu));
+
+                // Draw theta_j for each school
+                for (let j = 0; j < J; j++) {
+                    let V_j = 1.0 / (1.0 / (sigma[j]*sigma[j]) + 1.0 / (tau*tau));
+                    let theta_hat_j = V_j * (y[j] / (sigma[j]*sigma[j]) + mu / (tau*tau));
+                    let theta = randomNormal(theta_hat_j, Math.sqrt(V_j));
+                    theta_samples[j].push(theta);
+                }
+            }
+
+            // 3. Compute means and standard deviations of samples
+            const means = [];
+            const stds = [];
+            for (let j = 0; j < J; j++) {
+                let sum = 0;
+                for (let s = 0; s < n_samples; s++) sum += theta_samples[j][s];
+                let mean = sum / n_samples;
+                means.push(mean);
+
+                let sq_sum = 0;
+                for (let s = 0; s < n_samples; s++) sq_sum += (theta_samples[j][s] - mean) * (theta_samples[j][s] - mean);
+                stds.push(Math.sqrt(sq_sum / (n_samples - 1)));
+            }
+
+            // 4. Generate curves for Chart.js
+            const x_min = -25;
+            const x_max = 45;
+            const steps = 150;
+            const x_values = [];
+            for (let i = 0; i <= steps; i++) {
+                x_values.push(x_min + (x_max - x_min) * i / steps);
+            }
+
+            function normalPDF(x, mean, stdDev) {
+                let exponent = -0.5 * Math.pow((x - mean) / stdDev, 2);
+                return (1.0 / (stdDev * Math.sqrt(2.0 * Math.PI))) * Math.exp(exponent);
+            }
+
+            const datasets = [];
+            for (let j = 0; j < J; j++) {
+                const dataPts = [];
+                for (let i = 0; i < x_values.length; i++) {
+                    dataPts.push({
+                        x: x_values[i],
+                        y: normalPDF(x_values[i], means[j], stds[j])
+                    });
+                }
+                datasets.push({
+                    label: 'School ' + schoolNames[j] + ' (Mean=' + means[j].toFixed(1) + ', SD=' + stds[j].toFixed(1) + ')',
+                    data: dataPts,
+                    borderColor: colors[j],
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    fill: false,
+                    tension: 0.2
+                });
+            }
+
+            // Render Chart
+            const ctx = document.getElementById('densitiesChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            title: {
+                                display: true,
+                                text: 'Coaching Effect (Points)',
+                                color: '#131b2e',
+                                font: {
+                                    family: 'Inter',
+                                    size: 14,
+                                    weight: '600'
+                                }
+                            },
+                            grid: {
+                                color: '#f1f5f9'
+                            },
+                            ticks: {
+                                color: '#64748b'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Posterior Density',
+                                color: '#131b2e',
+                                font: {
+                                    family: 'Inter',
+                                    size: 14,
+                                    weight: '600'
+                                }
+                            },
+                            grid: {
+                                color: '#f1f5f9'
+                            },
+                            ticks: {
+                                color: '#64748b'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                boxWidth: 12,
+                                font: {
+                                    family: 'Inter',
+                                    size: 11
+                                },
+                                color: '#334155'
+                            }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    }
+                }
+            });
+        })();
+    </script>
+</body>
+</html>

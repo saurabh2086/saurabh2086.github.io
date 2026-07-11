@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bayesian RPS Agent</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-gradient: radial-gradient(circle at 50% 0%, #161a2b 0%, #080a10 100%);
+    --panel-bg: rgba(22, 27, 46, 0.6);
+    --panel-border: rgba(255, 255, 255, 0.08);
+    --panel-hover: rgba(30, 37, 62, 0.8);
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    
+    --accent: #06b6d4;
+    --accent-glow: rgba(6, 182, 212, 0.25);
+    
+    --win: #10b981;
+    --win-glow: rgba(16, 185, 129, 0.25);
+    
+    --lose: #f43f5e;
+    --lose-glow: rgba(244, 63, 94, 0.25);
+    
+    --tie: #fbbf24;
+    --tie-glow: rgba(251, 191, 36, 0.25);
+    
+    --rock: #ff5e62;
+    --paper: #00f2fe;
+    --scissors: #ffb300;
+    
+    --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    
+    --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  * { box-sizing: border-box; }
+  
+  body {
+    margin: 0;
+    background: #080a10;
+    background-image: var(--bg-gradient);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 16px 60px;
+    overflow-x: hidden;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.02);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  .wrap {
+    width: 100%;
+    max-width: 860px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .header {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+
+  h1 {
+    font-size: 36px;
+    font-weight: 800;
+    margin: 0;
+    background: linear-gradient(135deg, #ffffff 30%, #06b6d4 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.5px;
+  }
+
+  .sub {
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.6;
+    max-width: 680px;
+    margin: 0 auto;
+  }
+
+  .sub code {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 2px 6px;
+    border-radius: 6px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--accent);
+  }
+
+  .scoreboard {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+  }
+
+  .score {
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    backdrop-filter: blur(12px);
+    border-radius: 16px;
+    padding: 18px 12px;
+    text-align: center;
+    transition: var(--transition-normal);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .score::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    opacity: 0.8;
+  }
+
+  #youScore::before { background: var(--win); }
+  #agentScore::before { background: var(--lose); }
+  #tieScore::before { background: var(--tie); }
+  .score:last-child::before { background: var(--accent); }
+
+  .score:hover {
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  }
+
+  .score .n {
+    font-family: var(--font-mono);
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .score-pop {
+    animation: popScale 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  @keyframes popScale {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.25); text-shadow: 0 0 12px currentColor; }
+    100% { transform: scale(1); }
+  }
+
+  .score .l {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+  }
+
+  #youScore .n { color: var(--win); }
+  #agentScore .n { color: var(--lose); }
+  #tieScore .n { color: var(--tie); }
+
+  .arena {
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    backdrop-filter: blur(12px);
+    border-radius: 24px;
+    padding: 32px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+  }
+
+  .reveal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 48px;
+    margin-bottom: 20px;
+    width: 100%;
+  }
+
+  .handcol {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 120px;
+  }
+
+  .hand-bubble {
+    width: 100px;
+    height: 100px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 2px solid var(--panel-border);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.1s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    box-shadow: inset 0 2px 10px rgba(255, 255, 255, 0.05);
+  }
+
+  #youBubble {
+    border-color: rgba(6, 182, 212, 0.3);
+    box-shadow: 0 0 20px rgba(6, 182, 212, 0.1), inset 0 2px 10px rgba(255, 255, 255, 0.05);
+  }
+
+  #agentBubble {
+    border-color: rgba(244, 63, 94, 0.3);
+    box-shadow: 0 0 20px rgba(244, 63, 94, 0.1), inset 0 2px 10px rgba(255, 255, 255, 0.05);
+  }
+
+  .hand {
+    font-size: 52px;
+    line-height: 1;
+    transition: transform 0.15s;
+  }
+
+  .shaking-you {
+    animation: shakeYou 0.12s ease-in-out infinite alternate;
+  }
+
+  .shaking-agent {
+    animation: shakeAgent 0.12s ease-in-out infinite alternate;
+  }
+
+  @keyframes shakeYou {
+    0% { transform: translateY(8px) rotate(-6deg); }
+    100% { transform: translateY(-8px) rotate(6deg); }
+  }
+
+  @keyframes shakeAgent {
+    0% { transform: translateY(8px) rotate(6deg); }
+    100% { transform: translateY(-8px) rotate(-6deg); }
+  }
+
+  .vs-badge {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--panel-border);
+    color: var(--text-muted);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 20px;
+    letter-spacing: 2px;
+    animation: vsPulse 2s infinite ease-in-out;
+  }
+
+  @keyframes vsPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.05); }
+    50% { box-shadow: 0 0 12px 2px rgba(255, 255, 255, 0.12); }
+  }
+
+  .side-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-top: 14px;
+  }
+
+  .verdict {
+    font-size: 20px;
+    font-weight: 700;
+    text-align: center;
+    min-height: 30px;
+    margin: 12px 0 24px;
+    letter-spacing: 0.5px;
+    transition: var(--transition-normal);
+  }
+
+  .verdict.win {
+    color: var(--win);
+    text-shadow: 0 0 15px var(--win-glow);
+  }
+
+  .verdict.lose {
+    color: var(--lose);
+    text-shadow: 0 0 15px var(--lose-glow);
+  }
+
+  .verdict.tie {
+    color: var(--tie);
+    text-shadow: 0 0 15px var(--tie-glow);
+  }
+
+  .buttons {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    width: 100%;
+  }
+
+  .btn {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--panel-border);
+    border-radius: 20px;
+    padding: 24px 0;
+    font-size: 44px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+    user-select: none;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 100%);
+    opacity: 0;
+    transition: var(--transition-fast);
+  }
+
+  .btn:hover::after {
+    opacity: 1;
+  }
+
+  .btn.disabled {
+    pointer-events: none;
+    opacity: 0.35;
+    transform: none !important;
+    box-shadow: none !important;
+    border-color: var(--panel-border) !important;
+  }
+
+  .btn[data-move="0"]:hover {
+    border-color: var(--rock);
+    box-shadow: 0 0 20px rgba(255, 94, 98, 0.2);
+    transform: translateY(-4px);
+  }
+
+  .btn[data-move="1"]:hover {
+    border-color: var(--paper);
+    box-shadow: 0 0 20px rgba(0, 242, 254, 0.2);
+    transform: translateY(-4px);
+  }
+
+  .btn[data-move="2"]:hover {
+    border-color: var(--scissors);
+    box-shadow: 0 0 20px rgba(255, 179, 0, 0.2);
+    transform: translateY(-4px);
+  }
+
+  .btn:active {
+    transform: translateY(-1px);
+  }
+
+  .btn .k {
+    display: block;
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 8px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    font-family: var(--font-sans);
+  }
+
+  .btn[data-move="0"]:hover .k { color: var(--rock); }
+  .btn[data-move="1"]:hover .k { color: var(--paper); }
+  .btn[data-move="2"]:hover .k { color: var(--scissors); }
+
+  .history-strip {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    margin-top: 24px;
+    min-height: 8px;
+    width: 100%;
+  }
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transform: scale(0);
+    animation: dotAppear 0.3s forwards;
+  }
+
+  @keyframes dotAppear {
+    to { transform: scale(1); }
+  }
+
+  .dot.win { background: var(--win); box-shadow: 0 0 8px var(--win-glow); }
+  .dot.lose { background: var(--lose); box-shadow: 0 0 8px var(--lose-glow); }
+  .dot.tie { background: var(--tie); box-shadow: 0 0 8px var(--tie-glow); }
+
+  .brain {
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    backdrop-filter: blur(12px);
+    border-radius: 24px;
+    padding: 26px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    transition: var(--transition-normal);
+  }
+
+  .brain h2 {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--text-primary);
+    margin: 0 0 6px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .brain h2::before {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--accent);
+  }
+
+  .brain .note {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+    line-height: 1.5;
+  }
+
+  .row {
+    margin-bottom: 28px;
+    transition: opacity 0.3s ease, transform 0.3s ease, max-height 0.3s ease, margin 0.3s ease;
+    max-height: 500px;
+    opacity: 1;
+    overflow: visible;
+  }
+
+  .row.hidden {
+    opacity: 0;
+    max-height: 0;
+    margin-bottom: 0;
+    transform: translateY(10px);
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .row-title {
+    font-size: 13px;
+    color: var(--text-primary);
+    margin-bottom: 14px;
+    font-weight: 600;
+  }
+
+  .row-title span {
+    color: var(--text-muted);
+    font-weight: 400;
+  }
+
+  .bars3 {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .barcell {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .barcell .cap {
+    width: 110px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+
+  .bartrack {
+    flex: 1;
+    height: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 6px;
+    border: 1px solid var(--panel-border);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+  }
+
+  .barfill {
+    height: 100%;
+    border-radius: 6px;
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  }
+
+  .barcell.R .barfill { background: linear-gradient(90deg, #ff5e62, #ff9966); box-shadow: 0 0 8px rgba(255, 94, 98, 0.4); }
+  .barcell.P .barfill { background: linear-gradient(90deg, #00f2fe, #4facfe); box-shadow: 0 0 8px rgba(0, 242, 254, 0.4); }
+  .barcell.S .barfill { background: linear-gradient(90deg, #ffb300, #f77062); box-shadow: 0 0 8px rgba(255, 179, 0, 0.4); }
+
+  .barcell .pct {
+    width: 50px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 700;
+    text-align: right;
+  }
+
+  .barcell.R .pct { color: var(--rock); }
+  .barcell.P .pct { color: var(--paper); }
+  .barcell.S .pct { color: var(--scissors); }
+
+  .kbars {
+    display: flex;
+    gap: 6px;
+    align-items: flex-end;
+    height: 80px;
+    padding: 0 4px;
+  }
+
+  .kbar {
+    flex: 1;
+    background: var(--text-muted);
+    border-radius: 4px 4px 0 0;
+    min-height: 4px;
+    transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s ease, box-shadow 0.3s ease;
+    opacity: 0.35;
+  }
+
+  .kbar.active-depth {
+    background: linear-gradient(180deg, var(--accent), #4facfe);
+    opacity: 1;
+    box-shadow: 0 0 12px var(--accent-glow);
+  }
+
+  .klabels {
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
+  }
+
+  .klabel {
+    flex: 1;
+    text-align: center;
+    font-size: 10px;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    transition: var(--transition-fast);
+  }
+
+  .klabel.active-depth {
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  .depthread {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: 18px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--panel-border);
+    padding: 10px 16px;
+    border-radius: 12px;
+    display: inline-block;
+  }
+
+  .depthread b {
+    color: var(--accent);
+    font-family: var(--font-mono);
+  }
+
+  .footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 16px;
+    gap: 16px;
+    flex-wrap: wrap;
+    border-top: 1px solid var(--panel-border);
+    padding-top: 20px;
+  }
+
+  .reset {
+    background: transparent;
+    border: 1px solid rgba(244, 63, 94, 0.3);
+    color: #fda4af;
+    border-radius: 12px;
+    padding: 10px 20px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: var(--transition-fast);
+  }
+
+  .reset:hover {
+    background: rgba(244, 63, 94, 0.1);
+    border-color: var(--lose);
+    color: var(--text-primary);
+    box-shadow: 0 0 15px rgba(244, 63, 94, 0.2);
+  }
+
+  .toggle {
+    font-size: 13px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* Custom Switch Styles */
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 20px;
+  }
+
+  .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(255, 255, 255, 0.08);
+    transition: .3s;
+    border-radius: 20px;
+    border: 1px solid var(--panel-border);
+  }
+
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 14px;
+    width: 14px;
+    left: 2px;
+    bottom: 2px;
+    background-color: var(--text-secondary);
+    transition: .3s;
+    border-radius: 50%;
+  }
+
+  input:checked + .slider {
+    background-color: rgba(6, 182, 212, 0.25);
+    border-color: rgba(6, 182, 212, 0.45);
+  }
+
+  input:checked + .slider:before {
+    transform: translateX(20px);
+    background-color: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+  }
+
+  .control {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 16px;
+    padding-top: 20px;
+    border-top: 1px solid var(--panel-border);
+  }
+
+  .control label {
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+
+  .control label b { color: var(--accent); font-family: var(--font-mono); }
+  .control label span { color: var(--text-muted); }
+
+  .control input[type=range] {
+    width: 100%;
+    height: 6px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+    outline: none;
+    accent-color: var(--accent);
+    cursor: pointer;
+  }
+
+  .control input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 10px var(--accent-glow);
+    cursor: pointer;
+  }
+
+  @media(max-width: 600px) {
+    .scoreboard {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    .reveal {
+      gap: 20px;
+    }
+    .hand-bubble {
+      width: 80px;
+      height: 80px;
+    }
+    .hand {
+      font-size: 40px;
+    }
+    .btn {
+      padding: 18px 0;
+      font-size: 32px;
+    }
+    .barcell .cap {
+      width: 80px;
+    }
+    body {
+      padding: 24px 10px 40px;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="header">
+    <h1>Bayesian RPS Agent</h1>
+    <p class="sub">
+      A committee of memory-depth experts (<code>k = 0…10</code>) learns your patterns with
+      <code>γ = 0.9</code> discounted Dirichlet counts, weighted by prequential performance, and
+      acts by Thompson sampling. It commits its move <b>before</b> you click — no peeking.
+      If you play truly randomly, it can only tie you in the long run. If you don't, it will find the leak.
+    </p>
+  </header>
+
+  <div class="scoreboard">
+    <div class="score" id="youScore"><div class="n">0</div><div class="l">You win</div></div>
+    <div class="score" id="tieScore"><div class="n">0</div><div class="l">Ties</div></div>
+    <div class="score" id="agentScore"><div class="n">0</div><div class="l">Agent wins</div></div>
+    <div class="score"><div class="n" id="roundN">0</div><div class="l">Rounds</div></div>
+  </div>
+
+  <div class="arena">
+    <div class="reveal">
+      <div class="handcol">
+        <div class="hand-bubble" id="youBubble">
+          <div class="hand" id="youHand">✊</div>
+        </div>
+        <div class="side-label">You</div>
+      </div>
+      <div class="vs-badge">VS</div>
+      <div class="handcol">
+        <div class="hand-bubble" id="agentBubble">
+          <div class="hand" id="agentHand">🤖</div>
+        </div>
+        <div class="side-label">Agent</div>
+      </div>
+    </div>
+    <div class="verdict" id="verdict">Make your move</div>
+    <div class="buttons">
+      <div class="btn" data-move="0" onclick="play(0)">✊<span class="k">ROCK</span></div>
+      <div class="btn" data-move="1" onclick="play(1)">✋<span class="k">PAPER</span></div>
+      <div class="btn" data-move="2" onclick="play(2)">✌️<span class="k">SCISSORS</span></div>
+    </div>
+    <div class="history-strip" id="historyStrip"></div>
+  </div>
+
+  <div class="brain">
+    <h2>Inside the agent's head</h2>
+    <p class="note">Updated live. This is what the model believed <i>going into the next round</i>.</p>
+
+    <div class="row" id="beliefRow">
+      <div class="row-title">Predicted probability of your next move <span>— the blended belief q̂ it's about to exploit</span></div>
+      <div class="bars3" id="qbars">
+        <div class="barcell R">
+          <div class="cap">✊ Rock</div>
+          <div class="bartrack"><div class="barfill" style="width:33%"></div></div>
+          <div class="pct">33%</div>
+        </div>
+        <div class="barcell P">
+          <div class="cap">✋ Paper</div>
+          <div class="bartrack"><div class="barfill" style="width:33%"></div></div>
+          <div class="pct">33%</div>
+        </div>
+        <div class="barcell S">
+          <div class="cap">✌️ Scissors</div>
+          <div class="bartrack"><div class="barfill" style="width:33%"></div></div>
+          <div class="pct">33%</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row" id="actionRow">
+      <div class="row-title">Agent's own move probability <span>— a<sub>t</sub> = P(each hand is the best reply) across the belief cloud; it samples its hand from this</span></div>
+      <div class="bars3" id="abars">
+        <div class="barcell R">
+          <div class="cap">✊ Rock</div>
+          <div class="bartrack"><div class="barfill" style="width:33%"></div></div>
+          <div class="pct">33%</div>
+        </div>
+        <div class="barcell P">
+          <div class="cap">✋ Paper</div>
+          <div class="bartrack"><div class="barfill" style="width:33%"></div></div>
+          <div class="pct">33%</div>
+        </div>
+        <div class="barcell S">
+          <div class="cap">✌️ Scissors</div>
+          <div class="bartrack"><div class="barfill" style="width:33%"></div></div>
+          <div class="pct">33%</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row" id="trustRow">
+      <div class="row-title">Trust in each memory depth <span>— committee posterior P(k | data)</span></div>
+      <div class="kbars" id="kbars"></div>
+      <div class="klabels" id="klabels"></div>
+      <div class="depthread" id="depthread">Most-trusted depth: <b>—</b></div>
+    </div>
+
+    <div class="control">
+      <label for="gammaSlider">
+        Forgetting&nbsp; γ = <b id="gammaVal">0.90</b>
+        <span>&nbsp;— effective memory ≈ <b id="neffVal">10.0</b> rounds; lower γ forgets faster and stays jitterier</span>
+      </label>
+      <input type="range" id="gammaSlider" min="0.50" max="0.99" step="0.01" value="0.90" oninput="updateGamma()">
+    </div>
+
+    <div class="footer">
+      <label class="toggle">
+        <span class="switch">
+          <input type="checkbox" id="brainToggle" checked onchange="toggleBrain()">
+          <span class="slider"></span>
+        </span>
+        show the agent's mind
+      </label>
+      <label class="toggle">
+        <span class="switch">
+          <input type="checkbox" id="greedyToggle" onchange="toggleGreedy()">
+          <span class="slider"></span>
+        </span>
+        greedy: always play the max-value hand
+      </label>
+      <button class="reset" onclick="resetGame()">Reset match</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ---------- Engine (identical to the verified Node version) ----------
+const beatsIdx = m => (m + 2) % 3;   // move m beats this index
+const losesIdx = m => (m + 1) % 3;   // move m loses to this index
+const EMOJI = ['✊','✋','✌️'];
+
+function randn(){let u=0,v=0;while(u===0)u=Math.random();while(v===0)v=Math.random();
+  return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+function gammaSample(shape){
+  if(shape<1) return gammaSample(1+shape)*Math.pow(Math.random(),1/shape);
+  const d=shape-1/3,c=1/Math.sqrt(9*d);
+  while(true){const x=randn(),t=1+c*x,v=t*t*t;if(v<=0)continue;const u=Math.random();
+    if(u<1-0.0331*x*x*x*x)return d*v;
+    if(Math.log(u)<0.5*x*x+d*(1-v+Math.log(v)))return d*v;}
+}
+function dirichletSample(a){const g=a.map(gammaSample);const s=g[0]+g[1]+g[2];return[g[0]/s,g[1]/s,g[2]/s];}
+const logFact=n=>{let s=0;for(let i=2;i<=n;i++)s+=Math.log(i);return s;};
+
+class Agent{
+  constructor(Kmax=10,gamma=0.9,lambdaK=2.5){
+    this.Kmax=Kmax;this.g=gamma;
+    this.priorLog=[];
+    for(let k=0;k<=Kmax;k++)this.priorLog[k]=k*Math.log(lambdaK)-logFact(k);
+    // WSLS expert has the same unnormalized log-prior as memory-1 expert (k=1)
+    this.priorLog[Kmax+1]=1*Math.log(lambdaK)-logFact(1);
+    this.counts=Array.from({length:Kmax+1},()=>new Map());
+    this.S=new Array(Kmax+2).fill(0);
+    this.wslsCounts=[[0,0,0],[0,0,0],[0,0,0]]; // outcome (W=0, T=1, L=2) -> transition (repeat=0, shift+=1, shift-=2)
+    this.history=[];
+  }
+  getOutcomeCode(){
+    if(this.history.length<1)return null;
+    const last=this.history[this.history.length-1];
+    const res=outcomeForAgent(last.a,last.h);
+    if(res===-1)return 0; // human won (W)
+    if(res===0)return 1;  // tie (T)
+    return 2;             // human lost (L)
+  }
+  contextKey(k){
+    if(this.history.length<k)return null;
+    const p=[];for(let i=this.history.length-k;i<this.history.length;i++)p.push(this.history[i].a,this.history[i].h);
+    return p.join(',');
+  }
+  expertPredict(k){
+    if(k===this.Kmax+1){
+      const o=this.getOutcomeCode();
+      if(o===null)return[1/3,1/3,1/3];
+      const last=this.history[this.history.length-1];
+      const x=last.h;
+      const c=this.wslsCounts[o];
+      const N=c[0]+c[1]+c[2];
+      const pTrans=[(c[0]+1)/(N+3),(c[1]+1)/(N+3),(c[2]+1)/(N+3)];
+      const qAbs=[0,0,0];
+      qAbs[x]=pTrans[0];
+      qAbs[(x+1)%3]=pTrans[1];
+      qAbs[(x+2)%3]=pTrans[2];
+      return qAbs;
+    }
+    const key=this.contextKey(k);
+    if(key===null)return[1/3,1/3,1/3];
+    const c=this.counts[k].get(key);
+    if(!c)return[1/3,1/3,1/3];
+    const N=c[0]+c[1]+c[2];
+    return[(c[0]+1)/(N+3),(c[1]+1)/(N+3),(c[2]+1)/(N+3)];
+  }
+  weights(){
+    const lw=this.priorLog.map((p,k)=>p+this.S[k]);
+    const m=Math.max(...lw);
+    const w=lw.map(x=>Math.exp(x-m));
+    const s=w.reduce((a,b)=>a+b,0);
+    return w.map(x=>x/s);
+  }
+  predictHuman(){
+    const w=this.weights(),q=[0,0,0];
+    for(let k=0;k<=this.Kmax+1;k++){const qk=this.expertPredict(k);for(let i=0;i<3;i++)q[i]+=w[k]*qk[i];}
+    return q;
+  }
+  // one Thompson draw: sample q̃ from each expert, average them weighted by trust, best-respond
+  sampleBestAction(){
+    const w=this.weights();
+    const q=[0,0,0];
+    for(let k=0;k<=this.Kmax+1;k++){
+      let qk;
+      if(k===this.Kmax+1){
+        const o=this.getOutcomeCode();
+        if(o===null){
+          qk=dirichletSample([1,1,1]);
+        }else{
+          const last=this.history[this.history.length-1];
+          const x=last.h;
+          const c=this.wslsCounts[o];
+          const pTrans=dirichletSample([c[0]+1,c[1]+1,c[2]+1]);
+          qk=[0,0,0];
+          qk[x]=pTrans[0];
+          qk[(x+1)%3]=pTrans[1];
+          qk[(x+2)%3]=pTrans[2];
+        }
+      }else{
+        const key=this.contextKey(k);
+        let c=[0,0,0];
+        if(key!==null){const cc=this.counts[k].get(key);if(cc)c=cc;}
+        qk=dirichletSample([c[0]+1,c[1]+1,c[2]+1]);
+      }
+      for(let i=0;i<3;i++)q[i]+=w[k]*qk[i];
+    }
+    let best=0,bv=-Infinity;
+    for(let m=0;m<3;m++){const v=q[beatsIdx(m)]-q[losesIdx(m)];if(v>bv){bv=v;best=m;}}
+    return best;
+  }
+  // Monte-Carlo estimate of the mixed strategy a_t = ( P(R best), P(P best), P(S best) )
+  // by drawing many q̃ from the belief cloud and tallying which hand wins each time.
+  actionDistribution(n=2000){
+    const tally=[0,0,0];
+    for(let i=0;i<n;i++) tally[this.sampleBestAction()]++;
+    return tally.map(x=>x/n);
+  }
+  // deterministic best-response to the posterior mean q̂ — the greedy "max-value" hand
+  greedyAction(){
+    const q=this.predictHuman();
+    let best=0,bv=-Infinity;
+    for(let m=0;m<3;m++){const v=q[beatsIdx(m)]-q[losesIdx(m)];if(v>bv){bv=v;best=m;}}
+    return best;
+  }
+  chooseMove(){
+    // always compute the full mixed strategy so the display stays honest
+    this.actionDist=this.actionDistribution();
+    if(greedyMode) return this.greedyAction();   // exploit hard, but predictable
+    // otherwise sample the hand from a_t (one Thompson draw — probability matching)
+    let r=Math.random(),acc=0;
+    for(let m=0;m<3;m++){acc+=this.actionDist[m];if(r<=acc)return m;}
+    return 2;
+  }
+  record(humanMove){
+    for(let k=0;k<=this.Kmax+1;k++){const l=this.expertPredict(k)[humanMove];this.S[k]=this.g*this.S[k]+Math.log(l);}
+    for(let k=0;k<=this.Kmax;k++){
+      const key=this.contextKey(k);if(key===null)continue;
+      let c=this.counts[k].get(key);if(!c){c=[0,0,0];this.counts[k].set(key,c);}
+      for(let i=0;i<3;i++)c[i]*=this.g;
+      c[humanMove]+=1;
+    }
+    const o=this.getOutcomeCode();
+    if(o!==null){
+      const last=this.history[this.history.length-1];
+      const x=last.h;
+      const trans=(humanMove-x+3)%3;
+      const c=this.wslsCounts[o];
+      for(let i=0;i<3;i++)c[i]*=this.g;
+      c[trans]+=1;
+    }
+  }
+}
+function outcomeForAgent(a,h){if(a===h)return 0;return h===beatsIdx(a)?1:-1;}
+
+// ---------- Game state / UI wiring ----------
+let agent, pending, scoreYou, scoreAgent, scoreTie, round;
+let isAnimating = false;
+let greedyMode = false;   // false = Thompson sampling; true = always play max-value hand
+
+function toggleGreedy(){
+  greedyMode = document.getElementById('greedyToggle').checked;
+  if (agent) pending = agent.chooseMove();   // re-commit the next move under the new mode
+  render();
+}
+
+function getGamma(){
+  const el = document.getElementById('gammaSlider');
+  return el ? parseFloat(el.value) : 0.9;
+}
+function updateGammaLabels(){
+  const g = getGamma();
+  document.getElementById('gammaVal').textContent = g.toFixed(2);
+  document.getElementById('neffVal').textContent = (1/(1-g)).toFixed(1);
+}
+function updateGamma(){
+  const g = getGamma();
+  updateGammaLabels();
+  if (agent){ agent.g = g; pending = agent.chooseMove(); }  // apply new forgetting rate going forward
+  render();
+}
+
+function resetGame(){
+  agent=new Agent(10, getGamma());          // honor the current γ slider
+  updateGammaLabels();
+  scoreYou=scoreAgent=scoreTie=round=0;
+  pending=agent.chooseMove();               // agent pre-commits for round 1
+  
+  document.getElementById('youHand').textContent='✊';
+  document.getElementById('agentHand').textContent='🤖';
+  document.getElementById('verdict').textContent='Make your move';
+  document.getElementById('verdict').className='verdict';
+  
+  const strip = document.getElementById('historyStrip');
+  if (strip) strip.innerHTML = '';
+  
+  isAnimating = false;
+  const buttons = document.querySelectorAll('.btn');
+  buttons.forEach(btn => btn.classList.remove('disabled'));
+  
+  render();
+}
+
+function play(humanMove){
+  if (isAnimating) return;
+  isAnimating = true;
+
+  // Lock buttons during shake sequence
+  const buttons = document.querySelectorAll('.btn');
+  buttons.forEach(btn => btn.classList.add('disabled'));
+
+  const youHand = document.getElementById('youHand');
+  const agentHand = document.getElementById('agentHand');
+  const youBubble = document.getElementById('youBubble');
+  const agentBubble = document.getElementById('agentBubble');
+  const verdict = document.getElementById('verdict');
+
+  // Neutral shaking state
+  youHand.textContent = '✊';
+  agentHand.textContent = '✊';
+  
+  youBubble.classList.add('shaking-you');
+  agentBubble.classList.add('shaking-agent');
+  verdict.textContent = 'Shoot!';
+  verdict.className = 'verdict';
+
+  const agentMove = pending;                  // committed before this click
+  const res = outcomeForAgent(agentMove, humanMove); // +1 agent, -1 human, 0 tie
+
+  setTimeout(() => {
+    // Stop shaking animation
+    youBubble.classList.remove('shaking-you');
+    agentBubble.classList.remove('shaking-agent');
+
+    // Reveal moves
+    youHand.textContent = EMOJI[humanMove];
+    agentHand.textContent = EMOJI[agentMove];
+
+    round++;
+    let scoreEl = null;
+    let outcomeClass = '';
+
+    if (res === 1) {
+      scoreAgent++;
+      verdict.textContent = 'Agent wins this round';
+      verdict.className = 'verdict lose';
+      scoreEl = document.querySelector('#agentScore .n');
+      outcomeClass = 'lose';
+    } else if (res === -1) {
+      scoreYou++;
+      verdict.textContent = 'You win this round';
+      verdict.className = 'verdict win';
+      scoreEl = document.querySelector('#youScore .n');
+      outcomeClass = 'win';
+    } else {
+      scoreTie++;
+      verdict.textContent = "It's a tie";
+      verdict.className = 'verdict tie';
+      scoreEl = document.querySelector('#tieScore .n');
+      outcomeClass = 'tie';
+    }
+
+    // Trigger score pop animation
+    if (scoreEl) {
+      scoreEl.classList.remove('score-pop');
+      void scoreEl.offsetWidth; // trigger reflow
+      scoreEl.classList.add('score-pop');
+      setTimeout(() => scoreEl.classList.remove('score-pop'), 350);
+    }
+    
+    // Animate the round counter
+    const roundEl = document.getElementById('roundN');
+    roundEl.classList.remove('score-pop');
+    void roundEl.offsetWidth;
+    roundEl.classList.add('score-pop');
+    setTimeout(() => roundEl.classList.remove('score-pop'), 350);
+
+    // Add outcome dot to strip
+    const strip = document.getElementById('historyStrip');
+    if (strip) {
+      const dot = document.createElement('div');
+      dot.className = `dot ${outcomeClass}`;
+      strip.appendChild(dot);
+      if (strip.children.length > 20) {
+        strip.removeChild(strip.firstChild);
+      }
+    }
+
+    // Learn from this round, then advance history and pre-commit next move
+    agent.record(humanMove);
+    agent.history.push({a:agentMove, h:humanMove});
+    pending = agent.chooseMove();
+
+    render();
+
+    // Unlock
+    isAnimating = false;
+    buttons.forEach(btn => btn.classList.remove('disabled'));
+  }, 500);
+}
+
+function render(){
+  document.querySelector('#youScore .n').textContent=scoreYou;
+  document.querySelector('#agentScore .n').textContent=scoreAgent;
+  document.querySelector('#tieScore .n').textContent=scoreTie;
+  document.getElementById('roundN').textContent=round;
+
+  // predicted human distribution (for the upcoming round)
+  const q=agent.predictHuman();
+  const cells=document.querySelectorAll('#qbars .barcell');
+  q.forEach((p,i)=>{
+    cells[i].querySelector('.barfill').style.width=Math.max(2,p*100)+'%';
+    cells[i].querySelector('.pct').textContent=Math.round(p*100)+'%';
+  });
+
+  // agent's own mixed strategy a_t — probability each hand is the best reply
+  const a=agent.actionDist||[1/3,1/3,1/3];
+  const acells=document.querySelectorAll('#abars .barcell');
+  a.forEach((p,i)=>{
+    acells[i].querySelector('.barfill').style.width=Math.max(2,p*100)+'%';
+    acells[i].querySelector('.pct').textContent=Math.round(p*100)+'%';
+  });
+
+  // committee weights over depth
+  const w=agent.weights();
+  const kb=document.getElementById('kbars'), kl=document.getElementById('klabels');
+  if(kb.children.length===0){
+    for(let k=0;k<=agent.Kmax;k++){
+      const b=document.createElement('div');b.className='kbar';kb.appendChild(b);
+      const l=document.createElement('div');l.className='klabel';l.textContent=k;kl.appendChild(l);
+    }
+    const b=document.createElement('div');b.className='kbar';kb.appendChild(b);
+    const l=document.createElement('div');l.className='klabel';l.textContent='W';l.style.fontWeight='bold';kl.appendChild(l);
+  }
+  const wmax=Math.max(...w);
+  let bestK=0;w.forEach((x,k)=>{if(x>w[bestK])bestK=k;});
+  
+  w.forEach((x,k)=>{
+    const heightVal = Math.max(4, (x / (wmax || 1)) * 100);
+    kb.children[k].style.height = heightVal + '%';
+    
+    // Active highlights for current round
+    if (k === bestK && round > 0) {
+      kb.children[k].classList.add('active-depth');
+      kl.children[k].classList.add('active-depth');
+    } else {
+      kb.children[k].classList.remove('active-depth');
+      kl.children[k].classList.remove('active-depth');
+    }
+  });
+
+  if (round === 0) {
+    document.getElementById('depthread').innerHTML = 'Most-trusted depth: <b>—</b>';
+  } else {
+    const depthStr = bestK === agent.Kmax + 1 ? 'WSLS' : 'k = ' + bestK;
+    document.getElementById('depthread').innerHTML=
+      'Most-trusted depth: <b>'+depthStr+'</b> &nbsp;('+Math.round(w[bestK]*100)+'% of belief)';
+  }
+}
+
+function toggleBrain(){
+  const on=document.getElementById('brainToggle').checked;
+  document.getElementById('beliefRow').classList.toggle('hidden',!on);
+  document.getElementById('actionRow').classList.toggle('hidden',!on);
+  document.getElementById('trustRow').classList.toggle('hidden',!on);
+}
+
+resetGame();
+</script>
+</body>
+</html>
+
