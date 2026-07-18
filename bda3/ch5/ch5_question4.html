@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exchangeable Prior Distributions — BDA3 Chapter 5 Question 4</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400;1,6..72,600&display=swap" rel="stylesheet">
+
+    <!-- MathJax for LaTeX rendering -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bayesian: {
+                            bg: '#f7f9fb',
+                            text: '#191c1e',
+                            navy: '#131b2e',
+                            blue: '#0051d5',
+                            slate: '#75859d',
+                            surface: '#ffffff',
+                            surfaceAlt: '#f8fafc',
+                            border: '#e2e8f0'
+                        }
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 12px rgba(15, 23, 42, 0.05)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Newsreader', serif;
+            background-color: #f7f9fb;
+            color: #191c1e;
+            font-size: 1.25rem;
+            line-height: 1.7;
+        }
+
+        h1, h2, h3, h4, h5, h6, .ui-text {
+            font-family: 'Inter', sans-serif;
+            color: #131b2e; /* Deep Navy */
+        }
+
+        .math-inline {
+            font-family: 'Newsreader', serif;
+            font-size: 1.3rem;
+        }
+
+        .theorem-block {
+            background-color: #f8fafc;
+            border-left: 2px solid #0051d5;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            border-radius: 0 4px 4px 0;
+            overflow-x: auto;
+        }
+
+        .derivation {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-left: 3px solid #75859d;
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 1.5rem;
+            border-radius: 0 4px 4px 0;
+            overflow-x: auto;
+        }
+
+        mjx-container { max-width: 100%; }
+
+        .academic-card {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .academic-card:hover {
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .label {
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            font-size: 0.78rem;
+        }
+    </style>
+</head>
+
+<body class="antialiased">
+
+    <!-- Container constrained for optimal reading -->
+    <div class="max-w-[960px] mx-auto px-6 py-16">
+
+        <!-- Navigation -->
+        <nav class="mb-8">
+            <a href="../../index.html" class="inline-flex items-center text-sm font-semibold text-bayesian-slate hover:text-bayesian-navy transition-colors ui-text">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                Back to Index
+            </a>
+        </nav>
+
+        <!-- Header -->
+        <header class="mb-16">
+            <div class="flex flex-wrap gap-2 mb-6">
+                <div class="px-3 py-1 bg-bayesian-surfaceAlt border border-bayesian-border text-bayesian-slate rounded text-xs font-semibold tracking-wide uppercase ui-text">
+                    Chapter 5 &bull; Question 4
+                </div>
+                <div class="px-3 py-1 bg-blue-50 border border-blue-200 text-bayesian-blue rounded text-xs font-semibold tracking-wide uppercase ui-text">
+                    First-Principles Derivation
+                </div>
+            </div>
+            <h1 class="text-5xl font-bold mb-6 tracking-tight leading-tight ui-text">
+                Exchangeable Prior Distributions & de Finetti's Limit
+            </h1>
+            <p class="text-xl text-bayesian-slate leading-relaxed">
+                Suppose we know <em>a priori</em> that $2J$ parameters are split into two equal groups, half drawn from $N(1, 1)$ and the other half from $N(-1, 1)$. We do not know which parameter came from which group. This problem forces us to mathematically dissect exchangeability, compute the negative covariance generated by finite global constraints, and examine why this physical restriction disappears in the infinite limit.
+            </p>
+        </header>
+
+        <!-- Exercise Description -->
+        <div class="mb-12 p-6 bg-bayesian-surfaceAlt border border-bayesian-border rounded-lg">
+            <h3 class="text-base font-bold text-bayesian-navy mb-4 label">Exercise Description</h3>
+            <p class="text-base text-bayesian-slate mb-0">
+                Suppose it is known a priori that the $2J$ parameters $\theta_1, \dots, \theta_{2J}$ are clustered into two groups, with exactly half being drawn from a $N(1, 1)$ distribution and the other half from a $N(-1, 1)$ distribution, but we have not observed which parameters come from which distribution.
+            </p>
+            <ol class="list-decimal pl-5 mt-3 text-base text-bayesian-slate space-y-1">
+                <li>Are $\theta_1, \dots, \theta_{2J}$ exchangeable under this prior distribution?</li>
+                <li>Show that this distribution cannot be written as a mixture of independent and identically distributed (i.i.d.) components.</li>
+                <li>Why can we not simply take the limit as $J \to \infty$ and get a counterexample to de Finetti's theorem?</li>
+            </ol>
+        </div>
+
+        <!-- Section 1 -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-semibold mb-8 border-b pb-3 border-bayesian-border ui-text">
+                1. Part A: Permutation Invariance (Exchangeability)
+            </h2>
+            <p class="mb-6">
+                To show that the parameters are exchangeable, we must prove that the joint prior density $p(\theta_1, \dots, \theta_{2J})$ is invariant under any permutation of its indices.
+            </p>
+            <p class="mb-6">
+                Let $z = (z_1, \dots, z_{2J}) \in \{0, 1\}^{2J}$ be the vector of indicators, where $z_j = 1$ indicates $\theta_j$ is drawn from $N(1, 1)$, and $z_j = 0$ indicates $\theta_j$ is drawn from $N(-1, 1)$. The prior constraint dictates that exactly half of the parameters belong to each cluster. The set of all valid configurations is:
+            </p>
+            <div class="derivation">
+                $$Z = \left\{ z \in \{0, 1\}^{2J} : \sum_{j=1}^{2J} z_j = J \right\}$$
+            </div>
+            <p class="mb-6">
+                Since we have no prior information about which parameter belongs to which cluster, the distribution over these configurations is uniform:
+            </p>
+            <div class="derivation">
+                $$p(z) = \frac{1}{\binom{2J}{J}} \quad \text{for } z \in Z$$
+            </div>
+            <p class="mb-6">
+                Given $z$, the parameters are conditionally independent:
+            </p>
+            <div class="derivation">
+                $$p(\theta \mid z) = \prod_{j=1}^{2J} p(\theta_j \mid z_j) = \prod_{j=1}^{2J} N(\theta_j \mid \mu(z_j), 1)$$
+            </div>
+            <p class="mb-6">
+                where $\mu(1) = 1$ and $\mu(0) = -1$. The marginal joint density is the mixture over all configurations:
+            </p>
+            <div class="derivation">
+                $$p(\theta) = \frac{1}{\binom{2J}{J}} \sum_{z \in Z} \prod_{j=1}^{2J} N(\theta_j \mid \mu(z_j), 1)$$
+            </div>
+            <p class="mb-6">
+                Now apply a permutation $\pi$ to the parameter indices. The permuted density is:
+            </p>
+            <div class="derivation">
+                $$p(\theta_{\pi(1)}, \dots, \theta_{\pi(2J)}) = \frac{1}{\binom{2J}{J}} \sum_{z \in Z} \prod_{j=1}^{2J} N(\theta_{\pi(j)} \mid \mu(z_j), 1)$$
+            </div>
+            <p class="mb-6">
+                Re-index the product terms by setting $i = \pi(j)$ (which implies $j = \pi^{-1}(i)$):
+            </p>
+            <div class="derivation">
+                $$p(\theta_{\pi(1)}, \dots, \theta_{\pi(2J)}) = \frac{1}{\binom{2J}{J}} \sum_{z \in Z} \prod_{i=1}^{2J} N(\theta_i \mid \mu(z_{\pi^{-1}(i)}), 1)$$
+            </div>
+            <p class="mb-6">
+                Because $\pi$ is a bijection, the permuted indicator vector $z_{\pi^{-1}}$ has exactly the same number of ones as $z$. Thus, $z \in Z \iff z_{\pi^{-1}} \in Z$. The mapping $z \mapsto z_{\pi^{-1}}$ merely permutes the summation terms over the finite set $Z$. The total sum is unchanged:
+            </p>
+            <div class="derivation">
+                $$p(\theta_{\pi(1)}, \dots, \theta_{\pi(2J)}) = \frac{1}{\binom{2J}{J}} \sum_{z' \in Z} \prod_{i=1}^{2J} N(\theta_i \mid \mu(z'_i), 1) = p(\theta)$$
+            </div>
+            <div class="theorem-block">
+                <div class="label text-bayesian-blue mb-2">Conclusion for Part A</div>
+                <p class="mb-0">
+                    The joint prior density is completely symmetric under index shuffling. Therefore, $\theta_1, \dots, \theta_{2J}$ are <strong>exchangeable</strong>.
+                </p>
+            </div>
+        </section>
+
+        <!-- Section 2 -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-semibold mb-8 border-b pb-3 border-bayesian-border ui-text">
+                2. Part B: Non-i.i.d. Mixture Representation
+            </h2>
+            <p class="mb-6">
+                A prior distribution is a mixture of i.i.d. components if and only if it can be represented as:
+            </p>
+            <div class="derivation">
+                $$p(\theta) = \int \prod_{j=1}^{2J} p(\theta_j \mid \phi) p(\phi) d\phi$$
+            </div>
+            <p class="mb-6">
+                Let $\mu(\phi) = E[\theta_j \mid \phi]$ be the conditional expectation. For any two distinct parameters $\theta_a$ and $\theta_b$ ($a \neq b$), conditional independence yields:
+            </p>
+            <div class="derivation">
+                $$E[\theta_a \theta_b] = E[E[\theta_a \theta_b \mid \phi]] = E[E[\theta_a \mid \phi] E[\theta_b \mid \phi]] = E[\mu(\phi)^2]$$
+            </div>
+            <p class="mb-6">
+                And the product of their expectations is:
+            </p>
+            <div class="derivation">
+                $$E[\theta_a] E[\theta_b] = (E[E[\theta_a \mid \phi]])^2 = (E[\mu(\phi)])^2$$
+            </div>
+            <p class="mb-6">
+                The covariance between any two distinct variables in an i.i.d. mixture is therefore:
+            </p>
+            <div class="derivation">
+                $$\text{cov}(\theta_a, \theta_b) = E[\mu(\phi)^2] - (E[\mu(\phi)])^2 = \text{var}(\mu(\phi)) \ge 0$$
+            </div>
+            <p class="mb-6">
+                Because a variance is always non-negative, **any mixture of i.i.d. components must have a non-negative covariance between its variables.** Let's compute the covariance of our prior.
+            </p>
+
+            <h3 class="text-2xl font-bold mb-4 mt-8 ui-text">Derivation of Prior Covariance</h3>
+            <p class="mb-6">
+                Let $S = \sum_{i=1}^{2J} \theta_i$ be the sum of all variables. Expanding the variance of the sum:
+            </p>
+            <div class="derivation">
+                $$\text{var}(S) = \sum_{i=1}^{2J} \text{var}(\theta_i) + \sum_{i \neq j} \text{cov}(\theta_i, \theta_j)$$
+                $$\text{var}(S) = 2J \text{var}(\theta_i) + 2J(2J - 1) c$$
+            </div>
+            <p class="mb-6">
+                where $c = \text{cov}(\theta_i, \theta_j)$ is the shared covariance by exchangeability.
+            </p>
+            <p class="mb-6">
+                We compute $\text{var}(S)$ using the law of total variance, conditioning on the indicator configuration $z$:
+            </p>
+            <div class="derivation">
+                $$\text{var}(S) = E[\text{var}(S \mid z)] + \text{var}(E[S \mid z])$$
+            </div>
+            <p class="mb-6">
+                * **Conditional Variance**: Given $z$, $\theta_i$ are independent with variance $1$. Thus, $\text{var}(S \mid z) = \sum \text{var}(\theta_i \mid z_i) = 2J \cdot 1 = 2J$. This is a constant, so $E[\text{var}(S \mid z)] = 2J$.
+                <br>
+                * **Conditional Expectation**: Given $z$, exactly $J$ variables have mean $1$ and $J$ variables have mean $-1$. Thus, $E[S \mid z] = J(1) + J(-1) = 0$. This is a constant, so $\text{var}(E[S \mid z]) = \text{var}(0) = 0$.
+            </p>
+            <p class="mb-6">
+                Therefore, the total variance of the sum is:
+            </p>
+            <div class="derivation">
+                $$\text{var}(S) = 2J$$
+            </div>
+            <p class="mb-6">
+                Next, we compute the marginal variance $\text{var}(\theta_i)$ by conditioning on $z_i$:
+            </p>
+            <div class="derivation">
+                $$\text{var}(\theta_i) = E[\text{var}(\theta_i \mid z_i)] + \text{var}(E[\theta_i \mid z_i])$$
+            </div>
+            <p class="mb-6">
+                * **Conditional Variance**: $\text{var}(\theta_i \mid z_i) = 1$, so $E[\text{var}(\theta_i \mid z_i)] = 1$.
+                <br>
+                * **Conditional Expectation**: $E[\theta_i \mid z_i]$ is $+1$ with probability $0.5$ and $-1$ with probability $0.5$. Its expected value is $0$, and its variance is $\text{var}(E[\theta_i \mid z_i]) = 0.5(1)^2 + 0.5(-1)^2 = 1$.
+            </p>
+            <p class="mb-6">
+                This gives the marginal variance:
+            </p>
+            <div class="derivation">
+                $$\text{var}(\theta_i) = 1 + 1 = 2$$
+            </div>
+            <p class="mb-6">
+                Now substitute $\text{var}(S) = 2J$ and $\text{var}(\theta_i) = 2$ back into the sum expansion:
+            </p>
+            <div class="derivation">
+                $$2J = 2J(2) + 2J(2J-1) c$$
+                $$2J = 4J + 2J(2J-1) c$$
+                $$-2J = 2J(2J-1) c$$
+                $$c = -\frac{1}{2J - 1}$$
+            </div>
+            <div class="theorem-block">
+                <div class="label text-bayesian-blue mb-2">Conclusion for Part B</div>
+                <p class="mb-3">
+                    For all $J \ge 1$, the covariance between distinct variables is strictly negative:
+                </p>
+                $$\text{cov}(\theta_i, \theta_j) = -\frac{1}{2J-1} < 0$$
+                <p class="mt-3 mb-0">
+                    Since a mixture of i.i.d. components requires $\text{cov}(\theta_i, \theta_j) \ge 0$, this distribution <strong>cannot</strong> be written as a mixture of i.i.d. components.
+                </p>
+            </div>
+        </section>
+
+        <!-- Section 3 -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-semibold mb-8 border-b pb-3 border-bayesian-border ui-text">
+                3. Part C: Resolution of the de Finetti Limit
+            </h2>
+            <p class="mb-6">
+                De Finetti's theorem states that any <em>infinite</em> exchangeable sequence can be written as a mixture of i.i.d. components. Why does this finite counterexample not contradict the theorem when we take the limit $J \to \infty$?
+            </p>
+            <p class="mb-6">
+                The key is **infinite extendability**. De Finetti's theorem applies to a single, infinite exchangeable sequence of variables. 
+            </p>
+            <p class="mb-6">
+                For a fixed $J$, the joint distribution is defined on a finite sequence of length $2J$. We cannot extend this specific joint distribution to an infinite sequence. For example, if we have a sequence of size $2J$ and attempt to add two more variables to make it size $2J+2$, the constraint "exactly half are $+1$" forces us to change the joint distribution of the first $2J$ parameters (their covariance changes from $-1/(2J-1)$ to $-1/(2J+1)$).
+            </p>
+            <p class="mb-6">
+                As we take the limit $J \to \infty$, the negative covariance vanishes:
+            </p>
+            <div class="derivation">
+                $$\lim_{J \to \infty} \text{cov}(\theta_i, \theta_j) = \lim_{J \to \infty} -\frac{1}{2J-1} = 0$$
+            </div>
+            <p class="mb-6">
+                In this infinite limit, the variables become conditionally independent. The joint distribution of the infinite sequence converges to a mixture of i.i.d. components:
+            </p>
+            <div class="derivation">
+                $$p(\theta) = \prod_{j=1}^{\infty} \left( 0.5 N(\theta_j \mid 1, 1) + 0.5 N(\theta_j \mid -1, 1) \right)$$
+            </div>
+            <div class="theorem-block">
+                <div class="label text-bayesian-blue mb-2">Conclusion for Part C</div>
+                <p class="mb-0">
+                    The finite-length prior cannot be extended to an infinite sequence without changing the underlying distribution. In the limit where the sequence does become infinite, the negative correlation pressure drops to $0$, and we recover a true i.i.d. mixture. There is no contradiction.
+                </p>
+            </div>
+        </section>
+
+    </div>
+
+</body>
+
+</html>
