@@ -349,6 +349,39 @@
             </div>
         </section>
 
+        <!-- Section 4 -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-semibold mb-8 border-b pb-3 border-bayesian-border ui-text">
+                4. Data Science Application: Block Randomization in A/B Testing
+            </h2>
+            <p class="mb-6">
+                This exercise is not just a theoretical curiosity about de Finetti's theorem; it represents a fundamental statistical issue in experimental design.
+            </p>
+            <p class="mb-6">
+                In A/B testing, when allocating users to Treatment or Control, simple random assignment can lead to unbalanced group sizes by pure chance (e.g., getting 55% Treatment and 45% Control). To ensure perfect balance, data scientists use <strong>block randomization</strong> (or balanced allocation): out of $2J$ incoming users in a cohort, we force exactly $J$ to be assigned to Treatment ($z_i = 1$) and $J$ to Control ($z_i = 0$).
+            </p>
+            <p class="mb-6">
+                Because of this global budget constraint, the assignments are exchangeable but <strong>not independent</strong>. If user 1 is assigned to Treatment, it leaves fewer Treatment slots for the remaining users, introducing the negative covariance we derived:
+            </p>
+            <div class="derivation">
+                $$\text{cov}(z_i, z_j) = -\frac{1}{2J - 1}$$
+            </div>
+            <p class="mb-6">
+                This dependency has major consequences for analyzing the experiment:
+            </p>
+            <ul class="list-disc pl-6 mb-6 space-y-3">
+                <li>
+                    <strong>Standard tests overestimate variance:</strong> A standard t-test or regression model assumes that user assignments are completely independent. When assignments have a negative covariance, the true variance of the treatment effect estimator is actually <em>lower</em> than what the standard independent formula calculates.
+                </li>
+                <li>
+                    <strong>Loss of statistical power:</strong> If you ignore this block structure and analyze the data as if it were a simple random sample, your variance estimate will be too conservative. You may fail to reject the null hypothesis, missing a real product improvement because your statistical test overestimated the noise.
+                </li>
+                <li>
+                    <strong>The asymptotic resolution:</strong> As $J \to \infty$, the negative covariance $-1/(2J-1)$ vanishes to $0$. For large web-scale experiments, the difference is negligible. But for small cohort testing (e.g., medical trials, localized city rollouts, B2B tests), using a variance estimator that accounts for the blocking structure (such as permutation tests or block-aware regression) is critical to preserving statistical power.
+                </li>
+            </ul>
+        </section>
+
     </div>
 
 </body>
