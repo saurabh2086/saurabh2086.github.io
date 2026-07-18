@@ -246,7 +246,7 @@
                 $$\text{cov}(\theta_a, \theta_b) = E[\mu(\phi)^2] - (E[\mu(\phi)])^2 = \text{var}(\mu(\phi)) \ge 0$$
             </div>
             <p class="mb-6">
-                Because a variance is always non-negative, **any mixture of i.i.d. components must have a non-negative covariance between its variables.** Let's compute the covariance of our prior.
+                Because a variance is always non-negative, <strong>any mixture of i.i.d. components must have a non-negative covariance between its variables.</strong> Let's compute the covariance of our prior.
             </p>
 
             <h3 class="text-2xl font-bold mb-4 mt-8 ui-text">Derivation of Prior Covariance</h3>
@@ -267,9 +267,9 @@
                 $$\text{var}(S) = E[\text{var}(S \mid z)] + \text{var}(E[S \mid z])$$
             </div>
             <p class="mb-6">
-                * **Conditional Variance**: Given $z$, $\theta_i$ are independent with variance $1$. Thus, $\text{var}(S \mid z) = \sum \text{var}(\theta_i \mid z_i) = 2J \cdot 1 = 2J$. This is a constant, so $E[\text{var}(S \mid z)] = 2J$.
+                * <strong>Conditional Variance</strong>: Given $z$, $\theta_i$ are independent with variance $1$. Thus, $\text{var}(S \mid z) = \sum \text{var}(\theta_i \mid z_i) = 2J \cdot 1 = 2J$. This is a constant, so $E[\text{var}(S \mid z)] = 2J$.
                 <br>
-                * **Conditional Expectation**: Given $z$, exactly $J$ variables have mean $1$ and $J$ variables have mean $-1$. Thus, $E[S \mid z] = J(1) + J(-1) = 0$. This is a constant, so $\text{var}(E[S \mid z]) = \text{var}(0) = 0$.
+                * <strong>Conditional Expectation</strong>: Given $z$, exactly $J$ variables have mean $1$ and $J$ variables have mean $-1$. Thus, $E[S \mid z] = J(1) + J(-1) = 0$. This is a constant, so $\text{var}(E[S \mid z]) = \text{var}(0) = 0$.
             </p>
             <p class="mb-6">
                 Therefore, the total variance of the sum is:
@@ -284,9 +284,9 @@
                 $$\text{var}(\theta_i) = E[\text{var}(\theta_i \mid z_i)] + \text{var}(E[\theta_i \mid z_i])$$
             </div>
             <p class="mb-6">
-                * **Conditional Variance**: $\text{var}(\theta_i \mid z_i) = 1$, so $E[\text{var}(\theta_i \mid z_i)] = 1$.
+                * <strong>Conditional Variance</strong>: $\text{var}(\theta_i \mid z_i) = 1$, so $E[\text{var}(\theta_i \mid z_i)] = 1$.
                 <br>
-                * **Conditional Expectation**: $E[\theta_i \mid z_i]$ is $+1$ with probability $0.5$ and $-1$ with probability $0.5$. Its expected value is $0$, and its variance is $\text{var}(E[\theta_i \mid z_i]) = 0.5(1)^2 + 0.5(-1)^2 = 1$.
+                * <strong>Conditional Expectation</strong>: $E[\theta_i \mid z_i]$ is $+1$ with probability $0.5$ and $-1$ with probability $0.5$. Its expected value is $0$, and its variance is $\text{var}(E[\theta_i \mid z_i]) = 0.5(1)^2 + 0.5(-1)^2 = 1$.
             </p>
             <p class="mb-6">
                 This gives the marginal variance:
@@ -324,7 +324,7 @@
                 De Finetti's theorem states that any <em>infinite</em> exchangeable sequence can be written as a mixture of i.i.d. components. Why does this finite counterexample not contradict the theorem when we take the limit $J \to \infty$?
             </p>
             <p class="mb-6">
-                The key is **infinite extendability**. De Finetti's theorem applies to a single, infinite exchangeable sequence of variables. 
+                The key is <strong>infinite extendability</strong>. De Finetti's theorem applies to a single, infinite exchangeable sequence of variables. 
             </p>
             <p class="mb-6">
                 For a fixed $J$, the joint distribution is defined on a finite sequence of length $2J$. We cannot extend this specific joint distribution to an infinite sequence. For example, if we have a sequence of size $2J$ and attempt to add two more variables to make it size $2J+2$, the constraint "exactly half are $+1$" forces us to change the joint distribution of the first $2J$ parameters (their covariance changes from $-1/(2J-1)$ to $-1/(2J+1)$).
