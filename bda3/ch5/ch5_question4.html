@@ -367,17 +367,17 @@
                 $$\text{cov}(z_i, z_j) = -\frac{1}{2J - 1}$$
             </div>
             <p class="mb-6">
-                This dependency has major consequences for analyzing the experiment:
+                This dependency has major consequences for the Bayesian analysis of the experiment:
             </p>
             <ul class="list-disc pl-6 mb-6 space-y-3">
                 <li>
-                    <strong>Standard tests overestimate variance:</strong> A standard t-test or regression model assumes that user assignments are completely independent. When assignments have a negative covariance, the true variance of the treatment effect estimator is actually <em>lower</em> than what the standard independent formula calculates.
+                    <strong>Overestimation of posterior variance:</strong> If we model the treatment assignments as independent draws (ignoring the negative covariance $-1/(2J-1)$ in their joint prior probability), our likelihood function ignores the conservation of slots. Consequently, the posterior variance of our treatment effect parameter $\tau = \theta_T - \theta_C$ will be overestimated (too wide).
                 </li>
                 <li>
-                    <strong>Loss of statistical power:</strong> If you ignore this block structure and analyze the data as if it were a simple random sample, your variance estimate will be too conservative. You may fail to reject the null hypothesis, missing a real product improvement because your statistical test overestimated the noise.
+                    <strong>Overly conservative credible intervals:</strong> When the posterior variance is overestimated, the resulting Bayesian credible intervals are wider than they should be, and the posterior probability that the treatment is positive, $P(\tau > 0 \mid \text{data})$, is pulled closer to $0.5$ (representing uncertainty). This leads to less confident decision-making, where a real effect is obscured by artificially inflated posterior uncertainty.
                 </li>
                 <li>
-                    <strong>The asymptotic resolution:</strong> As $J \to \infty$, the negative covariance $-1/(2J-1)$ vanishes to $0$. For large web-scale experiments, the difference is negligible. But for small cohort testing (e.g., medical trials, localized city rollouts, B2B tests), using a variance estimator that accounts for the blocking structure (such as permutation tests or block-aware regression) is critical to preserving statistical power.
+                    <strong>The asymptotic resolution:</strong> As $J \to \infty$, the negative prior covariance vanishes to $0$, and modeling the assignments as independent becomes exact. However, in small-sample Bayesian trials (e.g., localized city rollouts, B2B trials, or rare disease studies), using a joint prior/likelihood model that conditions on the exact allocation vector $z \in Z$ is essential for obtaining sharp, accurate posterior inferences.
                 </li>
             </ul>
         </section>
