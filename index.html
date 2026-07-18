@@ -12,7 +12,9 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400;1,6..72,600&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400;1,6..72,600&display=swap"
+        rel="stylesheet">
 
     <!-- Tailwind Configuration -->
     <script>
@@ -73,13 +75,16 @@
         .side-panel::-webkit-scrollbar {
             width: 6px;
         }
+
         .side-panel::-webkit-scrollbar-track {
             background: transparent;
         }
+
         .side-panel::-webkit-scrollbar-thumb {
             background: #cbd5e1;
             border-radius: 4px;
         }
+
         .side-panel::-webkit-scrollbar-thumb:hover {
             background: #94a3b8;
         }
@@ -120,6 +125,7 @@
             box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
             transition: all 0.2s ease;
         }
+
         .toggle-btn:hover {
             background: theme('colors.bayesian.surfaceAlt');
             transform: translateY(-1px);
@@ -132,11 +138,16 @@
             margin-top: 32px;
         }
 
-        .toc > li {
+        .toc>li {
             margin-bottom: 24px;
         }
 
-        .toc h2, .toc h3, .toc h4, .toc h5, .toc h6, .toc-heading-deep {
+        .toc h2,
+        .toc h3,
+        .toc h4,
+        .toc h5,
+        .toc h6,
+        .toc-heading-deep {
             color: theme('colors.bayesian.navy');
             cursor: pointer;
             user-select: none;
@@ -146,15 +157,42 @@
             padding: 6px 8px;
             border-radius: 6px;
             transition: background-color 0.2s ease, color 0.2s ease;
-            margin-left: -8px; /* Offset padding */
+            margin-left: -8px;
+            /* Offset padding */
         }
-        
-        .toc h2 { font-size: 1.15rem; font-weight: 700; margin-bottom: 8px; }
-        .toc h3 { font-size: 1.05rem; font-weight: 600; margin-top: 8px; }
-        .toc h4 { font-size: 0.95rem; font-weight: 600; margin-top: 8px; }
-        .toc h5, .toc h6, .toc-heading-deep { font-size: 0.9rem; font-weight: 600; margin-top: 8px; }
 
-        .toc h2:hover, .toc h3:hover, .toc h4:hover, .toc h5:hover, .toc h6:hover, .toc-heading-deep:hover {
+        .toc h2 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .toc h3 {
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .toc h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .toc h5,
+        .toc h6,
+        .toc-heading-deep {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .toc h2:hover,
+        .toc h3:hover,
+        .toc h4:hover,
+        .toc h5:hover,
+        .toc h6:hover,
+        .toc-heading-deep:hover {
             background-color: theme('colors.bayesian.surfaceAlt');
             color: theme('colors.bayesian.blue');
         }
@@ -213,7 +251,7 @@
             line-height: 1.5;
         }
 
-        .toc h2 > a {
+        .toc h2>a {
             padding: 0;
             font-size: inherit;
             font-weight: inherit;
@@ -232,7 +270,8 @@
 <body>
     <!-- Hamburger Toggle Button -->
     <button id="toggle-btn" class="toggle-btn" title="Toggle Sidebar">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+            stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h7" />
         </svg>
     </button>
@@ -242,15 +281,21 @@
         <nav class="side-panel">
             <h1 class="text-3xl font-bold text-bayesian-navy border-b border-bayesian-border pb-6 mb-8 tracking-tight">
                 Bayesian Analysis
-                <span class="block text-xs font-normal text-bayesian-slate mt-2 tracking-wide uppercase">Personal Study Notes &bull; BDA3</span>
+                <span class="block text-xs font-normal text-bayesian-slate mt-2 tracking-wide uppercase">Personal Study
+                    Notes &bull; BDA3</span>
             </h1>
-            
+
             <ul class="toc">
                 <li>
                     <h2><a href="index.html" class="flex items-center gap-2">
-                        <svg class="w-5 h-5 text-bayesian-slate" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-                        Home
-                    </a></h2>
+                            <svg class="w-5 h-5 text-bayesian-slate" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
+                                </path>
+                            </svg>
+                            Home
+                        </a></h2>
                 </li>
                 <li>
                     <h2 class="collapsible">
@@ -282,10 +327,14 @@
                                                         1. Probability & Inference
                                                     </div>
                                                     <ul>
-                                                        <li><a href="bda3/ch1/ch1_question1.html">Question 1: Conditional Probability</a></li>
-                                                        <li><a href="bda3/ch1/ch1_question3.html">Question 3: Genetics</a></li>
-                                                        <li><a href="bda3/ch1/ch1_question6.html">Question 6: Elvis Presley Twin Problem</a></li>
-                                                        <li><a href="bda3/ch1/ch1_question9.html">Question 9: Clinic Queuing Problem</a></li>
+                                                        <li><a href="bda3/ch1/ch1_question1.html">Question 1:
+                                                                Conditional Probability</a></li>
+                                                        <li><a href="bda3/ch1/ch1_question3.html">Question 3:
+                                                                Genetics</a></li>
+                                                        <li><a href="bda3/ch1/ch1_question6.html">Question 6: Elvis
+                                                                Presley Twin Problem</a></li>
+                                                        <li><a href="bda3/ch1/ch1_question9.html">Question 9: Clinic
+                                                                Queuing Problem</a></li>
                                                     </ul>
                                                 </li>
                                                 <li>
@@ -294,27 +343,49 @@
                                                         2. Single-parameter Models
                                                     </div>
                                                     <ul>
-                                                        <li><a href="bda3/ch2/ch2_poission_distribution.html">Interactive Poission Distribution</a></li>
-                                                        <li><a href="bda3/ch2/ch2_question1.html">Question 1: Binomial Model</a></li>
-                                                        <li><a href="bda3/ch2/ch2_question2.html">Question 2: Expected Number of Spins</a></li>
-                                                        <li><a href="bda3/ch2/ch2_question3.html">Question 3: Predictive distributions</a></li>
-                                                        <li><a href="bda3/ch2/ch2_question4.html">Question 4: Predictive distributions</a></li>
-                                                        <li><a href="bda3/ch2/ch2_question5.html">Question 5: Posterior distribution as a compromise</a></li>
-                                                        <li><a href="bda3/ch2/ch2_question6.html">Question 6: Predictive distributions</a></li>
-                                                        <li><a href="bda3/ch2/ch2_question7.html">Question 7: The Purist's Prior</a></li>
-                                                        <li><a href="bda3/ch2/ch2_question8.html">Question 8: Normal distribution with unknown mean</a></li>
-                                                        <li><a href="bda3/ch2/ch2_question9.html">Question 9: Beta-Binomial Updating</a></li>
-                                                        <li><a href="bda3/ch2/ch2_question10.html">Question 10: The Cable Car Problem </a></li>
-                                                        <li><a href="bda3/ch2/ch2_question11.html">Question 11: Bayesian Cauchy Parameter Estimation</a></li>
-                                                        <li><a href="bda3/ch2/ch2_question12.html">Question 12: The Jeffreys' Prior </a></li>
-                                                        <li><a href="bda3/ch2/ch2_question13.html">Question 13: Airline Fatalities</a></li>
-                                                        <li><a href="bda3/ch2/ch2_question14.html">Question 14: Conjugate Normal Model</a></li>
-                                                        <li><a href="bda3/ch2/ch2_question15.html">Question 15: Beta Distribution: Moments and Derivations</a></li>
-                                                        <li><a href="bda3/ch2/ch2_question16.html">Question 16: Beta-binomial distribution and Bayes’ prior distribution</a></li>
-                                                        <li><a href="bda3/ch2/ch2_question17.html">Question 17: Bayesian Posterior Intervals </a></li>
-                                                        <li><a href="bda3/ch2/ch2_question18.html">Question 18: Poisson-Gamma Conjugacy </a></li>
-                                                        <li><a href="bda3/ch2/ch2_question19.html">Question 19: Exponential-Gamma Conjugacy & CV </a></li>
-                                                        <li><a href="bda3/ch2/ch2_question20.html">Question 20: Censored Data & Variance Paradox </a></li>
+                                                        <li><a href="bda3/ch2/ch2_poission_distribution.html">Interactive
+                                                                Poission Distribution</a></li>
+                                                        <li><a href="bda3/ch2/ch2_question1.html">Question 1: Binomial
+                                                                Model</a></li>
+                                                        <li><a href="bda3/ch2/ch2_question2.html">Question 2: Expected
+                                                                Number of Spins</a></li>
+                                                        <li><a href="bda3/ch2/ch2_question3.html">Question 3: Predictive
+                                                                distributions</a></li>
+                                                        <li><a href="bda3/ch2/ch2_question4.html">Question 4: Predictive
+                                                                distributions</a></li>
+                                                        <li><a href="bda3/ch2/ch2_question5.html">Question 5: Posterior
+                                                                distribution as a compromise</a></li>
+                                                        <li><a href="bda3/ch2/ch2_question6.html">Question 6: Predictive
+                                                                distributions</a></li>
+                                                        <li><a href="bda3/ch2/ch2_question7.html">Question 7: The
+                                                                Purist's Prior</a></li>
+                                                        <li><a href="bda3/ch2/ch2_question8.html">Question 8: Normal
+                                                                distribution with unknown mean</a></li>
+                                                        <li><a href="bda3/ch2/ch2_question9.html">Question 9:
+                                                                Beta-Binomial Updating</a></li>
+                                                        <li><a href="bda3/ch2/ch2_question10.html">Question 10: The
+                                                                Cable Car Problem </a></li>
+                                                        <li><a href="bda3/ch2/ch2_question11.html">Question 11: Bayesian
+                                                                Cauchy Parameter Estimation</a></li>
+                                                        <li><a href="bda3/ch2/ch2_question12.html">Question 12: The
+                                                                Jeffreys' Prior </a></li>
+                                                        <li><a href="bda3/ch2/ch2_question13.html">Question 13: Airline
+                                                                Fatalities</a></li>
+                                                        <li><a href="bda3/ch2/ch2_question14.html">Question 14:
+                                                                Conjugate Normal Model</a></li>
+                                                        <li><a href="bda3/ch2/ch2_question15.html">Question 15: Beta
+                                                                Distribution: Moments and Derivations</a></li>
+                                                        <li><a href="bda3/ch2/ch2_question16.html">Question 16:
+                                                                Beta-binomial distribution and Bayes’ prior
+                                                                distribution</a></li>
+                                                        <li><a href="bda3/ch2/ch2_question17.html">Question 17: Bayesian
+                                                                Posterior Intervals </a></li>
+                                                        <li><a href="bda3/ch2/ch2_question18.html">Question 18:
+                                                                Poisson-Gamma Conjugacy </a></li>
+                                                        <li><a href="bda3/ch2/ch2_question19.html">Question 19:
+                                                                Exponential-Gamma Conjugacy & CV </a></li>
+                                                        <li><a href="bda3/ch2/ch2_question20.html">Question 20: Censored
+                                                                Data & Variance Paradox </a></li>
                                                     </ul>
                                                 </li>
                                                 <li>
@@ -323,20 +394,34 @@
                                                         3. Introduction to multiparameter models
                                                     </div>
                                                     <ul>
-                                                        <li><a href="bda3/ch3/ch3_section1.html">3.1 Averaging over 'nuisance parameters'</a></li>
-                                                        <li><a href="bda3/ch3/ch3_section2.html">3.2 Normal data with a noninformative prior</a></li>
-                                                        <li><a href="bda3/ch3/ch3_section3.html">3.3 Normal data with a conjugate prior</a></li>
-                                                        <li><a href="bda3/ch3/ch3_question1.html">Question 1: Binomial and Multinomial Models</a></li>
-                                                        <li><a href="bda3/ch3/ch3_question2.html">Question 2: Comparison of two multinomial observations</a></li>
-                                                        <li><a href="bda3/ch3/ch3_question3.html">Question 3: Estimation from two independent experiments</a></li>
-                                                        <li><a href="bda3/ch3/ch3_question4.html">Question 4: Inference for a 2 X 2 table</a></li>
-                                                        <li><a href="bda3/ch3/ch3_question5.html">Question 5: Rounded Data</a></li>
-                                                        <li><a href="bda3/ch3/ch3_question6.html">Question 6: The Waterbuck Investigation</a></li>
-                                                        <li><a href="bda3/ch3/ch3_question7.html">Question 7: Poisson and binomial distributions</a></li>
-                                                        <li><a href="bda3/ch3/ch3_question8.html">Question 8: Analysis of proportions</a></li>
-                                                        <li><a href="bda3/ch3/ch3_question9.html">Question 9: Conjugate Normal Model</a></li>
-                                                        <li><a href="bda3/ch3/ch3_question10.html">Question 10: Comparison of normal variances</a></li>
-                                                        <li><a href="bda3/ch3/ch3_question11.html">Question 11: Bio Assay Computation</a></li>
+                                                        <li><a href="bda3/ch3/ch3_section1.html">3.1 Averaging over
+                                                                'nuisance parameters'</a></li>
+                                                        <li><a href="bda3/ch3/ch3_section2.html">3.2 Normal data with a
+                                                                noninformative prior</a></li>
+                                                        <li><a href="bda3/ch3/ch3_section3.html">3.3 Normal data with a
+                                                                conjugate prior</a></li>
+                                                        <li><a href="bda3/ch3/ch3_question1.html">Question 1: Binomial
+                                                                and Multinomial Models</a></li>
+                                                        <li><a href="bda3/ch3/ch3_question2.html">Question 2: Comparison
+                                                                of two multinomial observations</a></li>
+                                                        <li><a href="bda3/ch3/ch3_question3.html">Question 3: Estimation
+                                                                from two independent experiments</a></li>
+                                                        <li><a href="bda3/ch3/ch3_question4.html">Question 4: Inference
+                                                                for a 2 X 2 table</a></li>
+                                                        <li><a href="bda3/ch3/ch3_question5.html">Question 5: Rounded
+                                                                Data</a></li>
+                                                        <li><a href="bda3/ch3/ch3_question6.html">Question 6: The
+                                                                Waterbuck Investigation</a></li>
+                                                        <li><a href="bda3/ch3/ch3_question7.html">Question 7: Poisson
+                                                                and binomial distributions</a></li>
+                                                        <li><a href="bda3/ch3/ch3_question8.html">Question 8: Analysis
+                                                                of proportions</a></li>
+                                                        <li><a href="bda3/ch3/ch3_question9.html">Question 9: Conjugate
+                                                                Normal Model</a></li>
+                                                        <li><a href="bda3/ch3/ch3_question10.html">Question 10:
+                                                                Comparison of normal variances</a></li>
+                                                        <li><a href="bda3/ch3/ch3_question11.html">Question 11: Bio
+                                                                Assay Computation</a></li>
                                                     </ul>
                                                 </li>
                                                 <li>
@@ -345,7 +430,8 @@
                                                         4. Asymptotics and connections
                                                     </div>
                                                     <ul>
-                                                        <li><a href="bda3/ch4/Section 4.1.html">4.1 Normal Approximations to the Posterior</a></li>
+                                                        <li><a href="bda3/ch4/Section 4.1.html">4.1 Normal
+                                                                Approximations to the Posterior</a></li>
                                                     </ul>
                                                 </li>
                                                 <li>
@@ -354,16 +440,26 @@
                                                         5. Hierarchical models
                                                     </div>
                                                     <ul>
-                                                        <li><a href="bda3/ch5/ch5_section1.html">5.1 Constructing a parameterized prior distribution</a></li>
-                                                        <li><a href="bda3/ch5/ch5_section2.html">5.2 Exchangeability and hierarchical models</a></li>
-                                                        <li><a href="bda3/ch5/ch5_section3.html">5.3 Fully Bayesian analysis of conjugate hierarchical models</a></li>
-                                                        <li><a href="bda3/ch5/ch5_section4.html">5.4 Estimating exchangeable parameters from a normal model</a></li>
-                                                        <li><a href="bda3/ch5/ch5_section5.html">5.5 Example: parallel experiments in eight schools</a></li>
-                                                        <li><a href="bda3/ch5/ch5_section6.html">5.6 Hierarchical modeling applied to a meta-analysis</a></li>
-                                                        <li><a href="bda3/ch5/ch5_section7.html">5.7 Weakly informative priors for variance parameters</a></li>
-                                                        <li><a href="bda3/ch5/ch5_question1.html">Question 1: Exchangeability vs. Independence</a></li>
-                                                        <li><a href="bda3/ch5/ch5_question2.html">Question 2: Unknown Parameters</a></li>
-                                                        <li><a href="bda3/ch5/ch5_question3.html">Question 3: Hierarchical Models and Multiple Comparisons</a></li>
+                                                        <li><a href="bda3/ch5/ch5_section1.html">5.1 Constructing a
+                                                                parameterized prior distribution</a></li>
+                                                        <li><a href="bda3/ch5/ch5_section2.html">5.2 Exchangeability and
+                                                                hierarchical models</a></li>
+                                                        <li><a href="bda3/ch5/ch5_section3.html">5.3 Fully Bayesian
+                                                                analysis of conjugate hierarchical models</a></li>
+                                                        <li><a href="bda3/ch5/ch5_section4.html">5.4 Estimating
+                                                                exchangeable parameters from a normal model</a></li>
+                                                        <li><a href="bda3/ch5/ch5_section5.html">5.5 Example: parallel
+                                                                experiments in eight schools</a></li>
+                                                        <li><a href="bda3/ch5/ch5_section6.html">5.6 Hierarchical
+                                                                modeling applied to a meta-analysis</a></li>
+                                                        <li><a href="bda3/ch5/ch5_section7.html">5.7 Weakly informative
+                                                                priors for variance parameters</a></li>
+                                                        <li><a href="bda3/ch5/ch5_question1.html">Question 1:
+                                                                Exchangeability vs. Independence</a></li>
+                                                        <li><a href="bda3/ch5/ch5_question2.html">Question 2: Unknown
+                                                                Parameters</a></li>
+                                                        <li><a href="bda3/ch5/ch5_question3.html">Question 3:
+                                                                Hierarchical Models and Multiple Comparisons</a></li>
                                                     </ul>
                                                 </li>
                                             </ul>
@@ -381,13 +477,16 @@
                     </h2>
                     <ul>
                         <li>
-                            <a href="non-fiction/history_of_normal.html">The Normal Distribution: A Convergence of Three Minds</a>
+                            <a href="non-fiction/history_of_normal.html">The Normal Distribution: A Convergence of Three
+                                Minds</a>
                         </li>
                         <li>
-                            <a href="non-fiction/great_explainers.html">The Art of Explanation: Legendary Communicators of Science & Math</a>
+                            <a href="non-fiction/great_explainers.html">The Art of Explanation: Legendary Communicators
+                                of Science & Math</a>
                         </li>
                         <li>
-                            <a href="non-fiction/formulation_first_principles.html">Rock, Paper, Scissors: A Bayesian Game-Theoretic Formulation</a>
+                            <a href="non-fiction/formulation_first_principles.html">Rock, Paper, Scissors: A Bayesian
+                                Game-Theoretic Formulation</a>
                         </li>
                         <li>
                             <h3 class="collapsible">
@@ -444,15 +543,21 @@
         <!-- Main Content Area -->
         <main class="main-content">
             <div class="max-w-2xl text-center flex flex-col items-center">
-                <div class="inline-block px-3 py-1 bg-white border border-bayesian-border text-bayesian-slate rounded text-xs font-semibold tracking-wide mb-6 uppercase font-sans">
+                <div
+                    class="inline-block px-3 py-1 bg-white border border-bayesian-border text-bayesian-slate rounded text-xs font-semibold tracking-wide mb-6 uppercase font-sans">
                     Bayesian Data Analysis System
                 </div>
-                <h2 class="text-5xl font-bold text-bayesian-navy mb-6 font-sans tracking-tight">Welcome to the Portfolio</h2>
+                <h2 class="text-5xl font-bold text-bayesian-navy mb-6 font-sans tracking-tight">Welcome to the Portfolio
+                </h2>
                 <p class="text-xl text-bayesian-slate leading-relaxed mb-8">
-                    Please select an analysis, chapter, or theorem from the academic side panel to view the project details.
+                    Please select an analysis, chapter, or theorem from the academic side panel to view the project
+                    details.
                 </p>
-                <div class="inline-block px-6 py-4 bg-slate-50 border border-bayesian-border rounded-lg text-sm text-bayesian-slate font-sans max-w-lg text-left shadow-sm">
-                    <strong class="text-bayesian-navy font-semibold">Disclaimer:</strong> This website contains personal study notes, derivations, and interactive visualizations compiled during my study of Gelman et al.'s <em>Bayesian Data Analysis</em> (3rd Edition).
+                <div
+                    class="inline-block px-6 py-4 bg-slate-50 border border-bayesian-border rounded-lg text-sm text-bayesian-slate font-sans max-w-lg text-left shadow-sm">
+                    <strong class="text-bayesian-navy font-semibold">Disclaimer:</strong> This website contains personal
+                    study notes, derivations, and interactive visualizations compiled during my study of Gelman et al.'s
+                    <em>Bayesian Data Analysis</em> (3rd Edition).
                 </div>
             </div>
         </main>
@@ -552,4 +657,5 @@
         });
     </script>
 </body>
+
 </html>
