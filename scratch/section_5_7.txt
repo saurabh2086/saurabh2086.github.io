@@ -1,0 +1,255 @@
+=== PDF PAGE INDEX 137 (BOOK PAGE 128) ===
+This electronic edition is for non-commercial purposes onl y.
+128 5. HIERARCHICAL MODELS
+certainty about the probable treatment e ﬀect in a particular popu lation where a study has
+not been performed (or indeed in a previously studied population but with a slightly mod-
+iﬁed treatment) might be more reasonably represented by inferen ce for a new study e ﬀect,
+exchangeable with those for which studies have been performed, r ather than for the overall
+mean. In this case, uncertainty is even greater, as exhibited in the ‘Predicted e ﬀect’ row of
+Table 5.5; uncertainty for an individual patient includes yet another compon ent of varia-
+tion. In particular, with the beta-blocker data, there is just over 10% posterior probability
+that the true e ﬀect, ˜ωj , in a new study would be positive (corresponding to the treatment
+increasing the probability of death in that study).
+5.7 W eakly informative priors for variance parameters
+A key element in the analyses above is the prior distribution for the sc ale parameter, τ .
+We have used the uniform, but various other noninformative prior d istributions have been
+suggested in the Bayesian literature. It turns out that the choice of ‘noninformative’ prior
+distribution can have a big e ﬀect on inferences, especially for proble ms where the number
+of groups J is small or the group-level variation τ is small.
+We discuss the options here in the context of the normal model, but the principles apply
+to inferences for group-level variances more generally.
+Concepts relating to the choice of prior distribution
+Improper limit of a prior distribution. Improper prior densities can, but do not necessarily,
+lead to proper posterior distributions. To avoid confusion it is usefu l to deﬁne improper
+distributions as particular limits of proper distributions. For the gro up-level variance pa-
+rameter, two commonly considered improper densities are uniform( 0,A )o n τ ,a s A →∞ ,
+and inverse-gamma( ϵ, ϵ)o n τ 2,a s ϵ → 0.
+As we shall see, the uniform(0 ,A ) model yields a limiting proper posterior density as
+A →∞ , as long as the number of groups J is at least 3. Thus, for a ﬁnite but su ﬃ ciently
+large A, inferences are not sensitive to the choice of A.
+In contrast, the inverse-gamma( ϵ, ϵ)m o d e ld o e snot have any proper limiting poste-
+rior distribution. As a result, posterior inferences are sensitive to ϵ—it cannot simply be
+comfortably set to a low value such as 0.001.
+Calibration. Posterior inferences can be evaluated using the concept of calibration of the
+posterior mean, the Bayesian analogue to the classical notion of bia s. For any parameter
+ω, if we label the posterior mean as ˆω =E ( ω|y), we can deﬁne the miscalibration of the
+posterior mean as E( ω|ˆω) − ˆω. If the prior distribution is true—that is, if the data are
+constructed by ﬁrst drawing ω from p(ω), then drawing y from p(y|ω)—then the posterior
+mean is automatically calibrated; that is, the miscalibration is 0 for all v alues of ˆω.
+To restate: in classical bias analysis, we condition on the true ω and look at the distri-
+bution of the data-based estimate, ˆω. In a Bayesian calibration analysis, we condition on
+the data y (and thus also on the estimate, ˆω) and look at the distribution of parameters ω
+that could have produced these data.
+When considering improper models, the theory must be expanded, s ince it is impossible
+for ω to be drawn from an unnormalized density. To evaluate calibration in t his context,
+it is necessary to posit a ‘true prior distribution’ from which ω is drawn along with the
+‘inferential prior distribution’ that is used in the Bayesian inference .
+For the hierarchical model for the 8 schools, we can consider the im proper uniform
+density on τ as a limit of uniform prior densities on the range (0 ,A ), with A →∞ .F o r
+any ﬁnite value of A, we can then see that the improper uniform density leads to inferen ces
+with a positive miscalibration—that is, overestimates (on average) o f τ .
+
+==================================================
+
+=== PDF PAGE INDEX 138 (BOOK PAGE 129) ===
+This electronic edition is for non-commercial purposes onl y.
+5.7. WEAKLY INFORMATIVE PRIORS FOR V ARIANCE PARAMETERS 129
+We demonstrate this miscalibration in two steps. First, suppose tha tb o t ht h et r u e
+and inferential prior distributions for τ are uniform on (0 ,A ). Then the miscalibration is
+trivially zero. Now keep the true prior distribution at U(0 ,A ) and let the inferential prior
+distribution go to U(0 , ∞). This will necessarily increase ˆω for any data y (since we are now
+averaging over values of ω in the range [ A, ∞)) without changing the true ω, thus causing
+the average value of the miscalibration to become positive.
+Classes of noninformative and weakly informative prior dis tributions for hierarchical
+variance parameters
+General considerations. We view any noninformative or weakly informative prior distribu-
+tion as inherently provisional—after the model has been ﬁt, one sho uld look at the posterior
+distribution and see if it makes sense. If the posterior distribution d oes not make sense,
+this implies that additional prior knowledge is available that has not bee n included in the
+model, and that contradicts the assumptions of the prior distribut ion that has been used.
+It is then appropriate to go back and alter the prior distribution to b e more consistent with
+this external knowledge.
+Uniform prior distributions. We ﬁrst consider uniform priors while recognizing that we
+must be explicit about the scale on which the distribution is deﬁned. Va rious choices have
+been proposed for modeling variance parameters. A uniform prior d istribution on log τ
+would seem natural—working with the logarithm of a parameter that m ust be positive—
+but it results in an improper posterior distribution. An alternative wo uld be to deﬁne the
+prior distribution on a compact set (e.g., in the range [ −A, A] for some large value of A),
+but then the posterior distribution would depend strongly on the low er bound −A of the
+prior support.
+The problem arises because the marginal likelihood, p(y|τ )—after integrating over ω and
+µ in ( 5.16)—approaches a ﬁnite nonzero value as τ → 0. Thus, if the prior density for log τ
+is uniform, the posterior will have inﬁnite mass integrating to the limit lo g τ →− ∞.T o p u t
+it another way, in a hierarchical model the data can never rule out a group-level variance
+of zero, and so the prior distribution cannot put an inﬁnite mass in th is area.
+Another option is a uniform prior distribution on τ itself, which has a ﬁnite integral
+near τ = 0 and thus avoids the above problem. We have generally used this no ninformative
+density in our applied work (as illustrated in Section 5.5), but it has a slightly disagreeable
+miscalibration toward positive values, with its inﬁnite prior mass in the r ange τ →∞ .
+With J = 1 or 2 groups, this actually results in an improper posterior density , essentially
+concluding τ = ∞ and doing no pooling. In a sense this is reasonable behavior, since it
+would seem di ﬃ cult from the data alone to decide how much, if any, poo ling should be
+done with data from only one or two groups. However, from a Bayes ian perspective it is
+awkward for the decision to be made ahead of time, as it were, with th e data having no say
+in the matter. In addition, for small J, such as 4 or 5, we worry that the heavy right tail of
+the posterior distribution would lead to overestimates of τ and thus result in pooling that
+is less than optimal for estimating the individual ωj ’s.
+We can interpret these improper uniform prior densities as limits of we akly informative
+conditionally conjugate priors. The uniform prior distribution on log τ is equivalent to
+p(τ ) ∝ τ →1 or p(τ 2) ∝ τ →2, which has the form of an inverse- χ2 density with 0 degrees of
+freedom and can be taken as a limit of proper inverse-gamma priors.
+The uniform density on τ is equivalent to p(τ 2) ∝ τ →1, an inverse- χ2 density with −1
+degrees of freedom. This density cannot easily be seen as a limit of pr oper inverse- χ2
+densities (since these must have positive degrees of freedom), bu t it can be interpreted as a
+limit of the half- t family on τ , where the scale approaches ∞ (and any value of ν).
+Another noninformative prior distribution sometimes proposed in th e Bayesian literature
+
+==================================================
+
+=== PDF PAGE INDEX 139 (BOOK PAGE 130) ===
+This electronic edition is for non-commercial purposes onl y.
+130 5. HIERARCHICAL MODELS
+is uniform on τ 2. We do not recommend this, as it seems to have the miscalibration tow ard
+higher values as described above, but more so, and also requires J ≥ 4g r o u p sf o rap r o p e r
+posterior distribution.
+Inverse-gamma(ϵ, ϵ) prior distributions. The parameter τ in model ( 5.21)d o e sn o th a v e
+any simple family of conjugate prior distributions because its margina l likelihood depends
+in a complex way on the data from all J groups. However, the inverse-gamma family
+is conditional ly conjugate given the other parameters in the model: that is, if τ 2 has an
+inverse-gamma prior distribution, then the conditional posterior d istribution p(τ 2 | ω,µ ,y )
+is also inverse-gamma. The inverse-gamma( α, β)m o d e lf o rτ 2 can also be expressed as an
+inverse-χ2 distribution with scale s2 = β
+α and degrees of freedom ν =2 α. The inverse-
+χ2 parameterization can be helpful in understanding the information u nderlying various
+choices of proper prior distributions.
+The inverse-gamma( ϵ, ϵ) prior distribution is an attempt at noninformativeness within
+the conditionally conjugate family, with ϵ set to a low value such as 1 or 0.01 or 0.001.
+Ad i ﬃ culty of this prior distribution is that in the limit of ϵ → 0 it yields an improper
+posterior density, and thus ϵ must be set to a reasonable value. Unfortunately, for datasets
+in which low values of τ are possible, inferences become very sensitive to ϵ in this model,
+and the prior distribution hardly looks noninformative, as we illustrat e in Figure 5.9.
+Half-Cauchy prior distributions. We shall also consider the t family of distributions (actu-
+ally, the half- t, since the scale parameter τ is constrained to be positive) as an alternative
+class that includes normal and Cauchy as edge cases. We ﬁrst cons idered the t model for
+this problem because it can be expressed as a conditionally conjugat e prior distribution for
+τ using a reparameterization.
+For our purposes here, however, it is enough to recognize that th e half-Cauchy can be a
+convenient weakly informative family; the distribution has a broad pe ak at zero and a single
+scale parameter, which we shall label A to indicate that it could be set to some large value.
+In the limit A →∞ this becomes a uniform prior density on τ . Large but ﬁnite values of
+A represent prior distributions which we consider weakly informative b ecause, even in the
+tail, they have a gentle slope (unlike, for example, a half-normal dist ribution) and can let
+the data dominate if the likelihood is strong in that region. We shall con sider half-Cauchy
+models for variance parameters which are estimated from a small nu mber of groups (so that
+inferences are sensitive to the choice of weakly informative prior dis tribution).
+Application to the 8-schools example
+We demonstrate the properties of some proposed noninformative prior densities on the
+eight-schools example of Section 5.5.H e r e , t h e p a r a m e t e r sω1,..., ω8 represent the relative
+eﬀects of coaching programs in eight di ﬀerent schools, and τ represents the between-school
+standard deviations of these e ﬀects. The e ﬀects are measured a s points on the test, which
+was scored from 200 to 800 with an average of about 500; thus the largest possible range of
+eﬀects could be about 300 points, with a realistic upper limit on τ of 100, say.
+Noninformative prior distributions for the 8-schools prob lem. Figure 5.9 displays the pos-
+terior distributions for the 8-schools model resulting from three d iﬀerent choices of prior
+distributions that are intended to be noninformative.
+The leftmost histogram shows posterior inference for τ for the model with uniform prior
+density. The data show support for a range of values below τ = 20, with a slight tail after
+that, reﬂecting the possibility of larger values, which are di ﬃ cult to r ule out given that the
+number of groups J is only 8—that is, not much more than the J = 3 required to ensure a
+proper posterior density with ﬁnite mass in the right tail.
+In contrast, the middle histogram in Figure 5.9 shows the result with an inverse-
+gamma(1, 1) prior distribution for τ 2. This new prior distribution leads to changed in-
+
+==================================================
+
+=== PDF PAGE INDEX 140 (BOOK PAGE 131) ===
+This electronic edition is for non-commercial purposes onl y.
+5.7. WEAKLY INFORMATIVE PRIORS FOR V ARIANCE PARAMETERS 131
+Figure 5.9 Histograms of posterior simulations of the between-school standard deviation, τ,
+from models with three di ﬀerent prior distributions: (a) uni form prior distribution on τ,( b )
+inverse-gamma(1, 1) prior distribution on τ2,( c )i n v e r s e - g a m m a(0.001, 0.001) prior distribution
+on τ2.O v e r l a i n o n e a c h i s t h e c o r r e s p o n d i n g p r i o r d e n s i t y f u n c t ion for τ.( F o r m o d e l s ( b ) a n d
+(c), the density for τ is calculated using the gamma density function multiplied b yt h eJ a c o b i a no f
+the 1/τ2 transformation.) In models (b) and (c), posterior inferenc es are strongly constrained by
+the prior distribution.
+ferences. In particular, the posterior mean and median of τ are lower, and shrinkage of the
+ωj ’s is greater than in the previously ﬁtted model with a uniform prior dis tribution on τ .T o
+understand this, it helps to graph the prior distribution in the range for which the posterior
+distribution is substantial. The graph shows that the prior distribut ion is concentrated in
+the range [0 .5, 5], a narrow zone in which the likelihood is close to ﬂat compared to this p rior
+(as we can see because the distribution of the posterior simulations of τ closely matches the
+prior distribution, p(τ )). By comparison, in the left graph, the uniform prior distribution
+on τ seems closer to ‘noninformative’ for this problem, in the sense that it does not appear
+to be constraining the posterior inference.
+Finally, the rightmost histogram in Figure 5.9 shows the corresponding result with an
+inverse-gamma(0.001, 0.001) prior distribution for τ 2. This prior distribution is even more
+sharply peaked near zero and further distorts posterior inferen ces, with the problem arising
+because the marginal likelihood for τ remains high near zero.
+In this example, we do not consider a uniform prior density on log τ , which would yield
+an improper posterior density with a spike at τ = 0, like the rightmost graph in Figure 5.9
+but more so. We also do not consider a uniform prior density on τ 2, which would yield a
+posterior similar to the leftmost graph in Figure 5.9, but with a slightly higher right tail.
+This example is a gratifying case in which the simplest approach—the un iform prior
+density on τ —seems to perform well. As detailed in Appendix C, this model is also str aight-
+forward to program directly in R or Stan.
+The appearance of the histograms and density plots in Figure 5.9 is crucially a ﬀected by
+the choice to plot them on the scale of τ . If instead they were plotted on the scale of log τ ,
+the inverse-gamma(0.001, 0.001) prior density would appear to be the ﬂattest. However, the
+inverse-gamma(ϵ, ϵ) prior is not at all ‘noninformative’ for this problem since the resultin g
+posterior distribution remains highly sensitive to the choice of ϵ. The hierarchical model
+likelihood does not constrain log τ in the limit log τ →− ∞, and so a prior distribution that
+is noninformative on the log scale will not work.
+Weakly informative prior distribution for the 3-schools pr oblem
+The uniform prior distribution seems ﬁne for the 8-school analysis, but problems arise if the
+number of groups J is much smaller, in which case the data supply little information about
+the group-level variance, and a noninformative prior distribution c an lead to a posterior
+distribution that is improper or is proper but unrealistically broad. We demonstrate by
+reanalyzing the 8-schools example using just the data from the ﬁrs t three of the schools.
+
+==================================================
+
+=== PDF PAGE INDEX 141 (BOOK PAGE 132) ===
+This electronic edition is for non-commercial purposes onl y.
+132 5. HIERARCHICAL MODELS
+Figure 5.10 Histograms of posterior simulations of the between-school standard deviation, τ,f r o m
+models for the 3-schools data with two di ﬀerent prior distrib utions on τ:( a ) u n i f o r m(0, ∞ ),( b )
+half-Cauchy with scale 25, set as a weakly informative prior distribution given that τ was expected
+to be well below 100. The histograms are not on the same scales .O v e r l a i n o n e a c h h i s t o g r a m i s
+the corresponding prior density function. With only J =3 groups, the noninformative uniform
+prior distribution is too weak, and the proper Cauchy distri bution works better, without appearing
+to distort inferences in the area of high likelihood.
+Figure 5.10 displays the inferences for τ based on two di ﬀerent priors. First we continue
+with the default uniform distribution that worked well with J = 8 (as seen in Figure 5.9).
+Unfortunately, as the left histogram of Figure 5.10 shows, the resulting posterior distribution
+for the 3-schools dataset has an extremely long right tail, containin g values of τ that are
+too high to be reasonable. This heavy tail is expected since J is so low (if J were any lower,
+the right tail would have an inﬁnite integral), and using this as a poste rior distribution will
+have the e ﬀect of underpooling the estimates of the school e ﬀects ωj .
+The right histogram of Figure 5.10 shows the posterior inference for τ resulting from
+a half-Cauchy prior distribution with scale parameter A = 25 (a value chosen to be a bit
+higher than we expect for the standard deviation of the underlying ωj ’s in the context of
+this educational testing example, so that the model will constrain τ only weakly). As the
+line on the graph shows, this prior distribution is high over the plausible range of τ < 50,
+falling o ﬀ gradually beyond this point. This prior distribution appears t o perform well in
+this example, reﬂecting the marginal likelihood for τ at its low end but removing much of
+the unrealistic upper tail.
+This half-Cauchy prior distribution would also perform well in the 8-sc hools problem;
+however it was unnecessary because the default uniform prior gav e reasonable results. With
+only 3 schools, we went to the trouble of using a weakly informative pr ior, a distribution
+that was not intended to represent our actual prior state of kno wledge about τ but rather
+to constrain the posterior distribution, to an extent allowed by the data.
+5.8 Bibliographic note
+The early non-Bayesian work on shrinkage estimation of Stein (1955 ) and James and Stein
+(1960) was inﬂuential in the development of hierarchical normal mo dels. Efron and Morris
+(1971, 1972) present subsequent theoretical work on the topic . Robbins (1955, 1964) con-
+structs and justiﬁes hierarchical methods from a decision-theor etic perspective. De Finetti’s
+theorem is described by de Finetti (1974); Bernardo and Smith (19 94) discuss its role in
+Bayesian modeling. An early thorough development of the idea of Bay esian hierarchical
+modeling is given by Good (1965).
+Mosteller and Wallace (1964) analyzed a hierarchical Bayesian model using the negative
+binomial distribution for counts of words in a study of authorship. R estricted to the limited
+computing power at the time, they used various approximations and point estimates for
+hyperparameters.
+Other historically inﬂuential papers on ‘empirical Bayes’ (or, in our t erminology, hierar-
+
+==================================================
