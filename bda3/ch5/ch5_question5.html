@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mixtures of Independent Distributions — BDA3 Chapter 5 Question 5</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400;1,6..72,600&display=swap" rel="stylesheet">
+
+    <!-- MathJax for LaTeX rendering -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bayesian: {
+                            bg: '#f7f9fb',
+                            text: '#191c1e',
+                            navy: '#131b2e',
+                            blue: '#0051d5',
+                            slate: '#75859d',
+                            surface: '#ffffff',
+                            surfaceAlt: '#f8fafc',
+                            border: '#e2e8f0'
+                        }
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 12px rgba(15, 23, 42, 0.05)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Newsreader', serif;
+            background-color: #f7f9fb;
+            color: #191c1e;
+            font-size: 1.25rem;
+            line-height: 1.7;
+        }
+
+        h1, h2, h3, h4, h5, h6, .ui-text {
+            font-family: 'Inter', sans-serif;
+            color: #131b2e; /* Deep Navy */
+        }
+
+        .math-inline {
+            font-family: 'Newsreader', serif;
+            font-size: 1.3rem;
+        }
+
+        .theorem-block {
+            background-color: #f8fafc;
+            border-left: 2px solid #0051d5;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            border-radius: 0 4px 4px 0;
+            overflow-x: auto;
+        }
+
+        .derivation {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-left: 3px solid #75859d;
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 1.5rem;
+            border-radius: 0 4px 4px 0;
+            overflow-x: auto;
+        }
+
+        mjx-container { max-width: 100%; }
+
+        .academic-card {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .academic-card:hover {
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .label {
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            font-size: 0.78rem;
+        }
+    </style>
+</head>
+
+<body class="antialiased">
+
+    <!-- Container constrained for optimal reading -->
+    <div class="max-w-[960px] mx-auto px-6 py-16">
+
+        <!-- Navigation -->
+        <nav class="mb-8">
+            <a href="../../index.html" class="inline-flex items-center text-sm font-semibold text-bayesian-slate hover:text-bayesian-navy transition-colors ui-text">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                Back to Index
+            </a>
+        </nav>
+
+        <!-- Header -->
+        <header class="mb-16">
+            <div class="flex flex-wrap gap-2 mb-6">
+                <div class="px-3 py-1 bg-bayesian-surfaceAlt border border-bayesian-border text-bayesian-slate rounded text-xs font-semibold tracking-wide uppercase ui-text">
+                    Chapter 5 &bull; Question 5
+                </div>
+                <div class="px-3 py-1 bg-blue-50 border border-blue-200 text-bayesian-blue rounded text-xs font-semibold tracking-wide uppercase ui-text">
+                    First-Principles Derivation
+                </div>
+            </div>
+            <h1 class="text-5xl font-bold mb-6 tracking-tight leading-tight ui-text">
+                Mixtures of Independent Distributions
+            </h1>
+            <p class="text-xl text-bayesian-slate leading-relaxed">
+                If a joint prior distribution of parameters is represented as a mixture of independent and identically distributed (i.i.d.) components, what does this mathematically imply about the covariance between the parameters? We prove from first principles that the covariance must be non-negative, and explore the Bayesian intuition of why a shared hyperparameter prevents negative correlation.
+            </p>
+        </header>
+
+        <!-- Exercise Description -->
+        <div class="mb-12 p-6 bg-bayesian-surfaceAlt border border-bayesian-border rounded-lg">
+            <h3 class="text-base font-bold text-bayesian-navy mb-4 label">Exercise Description</h3>
+            <p class="text-base text-bayesian-slate mb-0">
+                Suppose the distribution of $\theta = (\theta_1, \dots, \theta_J)$ can be written as a mixture of independent and identically distributed components:
+                $$p(\theta) = \int \prod_{j=1}^J p(\theta_j \mid \phi) p(\phi) d\phi$$
+                Prove that the covariances $\text{cov}(\theta_i, \theta_j)$ are all non-negative for $i \neq j$.
+            </p>
+        </div>
+
+        <!-- Section 1 -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-semibold mb-8 border-b pb-3 border-bayesian-border ui-text">
+                1. First-Principles Derivation
+            </h2>
+            <p class="mb-6">
+                We start with the fundamental definition of covariance for any two random variables $\theta_i$ and $\theta_j$ ($i \neq j$):
+            </p>
+            <div class="derivation">
+                $$\text{cov}(\theta_i, \theta_j) = E[\theta_i \theta_j] - E[\theta_i]E[\theta_j]$$
+            </div>
+            <p class="mb-6">
+                Let $\mu_i(\phi) = E[\theta_i \mid \phi]$ be the conditional expectation of $\theta_i$ given the hyperparameter vector $\phi$. Since the components are conditionally identically distributed given $\phi$, their conditional expectations are identical:
+            </p>
+            <div class="derivation">
+                $$\mu_i(\phi) = \mu_j(\phi) = \mu(\phi)$$
+            </div>
+            <p class="mb-6">
+                Now we evaluate the expectation of the product $E[\theta_i \theta_j]$ by conditioning on $\phi$ using the law of total expectation:
+            </p>
+            <div class="derivation">
+                $$E[\theta_i \theta_j] = E[E[\theta_i \theta_j \mid \phi]]$$
+            </div>
+            <p class="mb-6">
+                Because $\theta_i$ and $\theta_j$ are conditionally independent given $\phi$, their joint conditional expectation is the product of their individual conditional expectations:
+            </p>
+            <div class="derivation">
+                $$E[\theta_i \theta_j \mid \phi] = E[\theta_i \mid \phi] E[\theta_j \mid \phi] = \mu(\phi)^2$$
+            </div>
+            <p class="mb-6">
+                Taking the expectation over the hyperparameter prior $p(\phi)$:
+            </p>
+            <div class="derivation">
+                $$E[\theta_i \theta_j] = E[\mu(\phi)^2]$$
+            </div>
+            <p class="mb-6">
+                Similarly, we compute the marginal expectations of the individual parameters:
+            </p>
+            <div class="derivation">
+                $$E[\theta_i] = E[E[\theta_i \mid \phi]] = E[\mu(\phi)]$$
+                $$E[\theta_j] = E[E[\theta_j \mid \phi]] = E[\mu(\phi)]$$
+            </div>
+            <p class="mb-6">
+                So the product of their marginal expectations is:
+            </p>
+            <div class="derivation">
+                $$E[\theta_i] E[\theta_j] = (E[\mu(\phi)])^2$$
+            </div>
+            <p class="mb-6">
+                Now we substitute these two results back into our covariance formula:
+            </p>
+            <div class="derivation">
+                $$\text{cov}(\theta_i, \theta_j) = E[\mu(\phi)^2] - (E[\mu(\phi)])^2$$
+            </div>
+            <p class="mb-6">
+                This expression is exactly the mathematical definition of the variance of the random variable $X = \mu(\phi)$:
+            </p>
+            <div class="derivation">
+                $$\text{cov}(\theta_i, \theta_j) = \text{var}(\mu(\phi))$$
+            </div>
+            <p class="mb-6">
+                By definition, the variance of any real-valued random variable is non-negative:
+            </p>
+            <div class="derivation">
+                $$\text{var}(\mu(\phi)) = E[(\mu(\phi) - E[\mu(\phi)])^2] \ge 0$$
+            </div>
+            <div class="theorem-block">
+                <div class="label text-bayesian-blue mb-2">Conclusion of the Proof</div>
+                <p class="mb-0">
+                    The covariance is equivalent to the variance of the conditional expectation under the prior. Since variance must be non-negative, we conclude:
+                    $$\text{cov}(\theta_i, \theta_j) \ge 0$$
+                </p>
+            </div>
+        </section>
+
+        <!-- Section 2 -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-semibold mb-8 border-b pb-3 border-bayesian-border ui-text">
+                2. Bayesian Intuition & Information Transfer
+            </h2>
+            <p class="mb-6">
+                This result reveals a deep property of Bayesian hierarchical models.
+            </p>
+            <p class="mb-6">
+                Imagine we observe a very large value for the parameter $\theta_i$. Because all parameters share the same hyperparameter vector $\phi$, this observation updates our beliefs:
+            </p>
+            <ul class="list-disc pl-6 mb-6 space-y-3">
+                <li>
+                    <strong>Information Transfer</strong>: Seeing a large $\theta_i$ shifts our posterior distribution over $\phi$ to favor values that produce larger parameter draws.
+                </li>
+                <li>
+                    <strong>Positive Co-Movement</strong>: Since $\theta_j$ is drawn from the same distribution parameterized by $\phi$, this shift in the distribution of $\phi$ pulls our expectations for $\theta_j$ in the <em>same</em> direction.
+                </li>
+            </ul>
+            <p class="mb-6">
+                The parameters $\theta_i$ and $\theta_j$ are coupled through our uncertainty about $\phi$. The covariance $\text{cov}(\theta_i, \theta_j)$ is exactly the variance of this shared shifting center, $\text{var}(\mu(\phi))$:
+            </p>
+            <ul class="list-disc pl-6 mb-6 space-y-3">
+                <li>
+                    If we have <strong>no uncertainty</strong> about $\phi$ (i.e. $\phi$ is a fixed, known constant), then $\mu(\phi)$ is a constant. Its variance is $0$, and the parameters are truly independent: $\text{cov}(\theta_i, \theta_j) = 0$.
+                </li>
+                <li>
+                    If we have <strong>any uncertainty</strong> about $\phi$, that uncertainty acts as a source of positive co-movement. Learning about one parameter always updates our belief about the shared center, pulling our belief about the other parameters in the same direction, generating a positive covariance: $\text{cov}(\theta_i, \theta_j) > 0$.
+                </li>
+            </ul>
+            <p class="mb-6">
+                Because the variables only interact through their shared dependence on $\phi$, it is mathematically impossible for this model to generate negative correlation. To get negative correlation, there must be a global constraint (like a fixed budget or finite selection quota) which is not present in an i.i.d. mixture model.
+            </p>
+        </section>
+
+    </div>
+
+</body>
+
+</html>
