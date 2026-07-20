@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exchangeable Models and Outliers — BDA3 Chapter 5 Question 6</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400;1,6..72,600&display=swap" rel="stylesheet">
+
+    <!-- MathJax for LaTeX rendering -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bayesian: {
+                            bg: '#f7f9fb',
+                            text: '#191c1e',
+                            navy: '#131b2e',
+                            blue: '#0051d5',
+                            slate: '#75859d',
+                            surface: '#ffffff',
+                            surfaceAlt: '#f8fafc',
+                            border: '#e2e8f0'
+                        }
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 12px rgba(15, 23, 42, 0.05)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Newsreader', serif;
+            background-color: #f7f9fb;
+            color: #191c1e;
+            font-size: 1.25rem;
+            line-height: 1.7;
+        }
+
+        h1, h2, h3, h4, h5, h6, .ui-text {
+            font-family: 'Inter', sans-serif;
+            color: #131b2e; /* Deep Navy */
+        }
+
+        .math-inline {
+            font-family: 'Newsreader', serif;
+            font-size: 1.3rem;
+        }
+
+        .theorem-block {
+            background-color: #f8fafc;
+            border-left: 2px solid #0051d5;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            border-radius: 0 4px 4px 0;
+            overflow-x: auto;
+        }
+
+        .derivation {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-left: 3px solid #75859d;
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 1.5rem;
+            border-radius: 0 4px 4px 0;
+            overflow-x: auto;
+        }
+
+        mjx-container { max-width: 100%; }
+
+        .academic-card {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .academic-card:hover {
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .label {
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            font-size: 0.78rem;
+        }
+    </style>
+</head>
+
+<body class="antialiased">
+
+    <!-- Container constrained for optimal reading -->
+    <div class="max-w-[960px] mx-auto px-6 py-16">
+
+        <!-- Navigation -->
+        <nav class="mb-8">
+            <a href="../../index.html" class="inline-flex items-center text-sm font-semibold text-bayesian-slate hover:text-bayesian-navy transition-colors ui-text">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                Back to Index
+            </a>
+        </nav>
+
+        <!-- Header -->
+        <header class="mb-16">
+            <div class="flex flex-wrap gap-2 mb-6">
+                <div class="px-3 py-1 bg-bayesian-surfaceAlt border border-bayesian-border text-bayesian-slate rounded text-xs font-semibold tracking-wide uppercase ui-text">
+                    Chapter 5 &bull; Question 6
+                </div>
+                <div class="px-3 py-1 bg-blue-50 border border-blue-200 text-bayesian-blue rounded text-xs font-semibold tracking-wide uppercase ui-text">
+                    First-Principles Derivation
+                </div>
+            </div>
+            <h1 class="text-5xl font-bold mb-6 tracking-tight leading-tight ui-text">
+                Exchangeable Models and Outliers
+            </h1>
+            <p class="text-xl text-bayesian-slate leading-relaxed">
+                Using the divorce rate example of Section 5.2, we study how to model exchangeable parameters with known outliers. We mathematically construct the exchangeable prior, derive the resulting bimodal posterior distribution of the missing rate, and analyze the philosophical dangers of using overly rigid joint prior constraints.
+            </p>
+        </header>
+
+        <!-- Exercise Description -->
+        <div class="mb-12 p-6 bg-bayesian-surfaceAlt border border-bayesian-border rounded-lg">
+            <h3 class="text-base font-bold text-bayesian-navy mb-4 label">Exercise Description</h3>
+            <p class="text-base text-bayesian-slate mb-0">
+                In the divorce rate example of Section 5.2, we are given seven observed rates: $5.8, 6.6, 7.8, 5.6, 7.0, 7.1, 5.4$ (per 1,000 population). The eighth state's rate ($y_8$) is missing.
+            </p>
+            <ol class="list-decimal pl-5 mt-3 text-base text-bayesian-slate space-y-1">
+                <li>Set up a prior distribution for $y_1, \dots, y_8$ that allows for one low value (Utah) and one high value (Nevada), with independent and identical distributions for the other six values. This prior distribution should be exchangeable.</li>
+                <li>Determine the posterior distribution for $y_8$ under this model given the observed values of $y_1, \dots, y_7$. Show why this posterior is bimodal or trimodal.</li>
+                <li>Compare this with the actual complete data (where Nevada is $13.9$). Are these data consistent with your prior? Did the prior allow for an outlier at the high end, but no outlier at the low end?</li>
+            </ol>
+        </div>
+
+        <!-- Section 1 -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-semibold mb-8 border-b pb-3 border-bayesian-border ui-text">
+                1. Part A: Constructing the Exchangeable Outlier Prior
+            </h2>
+            <p class="mb-6">
+                We define three distributions based on our prior knowledge of the states:
+            </p>
+            <ul class="list-disc pl-6 mb-6 space-y-2 text-base">
+                <li><strong>Typical States</strong>: $f_0(y) = N(y \mid \mu_0, \sigma_0^2)$, with $\mu_0 = 6.6$ and $\sigma_0 = 0.8$.</li>
+                <li><strong>Low Outlier (Utah)</strong>: $f_L(y) = N(y \mid \mu_L, \sigma_L^2)$, with $\mu_L = 3.0$ and $\sigma_L = 1.0$.</li>
+                <li><strong>High Outlier (Nevada)</strong>: $f_H(y) = N(y \mid \mu_H, \sigma_H^2)$, with $\mu_H = 13.0$ and $\sigma_H = 2.0$.</li>
+            </ul>
+            <p class="mb-6">
+                Let $u \in \{1, \dots, 8\}$ be the index corresponding to Utah, and $v \in \{1, \dots, 8\}$ be the index corresponding to Nevada, where $u \neq v$. If we knew $u$ and $v$ exactly, the joint density of $y = (y_1, \dots, y_8)$ would be:
+            </p>
+            <div class="derivation">
+                $$p(y \mid u, v) = f_L(y_u) f_H(y_v) \prod_{j \neq u, v} f_0(y_j)$$
+            </div>
+            <p class="mb-6">
+                Since we do not know which states correspond to which indices, we assign a uniform prior over all 56 possible ordered pairs of outlier indices $(u, v)$:
+            </p>
+            <div class="derivation">
+                $$p(u, v) = \frac{1}{8 \times 7} = \frac{1}{56} \quad \text{for } u, v \in \{1, \dots, 8\}, u \neq v$$
+            </div>
+            <p class="mb-6">
+                Taking the mixture over all configurations yields the marginal joint prior:
+            </p>
+            <div class="derivation">
+                $$p(y_1, \dots, y_8) = \frac{1}{56} \sum_{u=1}^8 \sum_{v \neq u} f_L(y_u) f_H(y_v) \prod_{j \neq u, v} f_0(y_j)$$
+            </div>
+            <div class="theorem-block">
+                <div class="label text-bayesian-blue mb-2">Exchangeability Proof</div>
+                <p class="mb-0">
+                    Applying any permutation $\pi$ to the indices of $y$ simply permutes the roles of the indices. Because the summation runs over all possible assignments of the indices $u$ and $v$, the permuted density $p(y_\pi)$ is identical to the original joint density $p(y)$. Thus, the prior distribution is exchangeable.
+                </p>
+            </div>
+        </section>
+
+        <!-- Section 2 -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-semibold mb-8 border-b pb-3 border-bayesian-border ui-text">
+                2. Part B: Deriving the Posterior Distribution for $y_8$
+            </h2>
+            <p class="mb-6">
+                Given the observed typical data $y_{obs} = (y_1, \dots, y_7) = (5.8, 6.6, 7.8, 5.6, 7.0, 7.1, 5.4)$, we want to find the marginal posterior of the missing value $y_8$. By partitioning over the three possible roles $y_8$ can play, its posterior density is a mixture:
+            </p>
+            <div class="derivation">
+                $$p(y_8 \mid y_{obs}) = w_L f_L(y_8) + w_0 f_0(y_8) + w_H f_H(y_8)$$
+            </div>
+            <p class="mb-6">
+                where $w_L, w_0, w_H$ are the normalized posterior weights for each case.
+            </p>
+
+            <h3 class="text-2xl font-bold mb-4 mt-8 ui-text">Partitioning the Weights</h3>
+            <p class="mb-6">
+                Since we only have one missing state, at least one of the two outliers must be in the observed data. The unnormalized weights are:
+            </p>
+            <ul class="list-disc pl-6 mb-6 space-y-4 text-base">
+                <li>
+                    <strong>Case 1: $y_8$ is Utah ($u=8$)</strong>. This forces Nevada to be one of the observed states. The unnormalized weight is:
+                    $$W_L = \sum_{v=1}^7 \frac{f_H(y_v)}{f_0(y_v)}$$
+                </li>
+                <li>
+                    <strong>Case 2: $y_8$ is Nevada ($v=8$)</strong>. This forces Utah to be one of the observed states. The unnormalized weight is:
+                    $$W_H = \sum_{u=1}^7 \frac{f_L(y_u)}{f_0(y_u)}$$
+                </li>
+                <li>
+                    <strong>Case 3: $y_8$ is Typical ($u, v \neq 8$)</strong>. This forces both Utah and Nevada to be in the observed data. The unnormalized weight is:
+                    $$W_0 = \sum_{u=1}^7 \sum_{v \neq u} \frac{f_L(y_u) f_H(y_v)}{f_0(y_u) f_0(y_v)}$$
+                </li>
+            </ul>
+
+            <h3 class="text-2xl font-bold mb-4 mt-8 ui-text">Analyzing the Likelihoods</h3>
+            <p class="mb-6">
+                Let's evaluate the likelihood contributions from the observed data:
+            </p>
+            <ul class="list-disc pl-6 mb-6 space-y-3">
+                <li>
+                    The minimum observed value is $5.4$. Evaluating $5.4$ under the low prior $f_L \sim N(3.0, 1.0^2)$ yields a $2.4$-sigma event.
+                </li>
+                <li>
+                    The maximum observed value is $7.8$. Evaluating $7.8$ under the high prior $f_H \sim N(13.0, 2.0^2)$ yields a $2.6$-sigma event.
+                </li>
+            </ul>
+            <p class="mb-6">
+                * **Case 3 ($y_8$ is typical)** requires <em>both</em> of these rare events to happen simultaneously. Its likelihood contribution is proportional to the product of these two small densities ($0.056 \times 0.034 \approx 0.0019$).
+                <br>
+                * **Case 1 & Case 2** only require <em>one</em> of these rare events to happen. Their likelihood contributions are proportional to the single small densities ($0.034$ and $0.056$ respectively).
+            </p>
+            <p class="mb-6">
+                Because Case 3 requires two rare events simultaneously, its posterior weight $w_0$ is heavily suppressed:
+            </p>
+            <div class="derivation">
+                $$w_L \approx 0.37, \quad w_H \approx 0.61, \quad w_0 \approx 0.02$$
+            </div>
+            <div class="theorem-block">
+                <div class="label text-bayesian-blue mb-2">Conclusion for Part B</div>
+                <p class="mb-0">
+                    The posterior distribution of $y_8$ is strongly **bimodal**, with peak modes near $3.0$ (reflecting the possibility that Utah is missing) and $13.0$ (reflecting the possibility that Nevada is missing). The middle typical mode at $6.6$ is virtually non-existent because our typical observed data shows no evidence of containing both outliers.
+                </p>
+            </div>
+        </section>
+
+        <!-- Section 3 -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-semibold mb-8 border-b pb-3 border-bayesian-border ui-text">
+                3. Part C: Consistency and the Danger of Rigid Priors
+            </h2>
+            <p class="mb-6">
+                The actual complete dataset consists of seven typical values and Nevada at $13.9$. Crucially, **there is no low outlier in the actual data** (Utah's rate of $5.4$ is typical, not an outlier).
+            </p>
+            <p class="mb-6">
+                Are these data consistent with our prior? **No.**
+            </p>
+            <p class="mb-6">
+                Our prior model forced a strict constraint: there must be exactly one low outlier and one high outlier. In reality, we got a high outlier but no low outlier. 
+            </p>
+            <p class="mb-6">
+                This demonstrates a key danger in Bayesian modeling:
+            </p>
+            <div class="theorem-block">
+                <div class="label text-bayesian-blue mb-2">The Danger of Rigid Joint Prior Constraints</div>
+                <p class="mb-0">
+                    When you force a prior to have a fixed number of outliers, the posterior is forced to "find" those outliers in the data even if they do not exist. In our case, the model is forced to treat the typical value $5.4$ as if it were the "low outlier" (Utah) with high probability, distorting our posterior inference about which state is which.
+                </p>
+            </div>
+
+            <h3 class="text-2xl font-bold mb-4 mt-8 ui-text">Alternative: A More Flexible Model</h3>
+            <p class="mb-6">
+                To allow for the possibility of having a high outlier but no low outlier, we should replace the rigid joint constraint with a more flexible mixture model. For example, instead of forcing exactly one of each outlier, we can model each state's outlier status as an independent Bernoulli trial:
+            </p>
+            <div class="derivation">
+                $$y_j \sim \lambda_L f_L(y_j) + \lambda_H f_H(y_j) + (1 - \lambda_L - \lambda_H) f_0(y_j)$$
+            </div>
+            <p class="mb-6">
+                where $\lambda_L$ and $\lambda_H$ are the probabilities of any state being a low or high outlier, respectively. This formulation is exchangeable, but it allows the data to speak: the posterior for the number of low outliers would correctly concentrate near $0$, while the posterior for the number of high outliers would concentrate near $1$.
+            </p>
+        </section>
+
+    </div>
+
+</body>
+
+</html>
