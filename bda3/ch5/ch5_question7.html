@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Continuous Mixture Models — BDA3 Chapter 5 Question 7</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400;1,6..72,600&display=swap" rel="stylesheet">
+
+    <!-- MathJax for LaTeX rendering -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bayesian: {
+                            bg: '#f7f9fb',
+                            text: '#191c1e',
+                            navy: '#131b2e',
+                            blue: '#0051d5',
+                            slate: '#75859d',
+                            surface: '#ffffff',
+                            surfaceAlt: '#f8fafc',
+                            border: '#e2e8f0'
+                        }
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 12px rgba(15, 23, 42, 0.05)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Newsreader', serif;
+            background-color: #f7f9fb;
+            color: #191c1e;
+            font-size: 1.25rem;
+            line-height: 1.7;
+        }
+
+        h1, h2, h3, h4, h5, h6, .ui-text {
+            font-family: 'Inter', sans-serif;
+            color: #131b2e; /* Deep Navy */
+        }
+
+        .math-inline {
+            font-family: 'Newsreader', serif;
+            font-size: 1.3rem;
+        }
+
+        .theorem-block {
+            background-color: #f8fafc;
+            border-left: 2px solid #0051d5;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            border-radius: 0 4px 4px 0;
+            overflow-x: auto;
+        }
+
+        .derivation {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-left: 3px solid #75859d;
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 1.5rem;
+            border-radius: 0 4px 4px 0;
+            overflow-x: auto;
+        }
+
+        mjx-container { max-width: 100%; }
+
+        .academic-card {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .academic-card:hover {
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .label {
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            font-size: 0.78rem;
+        }
+    </style>
+</head>
+
+<body class="antialiased">
+
+    <!-- Container constrained for optimal reading -->
+    <div class="max-w-[960px] mx-auto px-6 py-16">
+
+        <!-- Navigation -->
+        <nav class="mb-8">
+            <a href="../../index.html" class="inline-flex items-center text-sm font-semibold text-bayesian-slate hover:text-bayesian-navy transition-colors ui-text">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                Back to Index
+            </a>
+        </nav>
+
+        <!-- Header -->
+        <header class="mb-16">
+            <div class="flex flex-wrap gap-2 mb-6">
+                <div class="px-3 py-1 bg-bayesian-surfaceAlt border border-bayesian-border text-bayesian-slate rounded text-xs font-semibold tracking-wide uppercase ui-text">
+                    Chapter 5 &bull; Question 7
+                </div>
+                <div class="px-3 py-1 bg-blue-50 border border-blue-200 text-bayesian-blue rounded text-xs font-semibold tracking-wide uppercase ui-text">
+                    First-Principles Derivation
+                </div>
+            </div>
+            <h1 class="text-5xl font-bold mb-6 tracking-tight leading-tight ui-text">
+                Continuous Mixture Models
+            </h1>
+            <p class="text-xl text-bayesian-slate leading-relaxed">
+                Two marginal (prior predictive) distributions arise from integrating a likelihood against a conjugate prior. Using only the laws of iterated expectation and total variance, we derive the mean and variance of the negative binomial distribution from a Poisson&ndash;gamma mixture, and the first two moments of the Student-$t$ posterior for a normal mean with unknown scale.
+            </p>
+        </header>
+
+        <!-- Exercise Description -->
+        <div class="mb-12 p-6 bg-bayesian-surfaceAlt border border-bayesian-border rounded-lg">
+            <h3 class="text-base font-bold text-bayesian-navy mb-4 label">Exercise Description</h3>
+            <ol class="list-decimal pl-5 text-base text-bayesian-slate space-y-3">
+                <li>If $y \mid \omega \sim \text{Poisson}(\omega)$, and $\omega \sim \text{Gamma}(\alpha, \beta)$, then the marginal (prior predictive) distribution of $y$ is negative binomial with parameters $\alpha$ and $\beta$ (or $p = \beta / (1 + \beta)$). Use the formulas (2.7) and (2.8) to derive the mean and variance of the negative binomial.</li>
+                <li>In the normal model with unknown location and scale $(\mu, \sigma^2)$, the noninformative prior density $p(\mu, \sigma^2) \propto 1/\sigma^2$ results in a normal-inverse-$\chi^2$ posterior distribution for $(\mu, \sigma^2)$. Marginally then $\sqrt{n}(\mu - \bar{y})/s$ has a posterior distribution that is $t_{n-1}$. Use (2.7) and (2.8) to derive the first two moments of the latter distribution, stating the appropriate condition on $n$ for existence of both moments.</li>
+            </ol>
+        </div>
+
+        <!-- The Tools -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-semibold mb-8 border-b pb-3 border-bayesian-border ui-text">
+                0. The Two Tools
+            </h2>
+            <p class="mb-6">
+                Both parts are solved with the same two identities. If $y$ and $\theta$ are jointly distributed, then the <strong>law of iterated expectation</strong> (formula 2.7) gives the marginal mean, and the <strong>law of total variance</strong> (formula 2.8) decomposes the marginal variance into an expected conditional variance plus the variance of the conditional mean:
+            </p>
+            <div class="derivation">
+                $$\operatorname{E}(y) = \operatorname{E}\!\big(\operatorname{E}(y \mid \theta)\big) \tag{2.7}$$
+                $$\operatorname{var}(y) = \operatorname{E}\!\big(\operatorname{var}(y \mid \theta)\big) + \operatorname{var}\!\big(\operatorname{E}(y \mid \theta)\big) \tag{2.8}$$
+            </div>
+            <p class="mb-6">
+                The strategy in each part is to pick the right variable to condition on so that the inner conditional moments are known in closed form, and then average over the mixing variable.
+            </p>
+        </section>
+
+        <!-- Section 1 -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-semibold mb-8 border-b pb-3 border-bayesian-border ui-text">
+                1. Part A: The Poisson&ndash;Gamma Mixture
+            </h2>
+            <p class="mb-6">
+                We condition on the rate $\omega$, which is the natural mixing variable. The two building blocks are the moments of the Poisson likelihood and of the gamma prior:
+            </p>
+            <ul class="list-disc pl-6 mb-6 space-y-2 text-base">
+                <li><strong>Poisson likelihood</strong>: $\operatorname{E}(y \mid \omega) = \omega$ and $\operatorname{var}(y \mid \omega) = \omega$ (the mean equals the variance).</li>
+                <li><strong>Gamma prior</strong> (rate parametrization): $\operatorname{E}(\omega) = \dfrac{\alpha}{\beta}$ and $\operatorname{var}(\omega) = \dfrac{\alpha}{\beta^2}$.</li>
+            </ul>
+
+            <h3 class="text-2xl font-bold mb-4 mt-8 ui-text">The Mean</h3>
+            <p class="mb-6">
+                Applying (2.7) with $\theta = \omega$, the marginal mean is simply the prior mean of the rate:
+            </p>
+            <div class="derivation">
+                $$\operatorname{E}(y) = \operatorname{E}\!\big(\operatorname{E}(y \mid \omega)\big) = \operatorname{E}(\omega) = \frac{\alpha}{\beta}$$
+            </div>
+
+            <h3 class="text-2xl font-bold mb-4 mt-8 ui-text">The Variance</h3>
+            <p class="mb-6">
+                Applying (2.8), both terms are non-trivial. The expected conditional variance is $\operatorname{E}(\omega)$, while the variance of the conditional mean is $\operatorname{var}(\omega)$. The mixture therefore <em>adds</em> the extra dispersion of the prior on top of the Poisson variability:
+            </p>
+            <div class="derivation">
+                $$\operatorname{var}(y) = \underbrace{\operatorname{E}\!\big(\operatorname{var}(y \mid \omega)\big)}_{\operatorname{E}(\omega)} + \underbrace{\operatorname{var}\!\big(\operatorname{E}(y \mid \omega)\big)}_{\operatorname{var}(\omega)} = \frac{\alpha}{\beta} + \frac{\alpha}{\beta^2} = \frac{\alpha(\beta + 1)}{\beta^2}$$
+            </div>
+
+            <div class="theorem-block">
+                <div class="label text-bayesian-blue mb-2">Matching the Negative Binomial Parametrization</div>
+                <p class="mb-3">
+                    With $p = \dfrac{\beta}{1 + \beta}$ (so that $1 - p = \dfrac{1}{1+\beta}$), the marginal is negative binomial with parameters $(\alpha, p)$, whose standard moments are $\operatorname{E}(y) = \dfrac{\alpha(1-p)}{p}$ and $\operatorname{var}(y) = \dfrac{\alpha(1-p)}{p^2}$. Substituting confirms our result:
+                </p>
+                <p class="mb-0">
+                    $$\frac{\alpha(1-p)}{p} = \alpha \cdot \frac{1/(1+\beta)}{\beta/(1+\beta)} = \frac{\alpha}{\beta}, \qquad \frac{\alpha(1-p)}{p^2} = \frac{\alpha}{\beta} \cdot \frac{1}{p} = \frac{\alpha}{\beta} \cdot \frac{1+\beta}{\beta} = \frac{\alpha(\beta+1)}{\beta^2}.$$
+                </p>
+            </div>
+            <p class="mb-6">
+                Because $\beta > 0$, the factor $(\beta + 1)/\beta > 1$, so $\operatorname{var}(y) > \operatorname{E}(y)$. The negative binomial is <strong>overdispersed</strong> relative to the Poisson: mixing over an uncertain rate inflates the variance, which is precisely why the negative binomial is the standard remedy for count data with excess variability.
+            </p>
+        </section>
+
+        <!-- Section 2 -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-semibold mb-8 border-b pb-3 border-bayesian-border ui-text">
+                2. Part B: Moments of the Student-$t$ Posterior
+            </h2>
+            <p class="mb-6">
+                Let $t = \sqrt{n}\,(\mu - \bar{y})/s$, where $s$ is the sample standard deviation (a fixed function of the data). We want the first two posterior moments of $t$. The key modeling choice is <strong>what to condition on</strong>: conditioning on the scale $\sigma^2$ untangles the two levels of the normal-inverse-$\chi^2$ posterior,
+            </p>
+            <div class="derivation">
+                $$\mu \mid \sigma^2, y \sim N\!\left(\bar{y},\; \frac{\sigma^2}{n}\right), \qquad \sigma^2 \mid y \sim \text{Inv-}\chi^2\!\big(n-1,\; s^2\big).$$
+            </div>
+            <p class="mb-6">
+                Throughout, $n$, $s$, and $\bar{y}$ are treated as constants; the randomness is entirely in $\mu$ and $\sigma^2$.
+            </p>
+
+            <h3 class="text-2xl font-bold mb-4 mt-8 ui-text">The First Moment</h3>
+            <p class="mb-6">
+                Conditioning on $\sigma^2$, the inner expectation of $\mu - \bar{y}$ is zero because the conditional mean of $\mu$ is exactly $\bar{y}$. Averaging zero over $\sigma^2$ leaves zero:
+            </p>
+            <div class="derivation">
+                $$\operatorname{E}(t) = \operatorname{E}\!\Big( \operatorname{E}\big(t \mid \sigma^2, y\big) \Big) = \operatorname{E}\!\left( \frac{\sqrt{n}}{s}\, \operatorname{E}(\mu - \bar{y} \mid \sigma^2, y) \right) = \operatorname{E}(0) = 0.$$
+            </div>
+            <p class="mb-6">
+                By symmetry the mean is zero, but for the expectation to actually <em>exist</em> the $t_{n-1}$ density must have a finite first moment, which requires more than one degree of freedom: $n - 1 > 1$, i.e. <strong>$n > 2$</strong>.
+            </p>
+
+            <h3 class="text-2xl font-bold mb-4 mt-8 ui-text">The Second Moment</h3>
+            <p class="mb-6">
+                Applying (2.8), the second term vanishes because the conditional mean $\operatorname{E}(t \mid \sigma^2, y) = 0$ is a constant. Only the expected conditional variance survives:
+            </p>
+            <div class="derivation">
+                $$\operatorname{var}(t) = \operatorname{E}\!\Big( \operatorname{var}\big(t \mid \sigma^2, y\big) \Big) + \underbrace{\operatorname{var}\!\Big( \operatorname{E}\big(t \mid \sigma^2, y\big) \Big)}_{=\,\operatorname{var}(0)\,=\,0}.$$
+            </div>
+            <p class="mb-6">
+                The conditional variance follows from scaling the variance of $\mu$: since $t = \tfrac{\sqrt{n}}{s}(\mu - \bar{y})$ and $\operatorname{var}(\mu \mid \sigma^2, y) = \sigma^2/n$,
+            </p>
+            <div class="derivation">
+                $$\operatorname{var}(t \mid \sigma^2, y) = \frac{n}{s^2}\, \operatorname{var}(\mu \mid \sigma^2, y) = \frac{n}{s^2}\cdot\frac{\sigma^2}{n} = \frac{\sigma^2}{s^2}.$$
+            </div>
+            <p class="mb-6">
+                It remains to average $\sigma^2$ over its scaled inverse-$\chi^2$ posterior. For $\sigma^2 \mid y \sim \text{Inv-}\chi^2(n-1, s^2)$, the mean is $\operatorname{E}(\sigma^2 \mid y) = \dfrac{(n-1)s^2}{(n-1) - 2} = \dfrac{(n-1)s^2}{n-3}$. Therefore:
+            </p>
+            <div class="derivation">
+                $$\operatorname{var}(t) = \operatorname{E}\!\left( \frac{\sigma^2}{s^2} \,\middle|\, y \right) = \frac{1}{s^2}\cdot\frac{(n-1)s^2}{n-3} = \frac{n-1}{n-3}.$$
+            </div>
+
+            <div class="theorem-block">
+                <div class="label text-bayesian-blue mb-2">Conclusion for Part B</div>
+                <p class="mb-0">
+                    The posterior of $\sqrt{n}(\mu - \bar{y})/s$ has mean $0$ (requiring $n > 2$) and variance $\dfrac{n-1}{n-3}$ (requiring $n > 3$). This matches the textbook variance of a $t_\nu$ distribution, $\dfrac{\nu}{\nu - 2}$, with $\nu = n - 1$. As $n \to \infty$ the variance tends to $1$ and the distribution approaches the standard normal, recovering the familiar large-sample result that the scale uncertainty washes out.
+                </p>
+            </div>
+        </section>
+
+        <!-- Synthesis -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-semibold mb-8 border-b pb-3 border-bayesian-border ui-text">
+                3. The Common Thread
+            </h2>
+            <p class="mb-6">
+                Both parts are instances of the same continuous-mixture logic. A parameter is integrated out&mdash;the Poisson rate $\omega$ in Part A, the scale $\sigma^2$ in Part B&mdash;and formulas (2.7) and (2.8) let us read off the marginal moments without ever writing down the full marginal density. In each case the total variance decomposition exposes the source of the extra dispersion: the negative binomial inherits variance $\operatorname{var}(\omega)$ from the uncertain rate, and the Student-$t$ inherits its heavy tails from the uncertain scale. Integrating over a conjugate prior does not merely relocate the mean; it widens the predictive spread in a way that iterated expectation and total variance quantify exactly.
+            </p>
+        </section>
+
+    </div>
+
+</body>
+
+</html>
