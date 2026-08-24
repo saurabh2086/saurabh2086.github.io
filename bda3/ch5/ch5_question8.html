@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mixtures of Conjugate Priors — BDA3 Chapter 5 Question 8</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400;1,6..72,600&display=swap" rel="stylesheet">
+
+    <!-- MathJax for LaTeX rendering -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bayesian: {
+                            bg: '#f7f9fb',
+                            text: '#191c1e',
+                            navy: '#131b2e',
+                            blue: '#0051d5',
+                            slate: '#75859d',
+                            surface: '#ffffff',
+                            surfaceAlt: '#f8fafc',
+                            border: '#e2e8f0'
+                        }
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 12px rgba(15, 23, 42, 0.05)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Newsreader', serif;
+            background-color: #f7f9fb;
+            color: #191c1e;
+            font-size: 1.25rem;
+            line-height: 1.7;
+        }
+
+        h1, h2, h3, h4, h5, h6, .ui-text {
+            font-family: 'Inter', sans-serif;
+            color: #131b2e; /* Deep Navy */
+        }
+
+        .math-inline {
+            font-family: 'Newsreader', serif;
+            font-size: 1.3rem;
+        }
+
+        .theorem-block {
+            background-color: #f8fafc;
+            border-left: 2px solid #0051d5;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            border-radius: 0 4px 4px 0;
+            overflow-x: auto;
+        }
+
+        .derivation {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-left: 3px solid #75859d;
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 1.5rem;
+            border-radius: 0 4px 4px 0;
+            overflow-x: auto;
+        }
+
+        mjx-container { max-width: 100%; }
+
+        .academic-card {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .academic-card:hover {
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .label {
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            font-size: 0.78rem;
+        }
+
+        table.calc {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+        }
+        table.calc th, table.calc td {
+            border: 1px solid #e2e8f0;
+            padding: 0.6rem 0.9rem;
+            text-align: center;
+        }
+        table.calc th {
+            background-color: #f8fafc;
+            color: #131b2e;
+            font-weight: 600;
+        }
+        table.calc td:first-child, table.calc th:first-child { text-align: left; }
+    </style>
+</head>
+
+<body class="antialiased">
+
+    <!-- Container constrained for optimal reading -->
+    <div class="max-w-[960px] mx-auto px-6 py-16">
+
+        <!-- Navigation -->
+        <nav class="mb-8">
+            <a href="../../index.html" class="inline-flex items-center text-sm font-semibold text-bayesian-slate hover:text-bayesian-navy transition-colors ui-text">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                Back to Index
+            </a>
+        </nav>
+
+        <!-- Header -->
+        <header class="mb-16">
+            <div class="flex flex-wrap gap-2 mb-6">
+                <div class="px-3 py-1 bg-bayesian-surfaceAlt border border-bayesian-border text-bayesian-slate rounded text-xs font-semibold tracking-wide uppercase ui-text">
+                    Chapter 5 &bull; Question 8
+                </div>
+                <div class="px-3 py-1 bg-blue-50 border border-blue-200 text-bayesian-blue rounded text-xs font-semibold tracking-wide uppercase ui-text">
+                    First-Principles Derivation
+                </div>
+            </div>
+            <h1 class="text-5xl font-bold mb-6 tracking-tight leading-tight ui-text">
+                Mixtures of Conjugate Priors
+            </h1>
+            <p class="text-xl text-bayesian-slate leading-relaxed">
+                A finite mixture of conjugate priors is itself conjugate. The posterior stays a mixture of the same components&mdash;each updated by its own conjugate rule&mdash;while the mixing weights are re-weighted by how well each component predicts the data. We prove the general result, then build a bimodal normal-mean prior and watch both the component parameters <em>and</em> the mixing weights update.
+            </p>
+        </header>
+
+        <!-- Exercise Description -->
+        <div class="mb-12 p-6 bg-bayesian-surfaceAlt border border-bayesian-border rounded-lg">
+            <h3 class="text-base font-bold text-bayesian-navy mb-4 label">Exercise Description</h3>
+            <p class="text-base text-bayesian-slate mb-4">
+                Suppose the densities $p_m(\theta)$, $m = 1, \dots, M$, are each a conjugate prior for the sampling model $y \mid \theta$. Show that the class of finite mixture prior densities
+                $$p(\theta) = \sum_{m=1}^{M} \lambda_m\, p_m(\theta), \qquad \lambda_m \ge 0, \quad \sum_{m=1}^{M} \lambda_m = 1,$$
+                is also a conjugate class. This extends the natural conjugate family to more flexible distributional forms.
+            </p>
+            <p class="text-base text-bayesian-slate mb-0">
+                As an example, use the mixture form to build a bimodal prior for a normal mean that is thought to be near $1$ (standard deviation $0.5$) but has a small probability of being near $-1$ (same standard deviation). The variance of each observation $y_1, \dots, y_{10}$ is known to be $1$, and their observed mean is $\bar{y} = -0.25$. Derive the posterior distribution for the mean and sketch both prior and posterior densities. <strong>Be careful: the prior and posterior mixture proportions are different.</strong>
+            </p>
+        </div>
+
+        <!-- Section 1 -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-semibold mb-8 border-b pb-3 border-bayesian-border ui-text">
+                1. The General Result
+            </h2>
+            <p class="mb-6">
+                Write Bayes' rule and substitute the mixture prior. Because the likelihood $p(y \mid \theta)$ does not depend on the mixing index, it passes inside the sum:
+            </p>
+            <div class="derivation">
+                $$p(\theta \mid y) \;\propto\; p(y \mid \theta)\, p(\theta) \;=\; p(y \mid \theta) \sum_{m=1}^{M} \lambda_m\, p_m(\theta) \;=\; \sum_{m=1}^{M} \lambda_m\, \big[\, p_m(\theta)\, p(y \mid \theta)\,\big].$$
+            </div>
+            <p class="mb-6">
+                Now invoke conjugacy <em>one component at a time</em>. For prior $p_m$ alone, conjugacy means the posterior $p_m(\theta \mid y)$ lies in the same family, and Bayes' rule for that single component reads
+            </p>
+            <div class="derivation">
+                $$p_m(\theta \mid y) = \frac{p_m(\theta)\, p(y \mid \theta)}{p_m(y)}, \qquad p_m(y) = \int p_m(\theta)\, p(y \mid \theta)\, d\theta,$$
+            </div>
+            <p class="mb-6">
+                where $p_m(y)$ is the <strong>prior predictive</strong> (marginal likelihood) of the data under component $m$. Solving for the bracketed product, $p_m(\theta)\,p(y \mid \theta) = p_m(y)\, p_m(\theta \mid y)$, and substituting back:
+            </p>
+            <div class="theorem-block">
+                <div class="label text-bayesian-blue mb-2">Posterior is a mixture of the same conjugate components</div>
+                $$p(\theta \mid y) \;=\; \sum_{m=1}^{M} \lambda_m'\; p_m(\theta \mid y), \qquad \boxed{\;\lambda_m' = \frac{\lambda_m\, p_m(y)}{\sum_{k=1}^{M} \lambda_k\, p_k(y)}\;}$$
+            </div>
+            <p class="mb-6">
+                Each $p_m(\theta \mid y)$ is a proper density in the original conjugate family (by conjugacy), and the new weights $\lambda_m'$ are nonnegative and sum to $1$ by construction. So the posterior is again a finite mixture of conjugate forms&mdash;the mixture class is closed under updating, i.e. <strong>conjugate</strong>. $\blacksquare$
+            </p>
+            <div class="theorem-block">
+                <div class="label text-bayesian-blue mb-2">Reading the weight update</div>
+                <p class="mb-0">
+                    The map $\lambda_m \to \lambda_m'$ multiplies each prior weight by $p_m(y)$, the marginal probability the data assign to that component, then renormalizes. Components that predict the observed data well are <em>up</em>-weighted; components that predict it poorly are <em>down</em>-weighted. This is exactly Bayes' rule operating at the level of the mixture labels: $\lambda_m' \propto \lambda_m\, p_m(y)$ is the posterior over "which component generated $\theta$."
+                </p>
+            </div>
+        </section>
+
+        <!-- Section 2 -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-semibold mb-8 border-b pb-3 border-bayesian-border ui-text">
+                2. Building the Bimodal Prior
+            </h2>
+            <p class="mb-6">
+                The sampling model is normal with known variance. The sufficient statistic is the sample mean, and with $n = 10$ observations each of variance $\sigma^2 = 1$,
+            </p>
+            <div class="derivation">
+                $$\bar{y} \mid \theta \sim N\!\left(\theta,\; \frac{\sigma^2}{n}\right) = N\!\left(\theta,\; \tfrac{1}{10}\right), \qquad \bar{y} = -0.25.$$
+            </div>
+            <p class="mb-6">
+                The normal prior is conjugate for a normal mean, so we take a two-component mixture of normals, each with standard deviation $0.5$ (variance $0.25$). "Near $1$" is the main belief; "small probability near $-1$" is the minor component:
+            </p>
+            <div class="derivation">
+                $$p(\theta) = \lambda_1\, N(\theta \mid 1,\, 0.5^2) + \lambda_2\, N(\theta \mid -1,\, 0.5^2), \qquad \lambda_1 = 0.99,\quad \lambda_2 = 0.01.$$
+            </div>
+            <p class="mb-6">
+                (The choice $0.99/0.01$ formalizes "small probability"; any small $\lambda_2$ gives the same qualitative behavior.) This prior is sharply unimodal to the eye&mdash;the $-1$ bump carries only $1\%$ of the mass.
+            </p>
+        </section>
+
+        <!-- Section 3 -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-semibold mb-8 border-b pb-3 border-bayesian-border ui-text">
+                3. Updating the Two Things at Once
+            </h2>
+
+            <h3 class="text-2xl font-bold mb-4 mt-8 ui-text">Step 1 &mdash; Each component's posterior (conjugate update)</h3>
+            <p class="mb-6">
+                For a normal mean, <strong>precisions add</strong> and the posterior mean is the precision-weighted average of prior mean and data. The prior precision is $1/0.5^2 = 4$; the data precision is $n/\sigma^2 = 10$; so every component's posterior precision is $4 + 10 = 14$, giving a common posterior variance $1/14$ (standard deviation $\approx 0.267$):
+            </p>
+            <div class="derivation">
+                $$\mu_m' = \frac{4\,\mu_m + 10\,\bar{y}}{14}, \qquad \sigma_m'^{\,2} = \frac{1}{14}.$$
+                $$\mu_1' = \frac{4(1) + 10(-0.25)}{14} = \frac{1.5}{14} \approx 0.107, \qquad \mu_2' = \frac{4(-1) + 10(-0.25)}{14} = \frac{-6.5}{14} \approx -0.464.$$
+            </div>
+            <p class="mb-6">
+                Both modes are pulled toward $\bar{y} = -0.25$ and both sharpen from sd $0.5$ to sd $0.267$.
+            </p>
+
+            <h3 class="text-2xl font-bold mb-4 mt-8 ui-text">Step 2 &mdash; The weight update (the "be careful" part)</h3>
+            <p class="mb-6">
+                By the general result, $\lambda_m' \propto \lambda_m\, p_m(\bar{y})$, where $p_m(\bar{y})$ is the prior predictive of $\bar{y}$ under component $m$. Marginalizing $\theta$ out adds the two independent variances&mdash;prior variance plus sampling variance:
+            </p>
+            <div class="derivation">
+                $$\bar{y} \sim N\!\big(\mu_m,\; 0.25 + 0.1\big) = N(\mu_m,\, 0.35).$$
+            </div>
+            <p class="mb-6">
+                Evaluating each predictive density at $\bar{y} = -0.25$ (the common normalizing constant $1/\sqrt{2\pi \cdot 0.35}$ cancels in the ratio, leaving only the exponential kernels):
+            </p>
+            <div class="mb-6 overflow-x-auto">
+                <table class="calc">
+                    <thead>
+                        <tr><th>Component $m$</th><th>center $\mu_m$</th><th>$(\bar{y}-\mu_m)^2$</th><th>$p_m(\bar{y}) \propto e^{-(\bar{y}-\mu_m)^2/0.7}$</th><th>prior $\lambda_m$</th><th>$\lambda_m\, p_m(\bar{y})$</th><th>posterior $\lambda_m'$</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>1 (near $+1$)</td><td>$+1$</td><td>$1.5625$</td><td>$0.0724$</td><td>$0.99$</td><td>$0.0716$</td><td>$\approx 0.96$</td></tr>
+                        <tr><td>2 (near $-1$)</td><td>$-1$</td><td>$0.5625$</td><td>$0.3019$</td><td>$0.01$</td><td>$0.0030$</td><td>$\approx 0.04$</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="mb-6">
+                The data at $\bar{y} = -0.25$ predict better under the $-1$ component ($p_2 \approx 4.2\, p_1$), so $\lambda_2$ <em>quadruples</em> from $0.01$ to $\approx 0.04$. But the prior odds were $99{:}1$, so component 1 still dominates: the data nudge the mixture toward $-1$ without overturning it. This is the promised subtlety&mdash;the mixing proportions change, and they move opposite to the prior's dominance.
+            </p>
+        </section>
+
+        <!-- Section 4 -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-semibold mb-8 border-b pb-3 border-bayesian-border ui-text">
+                4. The Posterior and Its Sketch
+            </h2>
+            <div class="theorem-block">
+                <div class="label text-bayesian-blue mb-2">Posterior distribution</div>
+                $$p(\theta \mid y) \;\approx\; 0.96\; N\!\big(0.107,\; 0.267^2\big) \;+\; 0.04\; N\!\big(-0.464,\; 0.267^2\big).$$
+            </div>
+            <figure class="my-8">
+                <img src="ch5_q8_prior_posterior.png" alt="Prior versus posterior densities for the bimodal normal-mean mixture" class="w-full rounded-lg border border-bayesian-border shadow-soft">
+                <figcaption class="text-base text-bayesian-slate mt-3 text-center italic">
+                    The grey prior looks unimodal&mdash;the $-1$ bump holds only $1\%$ of the mass. The blue posterior stays bimodal but shifts: the dominant mode moves $1 \to 0.107$, both modes narrow (sd $0.5 \to 0.267$), and the minor mode's weight grows from $\lambda_2 = 0.01$ to $\lambda_2' \approx 0.04$, making its bump visible. The dashed red line marks $\bar{y} = -0.25$.
+                </figcaption>
+            </figure>
+            <p class="mb-6">
+                Three effects are visible at once, and they are exactly the two mechanisms the general result predicts: the <strong>component parameters</strong> update (modes shift toward the data and sharpen), and the <strong>mixing weights</strong> update (the data-favored component gains mass).
+            </p>
+        </section>
+
+        <!-- Synthesis -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-semibold mb-8 border-b pb-3 border-bayesian-border ui-text">
+                5. The Common Thread
+            </h2>
+            <p class="mb-6">
+                A mixture of conjugate priors is conjugate because updating factors into two conjugate operations: each component absorbs the data through its own closed-form rule, and the mixture labels absorb the data through $\lambda_m' \propto \lambda_m\, p_m(y)$. Neither operation leaves the family. The same construction works for any conjugate pair&mdash;beta mixtures for a binomial proportion, gamma mixtures for a Poisson rate, normal mixtures for a normal mean&mdash;buying multimodal, heavy-tailed, or skewed prior shapes while keeping every posterior computation in closed form. The lesson to carry forward: with a mixture prior, always ask <em>both</em> how each component moved and how the weights re-balanced; forgetting the second is the classic error this exercise is built to expose.
+            </p>
+        </section>
+
+    </div>
+
+</body>
+
+</html>
