@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Product Rule — Jaynes Chapter 2</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400;1,6..72,600&display=swap" rel="stylesheet">
+
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bayesian: {
+                            bg: '#f7f9fb',
+                            text: '#191c1e',
+                            navy: '#131b2e',
+                            blue: '#0051d5',
+                            slate: '#75859d',
+                            surface: '#ffffff',
+                            surfaceAlt: '#f8fafc',
+                            border: '#e2e8f0'
+                        }
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 12px rgba(15, 23, 42, 0.05)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Newsreader', serif;
+            background-color: #f7f9fb;
+            color: #191c1e;
+            font-size: 1.25rem;
+            line-height: 1.7;
+        }
+
+        h1, h2, h3, h4, h5, h6, .ui-text {
+            font-family: 'Inter', sans-serif;
+            color: #131b2e;
+        }
+
+        .math-inline {
+            font-family: 'Newsreader', serif;
+            font-size: 1.3rem;
+        }
+
+        .theorem-block {
+            background-color: #f8fafc;
+            border-left: 2px solid #0051d5;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .derivation {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-left: 3px solid #75859d;
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 1.5rem;
+            border-radius: 0 4px 4px 0;
+        }
+
+        mjx-container { max-width: 100%; }
+
+        .label {
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            font-size: 0.78rem;
+        }
+
+        .underhood {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            margin-bottom: 1.5rem;
+        }
+        .underhood > summary {
+            cursor: pointer;
+            padding: 0.9rem 1.25rem;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #0051d5;
+            list-style: none;
+            user-select: none;
+        }
+        .underhood > summary::-webkit-details-marker { display: none; }
+        .underhood > summary::before { content: "\25B8\00A0\00A0"; }
+        .underhood[open] > summary::before { content: "\25BE\00A0\00A0"; }
+        .underhood[open] > summary { border-bottom: 1px solid #e2e8f0; }
+        .underhood .uh-body { padding: 1rem 1.25rem 0.5rem; }
+    </style>
+</head>
+<body class="antialiased">
+    <div class="max-w-[960px] mx-auto px-6 py-16">
+        <nav class="mb-8">
+            <a href="../../index.html" class="inline-flex items-center text-sm font-semibold text-bayesian-slate hover:text-bayesian-navy transition-colors ui-text">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                Back to Index
+            </a>
+        </nav>
+
+        <header class="mb-16">
+            <div class="flex flex-wrap gap-2 mb-6">
+                <div class="px-3 py-1 bg-bayesian-surfaceAlt border border-bayesian-border text-bayesian-slate rounded text-xs font-semibold tracking-wide uppercase ui-text">
+                    Jaynes • Chapter 2 • Section 2.1
+                </div>
+                <div class="px-3 py-1 bg-blue-50 border border-blue-200 text-bayesian-blue rounded text-xs font-semibold tracking-wide uppercase ui-text">
+                    First-Principles Derivation
+                </div>
+            </div>
+            <h1 class="text-5xl font-bold mb-6 tracking-tight leading-tight ui-text">
+                The Product Rule
+            </h1>
+            <p class="text-xl text-bayesian-slate leading-relaxed">
+                Section 2.1 asks a simple but deep question: how should the plausibility of two truths together be built from the plausibility of each one, taken one step at a time? The answer is the product rule, and it is the first quantitative bridge from logic to inference.
+            </p>
+        </header>
+
+        <!-- ============================================================
+             SECTION 1 — SETUP: THE THREE DEMANDS
+             ============================================================ -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-semibold mb-8 border-b pb-3 border-bayesian-border ui-text">
+                1. Setup — the three demands
+            </h2>
+
+            <blockquote class="border-l-2 border-bayesian-blue pl-5 mb-8 italic text-bayesian-slate">
+                &ldquo;Probability theory is nothing but common sense reduced to calculation.&rdquo;
+                <span class="block mt-2 text-base not-italic">— Laplace, 1819</span>
+            </blockquote>
+
+            <p class="mb-6">
+                Before we can combine beliefs, we have to say what a &ldquo;belief&rdquo; even is and what we are allowed to demand of it. Jaynes does something bold here: he refuses to <em>assume</em> any rule of probability. Instead he writes down a few requirements so reasonable you would nod at each one, and then shows that those requirements <em>force</em> the rules of probability into existence. This section lays out those requirements. Everything in the rest of the chapter is squeezed out of them.
+            </p>
+
+            <h3 class="text-xl font-semibold mt-10 mb-4 ui-text">1.1 The robot and its job</h3>
+            <p class="mb-6">
+                Jaynes asks us to imagine a reasoning <strong>robot</strong>. Not because we care about machines, but because a robot has no ego, no wishful thinking, and no memory of what it hoped would be true. It reasons only from what it has been told. That makes it the perfect stand-in for &ldquo;reasoning done right.&rdquo;
+            </p>
+            <p class="mb-6">
+                The robot's one job is to assign, to every proposition, a number saying how plausible that proposition is <em>given whatever it currently knows</em>. Nothing is judged in a vacuum: every plausibility rides on a background of information. We write this with a vertical bar meaning &ldquo;given&rdquo;:
+            </p>
+            <div class="derivation">
+                $$
+                (A \mid C) \;=\; \text{the plausibility of } A, \text{ given the background knowledge } C.
+                $$
+            </div>
+            <p>
+                Our task in Chapter 2 is not to <em>compute</em> any particular plausibility, but to discover the <em>rules</em> these numbers must obey so that the robot never reasons itself into nonsense.
+            </p>
+
+            <h3 class="text-xl font-semibold mt-10 mb-4 ui-text">1.2 The three desiderata</h3>
+            <p class="mb-6">
+                Jaynes states three broad demands — he calls them <em>desiderata</em>, the things we desire of any honest reasoning system. Read each one and notice how ordinary it sounds.
+            </p>
+
+            <div class="theorem-block">
+                <div class="label text-bayesian-blue mb-2">Desideratum I — Representation by real numbers</div>
+                <p class="mb-0">
+                    Degrees of plausibility are represented by <strong>real numbers</strong>. Not &ldquo;pretty likely&rdquo; or &ldquo;a hunch&rdquo; — an actual number, so that we can eventually calculate with them and compare any two.
+                </p>
+            </div>
+
+            <div class="theorem-block">
+                <div class="label text-bayesian-blue mb-2">Desideratum II — Qualitative agreement with common sense</div>
+                <p class="mb-0">
+                    The numbers must move the way common sense moves. If new information makes a proposition more plausible, its number must go <strong>up</strong>, never down — and it must do so <strong>continuously</strong>, with no sudden jumps. A whisker of evidence cannot flip a conclusion by a mile.
+                </p>
+            </div>
+
+            <div class="theorem-block">
+                <div class="label text-bayesian-blue mb-2">Desideratum III — Consistency</div>
+                <p class="mb-3">
+                    The robot must never contradict itself. Jaynes splits this into three parts:
+                </p>
+                <p class="mb-2"><strong>(IIIa)</strong> If a conclusion can be reached in more than one way, every route must give the <strong>same</strong> answer.</p>
+                <p class="mb-2"><strong>(IIIb)</strong> The robot always uses <strong>all</strong> the relevant evidence it has — it ignores nothing.</p>
+                <p class="mb-0"><strong>(IIIc)</strong> Equivalent states of knowledge must get <strong>equivalent</strong> plausibilities — the robot's conclusions depend on what it knows, not on how the question happened to be worded.</p>
+            </div>
+
+            <p class="mt-6">
+                Of these, <strong>(IIIa)</strong> — &ldquo;different routes must agree&rdquo; — is the quiet giant. It looks harmless, but it is the demand that will do almost all the work of pinning down the product rule.
+            </p>
+
+            <h3 class="text-xl font-semibold mt-10 mb-4 ui-text">1.3 What we are about to prove</h3>
+            <p class="mb-6">
+                That is the entire toolkit: numbers, common sense, consistency. No formula for probability has been assumed — we have only stated what any sane reasoner must satisfy. The astonishing claim of this chapter is that these three demands are <em>enough</em>. From them, the rule for combining the plausibility of &ldquo;$A$ and $B$&rdquo; is not one option among many; it is the <strong>only</strong> possibility that survives.
+            </p>
+            <p class="mb-6">
+                Here is the road ahead. We first ask how to judge two propositions at once (the two-step picture), rule out the tempting-but-broken shortcuts, and write the honest form $(AB\mid C) = F[(B\mid C),(A\mid BC)]$. Common sense then forces the combining recipe $F$ to be smooth and rising. Consistency across three propositions forces it to satisfy a famous functional equation. Solving that equation makes a rescaling function $w$ appear, which turns the whole mystery into ordinary multiplication — the product rule. Finally we pin the scale so that certainty is $1$ and impossibility is $0$.
+            </p>
+
+            <div class="theorem-block">
+                <div class="label text-bayesian-blue mb-2">Walk-away line</div>
+                <p class="mb-0">
+                    We assume nothing about probability — only that beliefs are numbers, agree with common sense, and never contradict themselves. Those three demands are the seeds from which the entire product rule grows.
+                </p>
+            </div>
+        </section>
+
+        <!-- ============================================================
+             SECTION 2 — THE QUESTION: JUDGING "A AND B"
+             (Plan section 1)
+             ============================================================ -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-semibold mb-8 border-b pb-3 border-bayesian-border ui-text">
+                2. The question: judging &ldquo;A and B&rdquo;
+            </h2>
+
+            <p class="mb-6">
+                With the three demands in hand, we ask the first real question of the chapter. How plausible is it that <em>two</em> propositions are true together? Write &ldquo;$A$ and $B$ are both true&rdquo; — the logical AND — simply as $AB$. We want the plausibility of $AB$ given the background $C$, which we write $(AB \mid C)$. Everything that follows grows out of one plain observation about how a mind actually reaches such a judgment.
+            </p>
+
+            <h3 class="text-xl font-semibold mt-10 mb-4 ui-text">2.1 You cannot judge a conjunction in one gulp</h3>
+            <p class="mb-6">
+                Picture a stranger walking toward you, and suppose you want to judge one claim about them: <em>black hair <strong>and</strong> blue eyes</em>. Notice what your mind actually does. It does not weigh &ldquo;black-hair-and-blue-eyes&rdquo; as a single lump. It proceeds in steps.
+            </p>
+            <p class="mb-6">
+                First it asks: does this person have black hair? Suppose you look and — yes, black hair. Then, <strong>holding that as settled</strong>, it asks the second question: <em>given that the hair is black, how plausible are blue eyes?</em> That is two steps, and crucially the second step is judged inside the world where the first has already come true.
+            </p>
+            <div class="derivation">
+                $$
+                \underbrace{(B \mid C)}_{\text{step 1: is }B\text{ true?}}
+                \qquad\longrightarrow\qquad
+                \underbrace{(A \mid BC)}_{\text{step 2: is }A\text{ true, given }B?}
+                $$
+            </div>
+            <p>
+                Read the second piece carefully. It is <em>not</em> &ldquo;how plausible are blue eyes in general.&rdquo; It is blue eyes <em>in the world where the hair is already known to be black</em>. That conditioning is the whole reason the two-step view is more powerful than it first appears — and section 3 will show it is exactly what a broken shortcut leaves out.
+            </p>
+
+            <h3 class="text-xl font-semibold mt-10 mb-4 ui-text">2.2 The two orders, and why they must agree</h3>
+            <p class="mb-6">
+                Nothing forced us to check the hair first. We could just as well have checked the eyes first, and then — taking blue eyes as settled — asked about the hair. That is a second, equally valid route:
+            </p>
+            <div class="derivation">
+                $$
+                \text{Route 1:}\quad (B \mid C)\ \text{then}\ (A \mid BC)
+                \qquad\qquad
+                \text{Route 2:}\quad (A \mid C)\ \text{then}\ (B \mid AC)
+                $$
+            </div>
+            <p class="mb-6">
+                Both routes judge the very same thing — the plausibility of $AB$ — because &ldquo;$A$ and $B$&rdquo; is the same claim as &ldquo;$B$ and $A$&rdquo;. So whichever way the robot walks, it had better arrive at the same number. This is not an extra assumption; it is simply desideratum <strong>(IIIa)</strong> from the Setup: if a conclusion can be reached in more than one way, every way must agree.
+            </p>
+            <p>
+                Keep this in view. It looks like a modest bookkeeping remark, but &ldquo;both orders must agree&rdquo; is the loaded spring of the entire derivation. In section 4 we will press on it with a third proposition, and out of it the shape of the product rule will pop.
+            </p>
+
+            <div class="theorem-block">
+                <div class="label text-bayesian-blue mb-2">Walk-away line</div>
+                <p class="mb-0">
+                    To judge &ldquo;$A$ and $B$,&rdquo; you never judge it directly — you judge one, then the other <em>given</em> the first, and because the two orders describe the same claim, they must land on the same number.
+                </p>
+            </div>
+        </section>
+
+        <!-- ============================================================
+             SECTION 3 — WHICH INGREDIENTS DO WE ACTUALLY NEED?
+             (Plan section 2)
+             ============================================================ -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-semibold mb-8 border-b pb-3 border-bayesian-border ui-text">
+                3. Which ingredients do we actually need?
+            </h2>
+
+            <p class="mb-6">
+                We have the two-step picture. Now the sharp question: which plausibilities do those steps actually <em>require</em>? Getting this right is what separates a rule that can reason like a human from one that cannot.
+            </p>
+
+            <h3 class="text-xl font-semibold mt-10 mb-4 ui-text">3.1 What you need, and what you can throw away</h3>
+            <p class="mb-6">
+                Going down Route 1, you need two things: $(B \mid C)$ — how plausible $B$ is — and $(A \mid BC)$ — how plausible $A$ is once $B$ is granted. What you do <strong>not</strong> need is $(A \mid C)$, the standalone plausibility of $A$ ignoring $B$. Why not? If $B$ turns out false, then $AB$ is already dead no matter what $A$ is doing; and if $B$ is true, you have moved into the conditioned world and want $(A \mid BC)$ instead. The plain $(A \mid C)$ never gets used — it would tell you nothing extra.
+            </p>
+            <p class="mb-6">
+                Jaynes sharpens this with a memorable point. Suppose the robot learns that the earth is round, and is now reasoning about cosmology. Should it drag back in the opinions it would have held <em>if it did not know</em> the earth is round? Of course not. <strong>Knowing a fact shrinks the world of possibilities you must carry.</strong> Once $C$ is known, only plausibilities conditioned on $C$ are ever relevant; the &ldquo;what if I didn't know $C$&rdquo; versions are dead weight.
+            </p>
+
+            <h3 class="text-xl font-semibold mt-10 mb-4 ui-text">3.2 The trap: why the marginals alone fail</h3>
+            <p class="mb-6">
+                Here is the shortcut that seems reasonable and is fatally wrong. Why not build the joint plausibility out of the two <em>standalone</em> judgments — $A$ given $C$ and $B$ given $C$ — with no conditioning of one on the other?
+            </p>
+            <div class="derivation">
+                $$
+                (AB \mid C) \overset{?}{=} F\big[(A \mid C),\, (B \mid C)\big] \qquad \text{— tempting, but broken.}
+                $$
+            </div>
+            <p class="mb-6">
+                Watch it break. Pick a random person and consider their eyes:
+            </p>
+            <p class="mb-6">
+                It is quite plausible the <em>left</em> eye is blue. It is quite plausible the <em>right</em> eye is brown. But <em>both at once</em>? Almost impossible — a person's eyes match. Each piece alone is believable, yet the conjunction is nearly ruled out. A recipe that only ever sees the two <em>alone</em> numbers receives identical inputs whether the two facts reinforce each other (black hair, blue eyes) or clash (blue eye, brown eye). It literally cannot tell the difference.
+            </p>
+            <div class="theorem-block">
+                <div class="label text-bayesian-blue mb-2">The lesson</div>
+                <p class="mb-0">
+                    To judge $A$ and $B$ together you need at least one <strong>conditional</strong> ingredient — a plausibility that already knows about the other proposition. That piece, $(A \mid BC)$, is what carries whether the two facts help each other or fight.
+                </p>
+            </div>
+
+            <h3 class="text-xl font-semibold mt-10 mb-4 ui-text">3.3 The honest equation</h3>
+            <p class="mb-6">
+                So we commit only to what we are sure of: the joint plausibility is built from those two pieces, by <em>some</em> combining recipe whose shape we do not yet know. Call the recipe $F$ and write it down — this is Jaynes's equation&nbsp;(2.1):
+            </p>
+            <div class="theorem-block">
+                <div class="label text-bayesian-blue mb-2">Equation (2.1) — the form of the product rule</div>
+                $$
+                (AB \mid C) = F\big[(B \mid C),\, (A \mid BC)\big]
+                $$
+            </div>
+            <p class="mb-6">
+                Read plainly: <em>plausibility of both = some recipe $F$ applied to (plausibility of $B$) and (plausibility of $A$ given $B$).</em> Note what we have <strong>not</strong> said. We have not claimed $F$ is multiplication, or addition, or anything at all beyond &ldquo;two inputs, one output.&rdquo; That restraint is deliberate: we will let the three demands tell us what $F$ must be, rather than guessing.
+            </p>
+            <p class="mb-6">
+                Is two ingredients really the right choice, though? Jaynes does not just assert it. Following Tribus, one can list <em>every</em> plausible way to build the joint out of the available numbers — there turn out to be eleven candidate recipes — and stress-test each against extreme cases like the blue-and-brown eyes. Nine of the eleven collapse: they violate common sense in some corner, exactly as the marginal-only shortcut did. Only <strong>two</strong> survive:
+            </p>
+            <div class="derivation">
+                $$
+                (AB \mid C) = F\big[(B\mid C),\,(A\mid BC)\big]
+                \qquad\text{or}\qquad
+                (AB \mid C) = F\big[(A\mid C),\,(B\mid AC)\big]
+                $$
+            </div>
+            <p>
+                and those two are nothing but our two-step story told in its two orders. Nothing new sneaked in. The picture from section 2 was right, and it has now survived a brute-force search.
+            </p>
+
+            <div class="theorem-block">
+                <div class="label text-bayesian-blue mb-2">Walk-away line</div>
+                <p class="mb-0">
+                    The joint plausibility is some two-input recipe $F\big[(B\mid C),(A\mid BC)\big]$ — we have named the recipe without yet knowing its shape, and a brute-force check confirms this is the only sensible form.
+                </p>
+            </div>
+        </section>
+
+        <!-- ============================================================
+             SECTION 4 — COMMON SENSE CONSTRAINS THE RECIPE
+             (Plan section 3)
+             ============================================================ -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-semibold mb-8 border-b pb-3 border-bayesian-border ui-text">
+                4. Common sense constrains the recipe
+            </h2>
+
+            <p class="mb-6">
+                The recipe $F$ is still a total mystery: two inputs, one output, no shape. But it cannot be <em>just any</em> function. Desideratum II — qualitative agreement with common sense — quietly rules out almost all of them. Two demands do the work, and both are obvious once stated.
+            </p>
+
+            <h3 class="text-xl font-semibold mt-10 mb-4 ui-text">4.1 It must rise, never fall</h3>
+            <p class="mb-6">
+                Let us state this precisely, the way Jaynes does. Suppose the prior information changes, $C \to C'$, in a way that makes $B$ more plausible while leaving the second-step judgment $A \mid B$ untouched:
+            </p>
+            <div class="derivation">
+                $$
+                B \mid C' > B \mid C, \tag{2.4}
+                $$
+                $$
+                A \mid BC' = A \mid BC. \tag{2.5}
+                $$
+            </div>
+            <p class="mb-6">
+                What should happen to the plausibility of &ldquo;$A$ and $B$ together&rdquo;? It can only go <strong>up</strong>, or at worst stay flat — never down. More faith in $B$ producing less faith in &ldquo;both&rdquo; would be nonsense:
+            </p>
+            <div class="derivation">
+                $$
+                AB \mid C' \ge AB \mid C, \tag{2.6}
+                $$
+            </div>
+            <p class="mb-6">
+                The inequality is usually <em>strict</em> (&ldquo;both&rdquo; genuinely rises), but there is one exception where it stays flat — the &ldquo;equality&rdquo; case. Here is why. Suppose $A$ is <strong>impossible</strong> given $B$, that is, $A \mid BC$ represents impossibility. Then even if $B$ becomes certain, $A$ still cannot be true — so &ldquo;$A$ and $B$&rdquo; is impossible no matter what. Pushing $B$'s plausibility higher does nothing, because the joint was already pinned at the bottom. That is the only situation in which raising an input leaves the output unchanged.
+            </p>
+            <p class="mb-6">
+                The same must hold for the other input. Take prior information $C''$ that leaves $B$ untouched but makes $A \mid B$ more plausible:
+            </p>
+            <div class="derivation">
+                $$
+                B \mid C'' = B \mid C, \tag{2.7}
+                $$
+                $$
+                A \mid BC'' > A \mid BC. \tag{2.8}
+                $$
+            </div>
+            <p class="mb-6">
+                Then again the joint can only rise or hold:
+            </p>
+            <div class="derivation">
+                $$
+                AB \mid C'' \ge AB \mid C, \tag{2.9}
+                $$
+            </div>
+            <p class="mb-6">
+                and by the mirror-image reasoning, the flat case here needs $B$ to be <strong>impossible</strong> given $C$: if there is no $B$ to speak of, then &ldquo;$A$ and $B$&rdquo; is impossible regardless of how plausible $A$ becomes, so raising $A \mid B$ cannot lift it. Put together, these say that $F$ never decreases when you increase either input — it is <strong>monotonic increasing</strong> in both of its slots.
+            </p>
+
+            <div class="theorem-block">
+                <div class="label text-bayesian-blue mb-2">Why &ldquo;equality&rdquo; means something is impossible</div>
+                <p class="mb-0">
+                    Raising an input normally raises the joint. The <em>only</em> way the joint can stay put is if it is already stuck at the bottom — impossibility — and nothing can lift it. That happens exactly when one of the two propositions cannot occur: an impossible $A$ (given $B$) or an impossible $B$ (given $C$) makes &ldquo;$A$ and $B$&rdquo; impossible on its own, so the other input becomes irrelevant. Impossibility is a floor; you cannot push something lower than the floor, and while you are on it, pushing the other lever does nothing.
+                </p>
+            </div>
+
+            <h3 class="text-xl font-semibold mt-10 mb-4 ui-text">4.2 No jumps</h3>
+            <p class="mb-6">
+                Now imagine a hair's-width increase in how plausible $B$ is. Should the plausibility of &ldquo;both&rdquo; be allowed to <em>lurch</em> — to jump a large amount off that microscopic nudge? Clearly not. A whisker more evidence must not swing your conclusion by a mile. Tiny cause, tiny effect. That property is <strong>continuity</strong>: no cliffs, no sudden jumps.
+            </p>
+            <p class="mb-6">
+                Turn that picture into the <em>shape</em> of a statement. Nudge the first input by a small amount $\delta$ and watch the output. Continuity demands that as the nudge shrinks toward nothing, the change it causes in the joint shrinks toward nothing too:
+            </p>
+            <div class="derivation">
+                $$
+                \lim_{\delta \to 0} F(x + \delta,\, y) = F(x, y),
+                \qquad
+                \lim_{\delta \to 0} F(x,\, y + \delta) = F(x, y).
+                $$
+            </div>
+            <p class="mb-6">
+                Equivalently: a small $|\delta|$ forces a small $\big|F(x+\delta,y) - F(x,y)\big|$. This is exactly the condition Jaynes gives — for if $F$ were <em>not</em> continuous, an arbitrarily small increase in one of the plausibilities on the right-hand side of (2.1) could produce a large jump in $(AB \mid C)$, and that is the cliff common sense forbids.
+            </p>
+            <p class="mb-6">
+                Why insist on it now? Because continuity is what buys us the machinery of the next section. A curve with no jumps has a well-defined <strong>slope</strong> at every point; a curve that leaps does not. So continuity is precisely the license to differentiate $F$ — the tool that will let consistency (section 5) pin down its shape. It is the second half of desideratum II, quietly setting up the calculus to come.
+            </p>
+
+            <h3 class="text-xl font-semibold mt-10 mb-4 ui-text">4.3 The constraint, compactly</h3>
+            <p class="mb-6">
+                Put the two demands together and an enormous amount of freedom has already died. Out of all conceivable two-input recipes, only the smooth, always-rising ones remain:
+            </p>
+            <div class="theorem-block">
+                <div class="label text-bayesian-blue mb-2">$F$ must be a continuous, monotonic-increasing function of both inputs</div>
+                <p class="mb-0">
+                    &ldquo;Rising in an input&rdquo; is the same as saying its slope in that direction is not negative. Writing $F_1$ for the slope with respect to the first slot and $F_2$ for the second, this reads as equations&nbsp;(2.10a&ndash;b):
+                </p>
+            </div>
+            <div class="derivation">
+                $$
+                F_1 \equiv \frac{\partial F}{\partial x} \ge 0,
+                \qquad
+                F_2 \equiv \frac{\partial F}{\partial y} \ge 0.
+                $$
+            </div>
+            <p>
+                Do not let the subscripts intimidate: $F_1$ just means &ldquo;how fast $F$ changes as you wiggle the first input,&rdquo; and $F_2$ the second. Push either input up, the output does not go down. Continuity is what lets us speak of these slopes at all — and it is the doorway to the real machinery of the next section.
+            </p>
+
+            <div class="theorem-block">
+                <div class="label text-bayesian-blue mb-2">Walk-away line</div>
+                <p class="mb-0">
+                    $F$ cannot be any old recipe: sanity forces it to always rise (never fall) when a piece gets more plausible, and to do so smoothly, with no sudden jumps.
+                </p>
+            </div>
+        </section>
+
+        <!-- ============================================================
+             SECTION 5 — THE CONSISTENCY HAMMER
+             (Plan section 4)
+             ============================================================ -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-semibold mb-8 border-b pb-3 border-bayesian-border ui-text">
+                5. The consistency hammer
+            </h2>
+
+            <p class="mb-6">
+                So far $F$ is smooth and rising, but still shapeless. Now we fire the spring we set in section 2 — &ldquo;both orders must agree&rdquo; — but with a twist that makes it enormously more powerful. We bring in a <em>third</em> proposition.
+            </p>
+
+            <h3 class="text-xl font-semibold mt-10 mb-4 ui-text">5.1 A third proposition, and grouping that cannot matter</h3>
+            <p class="mb-6">
+                Ask for the plausibility that $A$, $B$, and $C$ are <em>all</em> true, given some background $D$ — that is, $(ABC \mid D)$. Logic does not care how we bundle the three, because conjunction is <strong>associative</strong>:
+            </p>
+            <div class="derivation">
+                $$
+                (AB)\,C \;=\; A\,(BC).
+                $$
+            </div>
+            <p class="mb-6">
+                &ldquo;$(A$ and $B)$, and then $C$&rdquo; is the very same claim as &ldquo;$A$, and then $(B$ and $C)$.&rdquo; It is the same tower of blocks whether you glue the bottom two first or the top two first. But our recipe $F$ only ever combines things <em>two at a time</em>, so to reach all three we must combine twice — and there are two ways to do the bundling. Each way is a legal computation of the same number, so by desideratum (IIIa) they must agree.
+            </p>
+            <p class="mb-6">
+                Bundle $B$ and $C$ first (treat $BC$ as a single proposition, then expand it):
+            </p>
+            <div class="derivation">
+                $$
+                (ABC \mid D) = F\big[(BC\mid D),\,(A\mid BCD)\big]
+                = F\big\{\,F[(C\mid D),(B\mid CD)],\;(A\mid BCD)\,\big\}. \tag{2.12a}
+                $$
+            </div>
+            <p class="mb-6">
+                Or bundle $A$ and $B$ first and reason in the other order:
+            </p>
+            <div class="derivation">
+                $$
+                (ABC \mid D) = F\big[(C\mid D),\,(AB\mid CD)\big]
+                = F\big\{\,(C\mid D),\;F[(B\mid CD),(A\mid BCD)]\,\big\}. \tag{2.12b}
+                $$
+            </div>
+            <p>
+                Same three propositions, same final belief, different bundling. Consistency insists the two expressions be identical — otherwise the robot's answer would depend on trivial bookkeeping.
+            </p>
+
+            <h3 class="text-xl font-semibold mt-10 mb-4 ui-text">5.2 The Associativity Equation</h3>
+            <p class="mb-6">
+                Now strip away the propositions and keep only the numbers flowing through $F$. Name the three inputs
+            </p>
+            <div class="derivation">
+                $$
+                x = (C\mid D),\qquad y = (B\mid CD),\qquad z = (A\mid BCD).
+                $$
+            </div>
+            <p class="mb-6">
+                Then (2.12a) is $F[F(x,y),z]$ and (2.12b) is $F[x,F(y,z)]$, and demanding they be equal for <em>all</em> $x,y,z$ gives a pure constraint on $F$ alone:
+            </p>
+            <div class="theorem-block">
+                <div class="label text-bayesian-blue mb-2">Equation (2.13) — the Associativity Equation</div>
+                $$
+                F\big[F(x,y),\,z\big] = F\big[x,\,F(y,z)\big].
+                $$
+            </div>
+            <p class="mb-6">
+                Read it plainly: <strong>it must not matter which pair you combine first.</strong> That is the entire content. And here is the thrill — we did not import this equation from a textbook. It fell out of a single demand: do not contradict yourself when you regroup. Almost every recipe you could dream up <em>fails</em> it; only a very special family survives. Finding that family is the work of the next section.
+            </p>
+
+            <div class="bg-bayesian-surfaceAlt border border-bayesian-border rounded-lg p-6 mb-6">
+                <div class="label text-bayesian-slate mb-3">Historical note — the equation's pedigree</div>
+                <p class="mb-3 text-lg">
+                    The Associativity Equation is not new to Jaynes. It goes back to <strong>N. H. Abel (1826)</strong>. In his monumental survey of functional equations, <strong>Acz&eacute;l (1966)</strong> gives it that very name and lists 98 works that use or discuss it. Acz&eacute;l derives the general solution without even assuming differentiability — but the proof runs eleven pages.
+                </p>
+                <p class="mb-0 text-lg">
+                    Jaynes instead follows the shorter route of <strong>R. T. Cox (1961)</strong>, which <em>assumes</em> $F$ is differentiable — and this is exactly why we fought for continuity in section 4.2. Continuity earns us the right to take the derivatives that Cox's proof needs.
+                </p>
+            </div>
+
+            <div class="theorem-block">
+                <div class="label text-bayesian-blue mb-2">Walk-away line</div>
+                <p class="mb-0">
+                    Because &ldquo;$A$ and $B$ and $C$&rdquo; can be bundled two ways but must give one answer, $F$ has to satisfy the Associativity Equation — &ldquo;it cannot matter which pair you combine first&rdquo; — and that single demand nearly determines $F$ completely.
+                </p>
+            </div>
+        </section>
+
+        <!-- ============================================================
+             SECTION 6 — SOLVING IT: WHERE w COMES FROM
+             (Plan section 5)
+             ============================================================ -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-semibold mb-8 border-b pb-3 border-bayesian-border ui-text">
+                6. Solving it: where $w$ comes from
+            </h2>
+
+            <p class="mb-6">
+                We must now solve the Associativity Equation. The full derivation is a few pages of calculus, so here is the deal: the main thread below is the <em>idea</em>, and it reads on its own. The step-by-step algebra sits in the collapsible <span class="ui-text text-bayesian-blue font-semibold">&ldquo;Under the hood&rdquo;</span> boxes — open them if you want every line, skip them if you just want the story.
+            </p>
+
+            <h3 class="text-xl font-semibold mt-10 mb-4 ui-text">6.1 The idea: multiplication in disguise</h3>
+            <p class="mb-6">
+                Look again at the equation we must satisfy:
+            </p>
+            <div class="derivation">
+                $$
+                F[F(x,y),z] = F[x,F(y,z)].
+                $$
+            </div>
+            <p class="mb-6">
+                Where have you already met an operation that does not care how you group things? <strong>Multiplication.</strong> $(x\cdot y)\cdot z = x\cdot(y\cdot z)$ — group it however you like, same answer. So is ordinary addition. That is the clue: this equation is the <em>signature</em> of multiplication.
+            </p>
+            <p class="mb-6">
+                So here is the hunch. What if $F$ <em>is</em> multiplication, just wearing a disguise? What if the plausibility numbers are on the &ldquo;wrong ruler,&rdquo; and once we <strong>relabel</strong> each one with some function — call it $w$ — the combining step turns into plain multiplication?
+            </p>
+            <div class="theorem-block">
+                <div class="label text-bayesian-blue mb-2">The hope, in one line</div>
+                $$
+                w\big(F(x,y)\big) = w(x)\,w(y). \tag{2.26}
+                $$
+            </div>
+            <p class="mb-6">
+                If such a $w$ exists, associativity is automatic — because multiplication is already associative, and the messy $F$ simply inherits the good behaviour. The whole job of the algebra below is to prove that such a $w$ <em>must</em> exist, and is essentially unique.
+            </p>
+
+            <h3 class="text-xl font-semibold mt-10 mb-4 ui-text">6.2 From the equation to a clean ratio</h3>
+            <p class="mb-6">
+                The first move is to differentiate the associativity equation — legal, thanks to the continuity we secured in 4.2 — and squeeze it down to a single tidy condition, Jaynes's equation (2.17).
+            </p>
+            <details class="underhood">
+                <summary>Under the hood — differentiate, eliminate, and name the ratio $G$</summary>
+                <div class="uh-body">
+                    <p class="mb-4">Introduce the two inner combinations and treat $x,y,z$ as independent:</p>
+                    <div class="derivation">
+                        $$ u \equiv F(x,y), \qquad v \equiv F(y,z), $$
+                        $$ \text{so the equation reads}\quad F(x,v) = F(u,z). \tag{2.15} $$
+                    </div>
+                    <p class="mb-4">The crucial bookkeeping: $u$ depends on $x$ and $y$; $v$ depends on $y$ and $z$ but <strong>not</strong> $x$; and $x,z$ are independent. Differentiate (2.15) with respect to $x$ (only $u$ moves on the right, and $v$ is frozen on the left):</p>
+                    <div class="derivation">
+                        $$ F_1(x,v) = F_1(u,z)\,F_1(x,y). \tag{2.16a} $$
+                    </div>
+                    <p class="mb-4">Differentiate with respect to $y$ — now <em>both</em> $u$ and $v$ move, so each side has one term:</p>
+                    <div class="derivation">
+                        $$ F_2(x,v)\,F_1(y,z) = F_1(u,z)\,F_2(x,y). \tag{2.16b} $$
+                    </div>
+                    <p class="mb-4">Eliminate the awkward $F_1(u,z)$ using (2.16a), then divide through. Defining the ratio $G \equiv F_2/F_1$:</p>
+                    <div class="derivation">
+                        $$ G(x,v)\,F_1(y,z) = G(x,y), \qquad G(x,y)\equiv\frac{F_2(x,y)}{F_1(x,y)}. \tag{2.17} $$
+                    </div>
+                    <p class="mb-0">Notice the right side has no $z$ in it — yet the left side seems to contain $z$ through $v$ and $F_1(y,z)$. That tension is exactly what the next box exploits.</p>
+                </div>
+            </details>
+
+            <h3 class="text-xl font-semibold mt-10 mb-4 ui-text">6.3 The mixed-partials trick</h3>
+            <p class="mb-6">
+                Since the right side of (2.17) carries no $z$, the left side's $z$-dependence must secretly cancel. Pushing on that fact — using the fact that mixed second derivatives commute — forces $G$ into a very rigid shape, equation (2.19).
+            </p>
+            <details class="underhood">
+                <summary>Under the hood — why $G(x,y) = r\,H(x)/H(y)$</summary>
+                <div class="uh-body">
+                    <p class="mb-4">Multiply (2.17) by $G(y,z)=F_2(y,z)/F_1(y,z)$; the $F_1(y,z)$ cancels to give a twin equation:</p>
+                    <div class="derivation">
+                        $$ G(x,v)\,F_2(y,z) = G(x,y)\,G(y,z). \tag{2.18} $$
+                    </div>
+                    <p class="mb-4"><strong>Name the two left sides.</strong> Let $U$ be the left side of (2.17) and $V$ the left side of (2.18), recalling $v = F(y,z)$:</p>
+                    <div class="derivation">
+                        $$ U \equiv G(x,v)\,F_1(y,z) = G(x,y), $$
+                        $$ V \equiv G(x,v)\,F_2(y,z) = G(x,y)\,G(y,z). $$
+                    </div>
+                    <p class="mb-4"><strong>Differentiate $U$ with respect to $z$.</strong> Both factors carry $z$ (through $v$, and directly in $F_1$), and $\partial v/\partial z = F_2(y,z)$, so by the product and chain rules:</p>
+                    <div class="derivation">
+                        $$ \frac{\partial U}{\partial z}
+                        = G_2(x,v)\,F_2(y,z)\,F_1(y,z) + G(x,v)\,\frac{\partial^2 F}{\partial z\,\partial y}. $$
+                    </div>
+                    <p class="mb-4"><strong>Differentiate $V$ with respect to $y$.</strong> Here $\partial v/\partial y = F_1(y,z)$, so likewise:</p>
+                    <div class="derivation">
+                        $$ \frac{\partial V}{\partial y}
+                        = G_2(x,v)\,F_1(y,z)\,F_2(y,z) + G(x,v)\,\frac{\partial^2 F}{\partial y\,\partial z}. $$
+                    </div>
+                    <p class="mb-4"><strong>Compare them.</strong> The first terms are identical because ordinary multiplication commutes, $F_2 F_1 = F_1 F_2$. The second terms are identical because mixed partial derivatives commute, $\partial^2 F/\partial z\,\partial y = \partial^2 F/\partial y\,\partial z$. Therefore:</p>
+                    <div class="derivation">
+                        $$ \frac{\partial U}{\partial z} = \frac{\partial V}{\partial y}. $$
+                    </div>
+                    <p class="mb-4">Now cash it in. Since $U = G(x,y)$ contains no $z$, we have $\partial U/\partial z = 0$, and hence $\partial V/\partial y = 0$. But $V = G(x,y)\,G(y,z)$, so:</p>
+                    <div class="derivation">
+                        $$ G(x,y)\,G(y,z)\ \text{is independent of}\ y. $$
+                    </div>
+                    <p class="mb-4"><strong>Now solve that condition.</strong> Fix the third variable at any convenient constant, $z = z_0$. Then $G(x,y)\,G(y,z_0)$ is still independent of $y$, so it is a function of $x$ alone — call it $\varphi(x)$:</p>
+                    <div class="derivation">
+                        $$ G(x,y)\,G(y,z_0) = \varphi(x). $$
+                    </div>
+                    <p class="mb-4">Also, with $z_0$ frozen, $G(y,z_0)$ is a function of $y$ alone; name it $H(y) \equiv G(y,z_0)$. Rearranging the line above:</p>
+                    <div class="derivation">
+                        $$ G(x,y) = \frac{\varphi(x)}{H(y)}. \tag{$\ast$} $$
+                    </div>
+                    <p class="mb-4">The function $\varphi$ is not independent — we pin it down by feeding $(\ast)$ back into itself. Equation $(\ast)$ holds for <em>any</em> pair of arguments, so put $y$ in the first slot and $z_0$ in the second:</p>
+                    <div class="derivation">
+                        $$ G(y,z_0) = \frac{\varphi(y)}{H(z_0)}. $$
+                    </div>
+                    <p class="mb-4">But the left side is exactly $H(y)$ by definition. Hence $H(y) = \varphi(y)/H(z_0)$, which gives $\varphi(y) = H(y)\,H(z_0)$, i.e. $\varphi(x) = H(x)\,H(z_0)$. Since $z_0$ is a fixed constant, $H(z_0)$ is just a number; call it $r$. Substituting back into $(\ast)$:</p>
+                    <div class="derivation">
+                        $$ G(x,y) = \frac{\varphi(x)}{H(y)} = r\,\frac{H(x)}{H(y)}, \tag{2.19} $$
+                    </div>
+                    <p class="mb-0">with $H$ an arbitrary function and $r=H(z_0)$ a constant &mdash; and $\varphi$ has vanished, since it was never independent of $H$. Two checks: substituting back, $G(x,y)G(y,z) = r^2\,H(x)/H(z)$, indeed free of $y$; and $G(y,z_0) = rH(y)/H(z_0) = H(y)$, matching the definition. Monotonicity from section 4 makes $G>0$, so $r>0$ and $H$ keeps one sign.</p>
+                </div>
+            </details>
+
+            <h3 class="text-xl font-semibold mt-10 mb-4 ui-text">6.4 Integrate, and $w$ appears</h3>
+            <p class="mb-6">
+                Feed that rigid shape back in, and the pieces of $F$ become simple ratios of $H$. Their total differential integrates cleanly — and the act of integrating $1/H$ is precisely what <em>defines</em> the relabeling function $w$.
+            </p>
+            <details class="underhood">
+                <summary>Under the hood — the total differential and the definition of $w$</summary>
+                <div class="uh-body">
+                    <p class="mb-4">Substituting (2.19) back into (2.17) and (2.18) recovers the two slopes of $F$:</p>
+                    <div class="derivation">
+                        $$ F_1(y,z) = \frac{H(v)}{H(y)}, \tag{2.20} $$
+                        $$ F_2(y,z) = r\,\frac{H(v)}{H(z)}. \tag{2.21} $$
+                    </div>
+                    <p class="mb-4">Since $v=F(y,z)$, its total differential $dv = F_1\,dy + F_2\,dz$ becomes, after dividing by $H(v)$:</p>
+                    <div class="derivation">
+                        $$ \frac{dv}{H(v)} = \frac{dy}{H(y)} + r\,\frac{dz}{H(z)}. \tag{2.22} $$
+                    </div>
+                    <p class="mb-4">Every term has the form $dt/H(t)$. So <strong>define</strong> the function whose derivative is exactly $1/H$:</p>
+                    <div class="derivation">
+                        $$ w(x) \equiv \exp\!\left\{\int^{x}\frac{dx}{H(x)}\right\}
+                        \quad\Longleftrightarrow\quad d\big[\ln w(t)\big] = \frac{dt}{H(t)}. \tag{2.24} $$
+                    </div>
+                    <p class="mb-0">Integrating (2.22) and exponentiating (the constant of integration becomes an overall multiplicative factor):</p>
+                    <div class="derivation">
+                        $$ w[F(y,z)] = w(y)\,w(z)^{\,r}. \tag{2.23} $$
+                    </div>
+                </div>
+            </details>
+            <p class="mb-6">
+                There is $w$ — the relabeling that turns the mysterious recipe $F$ into a product. Combining two beliefs has become <em>multiplying</em> their $w$-values. Only one blemish remains: the stray exponent $r$.
+            </p>
+
+            <h3 class="text-xl font-semibold mt-10 mb-4 ui-text">6.5 Killing the exponent: why $r = 1$</h3>
+            <p class="mb-6">
+                We feed the near-solution (2.23) back into the original associativity equation one last time. First, note that (2.23) holds for <em>any</em> pair of arguments, so we may write it in the general form
+            </p>
+            <div class="derivation">
+                $$
+                w\big[F(a,b)\big] = w(a)\,w(b)^{\,r} \qquad\text{for any } a, b. \tag{2.23$'$}
+                $$
+            </div>
+            <p class="mb-6">
+                <strong>Step 1 — apply $w$ to both sides of the associativity equation.</strong> Recall the equation we have been solving all along, $F(x,v) = F(u,z)$, with the inner combinations $u = F(x,y)$ and $v = F(y,z)$. Both sides are equal numbers, so applying $w$ keeps them equal:
+            </p>
+            <div class="derivation">
+                $$
+                w\big[F(x,v)\big] = w\big[F(u,z)\big].
+                $$
+            </div>
+            <p class="mb-6">
+                <strong>Step 2 — expand each side once with (2.23$'$).</strong> Treat the left side as $F$ of the pair $(x,v)$ and the right side as $F$ of the pair $(u,z)$:
+            </p>
+            <div class="derivation">
+                $$
+                w(x)\,w(v)^{\,r} = w(u)\,w(z)^{\,r}. \tag{i}
+                $$
+            </div>
+            <p class="mb-6">
+                <strong>Step 3 — expand $u$ and $v$ a second time.</strong> They are themselves outputs of $F$, so (2.23$'$) applies to each. For $v = F(y,z)$:
+            </p>
+            <div class="derivation">
+                $$
+                w(v) = w\big[F(y,z)\big] = w(y)\,w(z)^{\,r}
+                \quad\Longrightarrow\quad
+                w(v)^{\,r} = \big[w(y)\,w(z)^{\,r}\big]^{\,r} = w(y)^{\,r}\,w(z)^{\,r^2}.
+                $$
+            </div>
+            <p class="mb-6">
+                And for $u = F(x,y)$:
+            </p>
+            <div class="derivation">
+                $$
+                w(u) = w\big[F(x,y)\big] = w(x)\,w(y)^{\,r}.
+                $$
+            </div>
+            <p class="mb-6">
+                <strong>Step 4 — substitute both back into (i).</strong> The left side of (i) becomes
+            </p>
+            <div class="derivation">
+                $$
+                w(x)\,w(v)^{\,r} = w(x)\,w(y)^{\,r}\,w(z)^{\,r^2},
+                $$
+            </div>
+            <p class="mb-6">
+                and the right side of (i) becomes
+            </p>
+            <div class="derivation">
+                $$
+                w(u)\,w(z)^{\,r} = w(x)\,w(y)^{\,r}\,w(z)^{\,r}.
+                $$
+            </div>
+            <p class="mb-6">
+                Setting them equal gives Jaynes's equation (2.25):
+            </p>
+            <div class="derivation">
+                $$
+                w(x)\,w(y)^{\,r}\,w(z)^{\,r^2} = w(x)\,w(y)^{\,r}\,w(z)^{\,r}. \tag{2.25}
+                $$
+            </div>
+            <p class="mb-6">
+                <strong>Step 5 — cancel and read off $r$.</strong> Because $w$ is positive, the common factor $w(x)\,w(y)^{\,r}$ is nonzero and may be divided out from both sides:
+            </p>
+            <div class="derivation">
+                $$
+                w(z)^{\,r^2} = w(z)^{\,r}.
+                $$
+            </div>
+            <p class="mb-6">
+                This must hold for <em>every</em> proposition $z$. Since $w$ is monotonic and non-constant, $w(z)$ takes a whole range of values, so we may pick a $z$ with $w(z) \neq 1$ and divide:
+            </p>
+            <div class="derivation">
+                $$
+                w(z)^{\,r^2 - r} = 1
+                \quad\Longrightarrow\quad
+                r^2 - r = 0
+                \quad\Longrightarrow\quad
+                r(r-1) = 0
+                \quad\Longrightarrow\quad
+                r = 0 \ \text{or}\ r = 1.
+                $$
+            </div>
+            <p class="mb-6">
+                The root $r = 0$ would make $G = r\,H(x)/H(y) = 0$, collapsing $F$ to a constant and destroying the monotonicity we insisted on in section 4 — the useless trivial solution. That leaves the single admissible value:
+            </p>
+            <div class="derivation">
+                $$
+                r = 1.
+                $$
+            </div>
+            <p class="mb-6">
+                With $r=1$, equation (2.23) collapses to the clean form we hoped for back in 6.1:
+            </p>
+            <div class="theorem-block">
+                <div class="label text-bayesian-blue mb-2">Equations (2.26)–(2.27)</div>
+                $$
+                w[F(x,y)] = w(x)\,w(y)
+                \qquad\Longleftrightarrow\qquad
+                F(x,y) = w^{-1}\!\big[w(x)\,w(y)\big].
+                $$
+            </div>
+            <p class="mb-6">
+                The mysterious recipe $F$ is nothing but multiplication on the $w$-ruler — no stray exponent, no other freedom. That is the whole content of the Associativity Equation, unpacked.
+            </p>
+
+            <div class="theorem-block">
+                <div class="label text-bayesian-blue mb-2">Walk-away line</div>
+                <p class="mb-0">
+                    Solving the Associativity Equation makes a relabeling $w$ appear that turns &ldquo;combine two beliefs&rdquo; into &ldquo;multiply their $w$-values&rdquo; — and feeding the near-solution back into itself forces the last exponent to $1$, leaving pure multiplication.
+                </p>
+            </div>
+        </section>
+
+        <!-- ============================================================
+             SECTION 7 — THE PRODUCT RULE
+             (Plan section 6)
+             ============================================================ -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-semibold mb-8 border-b pb-3 border-bayesian-border ui-text">
+                7. The product rule
+            </h2>
+
+            <h3 class="text-xl font-semibold mt-10 mb-4 ui-text">7.1 Reading the result back into propositions</h3>
+            <p class="mb-6">
+                Equation (2.26) is stated in the bare variables $x$ and $y$. But we know what those stood for: back in section 3 the two ingredients were $x = (B\mid C)$ and $y = (A\mid BC)$. Put them back, and $F(x,y)$ is just $(AB\mid C)$. So (2.26) becomes the headline result of the chapter, Jaynes's equation (2.28):
+            </p>
+            <div class="theorem-block">
+                <div class="label text-bayesian-blue mb-2">Equation (2.28) — the product rule</div>
+                $$
+                w(AB \mid C) = w(A \mid BC)\,w(B \mid C) = w(B \mid AC)\,w(A \mid C).
+                $$
+            </div>
+            <p class="mb-6">
+                Read the first form out loud: <em>the (relabeled) plausibility of &ldquo;$A$ and $B$&rdquo; equals the plausibility of $A$ given $B$, times the plausibility of $B$.</em> The mysterious two-step combining of section 2 has turned out to be nothing but multiplication, once belief is measured on the $w$-ruler. The second form is the very same product computed in the other order — exactly the &ldquo;both orders must agree&rdquo; requirement from section 2, now written as an identity.
+            </p>
+            <p class="mb-6">
+                One more thing is worth saying. We derived (2.28) as a <em>necessary</em> condition for consistency. It is also <em>sufficient</em>: once the product rule holds, any joint plausibility of any number of propositions — say $(ABCDEFG \mid H)$ — can be expanded by partitioning in a great many different orders, and every one of them yields the same answer. Consistency is not just satisfied in the three-proposition case we used; it is secured for good.
+            </p>
+
+            <h3 class="text-xl font-semibold mt-10 mb-4 ui-text">7.2 Check it by hand</h3>
+            <p class="mb-6">
+                The whole apparatus was built so that regrouping never changes the answer. Let us <em>watch</em> that happen. On the $w$-ruler, combining is multiplication, so building &ldquo;$A$ and $B$ and $C$&rdquo; both ways gives:
+            </p>
+            <div class="derivation">
+                $$
+                w\big[F(F(x,y),z)\big] = w(x)\,w(y)\,w(z)
+                = w\big[F(x,F(y,z))\big].
+                $$
+            </div>
+            <p class="mb-6">
+                Both groupings collapse to the same product $w(x)\,w(y)\,w(z)$, because plain multiplication does not care how you bracket it. That is the entire point of the derivation, seen in a single line.
+            </p>
+            <p class="mb-6">
+                And with actual numbers, to count it on your fingers. Suppose the three relabeled beliefs are each $\tfrac12$:
+            </p>
+            <div class="derivation">
+                $$
+                \big(\tfrac12 \cdot \tfrac12\big)\cdot \tfrac12 = \tfrac14 \cdot \tfrac12 = \tfrac18,
+                \qquad
+                \tfrac12 \cdot \big(\tfrac12 \cdot \tfrac12\big) = \tfrac12 \cdot \tfrac14 = \tfrac18.
+                $$
+            </div>
+            <p>
+                Same answer, $\tfrac18$, either way. Regrouping is invisible — precisely what the consistency hammer of section 5 demanded, and precisely what $r=1$ delivered.
+            </p>
+
+            <div class="theorem-block">
+                <div class="label text-bayesian-blue mb-2">Walk-away line</div>
+                <p class="mb-0">
+                    The strange &ldquo;combine two beliefs&rdquo; recipe is just multiplication in disguise: relabel each belief with $w$, and &ldquo;belief in $A$ and $B$&rdquo; is &ldquo;belief in $A$ given $B$&rdquo; times &ldquo;belief in $B$.&rdquo; That is the product rule — forced, not assumed.
+                </p>
+            </div>
+        </section>
+
+        <!-- ============================================================
+             SECTION 8 — FIXING THE SCALE
+             (Plan section 7)
+             ============================================================ -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-semibold mb-8 border-b pb-3 border-bayesian-border ui-text">
+                8. Fixing the scale
+            </h2>
+
+            <p class="mb-6">
+                The product rule is proved, but $w$ is still floating: we never said what number stands for &ldquo;certain&rdquo; or for &ldquo;impossible.&rdquo; Common sense — desideratum II again — pins both ends, using the very rule we just earned.
+            </p>
+
+            <h3 class="text-xl font-semibold mt-10 mb-4 ui-text">8.1 Certainty forces $w = 1$</h3>
+            <p class="mb-6">
+                Suppose $A$ is <strong>certain</strong> given $C$. Then &ldquo;$A$ and $B$&rdquo; is really just &ldquo;$B$&rdquo; — the $A$ part adds nothing, since it is guaranteed. Whenever $B$ is true, $AB$ is true, and vice versa. Two propositions with the same truth value must have the same plausibility (the most primitive axiom of all), so:
+            </p>
+            <div class="derivation">
+                $$ AB \mid C = B \mid C, \tag{2.29} $$
+                $$ A \mid BC = A \mid C. \tag{2.30} $$
+            </div>
+            <p class="mb-6">
+                Feed these into the product rule $w(AB\mid C) = w(A\mid BC)\,w(B\mid C)$:
+            </p>
+            <div class="derivation">
+                $$ w(B \mid C) = w(A \mid C)\,w(B \mid C). \tag{2.31} $$
+            </div>
+            <p class="mb-6">
+                This must hold <em>no matter what $B$ is</em> — for every value $w(B\mid C)$ could take. The only way $w(B\mid C) = w(A\mid C)\cdot w(B\mid C)$ can survive for all $B$ is if the multiplier is exactly one:
+            </p>
+            <div class="theorem-block">
+                <div class="label text-bayesian-blue mb-2">Equation (2.32) — certainty</div>
+                $$ \text{certainty is represented by}\quad w(A \mid C) = 1. $$
+            </div>
+
+            <h3 class="text-xl font-semibold mt-10 mb-4 ui-text">8.2 Impossibility forces $w = 0$ (or $\infty$)</h3>
+            <p class="mb-6">
+                Now suppose $A$ is <strong>impossible</strong> given $C$. Then &ldquo;$A$ and $B$&rdquo; is impossible too, right alongside $A$; and $A$ stays impossible whatever compatible $B$ you might learn:
+            </p>
+            <div class="derivation">
+                $$ AB \mid C = A \mid C, \tag{2.33} $$
+                $$ A \mid BC = A \mid C. \tag{2.34} $$
+            </div>
+            <p class="mb-6">
+                The product rule then gives:
+            </p>
+            <div class="derivation">
+                $$ w(A \mid C) = w(A \mid C)\,w(B \mid C). \tag{2.35} $$
+            </div>
+            <p class="mb-6">
+                Again this must hold for <em>every</em> $B$. Write $m = w(A\mid C)$ for the impossibility value; then $m = m\,w(B\mid C)$ for all values of $w(B\mid C)$. If $m$ were any ordinary nonzero, finite number, this would demand $w(B\mid C) = 1$ always — absurd. Only two escapes remain:
+            </p>
+            <div class="derivation">
+                $$ w(A \mid C) = 0 \qquad\text{or}\qquad w(A \mid C) = +\infty. $$
+            </div>
+            <p class="mb-6">
+                Both &ldquo;absorb&rdquo; multiplication ($0\cdot\text{anything}=0$, and $\infty$ swamps anything). The choice $-\infty$ is ruled out: by continuity it would force some $w$-values negative, contradicting (2.35).
+            </p>
+
+            <h3 class="text-xl font-semibold mt-10 mb-4 ui-text">8.3 Why $0$-to-$1$ is a free convention</h3>
+            <p class="mb-6">
+                So $w$ is a positive, continuous, monotonic function that can run two ways: <strong>increasing</strong>, from $0$ for impossibility up to $1$ for certainty; or <strong>decreasing</strong>, from $\infty$ for impossibility down to $1$ for certainty. Which should we pick?
+            </p>
+            <p class="mb-6">
+                It genuinely does not matter — the two carry identical content. Given any decreasing $w_1$ with impossibility at $\infty$, simply define
+            </p>
+            <div class="derivation">
+                $$ w_2(x) \equiv \frac{1}{w_1(x)}, $$
+            </div>
+            <p class="mb-6">
+                which is increasing, puts impossibility at $0$, and obeys all the same rules. Same theory, relabeled. So we choose the familiar one purely by <strong>convention</strong>:
+            </p>
+            <div class="theorem-block">
+                <div class="label text-bayesian-blue mb-2">Convention</div>
+                $$ 0 \le w(x) \le 1, \qquad \text{impossible} = 0, \quad \text{certain} = 1. $$
+            </div>
+            <p>
+                This is the familiar probability scale — arrived at last, and <em>chosen</em> only after proving the choice costs nothing.
+            </p>
+
+            <div class="theorem-block">
+                <div class="label text-bayesian-blue mb-2">Walk-away line</div>
+                <p class="mb-0">
+                    The product rule itself forces certainty to be $1$ and impossibility to be $0$ (or its mirror image $\infty$), so the $0$-to-$1$ scale is a convenience we adopt, not an assumption we make.
+                </p>
+            </div>
+        </section>
+
+        <!-- ============================================================
+             SECTION 9 — WHY IT MATTERS + WHAT'S NEXT
+             (Plan section 8)
+             ============================================================ -->
+        <section>
+            <h2 class="text-3xl font-semibold mb-8 border-b pb-3 border-bayesian-border ui-text">
+                9. Why it matters, and what comes next
+            </h2>
+
+            <h3 class="text-xl font-semibold mt-10 mb-4 ui-text">9.1 What we actually proved</h3>
+            <p class="mb-6">
+                Step back and look at the whole climb. We began with three demands so mild that anyone would grant them: beliefs should be real numbers, they should move the way common sense moves, and they should never contradict themselves. We assumed <em>nothing</em> about probability. And yet, one forced step at a time, those demands delivered a single, inescapable rule for combining the plausibility of &ldquo;$A$ and $B$&rdquo;:
+            </p>
+            <div class="theorem-block">
+                <div class="label text-bayesian-blue mb-2">The product rule, in the notation you already know</div>
+                $$
+                P(AB \mid C) = P(A \mid BC)\,P(B \mid C).
+                $$
+            </div>
+            <p class="mb-6">
+                Retrace the chain: the two-step picture (§2) $\to$ the honest form $F[(B\mid C),(A\mid BC)]$ and the eye-color trap (§3) $\to$ common sense makes $F$ smooth and rising (§4) $\to$ consistency across three propositions gives the Associativity Equation (§5) $\to$ solving it births $w$ and turns $F$ into multiplication (§6) $\to$ the product rule (§7) $\to$ the scale is pinned to $[0,1]$ (§8). At no point did we get to <em>choose</em> the rule; each step closed off every alternative. That is the deep lesson: the product rule is not one convention among many. It is the only way to combine beliefs without eventually contradicting yourself.
+            </p>
+            <p class="mb-6">
+                This is what Laplace's epigraph really means. Probability is not a separate axiom system bolted onto logic; it is what ordinary consistent reasoning <em>becomes</em> once you insist on carrying it out with numbers.
+            </p>
+
+            <h3 class="text-xl font-semibold mt-10 mb-4 ui-text">9.2 What comes next: the sum rule</h3>
+            <p class="mb-6">
+                The product rule tells us how to handle &ldquo;$A$ <em>and</em> $B$.&rdquo; But a complete calculus of belief needs one more piece: how does the plausibility of $A$ relate to the plausibility of its <em>negation</em>, &ldquo;not $A$&rdquo;? Section 2.2 attacks exactly that, in the very same spirit — write down a functional relation $v = S(u)$ between a belief and its opposite, demand consistency with the product rule we just built, and watch it force a unique answer.
+            </p>
+            <p class="mb-6">
+                That answer is the <strong>sum rule</strong>, $P(A\mid C) + P(\bar A\mid C) = 1$, and together with the product rule it completes the foundation. Everything else in Bayesian inference — Bayes' theorem, marginalization, updating on evidence — is bookkeeping on top of these two.
+            </p>
+
+            <div class="theorem-block">
+                <div class="label text-bayesian-blue mb-2">One-line summary</div>
+                <p class="mb-0">
+                    Demand only that beliefs be numbers, agree with common sense, and never contradict themselves — and the product rule of probability is the <em>only</em> thing that can result.
+                </p>
+            </div>
+        </section>
+
+    </div>
+</body>
+</html>
