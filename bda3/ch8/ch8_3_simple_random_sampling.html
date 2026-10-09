@@ -1,0 +1,2083 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Random Sampling of a Finite Population — BDA3 Section 8.3</title>
+    <meta name="description"
+        content="First-principles Bayesian decompression of BDA3 Section 8.3: Simple Random Sampling of a Finite Population applied to Gelman's Food Expenditure & Public Health Survey, Equation 8.5, and the derivation of the Finite Population Correction (Equation 8.6).">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400;1,6..72,600&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+
+    <!-- MathJax for LaTeX rendering -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bayesian: {
+                            bg: '#f7f9fb',
+                            text: '#191c1e',
+                            navy: '#131b2e',
+                            blue: '#0051d5',
+                            slate: '#596780',
+                            surface: '#ffffff',
+                            surfaceAlt: '#f8fafc',
+                            border: '#e2e8f0',
+                            accent: '#0f766e',
+                            amber: '#b45309'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Newsreader', Georgia, serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+            font-size: 1.125rem;
+            line-height: 1.75;
+            text-rendering: optimizeLegibility;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .ui-text {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        .mono-text {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Reading rhythm & prose accents */
+        p {
+            margin-bottom: 1.5rem;
+            color: #334155;
+        }
+
+        strong {
+            color: #0f172a;
+        }
+
+        /* Premium Callout Box */
+        .callout-box {
+            border-left: 4px solid #0051d5;
+            background: #ffffff;
+            box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
+            border-radius: 0 0.75rem 0.75rem 0;
+            border-top: 1px solid #f1f5f9;
+            border-right: 1px solid #f1f5f9;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        /* Math Display Plate */
+        .math-plate {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            box-shadow: 0 2px 10px rgba(15, 23, 42, 0.03);
+            padding: 1.5rem;
+            margin: 1.75rem 0;
+            text-align: center;
+            overflow-x: auto;
+        }
+
+        /* Derivation Step Card */
+        .derivation-step {
+            border: 1px solid #e2e8f0;
+            background: #ffffff;
+            border-radius: 0.75rem;
+            box-shadow: 0 2px 10px rgba(15, 23, 42, 0.03);
+            transition: all 0.25s ease;
+        }
+
+        .derivation-step:hover {
+            border-color: #cbd5e1;
+            box-shadow: 0 8px 24px -4px rgba(15, 23, 42, 0.08);
+            transform: translateY(-1px);
+        }
+
+        /* Collapsible Underhood Plate */
+        .underhood {
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            background: #ffffff;
+            margin: 1.75rem 0;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.02);
+            transition: border-color 0.2s ease;
+        }
+
+        .underhood:hover {
+            border-color: #cbd5e1;
+        }
+
+        .underhood>summary {
+            padding: 1rem 1.25rem;
+            cursor: pointer;
+            font-weight: 600;
+            background-color: #f8fafc;
+            color: #0f172a;
+            list-style: none;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.925rem;
+            transition: background-color 0.15s ease;
+        }
+
+        .underhood>summary:hover {
+            background-color: #f1f5f9;
+        }
+
+        .underhood>summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .underhood>summary::before {
+            content: "▸";
+            font-size: 0.95rem;
+            color: #64748b;
+            margin-right: 0.65rem;
+            transition: transform 0.2s ease;
+        }
+
+        .underhood[open]>summary::before {
+            content: "▾";
+            color: #0051d5;
+        }
+
+        .underhood[open]>summary {
+            border-bottom: 1px solid #e2e8f0;
+            background-color: #ffffff;
+        }
+
+        .underhood .uh-body {
+            padding: 1.25rem 1.5rem;
+            font-size: 1.05rem;
+            line-height: 1.7;
+        }
+
+        /* Section Numbering Badge */
+        .sec-num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 9999px;
+            background: #eff6ff;
+            color: #0051d5;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-right: 0.75rem;
+            flex-shrink: 0;
+            border: 1px solid #bfdbfe;
+        }
+
+        /* Modern Range Input Styling */
+        input[type=range] {
+            accent-color: #0051d5;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 9999px;
+            cursor: pointer;
+        }
+
+        /* Smooth Anchor Scroll */
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+
+<body class="antialiased selection:bg-blue-100 selection:text-bayesian-navy">
+    <div class="max-w-[840px] mx-auto px-6 py-12">
+
+        <!-- Navigation -->
+        <nav class="mb-12 flex items-center justify-between border-b border-slate-200/80 pb-4">
+            <a href="../../index.html"
+                class="inline-flex items-center text-xs font-semibold text-slate-500 hover:text-bayesian-blue transition-colors ui-text uppercase tracking-wider">
+                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                Portfolio Index
+            </a>
+            <div class="flex items-center gap-3 text-xs text-slate-400 ui-text">
+                <span>BDA3 Deconstructions</span>
+                <span>/</span>
+                <span class="text-slate-600 font-medium">Chapter 8</span>
+            </div>
+        </nav>
+
+        <!-- Header -->
+        <header class="mb-14">
+            <div class="flex flex-wrap items-center gap-2 mb-4">
+                <span
+                    class="px-2.5 py-1 bg-slate-100 border border-slate-200 text-slate-700 rounded-md text-xs font-semibold tracking-wide uppercase ui-text">
+                    BDA3 • Chapter 8 • Section 8.3
+                </span>
+                <span
+                    class="px-2.5 py-1 bg-blue-50 border border-blue-200 text-bayesian-blue rounded-md text-xs font-semibold tracking-wide uppercase ui-text">
+                    Gelman's Food Survey Model
+                </span>
+                <span
+                    class="px-2.5 py-1 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-md text-xs font-semibold tracking-wide uppercase ui-text">
+                    First-Principles Decompression
+                </span>
+            </div>
+
+            <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight leading-[1.15] text-slate-900 ui-text mb-4">
+                Simple Random Sampling of a Finite Population
+            </h1>
+
+            <p class="text-lg md:text-xl text-slate-600 font-serif leading-relaxed italic mb-6">
+                How estimating weekly food expenditure across a finite community becomes a clean game of predicting
+                un-surveyed households, and how Bayesian first principles naturally derive the classical Finite
+                Population Correction without arbitrary bookkeeping tricks.
+            </p>
+
+            <!-- Byline & Metadata Bar -->
+            <div class="flex flex-wrap items-center justify-between text-xs text-slate-500 border-y border-slate-200/80 py-3.5 gap-3 ui-text">
+                <div class="flex items-center gap-2">
+                    <span class="font-semibold text-slate-900">Saurabh Kumar Pandey</span>
+                    <span>•</span>
+                    <span>Gelman et al., BDA3 §8.3 (p. 205–216)</span>
+                    <span>•</span>
+                    <span>October 2026</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="inline-flex items-center gap-1 text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded-full font-medium">
+                        <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        14 min read
+                    </span>
+                    <a href="#sec-5" class="inline-flex items-center gap-1.5 text-blue-700 bg-blue-50 border border-blue-200 hover:bg-blue-100 px-2.5 py-0.5 rounded-full font-medium transition-colors">
+                        <span class="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse"></span>
+                        Interactive Policy Lab ↓
+                    </a>
+                </div>
+            </div>
+
+            <!-- Executive Decompression Abstract -->
+            <div class="mt-6 p-6 sm:p-7 bg-white border-l-4 border-bayesian-blue border-y border-r border-slate-200/80 rounded-r-xl shadow-[0_4px_16px_rgba(15,23,42,0.03)]">
+                <div class="flex items-center gap-2 mb-2 ui-text">
+                    <span class="text-xs font-bold uppercase tracking-wider text-bayesian-blue">Executive Decompression Brief</span>
+                </div>
+                <p class="text-sm sm:text-base text-slate-600 font-serif leading-relaxed italic mb-0">
+                    Classical survey statistics presents the Finite Population Correction $(1 - n/N)$ as an algebraic postulate applied to confidence intervals. In Bayesian data analysis, however, finite-population inference is re-anchored as a <strong>pure prediction problem</strong>: given observed food diaries $y_{\text{obs}}$ from $n = 400$ residents, we predict the missing balance $y_{\text{mis}}$ for the remaining $N - n = 19{,}600$ citizens. Once the missing ledger entries are imputed, non-linear municipal decisions—such as food poverty headcount, emergency nutrition voucher reserves, and solvency stress thresholds—are evaluated without Taylor-series approximations.
+                </p>
+            </div>
+
+            <!-- Quick Jump Section Navigation -->
+            <div class="mt-6 flex flex-wrap gap-2 text-xs font-semibold ui-text">
+                <a href="#sec-1" class="px-3 py-1.5 bg-slate-100 hover:bg-blue-50 hover:text-bayesian-blue text-slate-700 rounded-lg border border-slate-200 transition-colors">01. Exchangeability</a>
+                <a href="#sec-2" class="px-3 py-1.5 bg-slate-100 hover:bg-blue-50 hover:text-bayesian-blue text-slate-700 rounded-lg border border-slate-200 transition-colors">02. Inclusion Vector &amp; $\pi_i$</a>
+                <a href="#sec-3" class="px-3 py-1.5 bg-slate-100 hover:bg-blue-50 hover:text-bayesian-blue text-slate-700 rounded-lg border border-slate-200 transition-colors">03. Split Ledger (Eq 8.5)</a>
+                <a href="#sec-4" class="px-3 py-1.5 bg-slate-100 hover:bg-blue-50 hover:text-bayesian-blue text-slate-700 rounded-lg border border-slate-200 transition-colors">04. Deriving Eq 8.6</a>
+                <a href="#sec-5" class="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-bayesian-blue rounded-lg border border-blue-200 transition-colors font-bold">05. Policy Lab Simulator ↗</a>
+            </div>
+        </header>
+
+        <!-- ============================================================
+             SECTION 1 — THE FOOD SURVEY AND EXCHANGEABILITY
+             ============================================================ -->
+        <section id="sec-1" class="mb-16 scroll-mt-6">
+            <h2
+                class="text-2xl md:text-3xl font-bold mb-6 text-slate-900 border-b pb-3 border-slate-200/90 ui-text flex items-center">
+                <span class="sec-num">01</span>
+                <span>The Problem: Surveying Food Expenditure in a Finite Community</span>
+            </h2>
+
+            <p class="mb-6">
+                Consider a municipal district with a finite population of exactly $N = 20{,}000$ residents (or
+                households). Ahead of an annual public health and social welfare review, city officials must estimate
+                the population-wide average weekly food expenditure: $y_1, y_2, \dots, y_N$, where <strong>$y_i$ is the
+                    amount spent on food by the $i$th person</strong> (Gelman et al., BDA3 p. 205).
+            </p>
+
+            <p class="mb-6">
+                The target estimand is the exact population mean:
+            </p>
+
+            <div class="math-plate text-lg md:text-xl text-slate-900 font-bold">
+                $$\bar{y} = \frac{1}{N}\sum_{i=1}^N y_i = \frac{y_1 + y_2 + \dots + y_N}{N}$$
+            </div>
+
+            <p class="mb-6">
+                Conducting an exhaustive, in-person nutritional and grocery audit of all 20,000 households—collecting
+                itemized grocery receipts, dietary logs, and market bills—would exhaust the city's entire annual public
+                health budget. Instead, the department surveys a simple random sample of $n = 400$ residents who record
+                their detailed weekly food spending.
+            </p>
+
+            <p class="mb-6">
+                What does a Bayesian model assume about this finite community before the first survey diary is returned?
+            </p>
+
+            <div class="callout-box p-6 rounded-r-xl my-8">
+                <h3 class="text-base font-bold text-bayesian-navy uppercase tracking-wider mb-2 ui-text">The
+                    Foundational Assumption: Exchangeability</h3>
+                <p class="text-base text-bayesian-slate mb-4 leading-relaxed">
+                    Before inspecting individual grocery receipts or demographic forms, the city treats the 20,000
+                    residents as <strong>exchangeable</strong>.
+                </p>
+                <p class="text-base text-bayesian-slate mb-4 leading-relaxed">
+                    <strong>The Philosophical Meaning:</strong> Imagine an administrator walked into the municipal
+                    registry office and randomly permuted the identification numbers of all 20,000 residents. Your prior
+                    belief about the community's overall food expenditure would not change by a single cent. The citizen
+                    IDs, housing unit numbers, and filing order carry zero inherent information about grocery habits.
+                    Without inspecting specific household covariates (such as income or family size), you have no prior
+                    basis to believe Resident #14 spends any more on food than Resident #18,721.
+                </p>
+                <p class="text-base text-bayesian-slate leading-relaxed">
+                    <strong>Exchangeability Is Not Independence:</strong> It is vital to recognize that these residents
+                    are <em>not</em> independent. If the first 50 surveyed households report shockingly high food bills
+                    driven by unexpected supermarket grocery inflation, you immediately update your belief that the
+                    remaining 19,950 un-surveyed residents are also spending more on food. The residents are tied
+                    together through a shared local food market, regional grocery supply chains, and prevailing economic
+                    conditions. Exchangeability simply expresses <em>complete symmetry in our initial state of
+                        knowledge</em>: before the survey begins, every resident stands on identical epistemic footing.
+                </p>
+            </div>
+
+            <div class="derivation-step p-6 my-8">
+                <h3 class="text-base font-bold text-bayesian-navy uppercase tracking-wider mb-2 ui-text">Translating
+                    Symmetry into Mathematics: The Mixture Integral (Page 205)</h3>
+
+                <p class="text-base text-bayesian-slate mb-4 leading-relaxed">
+                    We assume that there is a <strong>common economic and market context</strong> represented by
+                    parameters $\theta$ (such as prevailing grocery inflation, local food retail prices, and general
+                    community wage levels) that drives these food expenditures.
+                </p>
+
+                <!-- Graphical Model Diagram -->
+                <div class="my-8 p-6 sm:p-8 bg-slate-50 border border-slate-200 rounded-xl shadow-sm">
+                    <div
+                        class="text-xs font-bold text-bayesian-slate uppercase tracking-wider mb-6 text-center ui-text">
+                        Graphical Model: Conditional Independence Given $\theta$
+                    </div>
+
+                    <svg viewBox="0 0 680 255" class="w-full h-auto max-w-[640px] mx-auto block overflow-visible"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6"
+                                orient="auto-start-reverse">
+                                <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#0051d5" />
+                            </marker>
+                        </defs>
+
+                        <!-- Heading labels with plenty of clearance above the circle -->
+                        <text text-anchor="middle" x="340" y="24" fill="#131b2e" font-family="'Inter', sans-serif"
+                            font-size="14" font-weight="700">Common Economic Context θ</text>
+                        <text text-anchor="middle" x="340" y="44" fill="#596780" font-family="'Inter', sans-serif"
+                            font-size="11">(Local Food Market Inflation & Supply Conditions)</text>
+
+                        <!-- Common Parameter Theta Node (center at y=82, top at y=56) -->
+                        <g transform="translate(340, 82)">
+                            <circle r="26" fill="#0051d5" stroke="#003db5" stroke-width="2" />
+                            <text text-anchor="middle" dy="0.35em" fill="#ffffff" font-family="'Newsreader', serif"
+                                font-size="24" font-weight="600">θ</text>
+                        </g>
+
+                        <!-- Directed Edges -->
+                        <path d="M 316 93 L 105 178" stroke="#0051d5" stroke-width="1.75" fill="none"
+                            marker-end="url(#arrow)" />
+                        <path d="M 322 100 L 223 178" stroke="#0051d5" stroke-width="1.75" fill="none"
+                            marker-end="url(#arrow)" />
+                        <path d="M 340 108 L 340 178" stroke="#0051d5" stroke-width="1.75" fill="none"
+                            marker-end="url(#arrow)" />
+                        <path d="M 358 100 L 457 178" stroke="#0051d5" stroke-width="1.75" fill="none"
+                            marker-end="url(#arrow)" />
+                        <path d="M 364 93 L 575 178" stroke="#0051d5" stroke-width="1.75" fill="none"
+                            marker-end="url(#arrow)" />
+
+                        <!-- Child Nodes: Individual Residents -->
+                        <!-- y1 -->
+                        <g transform="translate(95, 196)">
+                            <circle r="22" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" />
+                            <text text-anchor="middle" dy="0.35em" fill="#131b2e" font-family="'Newsreader', serif"
+                                font-size="18" font-style="italic">y<tspan font-size="12" dy="4">1</tspan></text>
+                            <text text-anchor="middle" y="34" fill="#596780" font-family="'Inter', sans-serif"
+                                font-size="11">Person 1</text>
+                        </g>
+
+                        <!-- y2 -->
+                        <g transform="translate(215, 196)">
+                            <circle r="22" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" />
+                            <text text-anchor="middle" dy="0.35em" fill="#131b2e" font-family="'Newsreader', serif"
+                                font-size="18" font-style="italic">y<tspan font-size="12" dy="4">2</tspan></text>
+                            <text text-anchor="middle" y="34" fill="#596780" font-family="'Inter', sans-serif"
+                                font-size="11">Person 2</text>
+                        </g>
+
+                        <!-- y3 -->
+                        <g transform="translate(340, 196)">
+                            <circle r="22" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" />
+                            <text text-anchor="middle" dy="0.35em" fill="#131b2e" font-family="'Newsreader', serif"
+                                font-size="18" font-style="italic">y<tspan font-size="12" dy="4">3</tspan></text>
+                            <text text-anchor="middle" y="34" fill="#596780" font-family="'Inter', sans-serif"
+                                font-size="11">Person 3</text>
+                        </g>
+
+                        <!-- dots -->
+                        <g transform="translate(460, 196)">
+                            <text text-anchor="middle" dy="0.35em" fill="#596780" font-family="'Inter', sans-serif"
+                                font-size="20" font-weight="700">···</text>
+                        </g>
+
+                        <!-- yN -->
+                        <g transform="translate(585, 196)">
+                            <circle r="22" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" />
+                            <text text-anchor="middle" dy="0.35em" fill="#131b2e" font-family="'Newsreader', serif"
+                                font-size="18" font-style="italic">y<tspan font-size="12" dy="4">N</tspan></text>
+                            <text text-anchor="middle" y="34" fill="#596780" font-family="'Inter', sans-serif"
+                                font-size="11">Person N</text>
+                        </g>
+                    </svg>
+
+                    <div class="mt-6 pt-4 border-t border-slate-200 text-center text-xs text-bayesian-slate ui-text">
+                        <strong>Key Insight:</strong> There are no direct horizontal arrows connecting $y_i$ to $y_j$.
+                        Once the common state $\theta$ is fixed, knowing the weekly food spending of Person 1 tells you
+                        <em>nothing new</em> about Person 2. The outcomes are <strong>conditionally independent given
+                            $\theta$</strong>:
+                        $$p(y_1, y_2, \dots, y_N \mid \theta) = \prod_{i=1}^N p(y_i \mid \theta)$$
+                    </div>
+                </div>
+
+                <p class="text-base text-bayesian-slate mb-3">
+                    Now, write the joint probability distribution of the entire population food expenditure vector $y$:
+                </p>
+
+                <div class="text-center my-3 text-bayesian-navy font-semibold">
+                    $$p(y) = p(y_1, y_2, y_3, \dots, y_N)$$
+                </div>
+
+                <p class="text-base text-bayesian-slate mb-3">
+                    Because we do not know the true economic and market context $\theta$ with certainty, the Law of
+                    Total Probability tells us to average over all possible values of $\theta$, weighted by our prior
+                    beliefs $p(\theta)$:
+                </p>
+
+                <div class="text-center my-3 text-bayesian-navy font-semibold">
+                    $$p(y) = \int p(y_1, y_2, y_3, \dots, y_N \mid \theta) \, p(\theta) \, d\theta$$
+                </div>
+
+                <p class="text-base text-bayesian-slate mb-3">
+                    Finally, substituting the conditional independence from our diagram above into this integral gives
+                    Gelman's exact exchangeability formula:
+                </p>
+
+                <div class="text-center my-4 text-bayesian-blue font-bold text-xl">
+                    $$p(y) = \int \left( \prod_{i=1}^N p(y_i \mid \theta) \right) p(\theta) \, d\theta$$
+                </div>
+
+                <p class="text-sm text-bayesian-slate mt-4 leading-relaxed ui-text">
+                    <strong>Economic & Public Health Meaning:</strong> Inflationary shocks and regional supply chains
+                    define a latent price regime $\theta = (\mu, \sigma^2)$. If $\theta$ were known with certainty, each
+                    household's food budget would be modeled as an independent draw from that economic climate. Because
+                    $\theta$ is unknown, we integrate over our prior uncertainty about the regional market environment.
+                </p>
+            </div>
+        </section>
+
+        <!-- ============================================================
+             SECTION 2 — THE SURVEY INCLUSION VECTOR AND PROPENSITY SCORES
+             ============================================================ -->
+        <section id="sec-2" class="mb-16 scroll-mt-6">
+            <h2
+                class="text-2xl md:text-3xl font-bold mb-6 text-slate-900 border-b pb-3 border-slate-200/90 ui-text flex items-center">
+                <span class="sec-num">02</span>
+                <span>The Inclusion Vector $I$ and Unit Selection Propensity</span>
+            </h2>
+
+            <p class="mb-6 leading-relaxed text-lg">
+                For this investigation, we have chosen a survey sample of $n$. To track which citizens are selected and
+                which are not, we create an indicator variable $I$:
+            </p>
+
+            <!-- Formal piecewise definition -->
+            <div class="math-plate text-lg md:text-xl text-slate-900 font-bold">
+                $$I_i = \begin{cases} 1 & \text{if unit } i \text{ is selected} \\ 0 & \text{otherwise} \end{cases}
+                \quad \text{for } i = 1, 2, \dots, N$$
+            </div>
+
+            <p class="mb-6">
+                In terms of our community food survey ($N = 20{,}000$, $n = 400$):
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
+                <div class="p-5 bg-white border border-bayesian-border rounded-lg shadow-sm">
+                    <span class="font-bold text-xl text-bayesian-blue">$I_i = 1$</span>
+                    <p class="text-base text-bayesian-slate mt-2 ui-text">Resident $i$ is selected into the survey
+                        sample (their weekly food spending $y_i$ is observed: $y_i \in y_{\text{obs}}$).</p>
+                </div>
+                <div class="p-5 bg-white border border-bayesian-border rounded-lg shadow-sm">
+                    <span class="font-bold text-xl text-bayesian-slate">$I_i = 0$</span>
+                    <p class="text-base text-bayesian-slate mt-2 ui-text">Resident $i$ is not selected and remains
+                        un-surveyed (their weekly food spending $y_i$ is missing/unobserved: $y_i \in y_{\text{mis}}$).
+                    </p>
+                </div>
+            </div>
+
+            <p class="mb-6 leading-relaxed">
+                Now the question is: <em>how is this vector $I$ selected?</em> Is there an underlying model or specific
+                logic applied to select these households?
+            </p>
+
+            <p class="mb-6 leading-relaxed">
+                For simplicity, we assume that it is selected <strong>completely randomly</strong>. Under this simple
+                random sampling design, every possible subset of $n$ residents from the population of $N$ residents has
+                the exact same chance of being picked. Therefore, the probability that a particular sample of households
+                is chosen is:
+            </p>
+
+            <div class="math-plate text-lg md:text-xl text-slate-900 font-bold">
+                $$p(I \mid y, \phi) = p(I) = \begin{cases} \dbinom{N}{n}^{-1} & \text{if } \sum_{i=1}^N I_i = n \\ 0 &
+                \text{otherwise} \end{cases}$$
+            </div>
+
+            <div class="my-6">
+                <h3 class="text-lg font-bold text-bayesian-navy mb-3 ui-text">Deconstructing the Formula:</h3>
+                <ul class="space-y-3 list-disc pl-6 text-base text-bayesian-slate">
+                    <li><strong class="text-bayesian-navy">Why $\binom{N}{n}^{-1}$?</strong> There are $\binom{N}{n}$
+                        possible distinct sample combinations of size $n$ from population $N$. In a clean, fair lottery,
+                        every possible combination has the exact same uniform probability.</li>
+                    <li><strong class="text-bayesian-navy">Why "0 otherwise"?</strong> Because the survey design
+                        mandates drawing <em>exactly $n$ people</em>. Any configuration where $\sum_{i=1}^N I_i \neq n$
+                        is impossible.</li>
+                    <li><strong class="text-bayesian-navy">Why does $y$ drop out?</strong> The sampling mechanism does
+                        not depend on the outcome values $y$ (food spending). Because $p(I \mid y) = p(I)$, the sampling
+                        is <strong>strongly ignorable</strong> by design!</li>
+                </ul>
+            </div>
+
+            <p class="mb-4 leading-relaxed text-base text-bayesian-slate">
+                While the joint probability of drawing any specific sample configuration $I$ is $\binom{N}{n}^{-1}$, the
+                probability of getting selected in the sample for each person (or unit $i$) is called the
+                <strong>propensity $\pi$</strong> (or unit inclusion propensity $\pi_i$):
+            </p>
+
+            <div class="p-5 bg-bayesian-cream border border-bayesian-border rounded-xl shadow-sm my-4 text-center">
+                $$\pi_i = \Pr(I_i = 1) = \frac{n}{N}$$
+            </div>
+
+            <p class="mb-6 leading-relaxed text-sm text-bayesian-slate">
+                In our community survey with $N = 20{,}000$ residents and a sample of $n = 400$, each individual citizen
+                has an identical propensity of $\pi = \frac{400}{20{,}000} = \frac{1}{50} = 2.0\%$.
+            </p>
+
+            <!-- Proof Box -->
+            <details class="underhood" open>
+                <summary>First-Principles Proof: The Unit-Level Survey Selection Probability is $\pi_i = \frac{n}{N}$
+                </summary>
+                <div class="uh-body text-bayesian-slate space-y-4">
+                    <p>
+                        While the joint probability of drawing this exact 400-person sample is $p(I) =
+                        \binom{N}{n}^{-1}$, what is the chance that <strong>one specific resident (Citizen #7)</strong>
+                        is surveyed?
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-4">
+                        <div class="p-4 bg-slate-50 border border-slate-200 rounded-lg">
+                            <h4 class="font-bold text-bayesian-navy text-sm uppercase tracking-wider mb-2 ui-text">
+                                Method 1: Combinatorial Team Counting</h4>
+                            <p class="text-sm mb-2">If Citizen #7 is selected into the survey batch, $(n-1)$ spots
+                                remain to be chosen from the $(N-1)$ other residents in the community:</p>
+                            <div class="text-xs mono-text text-bayesian-navy text-center my-3">
+                                $$\Pr(\text{Citizen } i) = \frac{\binom{N-1}{n-1}}{\binom{N}{n}} =
+                                \frac{\frac{(N-1)!}{(n-1)!(N-n)!}}{\frac{N!}{n!(N-n)!}}$$
+                            </div>
+                            <p class="text-xs text-bayesian-slate">
+                                The $(N-n)!$ terms cancel cleanly:
+                                $$\frac{(N-1)!}{N!} \times \frac{n!}{(n-1)!} = \frac{1}{N} \times n =
+                                \mathbf{\frac{n}{N}}$$
+                                For our community: $\pi_i = \frac{400}{20{,}000} = 2.0\%$.
+                            </p>
+                        </div>
+
+                        <div class="p-4 bg-slate-50 border border-slate-200 rounded-lg">
+                            <h4 class="font-bold text-bayesian-navy text-sm uppercase tracking-wider mb-2 ui-text">
+                                Method 2: Symmetry (Feynman's View)</h4>
+                            <p class="text-sm mb-2">Picture $N$ citizens in the municipal registry and $n$ interview
+                                slots in the survey team's schedule:</p>
+                            <ul class="text-xs space-y-2 list-disc pl-4 text-bayesian-slate">
+                                <li>Every citizen has the identical probability $p$ of being interviewed.</li>
+                                <li>The expected sum of surveyed citizens is $N \times p$.</li>
+                                <li>We know with certainty that exactly $n$ citizens are interviewed:
+                                    $$N \cdot p = n \implies \mathbf{p = \frac{n}{N}}$$
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </details>
+        </section>
+
+        <!-- ============================================================
+             SECTION 3 — THE SPLIT LEDGER (EQUATION 8.5) & SIMULATION
+             ============================================================ -->
+        <section id="sec-3" class="mb-16 scroll-mt-6">
+            <h2
+                class="text-2xl md:text-3xl font-bold mb-6 text-slate-900 border-b pb-3 border-slate-200/90 ui-text flex items-center">
+                <span class="sec-num">03</span>
+                <span>Observed vs. Missing Data: The Split Ledger Formula (Equation 8.5)</span>
+            </h2>
+
+            <p class="mb-6 leading-relaxed">
+                Now, we take those selected households where $I_i = 1$ and look at their actual food expenditure. We
+                call these $y_{\text{obs}}$ (the <strong>observed values</strong>).
+            </p>
+
+            <p class="mb-6 leading-relaxed">
+                Our ultimate objective is to estimate the population mean weekly food expenditure $\bar{y}$ across the
+                entire community using this sample. However, we do not have the food expenditure for the un-surveyed
+                residents. Therefore, we divide our entire population into two distinct groups:
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
+                <div class="p-5 bg-emerald-50 border border-emerald-200 rounded-lg shadow-sm">
+                    <span class="ui-text font-bold text-emerald-800 text-sm uppercase tracking-wider">Group 1: Observed
+                        Data ($y_{\text{obs}}$)</span>
+                    <p class="text-base text-emerald-900 mt-2">
+                        The $n = 400$ residents who completed the weekly food diary ($I_i = 1$). Using $y_{\text{obs}}$,
+                        we can immediately compute their exact sample mean:
+                    </p>
+                    <div class="text-center font-bold text-emerald-900 my-2">
+                        $$\bar{y}_{\text{obs}} = \frac{1}{n}\sum_{i: I_i = 1} y_i$$
+                    </div>
+                    <p class="text-xs text-emerald-800 mt-1">This is an observed fact with zero posterior variance.</p>
+                </div>
+
+                <div class="p-5 bg-amber-50 border border-amber-200 rounded-lg shadow-sm">
+                    <span class="ui-text font-bold text-amber-800 text-sm uppercase tracking-wider">Group 2: Missing
+                        Data ($y_{\text{mis}}$)</span>
+                    <p class="text-base text-amber-900 mt-2">
+                        The $N - n = 19{,}600$ residents living in the community who were not surveyed ($I_i = 0$). If
+                        we knew their actual food spending, we could also compute their mean:
+                    </p>
+                    <div class="text-center font-bold text-amber-900 my-2">
+                        $$\bar{y}_{\text{mis}} = \frac{1}{N - n}\sum_{i: I_i = 0} y_i$$
+                    </div>
+                    <p class="text-xs text-amber-800 mt-1">All our uncertainty about $\bar{y}$ stems entirely from this
+                        unknown term.</p>
+                </div>
+            </div>
+
+            <p class="mb-4 leading-relaxed">
+                If we knew both $\bar{y}_{\text{obs}}$ and $\bar{y}_{\text{mis}}$, the entire community average food
+                expenditure $\bar{y}$ is simply the weighted combination of the two groups:
+            </p>
+
+            <div class="math-plate text-lg md:text-xl text-slate-900 font-bold">
+                $$\bar{y} = \frac{\sum_{i=1}^N y_i}{N} = \frac{\sum_{i: I_i = 1} y_i + \sum_{i: I_i = 0} y_i}{N} =
+                \left(\frac{n}{N}\right) \bar{y}_{\text{obs}} + \left(\frac{N - n}{N}\right) \bar{y}_{\text{mis}}
+                \tag{8.5}$$
+            </div>
+
+            <p class="mb-6 leading-relaxed text-bayesian-slate">
+                <strong>The Core Bayesian Insight:</strong> Notice what Gelman does here. Estimating the finite
+                population mean $\bar{y}$ is <em>not</em> an abstract inferential dilemma about hypothetical repeated
+                universes. It is strictly an <strong>out-of-sample prediction problem</strong>. We already know
+                $\bar{y}_{\text{obs}}$ with $100\%$ certainty; finding the posterior distribution of $\bar{y}$ reduces
+                completely to finding the predictive distribution of the un-surveyed residents' food spending
+                $\bar{y}_{\text{mis}}$!
+            </p>
+
+            <div class="callout-box p-6 rounded-r-xl my-8">
+                <h3 class="text-base font-bold text-bayesian-navy uppercase tracking-wider mb-2 ui-text">
+                    The Epistemic Bridge: Using $y_{\text{obs}}$ to Learn the Context $\theta$
+                </h3>
+                <p class="text-base text-bayesian-slate mb-4 leading-relaxed">
+                    Now we have observed food expenditure data from the $n = 400$ surveyed residents ($y_{\text{obs}}$).
+                    What is their primary job in the Bayesian framework?
+                </p>
+                <p class="text-base text-bayesian-slate mb-4 leading-relaxed">
+                    They act as a <strong>telescope into the latent food market context</strong> $\theta = (\mu,
+                    \sigma^2)$. The 400 grocery diaries reveal the prevailing regional inflation rate, supermarket
+                    markups, and dietary costs across the whole municipality. Applying Bayes' rule, we invert the
+                    generative process to obtain the posterior distribution of the economic environment:
+                </p>
+                <div class="text-center font-bold text-bayesian-blue text-lg my-3">
+                    $$p(\theta \mid y_{\text{obs}}) \propto p(\theta) \prod_{i: I_i = 1} p(y_i \mid \theta)$$
+                </div>
+                <p class="text-base text-bayesian-slate leading-relaxed">
+                    Once this posterior distribution $p(\theta \mid y_{\text{obs}})$ is locked in, we no longer need to
+                    speculate about the unobserved households in the abstract. We can use this distribution to
+                    <strong>generate plausible replicas of the $19{,}600$ un-surveyed citizens' weekly food
+                        purchases</strong>.
+                </p>
+            </div>
+
+            <!-- Two-Stage Generative Pipeline SVG Diagram -->
+            <div class="my-8 p-6 sm:p-8 bg-slate-50 border border-slate-200 rounded-xl shadow-sm">
+                <div class="text-xs font-bold text-bayesian-slate uppercase tracking-wider mb-6 text-center ui-text">
+                    The Two-Stage Generative Monte Carlo Pipeline (2,000 Iterations)
+                </div>
+
+                <svg viewBox="0 0 760 220" class="w-full h-auto max-w-[720px] mx-auto block overflow-visible"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <marker id="arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6"
+                            orient="auto-start-reverse">
+                            <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#0051d5" />
+                        </marker>
+                    </defs>
+
+                    <!-- Box 1: Observed Data -->
+                    <g transform="translate(10, 30)">
+                        <rect width="140" height="90" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" />
+                        <text x="70" y="26" text-anchor="middle" font-family="'Inter', sans-serif" font-size="11"
+                            font-weight="700" fill="#0051d5" letter-spacing="0.5">STEP 0: SURVEY</text>
+                        <text x="70" y="50" text-anchor="middle" font-family="'Newsreader', serif" font-size="18"
+                            font-style="italic" fill="#131b2e">y<tspan font-size="12" dy="3">obs</tspan></text>
+                        <text x="70" y="72" text-anchor="middle" font-family="'Inter', sans-serif" font-size="11"
+                            fill="#596780">400 Food Diaries</text>
+                    </g>
+
+                    <!-- Arrow 1 -> 2 -->
+                    <path d="M 150 75 L 188 75" stroke="#0051d5" stroke-width="2" fill="none"
+                        marker-end="url(#arrow-blue)" />
+                    <text x="170" y="65" text-anchor="middle" font-family="'Inter', sans-serif" font-size="9"
+                        font-weight="600" fill="#596780">BAYES</text>
+
+                    <!-- Box 2: Posterior of Context Theta -->
+                    <g transform="translate(190, 30)">
+                        <rect width="160" height="90" rx="8" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.5" />
+                        <text x="80" y="26" text-anchor="middle" font-family="'Inter', sans-serif" font-size="11"
+                            font-weight="700" fill="#0051d5" letter-spacing="0.5">STAGE 1: DRAW θ<tspan font-size="9" dy="-3">(s)</tspan><tspan font-size="11" dy="3"></tspan></text>
+                        <text x="80" y="52" text-anchor="middle" font-family="'Newsreader', serif" font-size="16"
+                            font-weight="600" fill="#131b2e">θ<tspan font-size="11" dy="-4">(s)</tspan><tspan font-size="16" dy="4"> ~ p(θ|y</tspan><tspan font-size="11" dy="3">obs</tspan><tspan font-size="16" dy="-3">)</tspan></text>
+                        <text x="80" y="74" text-anchor="middle" font-family="'Inter', sans-serif" font-size="11"
+                            fill="#596780">Plausible Price State</text>
+                    </g>
+
+                    <!-- Arrow 2 -> 3 -->
+                    <path d="M 350 75 L 388 75" stroke="#0051d5" stroke-width="2" fill="none"
+                        marker-end="url(#arrow-blue)" />
+                    <text x="370" y="65" text-anchor="middle" font-family="'Inter', sans-serif" font-size="9"
+                        font-weight="600" fill="#596780">SIMULATE</text>
+
+                    <!-- Box 3: Simulate Missing Records -->
+                    <g transform="translate(390, 30)">
+                        <rect width="165" height="90" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" />
+                        <text x="82" y="26" text-anchor="middle" font-family="'Inter', sans-serif" font-size="11"
+                            font-weight="700" fill="#0051d5" letter-spacing="0.5">STAGE 2: DRAW y<tspan font-size="9"
+                                dy="2">mis</tspan><tspan font-size="9" dy="-5">(s)</tspan><tspan font-size="11" dy="3"></tspan></text>
+                        <text x="82" y="52" text-anchor="middle" font-family="'Newsreader', serif" font-size="16"
+                            font-style="italic" fill="#131b2e">y<tspan font-size="11" dy="3">i</tspan><tspan font-size="10" dy="-7">(s)</tspan><tspan font-size="16" dy="4"> ~ p(y|θ</tspan><tspan font-size="10" dy="-5">(s)</tspan><tspan font-size="16" dy="5">)</tspan></text>
+                        <text x="82" y="74" text-anchor="middle" font-family="'Inter', sans-serif" font-size="11"
+                            fill="#596780">19,600 Citizens</text>
+                    </g>
+
+                    <!-- Arrow 3 -> 4 -->
+                    <path d="M 555 75 L 593 75" stroke="#0051d5" stroke-width="2" fill="none"
+                        marker-end="url(#arrow-blue)" />
+                    <text x="575" y="65" text-anchor="middle" font-family="'Inter', sans-serif" font-size="9"
+                        font-weight="600" fill="#596780">EQ 8.5</text>
+
+                    <!-- Box 4: Combine via Split Ledger -->
+                    <g transform="translate(595, 30)">
+                        <rect width="155" height="90" rx="8" fill="#f0fdf4" stroke="#86efac" stroke-width="1.5" />
+                        <text x="77" y="26" text-anchor="middle" font-family="'Inter', sans-serif" font-size="11"
+                            font-weight="700" fill="#166534" letter-spacing="0.5">STAGE 3: RECOMBINE</text>
+                        <text x="77" y="52" text-anchor="middle" font-family="'Newsreader', serif" font-size="16"
+                            font-weight="600" fill="#14532d">ȳ<tspan font-size="11" dy="-5">(s)</tspan><tspan font-size="16" dy="5"> = Split Ledger</tspan></text>
+                        <text x="77" y="74" text-anchor="middle" font-family="'Inter', sans-serif" font-size="11"
+                            fill="#166534">One Community Draw</text>
+                    </g>
+
+                    <!-- Recurrence loop indicator below -->
+                    <path d="M 672 130 L 672 175 L 270 175 L 270 130" stroke="#94a3b8" stroke-width="1.5"
+                        stroke-dasharray="4,4" fill="none" marker-end="url(#arrow-blue)" />
+                    <text x="471" y="166" text-anchor="middle" font-family="'Inter', sans-serif" font-size="11"
+                        font-weight="600" fill="#596780">
+                        Repeat S = 2,000 times → Full Posterior Distribution of ȳ
+                    </text>
+                </svg>
+            </div>
+
+            <h3 class="text-xl font-bold text-bayesian-navy mb-4 ui-text">The Computer Simulation Algorithm (BDA3 pp.
+                205–206)</h3>
+            <p class="mb-6 leading-relaxed">
+                How do public health analysts compute the complete posterior distribution of community-wide food
+                spending? They program a Monte Carlo loop with $S = 2{,}000$ iterations:
+            </p>
+
+            <div class="space-y-4 my-6">
+                <!-- Step 1 -->
+                <div class="derivation-step p-5">
+                    <div class="flex items-start gap-4">
+                        <span
+                            class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 text-bayesian-blue font-bold flex items-center justify-center text-sm ui-text">1</span>
+                        <div>
+                            <h4 class="font-bold text-bayesian-navy text-base ui-text">Sample a Market State of the
+                                World: $\theta^{(s)} \sim p(\theta \mid y_{\text{obs}})$</h4>
+                            <p class="text-sm text-bayesian-slate mt-1 leading-relaxed">
+                                Conditioned on the $400$ audited weekly food diaries, draw a plausible economic
+                                parameter vector $\theta^{(s)} = (\mu^{(s)}, \sigma^{2(s)})$.
+                            </p>
+                            <p class="text-xs text-bayesian-slate mt-2 ui-text">
+                                <em>Intuition:</em> In draw $s=1$, food inflation might be slightly higher than expected
+                                ($\mu^{(1)} = \$54$). In draw $s=2$, slightly milder ($\mu^{(2)} = \$48$). This step
+                                absorbs all <strong>parameter uncertainty</strong> (the fact that surveying 400
+                                residents did not reveal the true market average with infinite precision).
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="derivation-step p-5">
+                    <div class="flex items-start gap-4">
+                        <span
+                            class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 text-bayesian-blue font-bold flex items-center justify-center text-sm ui-text">2</span>
+                        <div>
+                            <h4 class="font-bold text-bayesian-navy text-base ui-text">Populate the $19{,}600$
+                                Un-Surveyed Citizens: $y_{\text{mis}}^{(s)} \sim p(y \mid \theta^{(s)})$</h4>
+                            <p class="text-sm text-bayesian-slate mt-1 leading-relaxed">
+                                Fix the simulated price state $\theta^{(s)}$. Now imagine visiting the $N - n =
+                                19{,}600$ un-surveyed homes across the district ($I_i = 0$). Draw a weekly food
+                                expenditure for each missing household independently from the conditional likelihood:
+                            </p>
+                            <div class="text-center font-bold text-bayesian-navy text-sm my-2">
+                                $$y_i^{(s)} \sim p(y \mid \theta^{(s)}) \quad \text{for all } i \text{ with } I_i = 0$$
+                            </div>
+                            <p class="text-sm text-bayesian-slate leading-relaxed">
+                                Then average them to obtain the simulated unobserved food spending mean for universe
+                                $s$:
+                            </p>
+                            <div class="text-center font-bold text-bayesian-blue text-sm my-2">
+                                $$\bar{y}_{\text{mis}}^{(s)} = \frac{1}{N - n}\sum_{i: I_i = 0} y_i^{(s)}$$
+                            </div>
+                            <p class="text-xs text-bayesian-slate mt-1 ui-text">
+                                <em>Intuition:</em> Even if the market average $\mu^{(s)}$ is known, individual families
+                                experience idiosyncratic shocks (a family gathering, buying infant formula, dietary
+                                preferences). This step absorbs all <strong>finite sample scatter uncertainty</strong>.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="derivation-step p-5">
+                    <div class="flex items-start gap-4">
+                        <span
+                            class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 text-bayesian-blue font-bold flex items-center justify-center text-sm ui-text">3</span>
+                        <div>
+                            <h4 class="font-bold text-bayesian-navy text-base ui-text">Recombine via the Split Ledger
+                                (Equation 8.5)</h4>
+                            <p class="text-sm text-bayesian-slate mt-1 leading-relaxed">
+                                Plug the verified sample average $\bar{y}_{\text{obs}}$ and the simulated candidate
+                                $\bar{y}_{\text{mis}}^{(s)}$ directly into Equation (8.5):
+                            </p>
+                            <div class="text-center font-bold text-bayesian-navy text-base my-2">
+                                $$\bar{y}^{(s)} = \left(\frac{n}{N}\right) \bar{y}_{\text{obs}} + \left(\frac{N -
+                                n}{N}\right) \bar{y}_{\text{mis}}^{(s)}$$
+                            </div>
+                            <p class="text-sm text-bayesian-slate leading-relaxed">
+                                Multiplying by the population size $N = 20{,}000$ yields the total community weekly food
+                                expenditure for draw $s$:
+                            </p>
+                            <div class="text-center font-bold text-bayesian-blue text-base my-2">
+                                $$\text{Total Food Expenditure}^{(s)} = N \cdot \bar{y}^{(s)} = n\,\bar{y}_{\text{obs}}
+                                + (N - n)\,\bar{y}_{\text{mis}}^{(s)}$$
+                            </div>
+                            <p class="text-xs text-bayesian-slate text-center font-semibold ui-text mt-1">
+                                District Baseline: $N \cdot \bar{y}_{\text{obs}} = 20{,}000 \times \$50 =
+                                \mathbf{\$1{,}000{,}000}$ ($\mathbf{1\text{ Million dollars}}$ or $\mathbf{\$1\text{
+                                Mil}}$ per week).
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary / The 2000 draws power -->
+            <div class="p-6 md:p-8 bg-slate-50 border border-slate-200 rounded-2xl my-8">
+                <div class="flex items-center gap-3 mb-4">
+                    <span
+                        class="px-2.5 py-1 bg-bayesian-blue text-white rounded text-xs font-bold uppercase tracking-wider ui-text">Public
+                        Policy Engine</span>
+                    <h3 class="text-xl font-bold text-bayesian-navy ui-text">
+                        The Payoff: 2,000 Simulated Worlds Answer Real Policy Questions
+                    </h3>
+                </div>
+
+                <p class="text-base text-bayesian-slate leading-relaxed mb-4">
+                    To make public health policy believable, we must ground the numbers in human reality. An average
+                    food expenditure of <strong>$\bar{y}_{\text{obs}} = \$50$ per week</strong> ($\approx \$200$ per
+                    month per person, or $\$800$ per month for a family of four) translates across all $N = 20{,}000$
+                    residents into a total weekly community food economy of <strong>$\$1{,}000{,}000$ ($1\text{ Million dollars}$ or $\$1\text{ Mil}$) per week</strong>.
+                </p>
+
+                <p class="text-base text-bayesian-slate leading-relaxed mb-6">
+                    Furthermore, a public policy officer does not buy groceries for the entire city—affluent and
+                    middle-class families pay for their own food. Instead, the policy officer's mandate is
+                    <strong>targeted social protection</strong>: identifying vulnerable families suffering from food
+                    insecurity and funding an <strong>Emergency Food Voucher Assistance Program</strong> to bridge the
+                    nutrition gap.
+                </p>
+
+                <!-- Comparison: Classical Wall vs Simulation Engine -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-6">
+                    <!-- Classical Wall -->
+                    <div class="p-5 bg-white border border-rose-200 rounded-xl shadow-sm">
+                        <div
+                            class="flex items-center gap-2 mb-2 text-rose-700 font-bold text-sm uppercase tracking-wider ui-text">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                            The Classical Policy Bottleneck
+                        </div>
+                        <p class="text-sm text-bayesian-slate leading-relaxed mb-3">
+                            Classical survey statistics only easily outputs linear summaries: the overall mean
+                            $\bar{y}_{\text{obs}}$ and its standard error $\text{SE}$.
+                        </p>
+                        <p class="text-xs text-rose-800 bg-rose-50 p-3 rounded-lg leading-relaxed">
+                            <strong>Why This Paralyzes Policy:</strong> A health director cannot set food voucher
+                            budgets using the average alone. If grocery spending is skewed by high earners, the sample
+                            average looks healthy while thousands of low-income families quietly skip meals. Classical
+                            formulas cannot easily evaluate non-linear subsidy policies or count the number of families
+                            below a subsistence cutoff!
+                        </p>
+                    </div>
+
+                    <!-- Bayesian Monte Carlo Superpower -->
+                    <div class="p-5 bg-white border border-emerald-200 rounded-xl shadow-sm">
+                        <div
+                            class="flex items-center gap-2 mb-2 text-emerald-700 font-bold text-sm uppercase tracking-wider ui-text">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            The Bayesian Policy Advantage
+                        </div>
+                        <p class="text-sm text-bayesian-slate leading-relaxed mb-3">
+                            The Monte Carlo loop gives the policy officer something far more actionable than an abstract
+                            formula: <strong>2,000 fully completed virtual communities stored on their
+                                computer</strong>:
+                        </p>
+                        <div class="math-plate text-xs text-bayesian-navy my-3 py-2.5">
+                            $$\text{Completed Population Matrix: } 20{,}000 \text{ citizens } \times 2{,}000 \text{ simulated policy worlds}$$
+                        </div>
+                        <p class="text-xs text-emerald-800 bg-emerald-50 p-3 rounded-lg leading-relaxed">
+                            In each column, the 400 surveyed residents keep their audited receipts, while the 19,600
+                            un-surveyed residents are realistically simulated, capturing both macro-inflation
+                            uncertainty and idiosyncratic household variation.
+                        </p>
+                    </div>
+                </div>
+
+                <h4 class="text-base font-bold text-bayesian-navy mb-4 ui-text">
+                    How Three Crucial Policy Decisions Become Trivial One-Line Calculations:
+                </h4>
+
+                <!-- Detailed 3-part cards -->
+                <div class="space-y-4 ui-text">
+                    <!-- Decision 1 -->
+                    <div class="p-5 bg-white border-l-4 border-rose-500 border-y border-r border-slate-200/90 rounded-r-xl shadow-sm">
+                        <div
+                            class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-2.5 mb-2.5">
+                            <span class="font-bold text-slate-900 text-sm flex items-center gap-1.5">
+                                <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+                                1. The Food Poverty Headcount: How Many Citizens Are Hungry?
+                            </span>
+                            <span
+                                class="text-xs font-semibold px-2 py-0.5 bg-rose-50 text-rose-700 border border-rose-200 rounded">Vulnerability
+                                Census</span>
+                        </div>
+                        <p class="text-xs text-slate-600 leading-relaxed mb-2.5">
+                            <strong>The Policy Dilemma:</strong> Public health guidelines define the <em>Nutritional
+                                Subsistence Minimum</em> as $\$35$ per week. Anyone spending less than $\$35$ is in
+                            acute food distress (skipping meals or relying on nutrient-deficient filler). The director
+                            must know: <em>How many residents in our district are currently food insecure?</em>
+                        </p>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            <strong>The Bayesian Solution:</strong> In each of the 2,000 simulated worlds $s$, count how
+                            many of the $N = 20{,}000$ citizens have $y_i^{(s)} < \$35$:
+                            $$H^{(s)} = \sum_{i=1}^N \mathbb{I}\left(y_i^{(s)} < \$35\right)$$
+                            Sorting these 2,000 counts immediately gives the exact
+                            posterior distribution of hungry residents (e.g. median $3{,}820$ citizens, with a 95%
+                            credible interval of $[3{,}410, \; 4{,}260]$). The director knows precisely how many
+                            food parcel kits and soup kitchen rations to stock.
+                        </p>
+                    </div>
+
+                    <!-- Decision 2 -->
+                    <div class="p-5 bg-white border-l-4 border-blue-500 border-y border-r border-slate-200/90 rounded-r-xl shadow-sm">
+                        <div
+                            class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-2.5 mb-2.5">
+                            <span class="font-bold text-slate-900 text-sm flex items-center gap-1.5">
+                                <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                                2. The Targeted Food Voucher Budget: Financing the Safety Net
+                            </span>
+                            <span
+                                class="text-xs font-semibold px-2 py-0.5 bg-blue-50 text-blue-700 border border-blue-200 rounded">Non-Linear
+                                "Hockey-Stick" Subsidy</span>
+                        </div>
+                        <p class="text-xs text-slate-600 leading-relaxed mb-2.5">
+                            <strong>The Policy Dilemma:</strong> The city does not buy groceries for everyone; it
+                            operates an <strong>Emergency Food Voucher Top-Up Program</strong>. For any resident whose
+                            weekly food spend falls below the healthy $\$50$ baseline, the city issues a voucher
+                            covering the exact shortfall:
+                            $$v_i^{(s)} = \max\left(0, \; \$50 - y_i^{(s)}\right)$$
+                            (A resident spending $\$65$ receives $\$0$; a resident spending $\$30$ receives a $\$20$
+                            voucher). What is the total weekly municipal voucher budget required:
+                            $$V^{(s)} = \sum_{i=1}^N v_i^{(s)}$$
+                        </p>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            <strong>The Bayesian Solution:</strong> Because of the sharp $\max(0, \cdot)$ kink,
+                            classical linear sampling theory has no closed-form standard error. In the Bayesian
+                            simulation, the analyst evaluates this non-linear function across all 2,000 worlds in a
+                            single line of code (`np.maximum(0, 50 - y).sum()`), obtaining the complete posterior
+                            distribution of municipal voucher payouts (median: $\$102{,}400$; 95% interval:
+                            $[\$89{,}200, \; \$116{,}800]$).
+                        </p>
+                    </div>
+
+                    <!-- Decision 3 -->
+                    <div class="p-5 bg-white border-l-4 border-emerald-500 border-y border-r border-slate-200/90 rounded-r-xl shadow-sm">
+                        <div
+                            class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-2.5 mb-2.5">
+                            <span class="font-bold text-slate-900 text-sm flex items-center gap-1.5">
+                                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                                3. Solvency &amp; 99% Stress Reserve: Will the Emergency Relief Fund Run Dry?
+                            </span>
+                            <span
+                                class="text-xs font-semibold px-2 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded">Cabinet
+                                / City Treasury</span>
+                        </div>
+                        <p class="text-xs text-slate-600 leading-relaxed mb-2.5">
+                            <strong>The Policy Dilemma:</strong> The City Council allocated an emergency weekly food
+                            voucher contingency reserve of $C_{\text{voucher}} = \$115{,}000$. The Health Director must
+                            answer: <em>What is the exact probability that actual voucher claims will exceed this
+                                contingency reserve?</em>
+                        </p>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            <strong>The Bayesian Solution:</strong> Count how many of the 2,000 simulated worlds
+                            required voucher funding $V^{(s)} > \$115{,}000$. If 312 worlds breached it:
+                            $$\Pr(\text{Voucher Fund Deficit}) = \frac{312}{2{,}000} = 15.6\%$$
+                            Furthermore, reading off the <strong>99th percentile</strong> ($V_{0.99} = \$121{,}800$)
+                            tells the City Treasurer the exact stress reserve required so that the voucher program never
+                            has to turn away a struggling family, even in the worst 1-in-100 food inflation crisis.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Beyond the Mean: Any Arbitrary Estimand Q(y) -->
+                <div class="mt-8 pt-6 border-t border-slate-200">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span
+                            class="px-2 py-0.5 bg-purple-100 text-purple-800 rounded text-xs font-bold uppercase tracking-wider ui-text">Generalizing
+                            Beyond the Mean</span>
+                        <h4 class="text-base font-bold text-bayesian-navy ui-text">
+                            Evaluating Any Arbitrary Population Quantity $Q(y)$ for Public Policy
+                        </h4>
+                    </div>
+
+                    <p class="text-sm text-bayesian-slate leading-relaxed mb-4">
+                        In classical survey sampling, estimating quantities beyond the linear average $\bar{y}$ requires
+                        complex mathematical acrobatics: Woodruff approximations for medians, Taylor series
+                        linearization for ratios, or bootstrap resamples.
+                    </p>
+                    <p class="text-sm text-bayesian-slate leading-relaxed mb-4">
+                        Under the Bayesian simulation paradigm, however, <strong>every policy estimand is evaluated
+                            identically</strong>. Because each iteration $s$ yields a completed finite population vector
+                        of all $N = 20{,}000$ citizens:
+                    </p>
+
+                    <div class="math-plate text-sm sm:text-base text-slate-900 font-bold my-4">
+                        $$y^{(s)} = \left( y_1, \; y_2, \; \dots, \; y_{400}, \; y_{401}^{(s)}, \; \dots, \; y_{20{,}000}^{(s)} \right)$$
+                    </div>
+
+                    <p class="text-sm text-bayesian-slate leading-relaxed mb-4">
+                        The policy officer simply evaluates their target function $Q(y^{(s)})$ directly on the $N = 20{,}000$
+                        completed values:
+                    </p>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 ui-text text-xs">
+                        <div class="p-3.5 bg-white border border-slate-200 rounded-lg">
+                            <strong class="text-bayesian-navy text-sm block mb-1">1. The Headcount Poverty Rate:
+                                $P_0(y^{(s)})$</strong>
+                            <p class="text-bayesian-slate leading-relaxed mb-2">
+                                The percentage of citizens living in nutritional subsistence deficit:
+                            </p>
+                            <div class="text-center font-bold text-slate-900 my-1.5">
+                                $$P_0^{(s)} = \frac{1}{N}\sum_{i=1}^N \mathbb{I}\left(y_i^{(s)} < \$35\right)$$
+                            </div>
+                            <p class="text-bayesian-slate leading-relaxed">
+                                In each draw $s$, compute this percentage. The resulting 2,000
+                                values give the mayor an honest credible interval on the district's true poverty
+                                rate (e.g. $19.1\% \pm 2.1\%$).
+                            </p>
+                        </div>
+
+                        <div class="p-3.5 bg-white border border-slate-200 rounded-lg">
+                            <strong class="text-bayesian-navy text-sm block mb-1">2. Poverty Depth (The
+                                Foster-Greer-Thorbecke Index $P_1(y^{(s)})$)</strong>
+                            <p class="text-bayesian-slate leading-relaxed mb-2">
+                                It is not enough to know how many people are hungry; policy officers need to know
+                                <em>how severe their hunger is</em>:
+                            </p>
+                            <div class="text-center font-bold text-slate-900 my-1.5">
+                                $$P_1^{(s)} = \frac{1}{N}\sum_{i=1}^N \frac{\max\left(0, \; \$35 - y_i^{(s)}\right)}{\$35}$$
+                            </div>
+                            <p class="text-bayesian-slate leading-relaxed">
+                                Quantifies the average percentage depth below the subsistence poverty line.
+                            </p>
+                        </div>
+
+                        <div class="p-3.5 bg-white border border-slate-200 rounded-lg">
+                            <strong class="text-bayesian-navy text-sm block mb-1">3. The Population Median:
+                                $\text{median}(y^{(s)})$</strong>
+                            <p class="text-bayesian-slate leading-relaxed mb-2">
+                                If a small wealthy enclave in the district spends $\$300/\text{week}$ on luxury
+                                groceries, the arithmetic mean $\bar{y}$ will be dragged upward to $\$50$, giving a
+                                false illusion of community affluence. The median:
+                            </p>
+                            <div class="text-center font-bold text-slate-900 my-1.5">
+                                $$M^{(s)} = \text{median}\left(y_1, \dots, y_{400}, y_{401}^{(s)}, \dots, y_{20{,}000}^{(s)}\right)$$
+                            </div>
+                            <p class="text-bayesian-slate leading-relaxed">
+                                Reveals what the <em>typical resident</em> actually spends (often closer to $\$42$), protecting the health
+                                director from misleading averages.
+                            </p>
+                        </div>
+
+                        <div class="p-3.5 bg-white border border-slate-200 rounded-lg">
+                            <strong class="text-bayesian-navy text-sm block mb-1">4. Severe Food Burden Ratio:
+                                $R(y^{(s)})$</strong>
+                            <p class="text-bayesian-slate leading-relaxed mb-2">
+                                Economists define high food stress when a household spends more than 30% of its total
+                                income on nutrition:
+                            </p>
+                            <div class="text-center font-bold text-slate-900 my-1.5">
+                                $$R^{(s)} = \frac{\sum_{i=1}^N y_i^{(s)}}{\sum_{i=1}^N \text{Income}_i}$$
+                            </div>
+                            <p class="text-bayesian-slate leading-relaxed">
+                                Computing this ratio on each simulated ledger gives the exact
+                                probability distribution of systemic cost-of-living distress.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div
+                        class="mt-4 p-3 bg-purple-50 border border-purple-200 rounded-lg text-xs text-purple-900 leading-relaxed ui-text">
+                        <strong>The Core Takeaway:</strong> Once you have filled in the missing entries of the finite
+                        population ledger, <em>any policy question—no matter how non-linear, censored, discontinuous, or
+                            mathematically intricate—is answered with a simple, transparent one-line function across the
+                            2,000 completed vectors.</em>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================
+             SECTION 4 — DERIVATION OF THE FINITE POPULATION CORRECTION
+             ============================================================ -->
+        <section id="sec-4" class="mb-16 scroll-mt-6">
+            <h2
+                class="text-2xl md:text-3xl font-bold mb-6 text-slate-900 border-b pb-3 border-slate-200/90 ui-text flex items-center">
+                <span class="sec-num">04</span>
+                <span>Analytical Derivation: The Finite Population Correction (Equation 8.6)</span>
+            </h2>
+
+            <p class="mb-6 leading-relaxed">
+                When the survey sample $n$ and the un-surveyed balance $N - n$ are reasonably large, we do not even need
+                to run computer simulations to find the posterior distribution of the population mean food expenditure
+                $\bar{y}$. We can derive it analytically from first principles.
+            </p>
+
+            <!-- 1. The Physical Object -->
+            <div class="mb-4">
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-blue-50 border border-blue-200 text-bayesian-blue text-xs font-bold uppercase tracking-wider mb-2 ui-text">Step 1 of 5</span>
+                <h3 class="text-xl font-bold text-slate-900 ui-text">
+                    Start with the Physical Object: The Un-Surveyed Average
+                </h3>
+            </div>
+
+            <p class="mb-4 leading-relaxed text-slate-600">
+                Look at the physical target we must predict. In our community of $N = 20{,}000$ residents, we collected
+                food expenditure diaries from $n = 400$ citizens. Remaining in the community are exactly $N - n =
+                19{,}600$ residents where $I_i = 0$.
+            </p>
+
+            <p class="mb-4 leading-relaxed text-slate-600">
+                The average weekly food expenditure of these un-surveyed residents is simply their arithmetic mean:
+            </p>
+
+            <div class="math-plate text-xl md:text-2xl text-slate-900 font-bold">
+                $$\bar{y}_{\text{mis}} = \frac{1}{N - n}\sum_{i: I_i = 0} y_i$$
+            </div>
+
+            <p class="mb-6 leading-relaxed text-slate-600">
+                Notice that this is not an abstract superpopulation parameter or an imaginary asymptote. It is a
+                <strong>concrete, physical number</strong> sitting right now in the households of our district:
+                $\frac{y_{401} + y_{402} + \dots + y_{20{,}000}}{19{,}600}$. If we had the municipal budget to visit all
+                $19{,}600$ remaining residents and audit their grocery receipts, $\bar{y}_{\text{mis}}$ is the exact
+                dollar amount that would appear at the bottom.
+            </p>
+
+            <p class="mb-8 leading-relaxed text-slate-600">
+                The entire mathematical task of this section is simply: <em>What is our probability distribution over
+                    this physical sum?</em>
+            </p>
+
+            <!-- 2. The CLT and Freezing the Economic Climate -->
+            <div class="mb-4 pt-6 border-t border-slate-200/80">
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-blue-50 border border-blue-200 text-bayesian-blue text-xs font-bold uppercase tracking-wider mb-2 ui-text">Step 2 of 5</span>
+                <h3 class="text-xl font-bold text-slate-900 ui-text">
+                    Applying the Central Limit Theorem: Freezing the Economic Climate ($\theta$)
+                </h3>
+            </div>
+            <p class="mb-4 leading-relaxed text-slate-600">
+                Whenever you add up thousands of random quantities ($N - n = 19{,}600$), the <strong>Central Limit
+                    Theorem (CLT)</strong> immediately comes to mind.
+            </p>
+            <p class="mb-4 leading-relaxed text-slate-600">
+                <em>Wait—can we apply the Central Limit Theorem directly to the residents' food expenditures?</em><br>
+                <strong>No.</strong> The CLT requires the items being added to be <em>independent</em>. Real household
+                grocery spending is not independent across people: if municipal grocery and fuel price inflation spikes,
+                food expenditures surge across the entire community simultaneously.
+            </p>
+            <p class="mb-6 leading-relaxed text-slate-600">
+                To unlock the CLT, we do what we established in Section 1: <strong>we freeze the underlying economic
+                    climate and food price index $\theta$</strong>.
+            </p>
+
+            <h4 class="font-bold text-slate-900 text-base mb-3 ui-text">
+                The Oracle's View: Conditioning on $\theta$
+            </h4>
+
+            <p class="mb-4 leading-relaxed text-slate-600">
+                Suppose an omniscient Oracle whispers the true economic climate $\theta$ into your ear. As our graphical
+                model proved, <em>conditional on $\theta$, the individual food expenditures become conditionally
+                    independent</em>.
+            </p>
+
+            <p class="mb-4 leading-relaxed text-slate-600">
+                Given that fixed state $\theta$, each resident's weekly food spend $y_i$ has an implied mean
+                $\mu(\theta) = E(y_i \mid \theta)$ and variance $\sigma^2(\theta) = \text{var}(y_i \mid \theta)$.
+            </p>
+
+            <p class="mb-4 leading-relaxed text-slate-600">
+                By the <strong>Central Limit Theorem</strong>, the average of $N - n = 19{,}600$ independent random
+                variables must be approximately Normal, defined by its expected value and its variance:
+            </p>
+
+            <div class="math-plate text-lg md:text-xl text-slate-900 font-bold">
+                $$p(\bar{y}_{\text{mis}} \mid \theta) \approx \mathcal{N}\Big( E(\bar{y}_{\text{mis}} \mid \theta), \;
+                \text{var}(\bar{y}_{\text{mis}} \mid \theta) \Big)$$
+            </div>
+
+            <p class="mb-4 leading-relaxed text-slate-600">
+                Now we calculate each of these two components directly from the physical definition
+                $\bar{y}_{\text{mis}} = \frac{1}{N - n}\sum_{i: I_i = 0} y_i$:
+            </p>
+
+            <!-- Two-column calculation cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-6 ui-text text-xs">
+                <!-- Mean Calculation -->
+                <div class="p-4 bg-white border border-slate-200/90 rounded-xl shadow-sm">
+                    <strong class="text-slate-900 text-sm block mb-2">1. The Mean: $E(\bar{y}_{\text{mis}} \mid
+                        \theta)$</strong>
+                    <p class="text-slate-600 mb-2">Pass the expectation inside the linear sum:</p>
+                    <div class="text-center font-bold text-slate-900 my-2">
+                        $$E\left[\frac{1}{N - n}\sum_{i: I_i = 0} y_i \;\middle|\; \theta\right] = \frac{1}{N -
+                        n}\sum_{i: I_i = 0} \mu(\theta)$$
+                    </div>
+                    <p class="text-slate-600">
+                        Adding $(N - n)$ copies of $\mu(\theta)$:
+                        $$\frac{(N - n)\,\mu(\theta)}{N - n} = \mathbf{\mu(\theta)}$$
+                    </p>
+                </div>
+
+                <!-- Variance Calculation -->
+                <div class="p-4 bg-white border border-slate-200/90 rounded-xl shadow-sm">
+                    <strong class="text-slate-900 text-sm block mb-2">2. The Variance:
+                        $\text{var}(\bar{y}_{\text{mis}} \mid \theta)$</strong>
+                    <p class="text-slate-600 mb-2">Because individual food spends are independent given $\theta$,
+                        variances add and the constant $\frac{1}{N - n}$ pulls out squared:</p>
+                    <div class="text-center font-bold text-slate-900 my-2">
+                        $$\text{var}\left(\frac{1}{N - n}\sum_{i: I_i = 0} y_i \;\middle|\; \theta\right) = \frac{1}{(N
+                        - n)^2}\sum_{i: I_i = 0} \sigma^2(\theta)$$
+                    </div>
+                    <p class="text-slate-600">
+                        Adding $(N - n)$ copies of $\sigma^2(\theta)$:
+                        $$\frac{(N - n)\,\sigma^2(\theta)}{(N - n)^2} = \mathbf{\frac{1}{N - n}\sigma^2(\theta)}$$
+                    </p>
+                </div>
+            </div>
+
+            <p class="mb-4 leading-relaxed text-slate-600">
+                Plugging these two calculated values into our Gaussian distribution yields Gelman's exact conditional
+                formula:
+            </p>
+
+            <div class="math-plate text-xl md:text-2xl text-bayesian-blue font-bold">
+                $$p(\bar{y}_{\text{mis}} \mid \theta) \approx \mathcal{N}\left(\bar{y}_{\text{mis}} \;\middle|\;
+                \mu(\theta), \; \frac{1}{N - n}\sigma^2(\theta)\right)$$
+            </div>
+
+            <!-- 3. Unconditioned World: Mixture of Normals -->
+            <div class="mb-4 pt-6 border-t border-slate-200/80">
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-blue-50 border border-blue-200 text-bayesian-blue text-xs font-bold uppercase tracking-wider mb-2 ui-text">Step 3 of 5</span>
+                <h3 class="text-xl font-bold text-slate-900 ui-text">
+                    The Real World: Integrating Out $\theta$ (A Normal Mixture of Normals)
+                </h3>
+            </div>
+            <p class="mb-4 leading-relaxed text-slate-600">
+                In reality, the Oracle leaves the room: we do not know $\theta$. We only have our $n = 400$ surveyed
+                food diaries ($y_{\text{obs}}$).
+            </p>
+            <p class="mb-4 leading-relaxed text-slate-600">
+                To find the true predictive distribution given our data, the Law of Total Probability tells us to
+                average over all possible values of $\theta$, weighted by its posterior distribution:
+            </p>
+            <div class="math-plate text-lg md:text-xl text-slate-900 font-bold">
+                $$p(\bar{y}_{\text{mis}} \mid y_{\text{obs}}) = \int p(\bar{y}_{\text{mis}} \mid \theta) \, p(\theta
+                \mid y_{\text{obs}}) \, d\theta$$
+            </div>
+            <p class="mb-6 leading-relaxed text-slate-600">
+                Because $n = 400$ is also reasonably large, the posterior distribution of $\theta$ is approximately
+                normal. A normal distribution integrated against another normal distribution creates a <strong>normal
+                    mixture of normals</strong>, which is itself approximately <strong>Normal</strong>:
+            </p>
+            <div class="math-plate text-lg md:text-xl text-slate-900 font-bold">
+                $$\bar{y}_{\text{mis}} \mid y_{\text{obs}} \approx \mathcal{N}\Big( E(\bar{y}_{\text{mis}} \mid
+                y_{\text{obs}}), \; \text{var}(\bar{y}_{\text{mis}} \mid y_{\text{obs}}) \Big)$$
+            </div>
+            <p class="mb-6 leading-relaxed text-slate-600">
+                A normal distribution is completely defined by two numbers: its <strong>Mean (Center)</strong> and its
+                <strong>Variance (Spread)</strong>. What are they?
+            </p>
+
+            <!-- Proper Derivation of Mean and Variance -->
+            <h4 class="font-bold text-slate-900 text-base mb-3 ui-text">
+                A. Deriving the Center: The Law of Total Expectation
+            </h4>
+
+            <p class="mb-4 leading-relaxed text-slate-600">
+                We want to find $E(\bar{y}_{\text{mis}} \mid y_{\text{obs}})$. By the <strong>Law of Total
+                    Expectation</strong> (iterated averages), we condition first on the latent parameters $\theta$, and
+                then take the expectation over the posterior distribution of $\theta$:
+            </p>
+
+            <div class="math-plate text-base md:text-lg text-slate-900 font-semibold">
+                $$E(\bar{y}_{\text{mis}} \mid y_{\text{obs}}) = E\Big[ E(\bar{y}_{\text{mis}} \mid \theta,
+                y_{\text{obs}}) \;\Big|\; y_{\text{obs}} \Big] = E\Big[ \mu(\theta) \;\Big|\; y_{\text{obs}} \Big]$$
+            </div>
+
+            <p class="mb-4 leading-relaxed text-slate-600">
+                Under standard uninformative priors (or large-sample posterior normality for $n = 400$), the posterior
+                mean of the latent parameter $\mu(\theta)$ given the survey sample is the sample mean
+                $\bar{y}_{\text{obs}}$:
+            </p>
+
+            <div class="math-plate text-xl md:text-2xl text-bayesian-blue font-bold">
+                $$E(\bar{y}_{\text{mis}} \mid y_{\text{obs}}) \approx \mathbf{\bar{y}_{\text{obs}}}$$
+            </div>
+
+            <p class="mb-8 leading-relaxed text-slate-600">
+                <em>Physical Meaning:</em> Our single best estimate for the average food spend of the $19{,}600$
+                un-surveyed residents living in the district is simply the average of the $400$ food diaries we audited
+                in our survey.
+            </p>
+
+            <h4 class="font-bold text-slate-900 text-base mb-3 ui-text">
+                B. Deriving the Spread: The Law of Total Variance
+            </h4>
+
+            <p class="mb-4 leading-relaxed text-slate-600">
+                Now we evaluate $\text{var}(\bar{y}_{\text{mis}} \mid y_{\text{obs}})$. By the <strong>Law of Total
+                    Variance</strong> (Eve's Law), the total variance of $\bar{y}_{\text{mis}}$ decomposes into two
+                additive, physically independent components:
+            </p>
+
+            <div class="math-plate text-base md:text-lg text-slate-900 font-semibold">
+                $$\text{var}(\bar{y}_{\text{mis}} \mid y_{\text{obs}}) = \underbrace{\text{var}\Big(
+                E[\bar{y}_{\text{mis}} \mid \theta] \;\Big|\; y_{\text{obs}} \Big)}_{\text{Variance of Expected Value}} + \underbrace{E\Big[ \text{var}(\bar{y}_{\text{mis}} \mid \theta) \;\Big|\; y_{\text{obs}}
+                \Big]}_{\text{Expected Value of Variance}}$$
+            </div>
+
+            <p class="mb-4 leading-relaxed text-slate-600">
+                Substitute our two known conditional results from Step 2 ($E[\bar{y}_{\text{mis}} \mid \theta] =
+                \mu(\theta)$ and $\text{var}(\bar{y}_{\text{mis}} \mid \theta) = \frac{\sigma^2(\theta)}{N - n}$):
+            </p>
+
+            <div class="math-plate text-base md:text-lg text-slate-900 font-semibold">
+                $$\text{var}(\bar{y}_{\text{mis}} \mid y_{\text{obs}}) = \text{var}\big(\mu(\theta) \mid
+                y_{\text{obs}}\big) + E\left[ \frac{\sigma^2(\theta)}{N - n} \;\middle|\; y_{\text{obs}} \right]$$
+            </div>
+
+            <p class="mb-4 leading-relaxed text-slate-600">
+                Now examine each of these two terms:
+            </p>
+
+            <ol class="list-decimal pl-6 space-y-4 mb-6 leading-relaxed text-slate-600">
+                <li>
+                    <strong class="text-slate-900">Term 1 (Economic Climate / Parameter Uncertainty):</strong>
+                    $$\text{var}\big(\mu(\theta) \mid y_{\text{obs}}\big) \approx \frac{s^2_{\text{obs}}}{n}$$
+                    This reflects our uncertainty about the true district-wide underlying mean $\mu(\theta)$ after
+                    surveying only $n = 400$ citizens. Notice that even if the un-surveyed population were infinite ($N
+                    \to \infty$), this term never goes away because we only ever collected 400 food diaries.
+                </li>
+                <li>
+                    <strong class="text-slate-900">Term 2 (Finite Sample Scatter):</strong>
+                    Pulling the constant scalar $\frac{1}{N - n}$ outside the expectation:
+                    $$E\left[ \frac{\sigma^2(\theta)}{N - n} \;\middle|\; y_{\text{obs}} \right] = \frac{1}{N - n}
+                    E\big[\sigma^2(\theta) \mid y_{\text{obs}}\big] \approx \frac{s^2_{\text{obs}}}{N - n}$$
+                    This reflects the fact that even if an Oracle revealed $\mu(\theta)$ with 100% certainty, the
+                    $19{,}600$ un-surveyed citizens in the community are finite in number and still fluctuate around
+                    $\mu(\theta)$ due to idiosyncratic household dietary preferences and family sizes.
+                </li>
+            </ol>
+
+            <p class="mb-4 leading-relaxed text-slate-600">
+                Adding these two independent variances yields:
+            </p>
+
+            <div class="math-plate text-lg md:text-xl text-slate-900 font-bold">
+                $$\text{var}(\bar{y}_{\text{mis}} \mid y_{\text{obs}}) \approx \frac{s^2_{\text{obs}}}{n} +
+                \frac{s^2_{\text{obs}}}{N - n} = s^2_{\text{obs}}\left( \frac{1}{n} + \frac{1}{N - n} \right) =
+                \mathbf{\frac{N}{n(N - n)} s^2_{\text{obs}}}$$
+            </div>
+
+            <p class="mb-4 leading-relaxed text-slate-600">
+                Combining the Mean and Variance, the complete unconditional predictive distribution for the un-surveyed
+                residents is:
+            </p>
+
+            <div class="math-plate text-xl md:text-2xl text-bayesian-blue font-bold">
+                $$\bar{y}_{\text{mis}} \mid y_{\text{obs}} \approx \mathcal{N}\left( \bar{y}_{\text{obs}}, \;
+                \frac{N}{n(N - n)} s^2_{\text{obs}} \right)$$
+            </div>
+
+            <!-- 4. Scaling Onto Full Population Mean -->
+            <div class="mb-4 pt-6 border-t border-slate-200/80">
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-blue-50 border border-blue-200 text-bayesian-blue text-xs font-bold uppercase tracking-wider mb-2 ui-text">Step 4 of 5</span>
+                <h3 class="text-xl font-bold text-slate-900 ui-text">
+                    Scaling Onto the Full Population Mean Food Spend $\bar{y}$ (Equation 8.6)
+                </h3>
+            </div>
+            <p class="mb-4 leading-relaxed text-slate-600">
+                Now we return to Gelman's Split Ledger (Equation 8.5) to find the variance of the <em>entire population
+                    mean weekly food expenditure</em> $\bar{y}$:
+            </p>
+            <div class="math-plate text-base md:text-lg text-slate-900 font-semibold">
+                $$\bar{y} = \left(\frac{n}{N}\right) \bar{y}_{\text{obs}} + \left(\frac{N - n}{N}\right)
+                \bar{y}_{\text{mis}}$$
+            </div>
+            <p class="mb-4 leading-relaxed text-slate-600">
+                Since $\bar{y}_{\text{obs}}$ is a verified survey fact with zero posterior variance, the constant weight
+                $\frac{N - n}{N}$ pulls out <strong>squared</strong>:
+            </p>
+
+            <div class="p-6 bg-slate-50 border border-slate-200/90 rounded-xl my-6 space-y-4">
+                <div class="text-center text-slate-900 font-semibold">
+                    $$\text{var}(\bar{y} \mid y_{\text{obs}}) = \left(\frac{N - n}{N}\right)^2
+                    \text{var}(\bar{y}_{\text{mis}} \mid y_{\text{obs}})$$
+                </div>
+                <p class="text-xs text-slate-500 text-center uppercase tracking-wider font-semibold ui-text">Substitute our formula for
+                    $\text{var}(\bar{y}_{\text{mis}} \mid y_{\text{obs}})$:</p>
+                <div class="text-center text-slate-900 font-semibold">
+                    $$= \frac{(N - n)^2}{N^2} \times \left[ \frac{N}{n(N - n)} s^2_{\text{obs}} \right]$$
+                </div>
+                <p class="text-xs text-slate-500 text-center uppercase tracking-wider font-semibold ui-text">Watch $(N - n)$ and $N$ cancel cleanly:</p>
+                <div class="text-center text-bayesian-blue font-bold text-xl md:text-2xl">
+                    $$= \left(\frac{N - n}{N}\right) \frac{s^2_{\text{obs}}}{n} = \left(1 - \frac{n}{N}\right)
+                    \frac{s^2_{\text{obs}}}{n} = \mathbf{\left(\frac{1}{n} - \frac{1}{N}\right) s^2_{\text{obs}}}$$
+                </div>
+            </div>
+
+            <!-- Summary Card -->
+            <div class="p-6 bg-blue-50/70 border border-blue-200 rounded-xl my-6 shadow-sm">
+                <div class="flex items-center gap-2 mb-2 ui-text">
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-blue-100 text-bayesian-blue text-xs font-bold uppercase tracking-wider">Step 5 of 5: The Master Formula</span>
+                </div>
+                <h4 class="font-bold text-slate-900 text-lg mb-2 ui-text">
+                    The Complete Normal Approximation (BDA3 Equation 8.6)
+                </h4>
+                <div class="math-plate text-xl md:text-2xl text-slate-900 font-bold bg-white my-4">
+                    $$\bar{y} \mid y_{\text{obs}} \approx \mathcal{N}\left( \bar{y}_{\text{obs}}, \; \left(\frac{1}{n} -
+                    \frac{1}{N}\right) s^2_{\text{obs}} \right)$$
+                </div>
+                <div class="mt-4 pt-4 border-t border-blue-200/80 text-sm text-slate-700 leading-relaxed ui-text">
+                    <strong>The Two Boundary Realities (Feynman Sanity Check):</strong>
+                    <ul class="list-disc pl-5 mt-2 space-y-1.5 text-xs text-slate-600">
+                        <li><strong>What if $N \to \infty$ (Infinite Population)?</strong> The term $\frac{1}{N} \to 0$,
+                            giving $\text{var}(\bar{y}) = \frac{s^2_{\text{obs}}}{n}$. We recover the standard
+                            infinite-population Central Limit Theorem without modification!</li>
+                        <li><strong>What if $n = N$ (Complete Census)?</strong> Then $\frac{1}{n} - \frac{1}{N} = 0$,
+                            giving $\text{var}(\bar{y}) = 0$. Once every single citizen in the community has logged
+                            their food expenditures, all uncertainty vanishes—because you know the truth!</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================
+             SECTION 5 — REAL SITUATION: FREQUENTIST VS. BAYESIAN DECISION MAKING
+             ============================================================ -->
+        <section id="sec-5" class="mb-16 scroll-mt-6">
+            <h2
+                class="text-2xl md:text-3xl font-bold mb-6 text-slate-900 border-b pb-3 border-slate-200/90 ui-text flex items-center">
+                <span class="sec-num">05</span>
+                <span>The Real Situation: Frequentist Limitations vs. The Bayesian Decision Engine</span>
+            </h2>
+
+            <p class="mb-4 leading-relaxed">
+                Why does this mathematical distinction between superpopulations and finite populations matter in the
+                real world?
+            </p>
+            <p class="mb-6 leading-relaxed">
+                To see why Bayesian statistics is uniquely suited for decision analysis and high-stakes policy
+                governance, consider the actual municipal dilemma faced by a City Public Health Director and Social
+                Welfare Board.
+            </p>
+
+            <!-- Real-World Framing -->
+            <div class="p-6 md:p-8 bg-white border border-bayesian-border rounded-2xl shadow-sm my-8">
+                <div class="flex items-center gap-3 mb-4">
+                    <span
+                        class="px-3 py-1 bg-amber-100 text-amber-900 rounded-md text-xs font-bold uppercase tracking-wider ui-text">The
+                        Public Health Dilemma</span>
+                    <h3 class="text-xl font-bold text-bayesian-navy ui-text">The Community Food Security & Emergency
+                        Cushion Decision</h3>
+                </div>
+
+                <p class="text-base text-bayesian-slate leading-relaxed mb-4">
+                    The municipal district is home to $N = 20{,}000$ citizens. Amid rising food costs, the Department of
+                    Public Health surveyed a random sample of $n = 400$ household food diaries, observing an average
+                    weekly spend of <strong>$\bar{y}_{\text{obs}} = \$50$ per person</strong> ($s_{\text{obs}} = \$50$).
+                </p>
+
+                <p
+                    class="text-sm text-bayesian-slate leading-relaxed mb-4 p-3.5 bg-slate-50 border border-slate-200 rounded-lg ui-text">
+                    <strong>Believable Scale Check:</strong> An individual food spend of $\$50$ per week ($\approx
+                    \$200$ per month, or $\$800$ per month for a family of four) is a realistic baseline budget. Across
+                    the entire district of $N = 20{,}000$ citizens, this translates into a total community food
+                    expenditure of <strong>$T = 20{,}000 \times \$50 = \$1{,}000{,}000$ per week ($1\text{ Million
+                        dollars}$ or $\$1\text{ Mil}$)</strong>.
+                </p>
+
+                <p class="text-base text-bayesian-slate leading-relaxed mb-4">
+                    The City Council has appropriated an emergency cost-of-living buffer capped at <strong>$C =
+                        \$1{,}050{,}000$ ($1.05\text{ Mil}$)</strong>. If community food costs spike beyond this
+                    threshold, low-income families are pushed into acute malnutrition, triggering emergency food voucher
+                    claims that could bankrupt the social welfare contingency reserve. The Public Health Director must
+                    answer three concrete policy questions:
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 my-4 ui-text text-xs">
+                    <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl">
+                        <strong class="text-bayesian-navy text-sm block mb-1">Decision 1: Assistance Deficit
+                            Risk</strong>
+                        "What is the exact probability that community food expenditure needs exceed our
+                        $\$1{,}050{,}000$ ($1.05\text{ Mil}$) municipal assistance cushion?"
+                    </div>
+                    <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl">
+                        <strong class="text-bayesian-navy text-sm block mb-1">Decision 2: 99% Stress Reserve</strong>
+                        "What is our maximum required emergency food relief reserve under a 99% severe cost-of-living
+                        stress scenario?"
+                    </div>
+                    <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl">
+                        <strong class="text-bayesian-navy text-sm block mb-1">Decision 3: Budget Rebalancing</strong>
+                        "Can we safely release surplus emergency contingency funds to primary health clinics without
+                        risking a voucher deficit?"
+                    </div>
+                </div>
+            </div>
+
+            <!-- Side-by-Side Method Comparison -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
+                <!-- Frequentist Method -->
+                <div class="p-6 bg-white border border-rose-200 rounded-2xl shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span
+                                class="text-xs font-bold uppercase tracking-wider text-rose-700 bg-rose-50 px-2.5 py-1 rounded ui-text">Traditional
+                                Approach</span>
+                            <span class="text-xs font-semibold text-slate-400 ui-text">What Most People Do</span>
+                        </div>
+                        <h4 class="text-lg font-bold text-bayesian-navy mb-2 ui-text">The Frequentist Method</h4>
+                        <p class="text-xs text-bayesian-slate leading-relaxed mb-4">
+                            Computes point estimate $\widehat{T} = N \bar{y}_{\text{obs}} = \$1{,}000{,}000$ ($1\text{
+                            Mil}$) and standard error $\text{SE} = N \sqrt{\frac{1}{n} - \frac{1}{N}} s_{\text{obs}} =
+                            \$49{,}500$. Generates a 95% Confidence Interval: $[\$903{,}000, \; \$1{,}097{,}000]$
+                            ($[\$0.90\text{M}, \; \$1.10\text{M}]$).
+                        </p>
+
+                        <div class="space-y-3 ui-text text-xs border-t border-slate-100 pt-3">
+                            <div>
+                                <span class="font-bold text-rose-800 block">Question 1: Probability of Budget
+                                    Breach</span>
+                                <p class="text-slate-600 mt-0.5">
+                                    <strong>"Cannot calculate."</strong> In frequentist theory, the total community
+                                    spend $T$ is a fixed unknown constant, not a random variable. It either exceeds
+                                    $\$1{,}050{,}000$ ($1.05\text{ Mil}$) or it doesn't—you cannot assign it an
+                                    epistemic probability.
+                                </p>
+                            </div>
+                            <div>
+                                <span class="font-bold text-rose-800 block">Question 2: Meaning of the Interval</span>
+                                <p class="text-slate-600 mt-0.5">
+                                    The 95% refers to <em>hypothetical repeated surveys</em> across imaginary parallel
+                                    universes. It cannot tell the Director whether this specific district's food
+                                    assistance will fall short this week.
+                                </p>
+                            </div>
+                            <div>
+                                <span class="font-bold text-rose-800 block">Decision Verdict</span>
+                                <p class="text-rose-700 font-semibold mt-0.5">
+                                    Policy makers are left in limbo: no probability metric to evaluate whether a budget
+                                    breach is an acceptable risk.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bayesian Method -->
+                <div
+                    class="p-6 bg-white border border-emerald-300 rounded-2xl shadow-sm flex flex-col justify-between ring-1 ring-emerald-200">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span
+                                class="text-xs font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded ui-text">Bayesian
+                                Decision Engine</span>
+                            <span class="text-xs font-semibold text-emerald-600 ui-text">Actionable for
+                                Leadership</span>
+                        </div>
+                        <h4 class="text-lg font-bold text-bayesian-navy mb-2 ui-text">The Bayesian Predictive Method
+                        </h4>
+                        <p class="text-xs text-bayesian-slate leading-relaxed mb-4">
+                            Treats the $19{,}600$ un-surveyed citizens as physical missing data and forms an exact
+                            posterior predictive distribution for total community food expenditure: $T =
+                            n\bar{y}_{\text{obs}} + (N - n)\bar{y}_{\text{mis}}$.
+                        </p>
+
+                        <div class="space-y-3 ui-text text-xs border-t border-slate-100 pt-3">
+                            <div>
+                                <span class="font-bold text-emerald-800 block">Question 1: Probability of Budget
+                                    Breach</span>
+                                <p class="text-slate-600 mt-0.5">
+                                    <strong>Exact, direct probability:</strong> $\Pr(\text{Total Community Spend} >
+                                    \$1{,}050{,}000 \mid \text{data}) = \mathbf{15.6\%}$. The Director can immediately
+                                    evaluate whether a 15.6% risk of exhausting the emergency fund is acceptable.
+                                </p>
+                            </div>
+                            <div>
+                                <span class="font-bold text-emerald-800 block">Question 2: 99% Emergency Food
+                                    Buffer</span>
+                                <p class="text-slate-600 mt-0.5">
+                                    Read off the exact 99th percentile of total community food spend:
+                                    $\mathbf{\$1{,}114{,}900}$ ($\mathbf{\$1.11\text{ Mil}}$). Tells the city treasurer
+                                    precisely how much funding guarantees 99% emergency coverage.
+                                </p>
+                            </div>
+                            <div>
+                                <span class="font-bold text-emerald-800 block">Decision Verdict</span>
+                                <p class="text-emerald-700 font-semibold mt-0.5">
+                                    Clear, actionable governance: approved or bolstered with mathematical precision.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interactive Decision Simulator -->
+            <div class="bg-white border border-slate-200/90 rounded-2xl p-6 md:p-8 shadow-[0_4px_24px_rgba(15,23,42,0.04)] my-10">
+                <div
+                    class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-5 mb-6">
+                    <div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <span class="text-xs font-bold uppercase tracking-wider text-emerald-700 ui-text">Interactive Public Health Policy Console</span>
+                        </div>
+                        <h3 class="text-xl md:text-2xl font-bold text-slate-900 ui-text">Community Food Security &amp; Buffer Decision Simulator
+                        </h3>
+                        <p class="text-xs text-slate-500 mt-1 ui-text max-w-xl">
+                            Move the sliders to simulate survey results and watch the Bayesian decision engine calculate
+                            the exact probability of total community food spend breaching the municipal food assistance
+                            cushion.
+                        </p>
+                    </div>
+                    <span
+                        class="px-3 py-1 bg-blue-50 text-bayesian-blue border border-blue-200 rounded-full text-xs font-bold uppercase tracking-wider ui-text self-start sm:self-auto flex items-center gap-1.5 shadow-sm">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                        Live Monte Carlo
+                    </span>
+                </div>
+
+                <!-- Sliders Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8 ui-text">
+                    <div class="p-3 bg-slate-50 border border-slate-200/90 rounded-xl hover:border-slate-300 transition-colors">
+                        <label
+                            class="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1.5">Community
+                            Size ($N$)</label>
+                        <input id="slider-N" type="range" min="1000" max="50000" step="1000" value="20000"
+                            class="w-full">
+                        <div class="text-right text-[11px] font-bold text-slate-900 mt-1.5"><span
+                                id="val-N">20,000</span> residents</div>
+                    </div>
+
+                    <div class="p-3 bg-slate-50 border border-slate-200/90 rounded-xl hover:border-slate-300 transition-colors">
+                        <label
+                            class="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1.5">Surveyed
+                            Sample ($n$)</label>
+                        <input id="slider-n" type="range" min="50" max="2000" step="50" value="400" class="w-full">
+                        <div class="text-right text-[11px] font-bold text-slate-900 mt-1.5"><span
+                                id="val-n">400</span> food diaries</div>
+                    </div>
+
+                    <div class="p-3 bg-slate-50 border border-slate-200/90 rounded-xl hover:border-slate-300 transition-colors">
+                        <label
+                            class="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1.5">Sample
+                            Mean Spend ($\bar{y}_{\text{obs}}$)</label>
+                        <input id="slider-ybar" type="range" min="20" max="100" step="5" value="50" class="w-full">
+                        <div class="text-right text-[11px] font-bold text-slate-900 mt-1.5">$<span
+                                id="val-ybar">50</span> / resident</div>
+                    </div>
+
+                    <div class="p-3 bg-slate-50 border border-slate-200/90 rounded-xl hover:border-slate-300 transition-colors">
+                        <label
+                            class="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1.5">Assistance
+                            Cushion ($C$)</label>
+                        <input id="slider-c" type="range" min="500" max="2500" step="25" value="1050" class="w-full">
+                        <div class="text-right text-[11px] font-bold text-slate-900 mt-1.5"><span
+                                id="val-c">$1,050,000 ($1.05 Mil)</span></div>
+                    </div>
+                </div>
+
+                <!-- Visual Distribution SVG Chart -->
+                <div class="p-6 bg-slate-50 border border-slate-200 rounded-xl mb-8">
+                    <div
+                        class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4 ui-text">
+                        <div class="text-xs font-bold text-bayesian-navy uppercase tracking-wider">
+                            Posterior Predictive Distribution of Total Community Food Spend ($T$)
+                        </div>
+                        <div class="text-xs text-bayesian-slate flex items-center gap-4">
+                            <span class="inline-flex items-center gap-1.5">
+                                <span class="w-3 h-3 rounded-full bg-emerald-500 inline-block"></span> Budget Covered
+                                Zone
+                            </span>
+                            <span class="inline-flex items-center gap-1.5">
+                                <span class="w-3 h-3 rounded-full bg-rose-500 inline-block"></span> Assistance Breach
+                                Zone
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- SVG Curve -->
+                    <div class="w-full overflow-hidden">
+                        <svg id="dist-svg" viewBox="0 0 700 240"
+                            class="w-full h-auto max-w-[680px] mx-auto block overflow-visible">
+                            <!-- Background Grid -->
+                            <line x1="50" y1="190" x2="650" y2="190" stroke="#cbd5e1" stroke-width="1.5" />
+
+                            <!-- Shaded Tail Area (Breach) -->
+                            <path id="svg-breach-area" fill="#fecdd3" opacity="0.75" d="" />
+
+                            <!-- Safe Distribution Curve -->
+                            <path id="svg-curve" fill="none" stroke="#0051d5" stroke-width="2.5" d="" />
+
+                            <!-- Vertical Line at Cushion C -->
+                            <line id="svg-cushion-line" x1="0" y1="30" x2="0" y2="190" stroke="#e11d48" stroke-width="2"
+                                stroke-dasharray="4,4" />
+                            <text id="svg-cushion-text" x="0" y="24" text-anchor="middle"
+                                font-family="'Inter', sans-serif" font-size="9.5" font-weight="700"
+                                fill="#e11d48">Cushion: $1,050,000 ($1.05 Mil)</text>
+
+                            <!-- Vertical Line at Mean T -->
+                            <line id="svg-mean-line" x1="0" y1="45" x2="0" y2="190" stroke="#0051d5" stroke-width="1.5"
+                                stroke-dasharray="2,2" />
+                            <text id="svg-mean-text" x="0" y="205" text-anchor="middle"
+                                font-family="'Inter', sans-serif" font-size="9.5" font-weight="600" fill="#0051d5">Mean:
+                                $1,000,000 ($1.00 Mil)</text>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Decision Outputs Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 ui-text">
+                    <!-- Metric 1: Expected Total -->
+                    <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl text-center">
+                        <div class="text-xs text-bayesian-slate uppercase font-medium">Community Food Total</div>
+                        <div id="stat-total-mean" class="text-xl font-bold text-bayesian-navy mt-1">$1,000,000 <span class="text-xs font-semibold text-bayesian-slate">($1.00 Mil)</span></div>
+                        <div class="text-[11px] text-bayesian-slate mt-1">$N \times \bar{y}_{\text{obs}}$ ($20{,}000
+                            \times \$50/\text{wk} = \$1\text{ Mil}$)</div>
+                    </div>
+
+                    <!-- Metric 2: Breach Probability -->
+                    <div id="card-breach"
+                        class="p-4 bg-amber-50 border border-amber-200 rounded-xl text-center transition-colors">
+                        <div class="text-xs text-amber-800 uppercase font-medium">Probability of Buffer Breach</div>
+                        <div id="stat-breach-prob" class="text-2xl font-bold text-amber-900 mt-1">15.6%</div>
+                        <div id="stat-verdict-sub" class="text-[11px] text-amber-800 mt-1 font-semibold">Caution: 1 in
+                            6.4 chance</div>
+                    </div>
+
+                    <!-- Metric 3: 99% Regulatory VaR -->
+                    <div class="p-4 bg-blue-50 border border-blue-200 rounded-xl text-center">
+                        <div class="text-xs text-bayesian-blue uppercase font-medium">99% Stress Expenditure</div>
+                        <div id="stat-var" class="text-xl font-bold text-bayesian-blue mt-1">$1,114,900 <span class="text-xs font-semibold text-bayesian-slate">($1.11 Mil)</span></div>
+                        <div class="text-[11px] text-bayesian-slate mt-1">Severe inflation spike threshold ($1.11\text{
+                            Mil}$)</div>
+                    </div>
+                </div>
+
+                <!-- Executive Takeaway Banner -->
+                <div id="executive-banner"
+                    class="mt-6 p-4 rounded-xl text-xs leading-relaxed ui-text bg-amber-50 border border-amber-200 text-amber-900">
+                    <strong class="font-bold">Public Health Recommendation:</strong>
+                    <span id="executive-text">
+                        With a 15.6% probability that community food spending exceeds the municipal $1,050,000 ($1.05
+                        Mil) buffer, the Health Department should <strong>pause discretionary transfers</strong> and
+                        bolster emergency food voucher reserves toward $1,114,900 ($1.11 Mil) to satisfy the 99% food
+                        security stress threshold.
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="mt-16 pt-10 border-t border-slate-200/90 text-sm text-slate-600 ui-text">
+            <div class="p-6 bg-white border border-slate-200/80 rounded-2xl shadow-sm mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-bayesian-blue block mb-1">Academic Citation &amp; Source Reference</span>
+                    <p class="text-xs text-slate-600 leading-relaxed font-mono">
+                        Gelman, A., Carlin, J. B., Stern, H. S., Dunson, D. B., Vehtari, A., &amp; Rubin, D. B. (2013). 
+                        <em>Bayesian Data Analysis</em> (3rd ed.). Chapman and Hall/CRC. Chapter 8: Modeling Accounting for Data Collection, Section 8.3 (pp. 205–216).
+                    </p>
+                </div>
+                <a href="../../index.html" class="inline-flex items-center px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors shrink-0">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                    Back to Portfolio
+                </a>
+            </div>
+
+            <div class="flex flex-col sm:flex-row justify-between items-center text-xs text-slate-400 gap-2 mb-8">
+                <span>First-Principles Bayesian Foundations • Mathematical Exposition &copy; 2026</span>
+                <span>Rendered with MathJax &amp; Tailwind CSS</span>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- Interactive Script for Decision-Making Simulation -->
+    <script>
+        const sliderN = document.getElementById('slider-N');
+        const slidern = document.getElementById('slider-n');
+        const sliderybar = document.getElementById('slider-ybar');
+        const sliderc = document.getElementById('slider-c');
+
+        const valN = document.getElementById('val-N');
+        const valn = document.getElementById('val-n');
+        const valybar = document.getElementById('val-ybar');
+        const valc = document.getElementById('val-c');
+
+        const statTotalMean = document.getElementById('stat-total-mean');
+        const statBreachProb = document.getElementById('stat-breach-prob');
+        const statVerdictSub = document.getElementById('stat-verdict-sub');
+        const statVaR = document.getElementById('stat-var');
+        const cardBreach = document.getElementById('card-breach');
+        const executiveBanner = document.getElementById('executive-banner');
+        const executiveText = document.getElementById('executive-text');
+
+        const svgCurve = document.getElementById('svg-curve');
+        const svgBreachArea = document.getElementById('svg-breach-area');
+        const svgCushionLine = document.getElementById('svg-cushion-line');
+        const svgCushionText = document.getElementById('svg-cushion-text');
+        const svgMeanLine = document.getElementById('svg-mean-line');
+        const svgMeanText = document.getElementById('svg-mean-text');
+
+        // Standard Normal CDF approximation (Abramowitz & Stegun)
+        function normalCDF(x) {
+            let t = 1 / (1 + 0.2316419 * Math.abs(x));
+            let d = 0.3989422804014337 * Math.exp(-x * x / 2);
+            let p = d * t * (0.319381530 + t * (-0.356563782 + t * (1.781477937 + t * (-1.821255978 + 1.330274429 * t))));
+            return x > 0 ? 1 - p : p;
+        }
+
+        function updateDecisionSimulator() {
+            let N = parseInt(sliderN.value);
+            let n = parseInt(slidern.value);
+            let ybar = parseFloat(sliderybar.value); // in dollars per person
+            let cK = parseFloat(sliderc.value); // in thousands of dollars ($k)
+            let s = 50; // standard deviation in dollars
+
+            if (n > N) {
+                n = N;
+                slidern.value = N;
+            }
+            slidern.max = N;
+
+            valN.textContent = N.toLocaleString();
+            valn.textContent = n.toLocaleString();
+            valybar.textContent = ybar;
+
+            const cActual = cK * 1000;
+            const cMil = (cK / 1000).toFixed(2);
+            valc.textContent = `${cActual.toLocaleString()} ($${cMil} Mil)`;
+
+            // Total Expected Food Spend in Dollars
+            const totalMean = N * ybar;
+            const totalMeanK = totalMean / 1000;
+
+            // Total Population Variance = N^2 * (1/n - 1/N) * s^2
+            const sK = s / 1000;
+            const finiteFactor = Math.max(0, (1 / n) - (1 / N));
+            const totalVarK = (N * N) * finiteFactor * (sK * sK);
+            const totalSDK = Math.sqrt(totalVarK);
+            const totalSD = totalSDK * 1000;
+
+            // Probability of Breach = Pr(Total Spend > C)
+            let z = 0;
+            let breachProb = 0;
+            if (totalSDK > 0) {
+                z = (cK - totalMeanK) / totalSDK;
+                breachProb = 1 - normalCDF(z);
+            } else {
+                breachProb = totalMeanK > cK ? 1 : 0;
+            }
+
+            // 99% Food Security Stress Need (z = 2.3263)
+            const var99 = totalMean + 2.3263 * totalSD;
+            const var99Mil = (var99 / 1000000).toFixed(2);
+            const meanMil = (totalMean / 1000000).toFixed(2);
+
+            // Update Text Displays
+            statTotalMean.innerHTML = '$' + Math.round(totalMean).toLocaleString('en-US') + ` <span class="text-xs font-semibold text-bayesian-slate">($${meanMil} Mil)</span>`;
+            statBreachProb.textContent = (breachProb * 100).toFixed(1) + '%';
+            statVaR.innerHTML = '$' + Math.round(var99).toLocaleString('en-US') + ` <span class="text-xs font-semibold text-bayesian-slate">($${var99Mil} Mil)</span>`;
+
+            // Executive Verdict Styling
+            if (breachProb < 0.05) {
+                cardBreach.className = "p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-center transition-colors";
+                statBreachProb.className = "text-2xl font-bold text-emerald-900 mt-1";
+                statVerdictSub.className = "text-[11px] text-emerald-800 mt-1 font-semibold";
+                statVerdictSub.textContent = "Safe: < 5% breach risk";
+                executiveBanner.className = "mt-6 p-4 rounded-xl text-xs leading-relaxed ui-text bg-emerald-50 border border-emerald-200 text-emerald-900";
+                executiveText.innerHTML = `With only a <strong>${(breachProb * 100).toFixed(1)}% probability</strong> of exceeding the $${cActual.toLocaleString()} ($${cMil} Mil) cushion, the emergency food voucher fund is well protected. The City can safely reallocate surplus contingency funds to primary care clinics.`;
+            } else if (breachProb < 0.20) {
+                cardBreach.className = "p-4 bg-amber-50 border border-amber-200 rounded-xl text-center transition-colors";
+                statBreachProb.className = "text-2xl font-bold text-amber-900 mt-1";
+                statVerdictSub.className = "text-[11px] text-amber-800 mt-1 font-semibold";
+                statVerdictSub.textContent = `Caution: 1 in ${(1 / breachProb).toFixed(1)} chance`;
+                executiveBanner.className = "mt-6 p-4 rounded-xl text-xs leading-relaxed ui-text bg-amber-50 border border-amber-200 text-amber-900";
+                executiveText.innerHTML = `With a <strong>${(breachProb * 100).toFixed(1)}% probability</strong> that community food spending exceeds the municipal $${cActual.toLocaleString()} ($${cMil} Mil) cushion, the Health Department should <strong>pause discretionary transfers</strong> and bolster emergency food voucher reserves toward $${Math.round(var99).toLocaleString()} ($${var99Mil} Mil) to satisfy the 99% food security stress threshold.`;
+            } else {
+                cardBreach.className = "p-4 bg-rose-50 border border-rose-200 rounded-xl text-center transition-colors";
+                statBreachProb.className = "text-2xl font-bold text-rose-900 mt-1";
+                statVerdictSub.className = "text-[11px] text-rose-800 mt-1 font-semibold";
+                statVerdictSub.textContent = "Critical Danger: High Deficit Risk";
+                executiveBanner.className = "mt-6 p-4 rounded-xl text-xs leading-relaxed ui-text bg-rose-50 border border-rose-200 text-rose-900";
+                executiveText.innerHTML = `<strong>CRITICAL ASSISTANCE SHORTFALL:</strong> There is a <strong>${(breachProb * 100).toFixed(1)}% probability</strong> of blowing through the $${cActual.toLocaleString()} ($${cMil} Mil) buffer. Immediate emergency appropriation is required; expand the food assistance reserve to at least $${Math.round(var99).toLocaleString()} ($${var99Mil} Mil).`;
+            }
+
+            // Draw SVG Distribution Curve
+            // Window of plot: totalMeanK - 3.5 * totalSDK to totalMeanK + 3.5 * totalSDK
+            const minX = totalMeanK - 3.5 * (totalSDK || 10);
+            const maxX = totalMeanK + 3.5 * (totalSDK || 10);
+            const plotLeft = 60;
+            const plotRight = 640;
+            const plotBaseline = 190;
+            const plotTop = 50;
+
+            function scaleX(val) {
+                return plotLeft + ((val - minX) / (maxX - minX)) * (plotRight - plotLeft);
+            }
+
+            // Generate Gaussian curve points
+            let curveD = "";
+            let breachD = "";
+            const steps = 100;
+            let breachStarted = false;
+            let cushionX = scaleX(cK);
+            cushionX = Math.max(plotLeft, Math.min(plotRight, cushionX));
+
+            for (let i = 0; i <= steps; i++) {
+                let xVal = minX + (i / steps) * (maxX - minX);
+                let zVal = totalSDK > 0 ? (xVal - totalMeanK) / totalSDK : 0;
+                let pdf = Math.exp(-0.5 * zVal * zVal);
+                let px = scaleX(xVal);
+                let py = plotBaseline - pdf * (plotBaseline - plotTop);
+
+                if (i === 0) {
+                    curveD += `M ${px.toFixed(1)} ${py.toFixed(1)}`;
+                } else {
+                    curveD += ` L ${px.toFixed(1)} ${py.toFixed(1)}`;
+                }
+
+                if (xVal >= cK) {
+                    if (!breachStarted) {
+                        breachD += `M ${cushionX.toFixed(1)} ${plotBaseline} L ${cushionX.toFixed(1)} ${py.toFixed(1)}`;
+                        breachStarted = true;
+                    } else {
+                        breachD += ` L ${px.toFixed(1)} ${py.toFixed(1)}`;
+                    }
+                }
+            }
+
+            if (breachStarted) {
+                breachD += ` L ${scaleX(maxX).toFixed(1)} ${plotBaseline} Z`;
+            }
+
+            svgCurve.setAttribute('d', curveD);
+            svgBreachArea.setAttribute('d', breachD);
+
+            // Update Cushion Line
+            svgCushionLine.setAttribute('x1', cushionX);
+            svgCushionLine.setAttribute('x2', cushionX);
+            svgCushionText.setAttribute('x', cushionX);
+            svgCushionText.textContent = `Cushion: $${cActual.toLocaleString()} ($${cMil} Mil)`;
+
+            // Update Mean Line
+            const meanX = scaleX(totalMeanK);
+            svgMeanLine.setAttribute('x1', meanX);
+            svgMeanLine.setAttribute('x2', meanX);
+            svgMeanText.setAttribute('x', meanX);
+            svgMeanText.textContent = `Mean: $${Math.round(totalMean).toLocaleString()} ($${meanMil} Mil)`;
+        }
+
+        sliderN.addEventListener('input', updateDecisionSimulator);
+        slidern.addEventListener('input', updateDecisionSimulator);
+        sliderybar.addEventListener('input', updateDecisionSimulator);
+        sliderc.addEventListener('input', updateDecisionSimulator);
+
+        updateDecisionSimulator();
+    </script>
+</body>
+
+</html>
