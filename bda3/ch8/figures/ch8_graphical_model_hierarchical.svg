@@ -1,0 +1,205 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 660" width="100%" height="100%" style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background-color: #ffffff; border-radius: 12px;">
+  <defs>
+    <!-- Arrow markers -->
+    <marker id="arr-blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#0284c7" />
+    </marker>
+    <marker id="arr-purple" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#7c3aed" />
+    </marker>
+    <marker id="arr-slate" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#475569" />
+    </marker>
+    <marker id="arr-emerald" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#059669" />
+    </marker>
+    <filter id="card-shadow" x="-3%" y="-3%" width="106%" height="106%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#0f172a" flood-opacity="0.06" />
+    </filter>
+  </defs>
+
+  <!-- Background Canvas -->
+  <rect x="0" y="0" width="1040" height="660" fill="#ffffff" rx="12" />
+
+  <!-- Outer Card Container -->
+  <g transform="translate(20, 16)">
+    <rect x="0" y="0" width="1000" height="628" rx="12" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5" filter="url(#card-shadow)" />
+
+    <!-- Top Banner -->
+    <rect x="0" y="0" width="1000" height="46" rx="12" fill="#f1f5f9" />
+    <path d="M 0 34 L 0 46 L 1000 46 L 1000 34 Z" fill="#f1f5f9" />
+    <line x1="0" y1="46" x2="1000" y2="46" stroke="#cbd5e1" stroke-width="1" />
+    <circle cx="24" cy="23" r="5.5" fill="#0284c7" />
+    <text x="40" y="27" font-size="12" font-weight="700" fill="#0f172a" letter-spacing="0.4">HIERARCHICAL MODEL: EXPLICIT TWO-STREAM SEQUENTIAL ARCHITECTURE</text>
+    <text x="825" y="27" font-size="11" font-weight="600" fill="#059669">Gelman BDA3 Eqs. 8.8 &amp; 8.9</text>
+
+    <!-- Subtitle description -->
+    <text x="24" y="68" font-size="11.5" fill="#475569">Decouples voter behavior into two correlated psychological channels (Partisan Choice &amp; Decisiveness) before recombining into the survey likelihood.</text>
+
+    <!-- ======================================================== -->
+    <!-- LEVEL 1: NATIONAL HYPERPRIORS (ABOVE THE PLATE)          -->
+    <!-- ======================================================== -->
+    <rect x="150" y="86" width="810" height="88" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2" stroke-dasharray="5 3" />
+    <text x="166" y="104" font-size="9.5" font-weight="700" fill="#64748b" letter-spacing="0.5">LEVEL 1: NATIONAL HYPERPRIORS (ACROSS ALL 16 STRATA)</text>
+
+    <!-- Stream 1 Hyperparameters: (mu_1, tau_1) centered at x=330 -->
+    <g transform="translate(260, 110)">
+      <circle cx="20" cy="22" r="15" fill="#ffffff" stroke="#0284c7" stroke-width="2" />
+      <text x="20" y="27" font-size="13" font-weight="700" fill="#0369a1" text-anchor="middle" font-family="'Newsreader', Georgia, serif">μ₁</text>
+      
+      <circle cx="60" cy="22" r="15" fill="#ffffff" stroke="#0284c7" stroke-width="2" />
+      <text x="60" y="27" font-size="13" font-weight="700" fill="#0369a1" text-anchor="middle" font-family="'Newsreader', Georgia, serif">τ₁</text>
+      
+      <text x="88" y="19" font-size="10" font-weight="700" fill="#0369a1">Partisan Hyperpriors</text>
+      <text x="88" y="32" font-size="8.5" fill="#64748b">Bush vs. Dukakis mean &amp; spread</text>
+    </g>
+
+    <!-- Correlation Bridge (rho) connecting Stream 1 & Stream 2 -->
+    <path d="M 440 134 C 500 114, 630 114, 680 134" fill="none" stroke="#7c3aed" stroke-width="1.8" stroke-dasharray="4 3" />
+    <rect x="546" y="112" width="64" height="20" rx="4" fill="#f5f3ff" stroke="#ddd6fe" stroke-width="1" />
+    <text x="578" y="126" font-size="9.5" font-weight="700" fill="#7c3aed" text-anchor="middle">Corr (ρ)</text>
+
+    <!-- Stream 2 Hyperparameters: (mu_2, tau_2) centered at x=770 -->
+    <g transform="translate(680, 110)">
+      <circle cx="20" cy="22" r="15" fill="#ffffff" stroke="#7c3aed" stroke-width="2" />
+      <text x="20" y="27" font-size="13" font-weight="700" fill="#6d28d9" text-anchor="middle" font-family="'Newsreader', Georgia, serif">μ₂</text>
+      
+      <circle cx="60" cy="22" r="15" fill="#ffffff" stroke="#7c3aed" stroke-width="2" />
+      <text x="60" y="27" font-size="13" font-weight="700" fill="#6d28d9" text-anchor="middle" font-family="'Newsreader', Georgia, serif">τ₂</text>
+      
+      <text x="88" y="19" font-size="10" font-weight="700" fill="#6d28d9">Decisiveness Hyperpriors</text>
+      <text x="88" y="32" font-size="8.5" fill="#64748b">Turnout / certainty mean &amp; spread</text>
+    </g>
+
+    <!-- Arrows from Hyperpriors into Stratum Plate -->
+    <line x1="330" y1="174" x2="330" y2="198" stroke="#0284c7" stroke-width="2" marker-end="url(#arr-blue)" />
+    <line x1="770" y1="174" x2="770" y2="198" stroke="#7c3aed" stroke-width="2" marker-end="url(#arr-purple)" />
+
+    <!-- ======================================================== -->
+    <!-- LEFT GUTTER: DEDICATED STAGE TIMELINE (OUTSIDE PLATE)    -->
+    <!-- ======================================================== -->
+    <g transform="translate(20, 230)">
+      <rect x="0" y="0" width="115" height="24" rx="5" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2" />
+      <text x="57" y="16" font-size="8.5" font-weight="700" fill="#334155" text-anchor="middle">STAGE 1: LOGITS (β)</text>
+    </g>
+    <line x1="77" y1="254" x2="77" y2="330" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="3 2" marker-end="url(#arr-slate)" />
+    
+    <g transform="translate(20, 334)">
+      <rect x="0" y="0" width="115" height="24" rx="5" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2" />
+      <text x="57" y="16" font-size="8.5" font-weight="700" fill="#334155" text-anchor="middle">STAGE 2: PROBS (α)</text>
+    </g>
+    <line x1="77" y1="358" x2="77" y2="434" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="3 2" marker-end="url(#arr-slate)" />
+    
+    <g transform="translate(20, 438)">
+      <rect x="0" y="0" width="115" height="24" rx="5" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2" />
+      <text x="57" y="16" font-size="8.5" font-weight="700" fill="#334155" text-anchor="middle">STAGE 3: COUNTS (y)</text>
+    </g>
+
+    <!-- ======================================================== -->
+    <!-- LEVEL 2: STRATUM PLATE (j = 1 .. 16)                     -->
+    <!-- ======================================================== -->
+    <rect x="150" y="194" width="810" height="316" rx="10" fill="#ffffff" stroke="#0284c7" stroke-width="1.8" stroke-dasharray="6 4" />
+    
+    <!-- Plate Label Badge at bottom right of plate -->
+    <rect x="860" y="474" width="85" height="22" rx="4" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1" />
+    <text x="902" y="489" font-size="11" font-weight="700" fill="#0284c7" text-anchor="middle">j = 1 … 16</text>
+
+    <!-- ======================================================== -->
+    <!-- STREAM 1 (LEFT COLUMN): PARTISAN CHOICE (cx = 330)       -->
+    <!-- ======================================================== -->
+    <!-- Latent Parameter: beta_1j -->
+    <circle cx="330" cy="235" r="20" fill="#ffffff" stroke="#0284c7" stroke-width="2.5" />
+    <text x="330" y="241" font-size="15" font-weight="700" fill="#0369a1" text-anchor="middle" font-family="'Newsreader', Georgia, serif">β<tspan font-size="9" dy="3">1j</tspan></text>
+    <text x="330" y="267" font-size="9.5" font-weight="700" fill="#0f172a" text-anchor="middle">Partisan Log-Odds</text>
+    <text x="330" y="279" font-size="8.5" fill="#64748b" text-anchor="middle">β₁<tspan font-size="6.5">j</tspan> ~ Normal(μ₁, τ₁²)</text>
+
+    <!-- Arrow down to alpha_1j -->
+    <line x1="330" y1="286" x2="330" y2="322" stroke="#0284c7" stroke-width="1.8" marker-end="url(#arr-blue)" />
+    <text x="338" y="308" font-size="8.5" font-weight="700" fill="#0284c7">logit⁻¹</text>
+
+    <!-- Deterministic Probability: alpha_1j -->
+    <circle cx="330" cy="348" r="19" fill="#f0f9ff" stroke="#0284c7" stroke-width="2" />
+    <circle cx="330" cy="348" r="15.5" fill="#ffffff" stroke="#0284c7" stroke-width="1" stroke-dasharray="2 2" />
+    <text x="330" y="353" font-size="13" font-weight="700" fill="#0369a1" text-anchor="middle" font-family="'Newsreader', Georgia, serif">α<tspan font-size="8.5" dy="3">1j</tspan></text>
+    <text x="330" y="380" font-size="9.5" font-weight="700" fill="#0f172a" text-anchor="middle">Bush Share Decided</text>
+    <text x="330" y="392" font-size="8.5" fill="#64748b" text-anchor="middle">α₁<tspan font-size="6.5">j</tspan> = θ₁<tspan font-size="6.5">j</tspan> / (θ₁<tspan font-size="6.5">j</tspan> + θ₂<tspan font-size="6.5">j</tspan>)</text>
+
+    <!-- ======================================================== -->
+    <!-- STREAM 2 (RIGHT COLUMN): VOTER DECISIVENESS (cx = 770)   -->
+    <!-- ======================================================== -->
+    <!-- Latent Parameter: beta_2j -->
+    <circle cx="770" cy="235" r="20" fill="#ffffff" stroke="#7c3aed" stroke-width="2.5" />
+    <text x="770" y="241" font-size="15" font-weight="700" fill="#6d28d9" text-anchor="middle" font-family="'Newsreader', Georgia, serif">β<tspan font-size="9" dy="3">2j</tspan></text>
+    <text x="770" y="267" font-size="9.5" font-weight="700" fill="#0f172a" text-anchor="middle">Decisiveness Log-Odds</text>
+    <text x="770" y="279" font-size="8.5" fill="#64748b" text-anchor="middle">β₂<tspan font-size="6.5">j</tspan> ~ Normal(μ₂, τ₂²)</text>
+
+    <!-- Arrow down to alpha_2j -->
+    <line x1="770" y1="286" x2="770" y2="322" stroke="#7c3aed" stroke-width="1.8" marker-end="url(#arr-purple)" />
+    <text x="778" y="308" font-size="8.5" font-weight="700" fill="#7c3aed">logit⁻¹</text>
+
+    <!-- Deterministic Probability: alpha_2j -->
+    <circle cx="770" cy="348" r="19" fill="#fdf4ff" stroke="#7c3aed" stroke-width="2" />
+    <circle cx="770" cy="348" r="15.5" fill="#ffffff" stroke="#7c3aed" stroke-width="1" stroke-dasharray="2 2" />
+    <text x="770" y="353" font-size="13" font-weight="700" fill="#6d28d9" text-anchor="middle" font-family="'Newsreader', Georgia, serif">α<tspan font-size="8.5" dy="3">2j</tspan></text>
+    <text x="770" y="380" font-size="9.5" font-weight="700" fill="#0f172a" text-anchor="middle">Decided Proportion</text>
+    <text x="770" y="392" font-size="8.5" fill="#64748b" text-anchor="middle">α₂<tspan font-size="6.5">j</tspan> = 1 - θ₃<tspan font-size="6.5">j</tspan> = θ₁<tspan font-size="6.5">j</tspan> + θ₂<tspan font-size="6.5">j</tspan></text>
+
+    <!-- ======================================================== -->
+    <!-- CENTRAL RECOMBINATION JUNCTION (THETA_J & Y_J)           -->
+    <!-- ======================================================== -->
+    <!-- Horizontal Converging Arrows into Recombination Box -->
+    <line x1="355" y1="348" x2="430" y2="348" stroke="#0284c7" stroke-width="2" marker-end="url(#arr-blue)" />
+    <line x1="745" y1="348" x2="670" y2="348" stroke="#7c3aed" stroke-width="2" marker-end="url(#arr-purple)" />
+
+    <!-- Recombination Node: theta_j (Center simplex box: x=440 to 660) -->
+    <rect x="440" y="312" width="220" height="74" rx="8" fill="#f8fafc" stroke="#334155" stroke-width="1.8" />
+    <text x="550" y="329" font-size="10.5" font-weight="700" fill="#0f172a" text-anchor="middle">Simplex Proportions θ<tspan font-size="8" dy="2">j</tspan></text>
+    <line x1="452" y1="335" x2="648" y2="335" stroke="#e2e8f0" stroke-width="1" />
+    <text x="456" y="349" font-size="8.5" font-family="'JetBrains Mono', monospace" fill="#0369a1">θ₁<tspan font-size="6.5">j</tspan> = α₁<tspan font-size="6.5">j</tspan> · α₂<tspan font-size="6.5">j</tspan> (Bush)</text>
+    <text x="456" y="363" font-size="8.5" font-family="'JetBrains Mono', monospace" fill="#b45309">θ₂<tspan font-size="6.5">j</tspan> = (1-α₁<tspan font-size="6.5">j</tspan>)·α₂<tspan font-size="6.5">j</tspan> (Dukakis)</text>
+    <text x="456" y="377" font-size="8.5" font-family="'JetBrains Mono', monospace" fill="#64748b">θ₃<tspan font-size="6.5">j</tspan> = 1 - α₂<tspan font-size="6.5">j</tspan> (Undecided)</text>
+
+    <!-- Arrow down from theta_j to observed data y_j -->
+    <line x1="550" y1="388" x2="550" y2="426" stroke="#334155" stroke-width="1.8" marker-end="url(#arr-slate)" />
+
+    <!-- Observed Data Likelihood: y_j & Sample Size n_j -->
+    <g transform="translate(550, 450)">
+      <!-- Sample size n_j fixed node -->
+      <rect x="-105" y="-12" width="46" height="24" rx="4" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1" />
+      <text x="-82" y="4" font-size="10" font-weight="600" fill="#475569" text-anchor="middle" font-family="'JetBrains Mono', monospace">n<tspan font-size="8" dy="2">j</tspan></text>
+      <line x1="-58" y1="0" x2="-26" y2="0" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr-slate)" />
+
+      <!-- Shaded circle y_j (Observed Data) -->
+      <circle cx="0" cy="0" r="18" fill="#e0f2fe" stroke="#0284c7" stroke-width="2.2" />
+      <text x="0" y="5" font-size="13" font-weight="700" fill="#0f172a" text-anchor="middle" font-family="'JetBrains Mono', monospace">y<tspan font-size="9" dy="2">j</tspan></text>
+      
+      <!-- Label on the right of y_j -->
+      <text x="28" y="-3" font-size="9.5" font-weight="700" fill="#0f172a">Observed Ballot Tally</text>
+      <text x="28" y="10" font-size="8.5" fill="#64748b">Multinomial(n<tspan font-size="7">j</tspan>, θ<tspan font-size="7">j</tspan>)</text>
+    </g>
+
+    <!-- ======================================================== -->
+    <!-- LEVEL 3: FINITE POPULATION POSTSTRATIFICATION            -->
+    <!-- ======================================================== -->
+    <!-- Clean arrow coming out of the plate into the poststratification box -->
+    <line x1="550" y1="512" x2="550" y2="544" stroke="#059669" stroke-width="2" marker-end="url(#arr-emerald)" />
+
+    <!-- Census Weights Box W_j -->
+    <rect x="180" y="546" width="140" height="42" rx="6" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.2" />
+    <text x="250" y="563" font-size="10" font-weight="700" fill="#334155" text-anchor="middle" font-family="'JetBrains Mono', monospace">W<tspan font-size="8" dy="2">j</tspan> = N<tspan font-size="8" dy="2">j</tspan> / N</text>
+    <text x="250" y="578" font-size="8.5" fill="#64748b" text-anchor="middle">Census Weights</text>
+    
+    <!-- Arrow from W_j into Estimand box -->
+    <line x1="322" y1="567" x2="368" y2="567" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr-slate)" />
+
+    <!-- National Target Estimand Box -->
+    <rect x="372" y="546" width="356" height="42" rx="8" fill="#ecfdf5" stroke="#059669" stroke-width="1.8" />
+    <text x="550" y="563" font-size="10.5" font-weight="700" fill="#065f46" text-anchor="middle">Poststratified National Bush Lead (Δ)</text>
+    <text x="550" y="579" font-size="10" font-weight="600" fill="#047857" text-anchor="middle" font-family="'JetBrains Mono', monospace">Δ = ∑ W<tspan font-size="8" dy="2">j</tspan> (θ₁<tspan font-size="8" dy="2">j</tspan> - θ₂<tspan font-size="8" dy="2">j</tspan>) = +11.0%</text>
+
+    <!-- BDA3 Table 8.3 callout tag -->
+    <rect x="748" y="546" width="180" height="42" rx="6" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1.2" />
+    <text x="838" y="563" font-size="9" font-weight="700" fill="#0284c7" text-anchor="middle">BDA3 Table 8.3 Results</text>
+    <text x="838" y="578" font-size="8.5" fill="#64748b" text-anchor="middle">Shrinkage: 48% to 59%</text>
+  </g>
+</svg>

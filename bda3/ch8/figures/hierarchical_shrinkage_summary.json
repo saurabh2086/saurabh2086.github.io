@@ -1,0 +1,176 @@
+{
+  "strata": [
+    {
+      "stratum": 1,
+      "label": "1. Northeast I (Rural)",
+      "n": 47,
+      "weight_pct": 3.2,
+      "raw_bush_decided": 32.55813953488372,
+      "hier_med": 51.18724559604342,
+      "hier_low": 37.14442653979602,
+      "hier_high": 57.73129310101899
+    },
+    {
+      "stratum": 2,
+      "label": "2. Northeast II",
+      "n": 46,
+      "weight_pct": 3.2,
+      "raw_bush_decided": 51.11111111111111,
+      "hier_med": 54.37823827464915,
+      "hier_low": 44.93532770957933,
+      "hier_high": 61.235222681711186
+    },
+    {
+      "stratum": 3,
+      "label": "3. Northeast III",
+      "n": 167,
+      "weight_pct": 11.5,
+      "raw_bush_decided": 53.06122448979592,
+      "hier_med": 54.59567274179915,
+      "hier_low": 48.19402921184609,
+      "hier_high": 59.81133405764159
+    },
+    {
+      "stratum": 4,
+      "label": "4. Northeast IV (Urban)",
+      "n": 69,
+      "weight_pct": 4.8,
+      "raw_bush_decided": 47.05882352941176,
+      "hier_med": 53.14982263174963,
+      "hier_low": 43.17284696194906,
+      "hier_high": 59.02923699725069
+    },
+    {
+      "stratum": 5,
+      "label": "5. Midwest I (Rural)",
+      "n": 47,
+      "weight_pct": 3.2,
+      "raw_bush_decided": 45.23809523809524,
+      "hier_med": 53.71596928206686,
+      "hier_low": 42.71372889321994,
+      "hier_high": 59.896204562860554
+    },
+    {
+      "stratum": 6,
+      "label": "6. Midwest II",
+      "n": 94,
+      "weight_pct": 6.5,
+      "raw_bush_decided": 50.0,
+      "hier_med": 53.90934451699246,
+      "hier_low": 45.545762937335844,
+      "hier_high": 59.69791287293329
+    },
+    {
+      "stratum": 7,
+      "label": "7. Midwest III",
+      "n": 116,
+      "weight_pct": 8.0,
+      "raw_bush_decided": 56.730769230769226,
+      "hier_med": 55.68123818667456,
+      "hier_low": 49.348172925170395,
+      "hier_high": 62.26686052071906
+    },
+    {
+      "stratum": 8,
+      "label": "8. Midwest IV (Urban)",
+      "n": 145,
+      "weight_pct": 10.0,
+      "raw_bush_decided": 62.01550387596899,
+      "hier_med": 57.530145987073325,
+      "hier_low": 52.3672851796582,
+      "hier_high": 65.01316710553101
+    },
+    {
+      "stratum": 9,
+      "label": "9. South I (Rural)",
+      "n": 21,
+      "weight_pct": 1.5,
+      "raw_bush_decided": 66.66666666666666,
+      "hier_med": 56.13868766135538,
+      "hier_low": 48.230338549554915,
+      "hier_high": 66.53790727132859
+    },
+    {
+      "stratum": 10,
+      "label": "10. South II",
+      "n": 96,
+      "weight_pct": 6.6000000000000005,
+      "raw_bush_decided": 53.57142857142857,
+      "hier_med": 54.87375916368518,
+      "hier_low": 47.657300602004796,
+      "hier_high": 61.0681299466569
+    },
+    {
+      "stratum": 11,
+      "label": "11. South III",
+      "n": 99,
+      "weight_pct": 6.800000000000001,
+      "raw_bush_decided": 56.043956043956044,
+      "hier_med": 55.41143910156065,
+      "hier_low": 48.95064827200943,
+      "hier_high": 61.80082613008706
+    },
+    {
+      "stratum": 12,
+      "label": "12. South IV (Urban)",
+      "n": 182,
+      "weight_pct": 12.6,
+      "raw_bush_decided": 61.212121212121204,
+      "hier_med": 57.48865532408929,
+      "hier_low": 52.631531009836394,
+      "hier_high": 64.42208228972551
+    },
+    {
+      "stratum": 13,
+      "label": "13. West I (Rural)",
+      "n": 34,
+      "weight_pct": 2.3,
+      "raw_bush_decided": 51.515151515151516,
+      "hier_med": 54.72298167848181,
+      "hier_low": 45.39791829536023,
+      "hier_high": 61.98675083710638
+    },
+    {
+      "stratum": 14,
+      "label": "14. West II",
+      "n": 77,
+      "weight_pct": 5.3,
+      "raw_bush_decided": 60.29411764705882,
+      "hier_med": 56.370020222346405,
+      "hier_low": 50.25962749355589,
+      "hier_high": 64.68480960631676
+    },
+    {
+      "stratum": 15,
+      "label": "15. West III",
+      "n": 124,
+      "weight_pct": 8.6,
+      "raw_bush_decided": 59.29203539823009,
+      "hier_med": 56.43626632182518,
+      "hier_low": 50.90540235157022,
+      "hier_high": 63.431131883826076
+    },
+    {
+      "stratum": 16,
+      "label": "16. West IV (Urban)",
+      "n": 83,
+      "weight_pct": 5.7,
+      "raw_bush_decided": 60.526315789473685,
+      "hier_med": 56.401173680400696,
+      "hier_low": 50.26443654718413,
+      "hier_high": 64.6875805010838
+    }
+  ],
+  "hier_lead_decided": {
+    "median": 11.03679935716977,
+    "mean": 11.001938680780071,
+    "hdi_2.5": 5.594364677968996,
+    "hdi_97.5": 16.46794361638078
+  },
+  "nopool_lead_decided": {
+    "median": 11.068431413086332,
+    "mean": 11.03663239606927,
+    "hdi_2.5": 5.655515580549021,
+    "hdi_97.5": 16.190697193826317
+  }
+}

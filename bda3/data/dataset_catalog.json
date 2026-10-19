@@ -1,0 +1,229 @@
+{
+  "datasets": [
+    {
+      "name": "rats",
+      "filename": "rats.csv",
+      "raw_source": "https://sites.stat.columbia.edu/gelman/book/data/rats.asc",
+      "book_chapter": "Chapter 5 (Hierarchical Models)",
+      "table_reference": "Table 5.1",
+      "description": "Historical control data of tumor incidence in 71 groups of female laboratory rats (Tarone, 1982).",
+      "columns": {
+        "study_id": "Identifier for each of the 71 laboratory experiments",
+        "y": "Number of rats with tumors (successes / cases)",
+        "n": "Total number of rats in the study group",
+        "observed_rate": "Empirical proportion y / n"
+      },
+      "pymc_use_case": "Hierarchical Beta-Binomial or Logit-Normal model estimating population distribution of tumor risks and individual group shrinkage."
+    },
+    {
+      "name": "light",
+      "filename": "light.csv",
+      "raw_source": "https://sites.stat.columbia.edu/gelman/book/data/light.asc",
+      "book_chapter": "Chapter 3 (Introduction to Multiparameter Models)",
+      "table_reference": "Figure 3.1 / Table 3.1",
+      "description": "Simon Newcomb's 66 measurements of the passage time of light (1882), recorded as deviations from 24,800 nanoseconds.",
+      "columns": {
+        "obs_id": "Observation index (1 to 66)",
+        "deviation_ns": "Recorded deviation in nanoseconds from 24,800 ns",
+        "passage_time_ns": "Total passage time (24,800 + deviation_ns)",
+        "speed_km_s": "Speed of light estimate calculated over 7.442 km path"
+      },
+      "pymc_use_case": "Comparison of Normal likelihood (sensitive to the two extreme negative outliers -44 and -2) vs. robust Student-t likelihood with degrees of freedom nu."
+    },
+    {
+      "name": "golf",
+      "filename": "golf.csv",
+      "raw_source": "https://sites.stat.columbia.edu/gelman/book/data/golf.dat",
+      "book_chapter": "Chapter 20 (Nonlinear and Specialized Models)",
+      "table_reference": "Table 20.1",
+      "description": "Professional golf putting success rates by distance from hole (in feet), based on 1988 PGA Tour data.",
+      "columns": {
+        "distance_ft": "Distance to the hole in feet (2 to 20 feet)",
+        "n_attempts": "Total number of putts attempted at this distance",
+        "y_success": "Number of successful putts holed",
+        "success_rate": "Empirical proportion of putts made (y / n)"
+      },
+      "pymc_use_case": "Physics-based non-linear Bayesian model where probability of holing is 2*Phi(arcsin((R-r)/x) / sigma) - 1, compared to standard logistic regression."
+    },
+    {
+      "name": "meta",
+      "filename": "meta.csv",
+      "raw_source": "https://sites.stat.columbia.edu/gelman/book/data/meta.asc",
+      "book_chapter": "Chapter 5 (Hierarchical Models)",
+      "table_reference": "Table 5.4",
+      "description": "Meta-analysis of 22 clinical trials of beta-blockers for reducing mortality after myocardial infarction (Yusuf et al., 1985).",
+      "columns": {
+        "study_id": "Clinical trial identifier (1 to 22)",
+        "control_deaths": "Number of deaths in the control group",
+        "control_total": "Total patients in the control group",
+        "treated_deaths": "Number of deaths in the beta-blocker treated group",
+        "treated_total": "Total patients in the treated group",
+        "control_rate": "Mortality rate in control group",
+        "treated_rate": "Mortality rate in treated group",
+        "log_odds_ratio": "Empirical log odds ratio"
+      },
+      "pymc_use_case": "Hierarchical meta-analysis model estimating overall treatment efficacy (log odds ratio) and study-to-study heterogeneity tau."
+    },
+    {
+      "name": "football",
+      "filename": "football.csv",
+      "raw_source": "https://sites.stat.columbia.edu/gelman/book/data/football.asc",
+      "book_chapter": "Chapter 1 (Probability and Inference)",
+      "table_reference": "Figure 1.1",
+      "description": "NFL football scores and point spreads across 10 seasons (1981, 1983-1986, 1988-1992), 224 games per season.",
+      "columns": {
+        "game_id": "Sequential game identifier",
+        "season_idx": "Season block index (1 to 10)",
+        "home_favored": "1 if the favorite played at home, 0 otherwise",
+        "favorite_score": "Points scored by the favored team",
+        "underdog_score": "Points scored by the underdog team",
+        "spread": "Bookmaker point spread",
+        "favorite_team": "Team abbreviation for favorite",
+        "underdog_team": "Team abbreviation for underdog",
+        "week": "NFL regular season week",
+        "score_diff": "favorite_score - underdog_score",
+        "outcome_vs_spread": "score_diff - spread"
+      },
+      "pymc_use_case": "Testing the efficient market hypothesis on point spreads and modeling score differential variability (Normal with variance ~ 14^2)."
+    },
+    {
+      "name": "fabric",
+      "filename": "fabric.csv",
+      "raw_source": "https://sites.stat.columbia.edu/gelman/book/data/fabric.asc",
+      "book_chapter": "Chapter 16 (Generalized Linear Models)",
+      "table_reference": "Table 16.4 (Table 14.4 in 1st ed.)",
+      "description": "Faults in 32 rolls of fabric of varying lengths manufactured in a textile plant (Hinde, 1982).",
+      "columns": {
+        "roll_id": "Fabric roll index (1 to 32)",
+        "length": "Length of fabric roll in meters",
+        "faults": "Count of faults detected in the roll",
+        "faults_per_100m": "Rate of faults per 100 meters"
+      },
+      "pymc_use_case": "Poisson regression with log(length) exposure offset or Negative-Binomial regression to account for overdispersion."
+    },
+    {
+      "name": "schizophrenia",
+      "filename": "schizophrenia.csv",
+      "raw_source": "https://sites.stat.columbia.edu/gelman/book/data/schiz.asc",
+      "book_chapter": "Chapter 18 (Models for Missing Data / Finite Mixtures)",
+      "table_reference": "Figure 18.1 (Figure 16.1 in 1st ed.)",
+      "description": "Reaction times (in milliseconds) for 11 non-schizophrenic controls and 6 schizophrenic patients (30 trials each, Belin & Rubin 1990).",
+      "columns": {
+        "subject_id": "Subject index (1 to 17)",
+        "group": "Diagnostic group ('control' or 'schizophrenic')",
+        "is_schizophrenic": "Binary indicator (0 = control, 1 = schizophrenic)",
+        "trial": "Trial number (1 to 30)",
+        "reaction_time_ms": "Reaction time in milliseconds",
+        "log_rt": "Natural logarithm of reaction time"
+      },
+      "pymc_use_case": "Hierarchical mixture model with subject-level random effects and an attentional lapse component."
+    },
+    {
+      "name": "cow",
+      "filename": "cow.csv",
+      "raw_source": "https://sites.stat.columbia.edu/gelman/book/data/cow.asc",
+      "book_chapter": "Chapter 7 (Modeling Accounting for Data Collection)",
+      "table_reference": "Table 7.5 (1st ed.) / p. 222-223",
+      "description": "Effect on milk production and health metrics of a dietary additive given to 50 dairy cows.",
+      "columns": {
+        "cow_id": "Animal index (1 to 50)",
+        "level": "Additive dose level (0.0, 0.1, or 0.2)",
+        "lactation": "Lactation number / parity",
+        "age": "Age in months",
+        "initial_weight": "Pre-treatment body weight (lbs)",
+        "dry": "Dry feed intake",
+        "milk": "Total milk yield produced",
+        "fat": "Milk fat percentage",
+        "solids": "Non-fat solids percentage",
+        "final_weight": "Post-treatment body weight (lbs)",
+        "protein": "Protein percentage"
+      },
+      "pymc_use_case": "Linear mixed models / causal inference adjusting for pre-treatment baseline covariates (lactation, initial weight, age)."
+    },
+    {
+      "name": "dilution",
+      "filename": "dilution.csv",
+      "raw_source": "https://sites.stat.columbia.edu/gelman/book/data/dilution.dat",
+      "book_chapter": "Chapter 20 (Nonlinear and Specialized Models)",
+      "table_reference": "Section 20.2",
+      "description": "Serial dilution laboratory assays for 10 unknown samples and standard titration curves.",
+      "columns": {
+        "assay_id": "Row observation number",
+        "sample_type": "'unknown' or 'standard'",
+        "sample_id": "Unknown sample number (1..10) or 'standard'",
+        "dilution": "Dilution fraction (e.g. 1.0, 0.333, 0.111, 0.037)",
+        "replicate": "Replicate index (1 or 2)",
+        "response": "Optical density / photometric measurement"
+      },
+      "pymc_use_case": "Non-linear calibration curve (4-parameter logistic or sigmoidal curve) estimating unknown specimen concentrations."
+    },
+    {
+      "name": "election_2008",
+      "filename": "election_2008.csv",
+      "raw_source": "https://sites.stat.columbia.edu/gelman/book/data/2008ElectionResult.csv",
+      "book_chapter": "Chapter 2 (Single-Parameter Models)",
+      "table_reference": "Exercise 2.21",
+      "description": "State-level popular and electoral results for the 2008 US Presidential Election (Obama vs. McCain).",
+      "columns": {
+        "state": "US State name",
+        "vote_obama": "Total popular votes cast for Barack Obama",
+        "vote_obama_pct": "Percentage of popular votes for Obama",
+        "vote_mccain": "Total popular votes cast for John McCain",
+        "vote_mccain_pct": "Percentage of popular votes for McCain",
+        "electoral_vote_dem": "Electoral college votes awarded to Democratic candidate",
+        "electoral_vote_rep": "Electoral college votes awarded to Republican candidate"
+      },
+      "pymc_use_case": "Bayesian state-level poll aggregation and predictive forecasting of electoral vote tallies."
+    },
+    {
+      "name": "newyork",
+      "filename": "newyork.csv",
+      "raw_source": "https://sites.stat.columbia.edu/gelman/book/data/newyork.asc",
+      "book_chapter": "Chapter 9 (Decision Analysis) / Chapter 18",
+      "table_reference": "Section 9.3 / Table 18.2",
+      "description": "1960 Census populations of cities and towns in New York State with dual sampling inclusion codes.",
+      "columns": {
+        "town_id": "Town sequence identifier (1 to 817)",
+        "population": "Census population in 1960",
+        "code": "Sampling inclusion status code (100=neither, 200=both, 300=sample 2 only, 400=sample 1 only)",
+        "sample_status": "Human-readable inclusion category"
+      },
+      "pymc_use_case": "Survey sampling weights, capture-recapture estimation, and finite population inference."
+    },
+    {
+      "name": "stratified",
+      "filename": "stratified.csv",
+      "raw_source": "https://sites.stat.columbia.edu/gelman/book/data/stratified.asc",
+      "book_chapter": "Chapter 7 (Modeling Accounting for Data Collection)",
+      "table_reference": "Table 7.2",
+      "description": "Stratified survey of 1,447 US adults across 16 geographical/density strata evaluating voting preferences.",
+      "columns": {
+        "stratum_id": "Stratum identifier (1 to 16)",
+        "region": "US geographic region (Northeast, Midwest, South, West)",
+        "density_tier": "Population density tier (I, II, III, IV)",
+        "bush_pct": "Support proportion for George H.W. Bush",
+        "dukakis_pct": "Support proportion for Michael Dukakis",
+        "other_pct": "Support proportion for third-party / undecided",
+        "stratum_pop_share": "Proportion of total US population residing in this stratum"
+      },
+      "pymc_use_case": "Post-stratification (MRP) and hierarchical multinomial-Dirichlet estimation across strata."
+    },
+    {
+      "name": "kidney_cancer_1980_1984",
+      "filename": "kidney_cancer_1980_1984.csv",
+      "raw_source": "https://stat.columbia.edu/~gelman/book/data/cancer/gd80to84.txt",
+      "book_chapter": "Chapter 2 (Single-Parameter Models)",
+      "table_reference": "Section 2.8",
+      "description": "US County-level kidney cancer deaths, populations, and age-adjusted rates (1980-1984).",
+      "columns": {
+        "state": "US State",
+        "county": "County name",
+        "death_count": "Observed kidney cancer deaths",
+        "population": "County population at risk",
+        "crude_rate": "Crude rate per 100,000",
+        "age_adjusted_rate": "Age-adjusted death rate per 100,000"
+      },
+      "pymc_use_case": "Empirical Bayes and Poisson-Gamma / spatial CAR smoothing to demonstrate why maps of raw rates are misled by small-population sample noise."
+    }
+  ]
+}

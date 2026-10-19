@@ -1,0 +1,137 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 440" width="100%" height="100%" style="font-family: 'Inter', -apple-system, sans-serif; background-color: #ffffff; border-radius: 12px;">
+  <defs>
+    <!-- Arrow marker -->
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#0284c7" />
+    </marker>
+    <marker id="arrow-slate" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#64748b" />
+    </marker>
+    <filter id="card-shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#0f172a" flood-opacity="0.04" />
+    </filter>
+  </defs>
+
+  <!-- Title & Banner -->
+  <rect x="0" y="0" width="960" height="440" fill="#ffffff" rx="12" />
+
+  <!-- ========================================== -->
+  <!-- LEFT PANEL: COMPLETE POOLING (SHARED THETA) -->
+  <!-- ========================================== -->
+  <g transform="translate(30, 20)">
+    <!-- Container Card -->
+    <rect x="0" y="0" width="430" height="395" rx="10" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5" filter="url(#card-shadow)" />
+    
+    <!-- Header -->
+    <rect x="0" y="0" width="430" height="46" rx="10" fill="#f1f5f9" />
+    <path d="M 0 36 L 0 46 L 430 46 L 430 36 Z" fill="#f1f5f9" />
+    <line x1="0" y1="46" x2="430" y2="46" stroke="#e2e8f0" stroke-width="1" />
+    <circle cx="24" cy="23" r="5" fill="#f59e0b" />
+    <text x="38" y="27" font-size="13" font-weight="700" fill="#0f172a" letter-spacing="0.5">COMPLETE POOLING (SHARED θ)</text>
+    <text x="360" y="27" font-size="11" font-weight="600" fill="#64748b">τ² = 0</text>
+
+    <!-- Subtitle description -->
+    <text x="24" y="70" font-size="11.5" fill="#475569">All strata share the exact same parameter vector θ.</text>
+    <text x="24" y="86" font-size="11" fill="#94a3b8" style="font-style: italic;">Geography and urbanization are completely erased.</text>
+
+    <!-- Hyperparameter node a = (1, 1, 1) -->
+    <rect x="175" y="105" width="80" height="30" rx="6" fill="#ffffff" stroke="#94a3b8" stroke-width="1.2" />
+    <text x="215" y="124" font-size="11" font-weight="600" fill="#334155" text-anchor="middle" font-family="'JetBrains Mono', monospace">a = (1,1,1)</text>
+
+    <!-- Arrow from a to theta -->
+    <line x1="215" y1="135" x2="215" y2="162" stroke="#64748b" stroke-width="1.8" marker-end="url(#arrow-slate)" />
+
+    <!-- Latent Parameter Node: theta (OUTSIDE PLATE) -->
+    <circle cx="215" cy="190" r="26" fill="#ffffff" stroke="#0284c7" stroke-width="2.5" />
+    <text x="215" y="196" font-size="18" font-weight="700" fill="#0369a1" text-anchor="middle" font-family="'Newsreader', Georgia, serif">θ</text>
+    <text x="255" y="186" font-size="10.5" font-weight="600" fill="#0284c7">Single Global</text>
+    <text x="255" y="200" font-size="10" fill="#64748b">Dirichlet(a)</text>
+
+    <!-- Arrow from theta into the Plate to y_j -->
+    <line x1="215" y1="216" x2="215" y2="265" stroke="#0284c7" stroke-width="2" marker-end="url(#arrow)" />
+
+    <!-- The Stratum Plate (j = 1..16) -->
+    <rect x="70" y="240" width="290" height="98" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="5 4" />
+    
+    <!-- Sample size node n_j -->
+    <rect x="100" y="274" width="46" height="26" rx="4" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1" />
+    <text x="123" y="291" font-size="11" font-weight="600" fill="#475569" text-anchor="middle" font-family="'JetBrains Mono', monospace">n<tspan font-size="9" dy="2">j</tspan></text>
+    <line x1="146" y1="287" x2="182" y2="287" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow-slate)" />
+
+    <!-- Observed Data Node: y_j (SHADED CIRCLE) -->
+    <circle cx="215" cy="287" r="24" fill="#e0f2fe" stroke="#0284c7" stroke-width="2.2" />
+    <text x="215" y="293" font-size="15" font-weight="700" fill="#0f172a" text-anchor="middle" font-family="'JetBrains Mono', monospace">y<tspan font-size="11" dy="3">j</tspan></text>
+    <text x="250" y="284" font-size="10.5" font-weight="600" fill="#0f172a">Observed</text>
+    <text x="250" y="298" font-size="10" fill="#64748b">Multinomial(n<tspan font-size="8">j</tspan>, θ)</text>
+
+    <!-- Plate Label Badge -->
+    <rect x="290" y="318" width="62" height="18" rx="4" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1" />
+    <text x="321" y="331" font-size="10" font-weight="700" fill="#475569" text-anchor="middle">j = 1 … 16</text>
+
+    <!-- Bottom Takeaway Note -->
+    <rect x="20" y="352" width="390" height="30" rx="6" fill="#fef3c7" stroke="#fde68a" stroke-width="1" />
+    <text x="215" y="371" font-size="10.5" font-weight="600" fill="#92400e" text-anchor="middle">
+      High Bias: Rural South &amp; Urban Northeast forced to identical θ
+    </text>
+  </g>
+
+  <!-- ========================================== -->
+  <!-- RIGHT PANEL: NO POOLING (ISOLATED THETA_J) -->
+  <!-- ========================================== -->
+  <g transform="translate(500, 20)">
+    <!-- Container Card -->
+    <rect x="0" y="0" width="430" height="395" rx="10" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5" filter="url(#card-shadow)" />
+    
+    <!-- Header -->
+    <rect x="0" y="0" width="430" height="46" rx="10" fill="#f1f5f9" />
+    <path d="M 0 36 L 0 46 L 430 46 L 430 36 Z" fill="#f1f5f9" />
+    <line x1="0" y1="46" x2="430" y2="46" stroke="#e2e8f0" stroke-width="1" />
+    <circle cx="24" cy="23" r="5" fill="#0284c7" />
+    <text x="38" y="27" font-size="13" font-weight="700" fill="#0f172a" letter-spacing="0.5">NO POOLING (ISOLATED θ<tspan font-size="10" dy="2">j</tspan>)</text>
+    <text x="360" y="27" font-size="11" font-weight="600" fill="#64748b">τ² = ∞</text>
+
+    <!-- Subtitle description -->
+    <text x="24" y="70" font-size="11.5" fill="#475569">Each stratum has its own isolated parameter vector θ<tspan font-size="9" dy="1">j</tspan>.</text>
+    <text x="24" y="86" font-size="11" fill="#94a3b8" style="font-style: italic;">No communication or information borrowing across boundaries.</text>
+
+    <!-- Hyperparameter node a_j = (1/16, 1/16, 1/16) (OUTSIDE OR ENTERING PLATE) -->
+    <rect x="165" y="105" width="100" height="30" rx="6" fill="#ffffff" stroke="#94a3b8" stroke-width="1.2" />
+    <text x="215" y="124" font-size="11" font-weight="600" fill="#334155" text-anchor="middle" font-family="'JetBrains Mono', monospace">a = 1/16</text>
+
+    <!-- Arrow into Plate -->
+    <line x1="215" y1="135" x2="215" y2="165" stroke="#64748b" stroke-width="1.8" marker-end="url(#arrow-slate)" />
+
+    <!-- The Stratum Plate (j = 1..16) ENCLOSING BOTH THETA_J AND Y_J -->
+    <rect x="70" y="152" width="290" height="186" rx="8" fill="#ffffff" stroke="#0284c7" stroke-width="1.5" stroke-dasharray="5 4" />
+    
+    <!-- Latent Parameter Node: theta_j (INSIDE PLATE) -->
+    <circle cx="215" cy="198" r="26" fill="#ffffff" stroke="#0284c7" stroke-width="2.5" />
+    <text x="215" y="204" font-size="18" font-weight="700" fill="#0369a1" text-anchor="middle" font-family="'Newsreader', Georgia, serif">θ<tspan font-size="12" dy="4">j</tspan></text>
+    <text x="255" y="194" font-size="10.5" font-weight="600" fill="#0284c7">Local Stratum</text>
+    <text x="255" y="208" font-size="10" fill="#64748b">Dirichlet(a)</text>
+
+    <!-- Arrow from theta_j to y_j -->
+    <line x1="215" y1="224" x2="215" y2="262" stroke="#0284c7" stroke-width="2" marker-end="url(#arrow)" />
+
+    <!-- Sample size node n_j -->
+    <rect x="100" y="274" width="46" height="26" rx="4" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1" />
+    <text x="123" y="291" font-size="11" font-weight="600" fill="#475569" text-anchor="middle" font-family="'JetBrains Mono', monospace">n<tspan font-size="9" dy="2">j</tspan></text>
+    <line x1="146" y1="287" x2="182" y2="287" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow-slate)" />
+
+    <!-- Observed Data Node: y_j (SHADED CIRCLE) -->
+    <circle cx="215" cy="287" r="24" fill="#e0f2fe" stroke="#0284c7" stroke-width="2.2" />
+    <text x="215" y="293" font-size="15" font-weight="700" fill="#0f172a" text-anchor="middle" font-family="'JetBrains Mono', monospace">y<tspan font-size="11" dy="3">j</tspan></text>
+    <text x="250" y="284" font-size="10.5" font-weight="600" fill="#0f172a">Observed</text>
+    <text x="250" y="298" font-size="10" fill="#64748b">Multinomial(n<tspan font-size="8">j</tspan>, θ<tspan font-size="8">j</tspan>)</text>
+
+    <!-- Plate Label Badge -->
+    <rect x="290" y="318" width="62" height="18" rx="4" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1" />
+    <text x="321" y="331" font-size="10" font-weight="700" fill="#0284c7" text-anchor="middle">j = 1 … 16</text>
+
+    <!-- Bottom Takeaway Note -->
+    <rect x="20" y="352" width="390" height="30" rx="6" fill="#fee2e2" stroke="#fecaca" stroke-width="1" />
+    <text x="215" y="371" font-size="10.5" font-weight="600" fill="#991b1b" text-anchor="middle">
+      High Variance: Small cells (Stratum 9, n=21) suffer 40.8% error span
+    </text>
+  </g>
+</svg>

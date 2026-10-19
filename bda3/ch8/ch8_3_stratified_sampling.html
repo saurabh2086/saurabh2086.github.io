@@ -1,0 +1,2360 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stratified Sampling and Poststratification — BDA3 Section 8.3</title>
+    <meta name="description"
+        content="First-principles Bayesian decompression of BDA3 Section 8.3: Stratified Sampling and Poststratification. Why naive sample pooling fails, the mathematics of sampling fractions, and how Bayesian imputation recovers the true population.">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400;1,6..72,600&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+
+    <!-- MathJax for LaTeX rendering -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bayesian: {
+                            bg: '#f7f9fb',
+                            text: '#191c1e',
+                            navy: '#131b2e',
+                            blue: '#0051d5',
+                            slate: '#596780',
+                            surface: '#ffffff',
+                            surfaceAlt: '#f8fafc',
+                            border: '#e2e8f0',
+                            accent: '#0f766e',
+                            amber: '#b45309'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Newsreader', Georgia, serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+            font-size: 1.125rem;
+            line-height: 1.75;
+            text-rendering: optimizeLegibility;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .ui-text {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        .mono-text {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        p {
+            margin-bottom: 1.25rem;
+            color: #334155;
+        }
+
+        strong {
+            color: #0f172a;
+        }
+
+        .callout-box {
+            border-left: 4px solid #0051d5;
+            background: #ffffff;
+            box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
+            border-radius: 0 0.75rem 0.75rem 0;
+            border-top: 1px solid #f1f5f9;
+            border-right: 1px solid #f1f5f9;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .math-plate {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            box-shadow: 0 2px 10px rgba(15, 23, 42, 0.03);
+            padding: 1.25rem 1.5rem;
+            margin: 1.25rem 0;
+            text-align: center;
+            overflow-x: auto;
+        }
+
+        .sec-num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 9999px;
+            background: #eff6ff;
+            color: #0051d5;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-right: 0.75rem;
+            flex-shrink: 0;
+            border: 1px solid #bfdbfe;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+
+<body class="antialiased selection:bg-blue-100 selection:text-bayesian-navy">
+    <div class="max-w-[1080px] mx-auto px-4 sm:px-6 md:px-8 py-8">
+
+        <!-- Navigation -->
+        <nav class="mb-8 flex items-center justify-between border-b border-slate-200/80 pb-3.5">
+            <a href="../../index.html"
+                class="inline-flex items-center text-xs font-semibold text-slate-500 hover:text-bayesian-blue transition-colors ui-text uppercase tracking-wider">
+                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                Portfolio Index
+            </a>
+            <div class="flex items-center gap-3 text-xs text-slate-400 ui-text">
+                <span>BDA3 Deconstructions</span>
+                <span>/</span>
+                <span class="text-slate-600 font-medium">Chapter 8</span>
+            </div>
+        </nav>
+
+        <!-- Header -->
+        <header class="mb-10">
+            <div class="flex flex-wrap items-center gap-2 mb-4">
+                <span
+                    class="px-2.5 py-1 bg-slate-100 border border-slate-200 text-slate-700 rounded-md text-xs font-semibold tracking-wide uppercase ui-text">
+                    BDA3 • Chapter 8 • Section 8.3
+                </span>
+                <span
+                    class="px-2.5 py-1 bg-blue-50 border border-blue-200 text-bayesian-blue rounded-md text-xs font-semibold tracking-wide uppercase ui-text">
+                    Stratified Sampling & Poststratification
+                </span>
+                <span
+                    class="px-2.5 py-1 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-md text-xs font-semibold tracking-wide uppercase ui-text">
+                    First-Principles Decompression
+                </span>
+            </div>
+
+            <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight leading-[1.15] text-slate-900 ui-text mb-4">
+                Stratified Sampling and the Illusion of the Big Average
+            </h1>
+
+            <p class="text-lg md:text-xl text-slate-600 font-serif leading-relaxed italic mb-6">
+                Why pooling survey data into one big spreadsheet is a silent recipe for disaster, how unequal sampling fractions distort reality, and how Bayesian principles reconstruct the true population through poststratification.
+            </p>
+
+            <!-- Byline & Metadata Bar -->
+            <div class="flex flex-wrap items-center justify-between text-xs text-slate-500 border-y border-slate-200/80 py-3.5 gap-3 ui-text">
+                <div class="flex items-center gap-2">
+                    <span class="font-semibold text-slate-900">Saurabh Kumar Pandey</span>
+                    <span>•</span>
+                    <span>Gelman et al., BDA3 §8.3 (p. 206–210)</span>
+                    <span>•</span>
+                    <span>October 2026</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <a href="https://colab.research.google.com/github/saurabh2086/saurabh2086.github.io/blob/main/bda3/notebooks/ch8_stratified_pymc.ipynb" target="_blank" rel="noopener noreferrer" class="inline-flex items-center hover:opacity-85 transition-opacity" title="Open interactive PyMC models in Google Colab">
+                        <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab" class="h-5" />
+                    </a>
+                    <span class="inline-flex items-center gap-1 text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded-full font-medium">
+                        <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        Part 1: Foundational Intuition
+                    </span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Narrative -->
+        <main class="space-y-8">
+
+            <!-- Section 1 -->
+            <section id="naive-instinct">
+                <h2 class="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 ui-text mb-6">
+                    The Naive Instinct
+                </h2>
+
+                <p>
+                    Imagine a pollster setting out to take the pulse of a nation on the eve of a major election.
+                </p>
+
+                <p>
+                    To keep the mechanics bare and transparent, let us picture a small country of exactly $N = 1{,}000$ citizens, divided cleanly into two distinct regions: a dense, bustling metropolis and a quiet, sprawling countryside.
+                </p>
+
+                <p>
+                    Our pollster wants to survey a sample of $n = 100$ voters. Sitting at their desk, an intuition that feels entirely fair, balanced, and democratic kicks in: <em>let us interview fifty people from the city and fifty people from the countryside.</em>
+                </p>
+
+                <p>
+                    In the formal language of survey design, the pollster has split the total sample $n$ into two equal buckets, setting $n_1 = 50$ for the city and $n_2 = 50$ for the countryside. On the surface, the plan feels unimpeachable. Neither region is ignored, both voices are heard in equal measure, and fifty interviews per side feels like a solid, orderly collection quota.
+                </p>
+
+                <p>
+                    The interviewers make their calls, record the answers, and hand over the notebooks.
+                </p>
+
+                <p>
+                    In the city, forty out of fifty (40/50) respondents enthusiastically back Candidate A. In the countryside, Candidate A is far less popular, securing just ten votes out of fifty (10/50).
+                </p>
+
+                <!-- Raw Survey Data (No Computation) -->
+                <div class="my-8 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm max-w-md mx-auto">
+                    <div class="px-5 py-3 bg-slate-50 border-b border-slate-200">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-600 ui-text">Survey Results</span>
+                    </div>
+                    <table class="w-full text-left text-sm ui-text">
+                        <thead class="bg-slate-50/50 border-b border-slate-200 text-xs font-semibold uppercase tracking-wider text-slate-600">
+                            <tr>
+                                <th class="px-5 py-3">Region</th>
+                                <th class="px-5 py-3 text-center">Interviews ($n_j$)</th>
+                                <th class="px-5 py-3 text-right">Candidate A ($y_j$)</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 text-slate-700">
+                            <tr class="hover:bg-slate-50/50 transition-colors">
+                                <td class="px-5 py-3 font-semibold text-slate-900">City</td>
+                                <td class="px-5 py-3 text-center mono-text">50</td>
+                                <td class="px-5 py-3 text-right mono-text font-semibold text-slate-900">40</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50/50 transition-colors">
+                                <td class="px-5 py-3 font-semibold text-slate-900">Countryside</td>
+                                <td class="px-5 py-3 text-center mono-text">50</td>
+                                <td class="px-5 py-3 text-right mono-text font-semibold text-slate-900">10</td>
+                            </tr>
+                            <tr class="bg-slate-50/80 font-semibold text-slate-900">
+                                <td class="px-5 py-3">Total Sample</td>
+                                <td class="px-5 py-3 text-center mono-text">100</td>
+                                <td class="px-5 py-3 text-right mono-text font-bold text-slate-900">50</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <p>
+                    The pollster opens a spreadsheet, dumps all one hundred responses into a single column, and computes the ordinary sample average that every introductory statistics textbook teaches:
+                </p>
+
+                <div class="math-plate">
+                    $$\bar{y}_{\text{naive}} = \frac{1}{n} \sum_{i=1}^n y_i = \frac{y_1 + y_2}{n_1 + n_2}$$
+                </div>
+
+                <p>
+                    Plugging in the numbers directly from the survey notebooks:
+                </p>
+
+                <div class="math-plate">
+                    $$\bar{y}_{\text{naive}} = \frac{40 + 10}{50 + 50} = \frac{50}{100} = 0.50$$
+                </div>
+
+                <p>
+                    The spreadsheet returns a clean, unmistakable <strong>$50\%$</strong>.
+                </p>
+
+                <p>
+                    The next morning, the front pages erupt: <strong>"Dead Heat: Race Tied at 50–50."</strong> Cable news anchors analyze the sudden tension, campaign managers panic, and donors scramble to redirect millions of dollars into an election that looks like an agonizing coin toss.
+                </p>
+            </section>
+
+            <!-- Section 2 -->
+            <section id="pulling-back-curtain">
+                <h2 class="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 ui-text mb-6">
+                    Pulling Back the Curtain: What the Spreadsheet Hid
+                </h2>
+
+                <p>
+                    Yet behind that dramatic headline lies an invisible, catastrophic mistake.
+                </p>
+
+                <p>
+                    To see it, we have to look at the real country standing outside the pollster’s window. That country contains $N = 1{,}000$ living citizens. But they do not live in equal halves.
+                </p>
+
+                <p>
+                    Let $N_1$ denote the true population of the city and $N_2$ the population of the countryside. Eight hundred citizens—eighty percent of the entire nation—live in the city ($N_1 = 800$), where Candidate A enjoys a genuine $80\%$ level of support. The countryside, despite its vast physical expanse on a map, holds only two hundred citizens ($N_2 = 200$), where Candidate A has only $20\%$ support.
+                </p>
+
+                <p>
+                    Let us lay the pollster's sample side-by-side against the census reality:
+                </p>
+
+                <!-- Data Table Plate -->
+                <div class="my-8 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+                    <table class="w-full text-left text-sm ui-text">
+                        <thead class="bg-slate-50 border-b border-slate-200 text-xs font-semibold uppercase tracking-wider text-slate-600">
+                            <tr>
+                                <th class="px-5 py-3.5">Region ($j$)</th>
+                                <th class="px-5 py-3.5 text-center">True Population ($N_j$)</th>
+                                <th class="px-5 py-3.5 text-center">Census Share ($\frac{N_j}{N}$)</th>
+                                <th class="px-5 py-3.5 text-center">Sample Size ($n_j$)</th>
+                                <th class="px-5 py-3.5 text-center">Observed Support</th>
+                                <th class="px-5 py-3.5 text-right">Sample Yes Count ($y_j$)</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 text-slate-700">
+                            <tr class="hover:bg-slate-50/50 transition-colors">
+                                <td class="px-5 py-3.5 font-semibold text-slate-900">1. City</td>
+                                <td class="px-5 py-3.5 text-center mono-text">800</td>
+                                <td class="px-5 py-3.5 text-center mono-text font-medium text-bayesian-blue">80%</td>
+                                <td class="px-5 py-3.5 text-center mono-text">50</td>
+                                <td class="px-5 py-3.5 text-center mono-text">40 / 50 (80%)</td>
+                                <td class="px-5 py-3.5 text-right mono-text font-semibold text-slate-900">$y_1 = 40$</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50/50 transition-colors">
+                                <td class="px-5 py-3.5 font-semibold text-slate-900">2. Countryside</td>
+                                <td class="px-5 py-3.5 text-center mono-text">200</td>
+                                <td class="px-5 py-3.5 text-center mono-text font-medium text-bayesian-amber">20%</td>
+                                <td class="px-5 py-3.5 text-center mono-text">50</td>
+                                <td class="px-5 py-3.5 text-center mono-text">10 / 50 (20%)</td>
+                                <td class="px-5 py-3.5 text-right mono-text font-semibold text-slate-900">$y_2 = 10$</td>
+                            </tr>
+                            <tr class="bg-slate-50/70 font-semibold text-slate-900">
+                                <td class="px-5 py-3.5">National Total</td>
+                                <td class="px-5 py-3.5 text-center mono-text">N = 1,000</td>
+                                <td class="px-5 py-3.5 text-center mono-text">100%</td>
+                                <td class="px-5 py-3.5 text-center mono-text">n = 100</td>
+                                <td class="px-5 py-3.5 text-center text-slate-500 italic">—</td>
+                                <td class="px-5 py-3.5 text-right mono-text text-bayesian-blue font-bold">50 / 100 (50%)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <p>
+                    Now look at what is actually happening in the voting booths across the entire nation.
+                </p>
+
+                <p>
+                    In the city, $80\%$ of the $800$ residents will vote for Candidate A:
+                </p>
+
+                <div class="math-plate">
+                    $$\text{City True Votes} = 80\% \times 800 = 640 \text{ votes}$$
+                </div>
+
+                <p>
+                    In the countryside, $20\%$ of the $200$ residents will vote for Candidate A:
+                </p>
+
+                <div class="math-plate">
+                    $$\text{Country True Votes} = 20\% \times 200 = 40 \text{ votes}$$
+                </div>
+
+                <p>
+                    Summing these up across the whole population gives the true national proportion, which we denote with a capital $\bar{Y}$:
+                </p>
+
+                <div class="math-plate">
+                    $$\bar{Y}_{\text{true}} = \frac{640 + 40}{1{,}000} = \frac{680}{1{,}000} = \mathbf{0.68}$$
+                </div>
+
+                <p>
+                    Candidate A was never trapped in a nail-biter. They were heading for an overwhelming <strong>$68\%$ landslide</strong>.
+                </p>
+            </section>
+
+            <!-- Section 3 -->
+            <section id="megaphone-effect">
+                <h2 class="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 ui-text mb-6">
+                    The Megaphone Effect: Why the Math Collapsed
+                </h2>
+
+                <p>
+                    How could a sample of one hundred real, honest voters turn a $68\%$ blowout into a $50\%$ dead heat?
+                </p>
+
+                <p>
+                    The flaw lies in what survey statisticians call the <strong>sampling fraction</strong>, written as $\pi_j = \frac{n_j}{N_j}$. This fraction measures the probability that any single citizen living in region $j$ gets picked up by the pollster's telephone call.
+                </p>
+
+                <p>
+                    Let us calculate this inclusion probability for each region:
+                </p>
+
+                <div class="math-plate">
+                    $$\pi_{\text{country}} = \frac{n_2}{N_2} = \frac{50}{200} = \frac{1}{4} = 25\%$$
+                </div>
+
+                <div class="math-plate">
+                    $$\pi_{\text{city}} = \frac{n_1}{N_1} = \frac{50}{800} = \frac{1}{16} = 6.25\%$$
+                </div>
+
+                <p>
+                    Notice the staggering disparity. A rural voter had a <strong>1 in 4</strong> chance of being polled, while an urban voter had only a <strong>1 in 16</strong> chance. The rural citizen was four times more likely to be heard.
+                </p>
+
+                <p>
+                    If we invert those probabilities, we discover each respondent's <strong>implicit representation weight</strong>, $w_j = \frac{1}{\pi_j} = \frac{N_j}{n_j}$:
+                </p>
+
+                <div class="math-plate">
+                    $$w_{\text{country}} = \frac{200}{50} = 4 \quad (\text{each rural respondent speaks for } 4 \text{ citizens})$$
+                </div>
+
+                <div class="math-plate">
+                    $$w_{\text{city}} = \frac{800}{50} = 16 \quad (\text{each urban respondent speaks for } 16 \text{ citizens})$$
+                </div>
+
+                <p>
+                    Now consider what happens when the pollster takes an unweighted average:
+                </p>
+
+                <div class="math-plate">
+                    $$\bar{y}_{\text{naive}} = \frac{y_1 + y_2 + \dots + y_{100}}{100} = \left(\frac{\mathbf{1}}{100}\right)y_1 + \left(\frac{\mathbf{1}}{100}\right)y_2 + \dots + \left(\frac{\mathbf{1}}{100}\right)y_{100}$$
+                </div>
+
+                <p>
+                    By dividing every response by the same number ($100$), the formula assigns every single row in the spreadsheet the exact same multiplier: $\frac{1}{100}$. In other words, every individual interview is implicitly given an identical weight of <strong>$1$</strong>.
+                </p>
+
+                <p>
+                    Look at the imbalance this creates between the spreadsheet and the country:
+                </p>
+
+                <ul class="list-disc pl-6 space-y-2 mb-6 text-slate-700">
+                    <li>
+                        <strong>In the spreadsheet:</strong> Fifty rural rows and fifty urban rows each contribute exactly $\frac{50}{100} = \mathbf{50\%}$ of the final calculation. The countryside dictates half of the pollster's total number.
+                    </li>
+                    <li>
+                        <strong>In the real country:</strong> Two hundred rural citizens out of one thousand represent exactly $\frac{200}{1{,}000} = \frac{\mathbf{1}}{\mathbf{5}} = \mathbf{20\%}$ of the electorate. 
+                    </li>
+                </ul>
+
+                <p>
+                    Because each rural respondent only represents $4$ people while each urban respondent must speak for $16$, treating their answers with equal $1$-to-$1$ weight in the spreadsheet hands the rural voter a megaphone that is:
+                </p>
+
+                <div class="math-plate">
+                    $$\text{Relative Amplification} = \frac{w_{\text{city}}}{w_{\text{country}}} = \frac{16}{4} = \mathbf{4\times}$$
+                </div>
+
+                <p>
+                    Every rural respondent is granted <strong>four times as much influence</strong> over the national average as their urban counterpart. A demographic that makes up only one-fifth ($20\%$) of the population was artificially inflated to control half ($50\%$) of the spreadsheet—drowning out Candidate A's overwhelming urban majority and generating a completely fabricated $50/50$ deadlock.
+                </p>
+
+                <div class="callout-box p-6 my-8">
+                    <h3 class="text-lg font-bold text-slate-900 ui-text mb-2">The Core Takeaway</h3>
+                    <p class="mb-0 text-slate-700">
+                        An unweighted sample average is only unbiased when everyone in the population has the exact same probability of being sampled ($\pi_i = \text{constant}$). The moment sampling fractions differ across groups ($\pi_j \neq \pi_k$), treating every row equally is no longer "democratic"—it actively distorts reality. The pollster did not measure the will of the electorate; they measured the mathematical distortion of their own sampling quota.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Section 4 -->
+            <section id="poststratification">
+                <h2 class="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 ui-text mb-6">
+                    Reconstructing Reality: The Logic of Poststratification
+                </h2>
+
+                <p>
+                    The most comforting lesson of this disaster is that the pollster does not need to throw away the survey and start over.
+                </p>
+
+                <p>
+                    The interviewers did not fabricate their data, and the voters did not deceive them. Forty urban respondents genuinely preferred Candidate A, and ten rural respondents genuinely preferred Candidate A. The raw information collected in the field was entirely authentic.
+                </p>
+
+                <p>
+                    The mistake was not in the interviews; it was in the aggregation. The pollster simply forgot that before you can assemble a puzzle, you have to sort the pieces into their proper frames.
+                </p>
+
+                <p>
+                    To repair the calculation, we use a two-step technique that survey statisticians call <strong>poststratification</strong>—literally, <em>"stratifying after the fact."</em>
+                </p>
+
+                <h3 class="text-xl font-bold text-slate-900 ui-text mt-8 mb-4">
+                    Step 1: Estimate Within Each Isolated Cell
+                </h3>
+
+                <p>
+                    Instead of dumping everyone into one big pot, we keep the two regions strictly separated. We compute the local proportion of support within each bucket:
+                </p>
+
+                <p>
+                    In the city ($j = 1$):
+                </p>
+
+                <div class="math-plate">
+                    $$\hat{\theta}_1 = \frac{y_1}{n_1} = \frac{40}{50} = \mathbf{0.80} \quad (80\%)$$
+                </div>
+
+                <p>
+                    In the countryside ($j = 2$):
+                </p>
+
+                <div class="math-plate">
+                    $$\hat{\theta}_2 = \frac{y_2}{n_2} = \frac{10}{50} = \mathbf{0.20} \quad (20\%)$$
+                </div>
+
+                <p>
+                    These local estimates are completely untainted by the sample size disparity. In the city, Candidate A has $80\%$ support; in the countryside, they have $20\%$ support.
+                </p>
+
+                <h3 class="text-xl font-bold text-slate-900 ui-text mt-8 mb-4">
+                    Step 2: Re-weight by the Census Truth
+                </h3>
+
+                <p>
+                    Now comes the vital repair step. We do not ask the survey notebook how many people live in each region. We ask the <strong>Census Bureau</strong>.
+                </p>
+
+                <p>
+                    The Census gives us the true demographic weights of the nation:
+                </p>
+
+                <ul class="list-disc pl-6 space-y-2 mb-6 text-slate-700">
+                    <li>
+                        <strong>City's true share of the electorate:</strong>
+                        $$\frac{N_1}{N} = \frac{800}{1{,}000} = \mathbf{0.80} \quad (80\%)$$
+                    </li>
+                    <li>
+                        <strong>Countryside's true share of the electorate:</strong>
+                        $$\frac{N_2}{N} = \frac{200}{1{,}000} = \mathbf{0.20} \quad (20\%)$$
+                    </li>
+                </ul>
+
+                <p>
+                    To find the true national support, we compute a weighted sum where each local estimate $\hat{\theta}_j$ is multiplied by its genuine population share $\frac{N_j}{N}$:
+                </p>
+
+                <div class="math-plate">
+                    $$\hat{\theta}_{\text{poststrat}} = \sum_{j=1}^J \left(\frac{N_j}{N}\right) \hat{\theta}_j$$
+                </div>
+
+                <p>
+                    Expanding this formula for our two regions:
+                </p>
+
+                <div class="math-plate">
+                    $$\hat{\theta}_{\text{poststrat}} = \left(\frac{N_1}{N}\right) \hat{\theta}_1 + \left(\frac{N_2}{N}\right) \hat{\theta}_2$$
+                </div>
+
+                <p>
+                    Plugging in our census proportions and local sample rates:
+                </p>
+
+                <div class="math-plate">
+                    $$\hat{\theta}_{\text{poststrat}} = (0.80 \times 0.80) + (0.20 \times 0.20) = 0.64 + 0.04 = \mathbf{0.68}$$
+                </div>
+
+                <p>
+                    The calculation outputs <strong>$68\%$</strong>.
+                </p>
+
+                <p>
+                    In an instant, the arithmetic illusion vanishes. The fictitious $50/50$ deadlock dissolves, and Candidate A's true $68\%$ landslide is completely restored.
+                </p>
+
+                <p>
+                    By forcing each region to speak only with the volume of its actual population weight, the rural megaphone is calibrated back to its true size.
+                </p>
+            </section>
+
+            <!-- Section 5 -->
+            <section id="cbs-1988-poll">
+                <h2 class="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 ui-text mb-6">
+                    From Toy Countries to the Real World: The 1988 CBS Election Poll
+                </h2>
+
+                <p>
+                    In our two-region fable, fixing the poll was straightforward. We had two neatly labeled buckets, fifty interviews in each, and a clean arithmetic correction.
+                </p>
+
+                <p>
+                    But real countries do not divide into two convenient halves.
+                </p>
+
+                <p>
+                    To see how this plays out in the messy reality of national politics, Gelman takes us to the eve of the <strong>1988 United States Presidential Election</strong> between Vice President George H.W. Bush and Massachusetts Governor Michael Dukakis.
+                </p>
+
+                <p>
+                    In the heat of the campaign, CBS News surveyed $n = 1{,}447$ voting-age adults across the United States. But CBS did not treat America as one monolithic population. Instead, their survey design recognized that voting preferences are shaped by two intersecting demographic forces:
+                </p>
+
+                <ul class="list-disc pl-6 space-y-2 mb-6 text-slate-700">
+                    <li>
+                        <strong>Geography:</strong> The four major Census regions—<strong>Northeast, Midwest, South, and West</strong>.
+                    </li>
+                    <li>
+                        <strong>Population Density:</strong> Four urbanization tiers—from <strong>Tier I</strong> (rural hamlets and small towns) to <strong>Tier IV</strong> (bustling inner-city metropolises).
+                    </li>
+                </ul>
+
+                <p>
+                    Crossing four geographic regions by four population density tiers creates a $4 \times 4$ grid: <strong>16 distinct demographic strata</strong>.
+                </p>
+
+                <!-- Table 8.2 Plate -->
+                <div class="my-8 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+                    <div class="px-5 py-3.5 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-700 ui-text">The 16 Strata of the 1988 CBS Survey (BDA3 Table 8.2)</span>
+                        <span class="text-xs text-slate-500 mono-text">Total n = 1,447</span>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm ui-text">
+                            <thead class="bg-slate-50/50 border-b border-slate-200 text-xs font-semibold uppercase tracking-wider text-slate-600">
+                                <tr>
+                                    <th class="px-4 py-3">Stratum ($j$)</th>
+                                    <th class="px-4 py-3">Region</th>
+                                    <th class="px-4 py-3 text-center">Density Tier</th>
+                                    <th class="px-4 py-3 text-center">Census Share ($\frac{N_j}{N}$)</th>
+                                    <th class="px-4 py-3 text-center">Sample ($n_j$)</th>
+                                    <th class="px-4 py-3 text-center font-bold text-slate-900">Bush</th>
+                                    <th class="px-4 py-3 text-center font-bold text-slate-900">Dukakis</th>
+                                    <th class="px-4 py-3 text-center text-slate-500">No Opinion</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 text-slate-700">
+                                <tr class="hover:bg-slate-50/50 transition-colors">
+                                    <td class="px-4 py-2.5 mono-text font-semibold">1</td>
+                                    <td class="px-4 py-2.5">Northeast</td>
+                                    <td class="px-4 py-2.5 text-center">I (Rural)</td>
+                                    <td class="px-4 py-2.5 text-center mono-text">3.2%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text">≈ 47</td>
+                                    <td class="px-4 py-2.5 text-center mono-text font-semibold text-rose-600">30%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text font-semibold text-blue-600">62%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-slate-400">8%</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50/50 transition-colors">
+                                    <td class="px-4 py-2.5 mono-text font-semibold">2</td>
+                                    <td class="px-4 py-2.5">Northeast</td>
+                                    <td class="px-4 py-2.5 text-center">II</td>
+                                    <td class="px-4 py-2.5 text-center mono-text">3.2%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text">≈ 47</td>
+                                    <td class="px-4 py-2.5 text-center mono-text font-semibold">50%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text font-semibold">48%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-slate-400">2%</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50/50 transition-colors">
+                                    <td class="px-4 py-2.5 mono-text font-semibold">3</td>
+                                    <td class="px-4 py-2.5">Northeast</td>
+                                    <td class="px-4 py-2.5 text-center">III</td>
+                                    <td class="px-4 py-2.5 text-center mono-text">11.5%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text">≈ 166</td>
+                                    <td class="px-4 py-2.5 text-center mono-text font-semibold">47%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text font-semibold">41%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-slate-400">12%</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50/50 transition-colors">
+                                    <td class="px-4 py-2.5 mono-text font-semibold">4</td>
+                                    <td class="px-4 py-2.5">Northeast</td>
+                                    <td class="px-4 py-2.5 text-center">IV (Urban)</td>
+                                    <td class="px-4 py-2.5 text-center mono-text">4.8%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text">≈ 70</td>
+                                    <td class="px-4 py-2.5 text-center mono-text font-semibold">46%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text font-semibold">52%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-slate-400">2%</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50/50 transition-colors">
+                                    <td class="px-4 py-2.5 mono-text font-semibold">5</td>
+                                    <td class="px-4 py-2.5">Midwest</td>
+                                    <td class="px-4 py-2.5 text-center">I (Rural)</td>
+                                    <td class="px-4 py-2.5 text-center mono-text">3.2%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text">≈ 47</td>
+                                    <td class="px-4 py-2.5 text-center mono-text font-semibold text-rose-600">40%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text font-semibold text-blue-600">49%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-slate-400">11%</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50/50 transition-colors">
+                                    <td class="px-4 py-2.5 mono-text font-semibold">6</td>
+                                    <td class="px-4 py-2.5">Midwest</td>
+                                    <td class="px-4 py-2.5 text-center">II</td>
+                                    <td class="px-4 py-2.5 text-center mono-text">6.5%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text">≈ 94</td>
+                                    <td class="px-4 py-2.5 text-center mono-text font-semibold">45%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text font-semibold">45%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-slate-400">10%</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50/50 transition-colors">
+                                    <td class="px-4 py-2.5 mono-text font-semibold">7</td>
+                                    <td class="px-4 py-2.5">Midwest</td>
+                                    <td class="px-4 py-2.5 text-center">III</td>
+                                    <td class="px-4 py-2.5 text-center mono-text">8.0%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text">≈ 116</td>
+                                    <td class="px-4 py-2.5 text-center mono-text font-semibold">51%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text font-semibold">39%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-slate-400">10%</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50/50 transition-colors">
+                                    <td class="px-4 py-2.5 mono-text font-semibold">8</td>
+                                    <td class="px-4 py-2.5">Midwest</td>
+                                    <td class="px-4 py-2.5 text-center">IV (Urban)</td>
+                                    <td class="px-4 py-2.5 text-center mono-text">10.0%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text">≈ 145</td>
+                                    <td class="px-4 py-2.5 text-center mono-text font-semibold">55%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text font-semibold">34%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-slate-400">11%</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50/50 transition-colors">
+                                    <td class="px-4 py-2.5 mono-text font-semibold">9</td>
+                                    <td class="px-4 py-2.5">South</td>
+                                    <td class="px-4 py-2.5 text-center">I (Rural)</td>
+                                    <td class="px-4 py-2.5 text-center mono-text">1.5%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text">≈ 22</td>
+                                    <td class="px-4 py-2.5 text-center mono-text font-semibold text-rose-600">57%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text font-semibold text-blue-600">29%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-slate-400">14%</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50/50 transition-colors">
+                                    <td class="px-4 py-2.5 mono-text font-semibold">10</td>
+                                    <td class="px-4 py-2.5">South</td>
+                                    <td class="px-4 py-2.5 text-center">II</td>
+                                    <td class="px-4 py-2.5 text-center mono-text">6.6%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text">≈ 95</td>
+                                    <td class="px-4 py-2.5 text-center mono-text font-semibold">47%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text font-semibold">41%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-slate-400">12%</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50/50 transition-colors">
+                                    <td class="px-4 py-2.5 mono-text font-semibold">11</td>
+                                    <td class="px-4 py-2.5">South</td>
+                                    <td class="px-4 py-2.5 text-center">III</td>
+                                    <td class="px-4 py-2.5 text-center mono-text">6.8%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text">≈ 98</td>
+                                    <td class="px-4 py-2.5 text-center mono-text font-semibold">52%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text font-semibold">40%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-slate-400">8%</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50/50 transition-colors">
+                                    <td class="px-4 py-2.5 mono-text font-semibold">12</td>
+                                    <td class="px-4 py-2.5">South</td>
+                                    <td class="px-4 py-2.5 text-center">IV (Urban)</td>
+                                    <td class="px-4 py-2.5 text-center mono-text">12.6%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text">≈ 182</td>
+                                    <td class="px-4 py-2.5 text-center mono-text font-semibold">56%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text font-semibold">35%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-slate-400">9%</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50/50 transition-colors">
+                                    <td class="px-4 py-2.5 mono-text font-semibold">13</td>
+                                    <td class="px-4 py-2.5">West</td>
+                                    <td class="px-4 py-2.5 text-center">I (Rural)</td>
+                                    <td class="px-4 py-2.5 text-center mono-text">2.3%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text">≈ 33</td>
+                                    <td class="px-4 py-2.5 text-center mono-text font-semibold">50%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text font-semibold">47%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-slate-400">3%</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50/50 transition-colors">
+                                    <td class="px-4 py-2.5 mono-text font-semibold">14</td>
+                                    <td class="px-4 py-2.5">West</td>
+                                    <td class="px-4 py-2.5 text-center">II</td>
+                                    <td class="px-4 py-2.5 text-center mono-text">5.3%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text">≈ 77</td>
+                                    <td class="px-4 py-2.5 text-center mono-text font-semibold">53%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text font-semibold">35%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-slate-400">12%</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50/50 transition-colors">
+                                    <td class="px-4 py-2.5 mono-text font-semibold">15</td>
+                                    <td class="px-4 py-2.5">West</td>
+                                    <td class="px-4 py-2.5 text-center">III</td>
+                                    <td class="px-4 py-2.5 text-center mono-text">8.6%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text">≈ 124</td>
+                                    <td class="px-4 py-2.5 text-center mono-text font-semibold">54%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text font-semibold">37%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-slate-400">9%</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50/50 transition-colors">
+                                    <td class="px-4 py-2.5 mono-text font-semibold">16</td>
+                                    <td class="px-4 py-2.5">West</td>
+                                    <td class="px-4 py-2.5 text-center">IV (Urban)</td>
+                                    <td class="px-4 py-2.5 text-center mono-text">5.7%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text">≈ 83</td>
+                                    <td class="px-4 py-2.5 text-center mono-text font-semibold">55%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text font-semibold">36%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-slate-400">8%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <h3 class="text-xl font-bold text-slate-900 ui-text mt-8 mb-4">
+                    The Real-World Fragility of Small Pockets
+                </h3>
+
+                <p>
+                    Cast your eye down that table, and the quiet danger of real-world survey analysis immediately reveals itself.
+                </p>
+
+                <p>
+                    Look at <strong>Stratum 1</strong> (rural Northeast): Dukakis appears to be crushing Bush by a staggering margin of $62\%$ to $30\%$. But only about $47$ people were reached in that entire bucket.
+                </p>
+
+                <p>
+                    Now look at <strong>Stratum 9</strong> (rural South): Bush appears to be dominating Dukakis $57\%$ to $29\%$. But because rural Southern adults represent only $1.5\%$ of the nation, the pollster reached only about <strong>22 people</strong> in total.
+                </p>
+
+                <p>
+                    If just three people in Stratum 9 had changed their minds before picking up the phone, Bush's support in that cell would have plummeted by fourteen percentage points.
+                </p>
+
+                <h3 class="text-xl font-bold text-slate-900 ui-text mt-8 mb-4">
+                    How Should We Analyze This Data?
+                </h3>
+
+                <p>
+                    Faced with this table, any analyst confronts a fundamental statistical challenge: <strong>estimates built from small samples are inherently noisy</strong>.
+                </p>
+
+                <p>
+                    When sample size $n_j$ is large—such as in Stratum 12 (urban South) with $182$ respondents—the law of large numbers shields us. The random quirks of individual respondents cancel out, and the sample proportion tightly reflects the true local reality. But in Stratum 9 (rural South) with only $22$ respondents, or Stratum 1 (rural Northeast) with $47$, random chance dominates the scoreboard. A single family choosing to answer or decline the phone call can swing the estimated vote share by five to ten percentage points.
+                </p>
+
+                <p>
+                    How, then, should we structure our statistical model? Historically, analysts have reached for one of two extremes.
+                </p>
+
+                <h4 class="text-lg font-bold text-slate-900 ui-text mt-6 mb-3">
+                    Approach 1: Complete Independence (No Pooling)
+                </h4>
+
+                <p>
+                    The first instinct is to assume that each of the sixteen strata is completely unique and independent of all the others. In this "no pooling" worldview, what voters feel in rural Georgia tells us absolutely nothing about what voters feel in rural Ohio.
+                </p>
+
+                <p>
+                    To compute the national lead for Bush under this approach, we estimate the local preference in each stratum independently and then poststratify using the census shares $\frac{N_j}{N}$:
+                </p>
+
+                <div class="math-plate">
+                    $$\text{National Bush Lead}_{\text{no pooling}} = \sum_{j=1}^{16} \frac{N_j}{N} \left( \hat{\theta}_{1j} - \hat{\theta}_{2j} \right)$$
+                </div>
+
+                <p>
+                    Plugging in the raw sample proportions from Table 8.2:
+                </p>
+
+                <div class="math-plate">
+                    $$\text{National Bush Lead}_{\text{no pooling}} \approx 0.032(0.30 - 0.62) + 0.032(0.50 - 0.48) + \dots + 0.057(0.55 - 0.36) = \mathbf{+0.098} \quad (+9.8\%)$$
+                </div>
+
+
+                <p>
+                    <strong>The consequence:</strong> While the nationwide average benefits from poststratification, our local stratum estimates remain dangerously fragile. If a campaign manager looks at Stratum 1 and sees a $32$-point deficit based on just $47$ interviews, they may waste resources or abandon an entire region based purely on a sampling fluke.
+                </p>
+
+                <h4 class="text-lg font-bold text-slate-900 ui-text mt-6 mb-3">
+                    Approach 2: Complete Pooling (A Single Homogeneous Population)
+                </h4>
+
+                <p>
+                    At the opposite extreme, what if we assume that regional and density labels are meaningless, and that all $1{,}447$ respondents are simply independent draws from one uniform, nationwide population?
+                </p>
+
+                <p>
+                    In this "complete pooling" worldview, we discard the sixteen buckets altogether and lump all $1{,}447$ responses into a single national tally:
+                </p>
+
+                <div class="math-plate">
+                    $$\hat{\theta}_{\text{pooled}} = \frac{\sum_{j=1}^{16} y_{j}}{\sum_{j=1}^{16} n_j}$$
+                </div>
+
+                <p>
+                    Summing the raw interviews across the entire survey produces a national Bush vote of approximately $53\%$ and Dukakis at $43\%$, yielding a national margin of:
+                </p>
+
+                <div class="math-plate">
+                    $$\text{National Bush Lead}_{\text{pooled}} \approx 0.53 - 0.43 = \mathbf{+0.100} \quad (+10.0\%)$$
+                </div>
+
+
+                <p>
+                    <strong>What we lose and the caveats:</strong>
+                </p>
+
+                <ul class="list-disc pl-6 space-y-2 mb-6 text-slate-700">
+                    <li>
+                        <strong>We erase geographic reality:</strong> Complete pooling acts as if rural Mississippi and downtown Boston vote identically. It completely blinds us to real political differences across the country.
+                    </li>
+                    <li>
+                        <strong>We lose local targeting:</strong> A candidate cannot use a pooled model to understand where to campaign, where ad money is needed, or which states are in play.
+                    </li>
+                    <li>
+                        <strong>Wider uncertainty:</strong> By throwing away the stratified design, the pooled estimate fails to exploit the variance-reduction benefits of stratification, leaving our estimate with greater sampling error.
+                    </li>
+            </section>
+
+            <!-- Section 6 -->
+            <section id="illusion-of-determinism">
+                <h2 class="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 ui-text mb-6">
+                    The Illusion of Determinism
+                </h2>
+
+                <p>
+                    If you step back and look at our calculations so far, something should make you uneasy: <strong>it all feels far too deterministic</strong>.
+                </p>
+
+                <p>
+                    We took the raw sample counts from the pollster's notebook, plugged them into formulas, and produced clean, crisp decimals: $+9.8\%$ under no pooling, $+10.0\%$ under complete pooling.
+                </p>
+
+                <p>
+                    But those numbers are not physical constants. They are not absolute reality.
+                </p>
+
+                <p>
+                    In truth, each of those percentages is merely a fleeting snapshot captured from $1{,}447$ specific people who happened to pick up the phone on a particular weekend in 1988. If CBS had conducted the exact same survey the following Tuesday, Stratum 9 might have had fourteen Bush supporters instead of thirteen, and its reported support would have jumped from $57\%$ to $64\%$.
+                </p>
+
+                <p>
+                    Presenting a single point estimate—say, declaring that Bush leads by exactly $9.8$ percentage points—creates a dangerous illusion of certainty. It tells us where the needle landed, but tells us nothing about how violently the dial was shaking.
+                </p>
+
+                <p>
+                    To make responsible decisions, we need a method that does not pretend our sample counts are stone-carved facts. We need a framework that treats <strong>uncertainty as a first-class citizen</strong>—one that tracks how much noise is in each stratum, carries that doubt through every mathematical step, and outputs an honest probability distribution rather than a single fragile number.
+                </p>
+
+                <p>
+                    This is precisely why we turn to the <strong>Bayesian approach</strong>.
+                </p>
+
+                <p>
+                    Instead of treating the true support in each stratum as a fixed, static number to be guessed, the Bayesian method treats it as an unknown quantity governed by a <strong>probability distribution</strong>. We begin with our state of uncertainty before the data arrives (the prior), observe the evidence from the $1{,}447$ phone calls (the likelihood), and update our knowledge into a complete picture of all plausible realities (the posterior).
+                </p>
+            </section>
+
+            <!-- Section 7 -->
+            <section id="multinomial-dirichlet">
+                <h2 class="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 ui-text mb-6">
+                    The Natural Bayesian Starting Point: Multinomial & Dirichlet
+                </h2>
+
+                <p>
+                    Once we decide to treat the voters' preferences as probability distributions rather than fixed numbers, where do we begin?
+                </p>
+
+                <p>
+                    The most natural starting point is to look at the structure of the question asked in each stratum. A voter is not a simple two-sided coin. When the CBS pollster dials a telephone in stratum $j$, the respondent faces a three-way choice:
+                </p>
+
+                <ol class="list-decimal pl-6 space-y-2 mb-6 text-slate-700">
+                    <li>Prefer George H.W. Bush ($y_{1j}$)</li>
+                    <li>Prefer Michael Dukakis ($y_{2j}$)</li>
+                    <li>No opinion or other candidate ($y_{3j}$)</li>
+                </ol>
+
+                <p>
+                    The total number of citizens interviewed in that stratum is $n_j = y_{1j} + y_{2j} + y_{3j}$.
+                </p>
+
+                <p>
+                    Underlying this stratum is a vector of three true, unknown population proportions:
+                </p>
+
+                <div class="math-plate">
+                    $$\theta_j = (\theta_{1j}, \; \theta_{2j}, \; \theta_{3j})$$
+                </div>
+
+                <p>
+                    Because these represent the complete pie of voter sentiment in that stratum, these three probabilities are strictly bound to sum to one: $\theta_{1j} + \theta_{2j} + \theta_{3j} = 1$.
+                </p>
+
+                <h3 class="text-xl font-bold text-slate-900 ui-text mt-8 mb-4">
+                    The Likelihood: The Three-Sided Die
+                </h3>
+
+                <p>
+                    If every citizen in stratum $j$ independently draws their preference from these underlying proportions, the probability of observing our exact tally of counts $(y_{1j}, y_{2j}, y_{3j})$ is governed by the <strong>Multinomial distribution</strong>:
+                </p>
+
+                <div class="math-plate">
+                    $$p(y_j \mid \theta_j) \propto \theta_{1j}^{y_{1j}} \; \theta_{2j}^{y_{2j}} \; \theta_{3j}^{y_{3j}}$$
+                </div>
+
+                <p>
+                    This is simply the multi-category generalization of the familiar Binomial distribution.
+                </p>
+
+                <h3 class="text-xl font-bold text-slate-900 ui-text mt-8 mb-4">
+                    The Prior: The Dirichlet Distribution
+                </h3>
+
+                <p>
+                    What prior distribution should we place on $\theta_j$?
+                </p>
+
+                <p>
+                    Because the vector $(\theta_{1j}, \theta_{2j}, \theta_{3j})$ lives on a triangular surface where all three numbers must be non-negative and sum to one (known geometrically as a <em>simplex</em>), standard bells and normal curves cannot be applied directly. We need a distribution built specifically for proportions that share a fixed whole.
+                </p>
+
+                <p>
+                    That distribution is the <strong>Dirichlet distribution</strong>:
+                </p>
+
+                <div class="math-plate">
+                    $$p(\theta_j \mid a) \propto \theta_{1j}^{a_1 - 1} \; \theta_{2j}^{a_2 - 1} \; \theta_{3j}^{a_3 - 1}$$
+                </div>
+
+                <p>
+                    The hyperparameters $a = (a_1, a_2, a_3)$ have an intuitive physical meaning: <strong>they act as prior pseudo-voters</strong> who cast their ballots before the survey even began.
+                </p>
+
+                <p>
+                    The standard noninformative choice taught in textbooks is to set every parameter to one:
+                </p>
+
+                <div class="math-plate">
+                    $$a_1 = 1, \quad a_2 = 1, \quad a_3 = 1$$
+                </div>
+
+                <p>
+                    This defines a uniform prior across the entire probability triangle, assigning equal density to every possible combination of shares.
+                </p>
+
+                <h3 class="text-xl font-bold text-slate-900 ui-text mt-8 mb-4">
+                    The Conjugate Posterior
+                </h3>
+
+                <p>
+                    Because the mathematical form of the Dirichlet prior mirrors the Multinomial likelihood, Bayes' rule works through simple addition. Prior counts and observed counts combine seamlessly without requiring numerical integration:
+                </p>
+
+                <div class="math-plate">
+                    $$\theta_j \mid y_j \sim \text{Dirichlet}(y_{1j} + a_1, \; y_{2j} + a_2, \; y_{3j} + a_3)$$
+                </div>
+
+                <p>
+                    Under the standard flat prior ($a_k = 1$):
+                </p>
+
+                <div class="math-plate">
+                    $$\theta_j \mid y_j \sim \text{Dirichlet}(y_{1j} + 1, \; y_{2j} + 1, \; y_{3j} + 1)$$
+                </div>
+
+                <p>
+                    The expected posterior proportion for Bush in stratum $j$ is simply:
+                </p>
+
+                <div class="math-plate">
+                    $$\mathbb{E}[\theta_{1j} \mid y] = \frac{y_{1j} + 1}{n_j + 3}$$
+                </div>
+
+                <h3 class="text-xl font-bold text-slate-900 ui-text mt-8 mb-4">
+                    The Quiet Distortion: The "16 Phantom Voters" Trap
+                </h3>
+
+                <p>
+                    At first glance, this independent Dirichlet model seems clean, elegant, and mathematically irreproachable. But on page 209 of <em>Bayesian Data Analysis</em>, Gelman points out a subtle, quiet distortion:
+                </p>
+
+                <ul class="list-disc pl-6 space-y-2 mb-6 text-slate-700">
+                    <li>
+                        <strong>In Chapter 3 (Unstratified):</strong> When analyzing the poll as one nationwide pool of $1{,}447$ people, a single $\text{Dirichlet}(1, 1, 1)$ prior contributed exactly <strong>$1$ phantom voter</strong> for Bush, <strong>$1$</strong> for Dukakis, and <strong>$1$</strong> for Undecided. Across the entire nation, the prior contributed just $1 + 1 + 1 = \mathbf{3 \text{ imaginary votes}}$.
+                    </li>
+                    <li>
+                        <strong>In Chapter 8 (Stratified into 16 Strata):</strong> By applying an independent $\text{Dirichlet}(1, 1, 1)$ to each stratum separately, we quietly added one phantom voter per category to <em>every single stratum</em>:
+                        $$\text{Total Phantom Bush Votes} = \sum_{j=1}^{16} 1 = \mathbf{16 \text{ phantom votes}}$$
+                        $$\text{Total Phantom Dukakis Votes} = \sum_{j=1}^{16} 1 = \mathbf{16 \text{ phantom votes}}$$
+                        $$\text{Total Phantom Undecided Votes} = \sum_{j=1}^{16} 1 = \mathbf{16 \text{ phantom votes}}$$
+                        Total prior weight nationwide: $16 \times 3 = \mathbf{48 \text{ phantom votes!}}$
+                    </li>
+                </ul>
+
+                <p>
+                    Without realizing it, by dividing the country into sixteen separate boxes and applying a "flat" prior to each, <strong>we made our prior belief sixteen times heavier than it was in the unstratified analysis</strong>.
+                </p>
+
+                <p>
+                    In large strata like Stratum 12 ($n_{12} = 182$), adding three imaginary voters is negligible. But in small strata like Stratum 9 ($n_9 = 22$) or Stratum 1 ($n_1 = 47$), those three phantom votes represent over $10\%$ of the evidence in the cell, pulling the stratum toward an artificial equal split ($33\%$ each).
+                </p>
+
+                <h3 class="text-xl font-bold text-slate-900 ui-text mt-8 mb-4">
+                    Why Gelman Corrects the Prior to $a_k = \frac{1}{16}$
+                </h3>
+
+                <p>
+                    To be scientifically consistent and maintain the <strong>exact same prior strength</strong> as the unstratified analysis, our prior should contribute only <strong>$1$ total phantom vote nationwide</strong> for each candidate.
+                </p>
+
+                <p>
+                    If we want a total prior weight of $1$ vote distributed evenly across sixteen strata, how much prior weight must each individual stratum receive?
+                </p>
+
+                <div class="math-plate">
+                    $$\text{Prior weight per stratum} = \frac{\text{Total National Prior Weight}}{\text{Number of Strata}} = \frac{1}{16}$$
+                </div>
+
+                <p>
+                    So in each stratum $j$, the mathematically consistent noninformative prior is:
+                </p>
+
+                <div class="math-plate">
+                    $$a_{1j} = \frac{1}{16}, \quad a_{2j} = \frac{1}{16}, \quad a_{3j} = \frac{1}{16}$$
+                </div>
+
+                <p>
+                    Now check the nationwide sum:
+                </p>
+
+                <div class="math-plate">
+                    $$\sum_{j=1}^{16} a_{1j} = \sum_{j=1}^{16} \frac{1}{16} = 16 \times \left(\frac{1}{16}\right) = \mathbf{1 \text{ phantom voter for Bush nationwide}}$$
+                </div>
+
+                <p>
+                    The total nationwide prior sample size across all three categories is:
+                </p>
+
+                <div class="math-plate">
+                    $$\text{Total National Prior Sample Size} = 16 \times \left(\frac{1}{16} + \frac{1}{16} + \frac{1}{16}\right) = 16 \times \frac{3}{16} = \mathbf{3 \text{ pseudo-voters}}$$
+                </div>
+
+                <p>
+                    By setting $a_k = \frac{1}{16}$ in each stratum, the prior footprint across the nation remains strictly identical to the Chapter 3 unstratified model ($3$ pseudo-voters total). The prior no longer overpowers small strata, and the resulting national posterior median lead aligns with the unstratified analysis.
+                </p>
+
+                <h3 class="text-xl font-bold text-slate-900 ui-text mt-10 mb-4">
+                    Empirical Confirmation: Sampling the Posteriors via PyMC
+                </h3>
+
+                <p>
+                    What happens when we take these Dirichlet-Multinomial posteriors to the computer and draw thousands of samples?
+                </p>
+
+                <p>
+                    Using modern Hamiltonian Monte Carlo in PyMC, we simulated the exact posterior distribution for every stratum simultaneously under both prior specifications, then poststratified the results across the national population weights $W_j = N_j / N$.
+                </p>
+
+                <!-- Publication Figure Plate -->
+                <div class="my-10 overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-[0_4px_24px_rgba(15,23,42,0.04)]">
+                    <div class="px-6 py-4 bg-slate-50/80 border-b border-slate-200 flex flex-wrap justify-between items-center gap-3">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-bayesian-blue"></span>
+                            <span class="text-xs font-bold uppercase tracking-wider text-slate-700 ui-text">Figure 8.1 • PyMC No-Pooling Posterior Distributions</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <a href="https://colab.research.google.com/github/saurabh2086/saurabh2086.github.io/blob/main/bda3/notebooks/ch8_stratified_pymc.ipynb" target="_blank" rel="noopener noreferrer" class="inline-flex items-center hover:opacity-85 transition-opacity" title="Run No-Pooling PyMC model in Google Colab">
+                                <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab" class="h-4 sm:h-5" />
+                            </a>
+                            <a href="../notebooks/ch8_stratified_pymc.ipynb" class="inline-flex items-center gap-1.5 text-xs font-semibold text-bayesian-blue hover:text-blue-800 transition-colors ui-text">
+                                <span>Notebook</span>
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="p-4 sm:p-6 bg-white flex justify-center">
+                        <img src="figures/ch8_stratified_nopooling.svg" alt="1988 CBS Election Poll: Bayesian No-Pooling Poststratification (BDA3 Section 8.3)" class="w-full h-auto rounded-lg" />
+                    </div>
+                    <div class="px-6 py-4 bg-slate-50/50 border-t border-slate-100 text-xs text-slate-500 leading-relaxed font-serif">
+                        <strong>Figure 8.1:</strong> <em>(Left)</em> Stratum-by-stratum posterior credible intervals ($95\%$ blue bars with medians) for Bush's share $\theta_{1j}$ under the corrected prior $a_k = 1/16$, contrasted with the flat prior $a_k = 1$ (amber squares). Highlighted in soft red are small-sample cells (Stratum 1 and 9). <em>(Right)</em> Posterior density of the national poststratified lead $\Delta = \sum W_j(\theta_{1j} - \theta_{2j})$, centering firmly at $+10.0\%$ ($95\%$ CI: $[+5.1\%, +14.7\%]$).
+                    </div>
+                </div>
+
+                <p>
+                    Inspecting this empirical simulation surfaces two crucial revelations:
+                </p>
+
+                <div class="space-y-4 my-6">
+                    <div class="p-5 rounded-xl border border-slate-200 bg-white shadow-sm">
+                        <h4 class="text-base font-bold text-slate-900 ui-text mb-2 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                            1. The National Lead is Solid and Decisive
+                        </h4>
+                        <p class="text-sm text-slate-600 mb-0 font-serif leading-relaxed">
+                            Looking at Panel B, the poststratified national lead is remarkably stable. The posterior median lead is <strong>$+10.0\%$</strong>, with a $95\%$ highest density interval spanning from <strong>$+5.1\%$ to $+14.7\%$</strong>. The probability that Bush is actually trailing (lead $\le 0\%$) is virtually zero ($p < 0.0001$). Poststratification has successfully aggregated the disparate regional samples into an authoritative national readout.
+                        </p>
+                    </div>
+
+                    <div class="p-5 rounded-xl border border-rose-200 bg-rose-50/30 shadow-sm">
+                        <h4 class="text-base font-bold text-rose-900 ui-text mb-2 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+                            2. Local Strata Remain Dangerously Wide (The No-Pooling Trap)
+                        </h4>
+                        <p class="text-sm text-slate-700 mb-0 font-serif leading-relaxed">
+                            Look closely at Panel A. In <strong>Stratum 9</strong> (rural South, $n=21$), the $95\%$ credible interval sprawls from <strong>$35.9\%$ to $76.7\%$</strong>—a staggering <strong>$40.8$ percentage point gulf of ignorance</strong>. A campaign advisor looking at this cell cannot even tell whether Bush is facing a landslide defeat or commanding a supermajority. Similarly, in <strong>Stratum 1</strong> (rural Northeast, $n=47$), the interval ranges from <strong>$17.9\%$ to $43.4\%$</strong>. 
+                        </p>
+                    </div>
+                </div>
+
+                <p>
+                    Notice also the subtle amber squares in Panel A: under the naive flat prior ($a_k = 1$), Stratum 9's posterior median was pulled all the way inward from $57.1\%$ to $54.2\%$, purely because three imaginary phantom voters carried $12\%$ of the total voting power in that cell. Under Gelman's corrected prior ($a_k = 1/16$), that artificial distortion vanishes.
+                </p>
+
+                <p>
+                    Yet our central dilemma remains unresolved: <strong>independent estimation leaves our small cells stranded in high uncertainty</strong>. If we refuse to combine them, local estimates remain uselessly noisy. But what happens if we take the opposite path?
+                </p>
+            </section>
+
+            <!-- Section 8 -->
+            <section id="bayesian-complete-pooling">
+                <h2 class="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 ui-text mb-6">
+                    The Opposite Extreme: Bayesian Complete Pooling
+                </h2>
+
+                <p>
+                    If treating every stratum as an isolated island produces wide, unstable local estimates, what happens when we swing the pendulum all the way to the other side?
+                </p>
+
+                <p>
+                    What if our statistician declares that regional boundaries, rural-urban differences, and geographic cultures are mere statistical noise—and that all $1{,}447$ respondents are simply independent draws from one single, homogeneous nationwide distribution:
+                </p>
+
+                <div class="math-plate">
+                    $$\theta = (\theta_{\text{Bush}}, \; \theta_{\text{Dukakis}}, \; \theta_{\text{Other}})$$
+                </div>
+
+                <p>
+                    This is the Bayesian formulation of <strong>Complete Pooling</strong>. In this worldview, the sixteen demographic strata are completely erased. We tear up the sixteen separate tally sheets and dump all $1{,}447$ interviews into one nationwide urn:
+                </p>
+
+                <div class="math-plate">
+                    $$y_{\text{pooled}} = \sum_{j=1}^{16} y_j = (y_{1,\text{pool}}, \; y_{2,\text{pool}}, \; y_{3,\text{pool}})$$
+                </div>
+
+                <p>
+                    Summing across all rows of Table 8.2 yields the national ballot counts:
+                </p>
+
+                <ul class="list-disc pl-6 space-y-2 mb-6 text-slate-700 font-serif">
+                    <li>
+                        <strong>George H.W. Bush ($y_{1,\text{pool}}$):</strong> $14 + 23 + 78 + 32 + \dots + 46 = \mathbf{727 \text{ votes}}$ ($50.2\%$)
+                    </li>
+                    <li>
+                        <strong>Michael Dukakis ($y_{2,\text{pool}}$):</strong> $29 + 22 + 69 + 36 + \dots + 30 = \mathbf{583 \text{ votes}}$ ($40.3\%$)
+                    </li>
+                    <li>
+                        <strong>Other / No Opinion ($y_{3,\text{pool}}$):</strong> $4 + 1 + 20 + 1 + \dots + 7 = \mathbf{137 \text{ votes}}$ ($9.5\%$)
+                    </li>
+                    <li>
+                        <strong>Total Interviews ($n$):</strong> $727 + 583 + 137 = \mathbf{1{,}447 \text{ respondents}}$
+                    </li>
+                </ul>
+
+                <h3 class="text-xl font-bold text-slate-900 ui-text mt-8 mb-4">
+                    The Conjugate Pooled Posterior
+                </h3>
+
+                <p>
+                    Because we are analyzing the entire country as a single pool, we place the standard unstratified noninformative prior from Chapter 3 on $\theta$:
+                </p>
+
+                <div class="math-plate">
+                    $$\theta \sim \text{Dirichlet}(1, \; 1, \; 1)$$
+                </div>
+
+                <p>
+                    Notice that across the entire nation, this prior contributes exactly <strong>$3$ pseudo-voters</strong> ($1$ for Bush, $1$ for Dukakis, and $1$ for Other). There is no phantom voter inflation here because there is only one prior.
+                </p>
+
+                <p>
+                    Combining this flat prior with the Multinomial likelihood of $1{,}447$ interviews produces an immediate, closed-form conjugate posterior:
+                </p>
+
+                <div class="math-plate">
+                    $$\theta \mid y_{\text{pooled}} \sim \text{Dirichlet}(727 + 1, \; 583 + 1, \; 137 + 1) = \text{Dirichlet}(728, \; 584, \; 138)$$
+                </div>
+
+                <h3 class="text-xl font-bold text-slate-900 ui-text mt-8 mb-4">
+                    PyMC Posterior Simulation
+                </h3>
+
+                <p>
+                    Running this complete pooling model through PyMC (drawing $12{,}000$ posterior samples across $4$ MCMC chains) produces crisp, highly concentrated posterior distributions:
+                </p>
+
+                <!-- Complete Pooling Summary Table -->
+                <div class="my-8 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+                    <div class="px-5 py-3.5 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-700 ui-text">PyMC Complete Pooling Posterior Estimates (n = 1,447)</span>
+                        <span class="text-xs text-slate-500 mono-text">Prior: Dirichlet(1, 1, 1)</span>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm ui-text">
+                            <thead class="bg-slate-50/50 border-b border-slate-200 text-xs font-semibold uppercase tracking-wider text-slate-600">
+                                <tr>
+                                    <th class="px-5 py-3">Parameter</th>
+                                    <th class="px-5 py-3 text-center">Observed Count</th>
+                                    <th class="px-5 py-3 text-center">Posterior Mean</th>
+                                    <th class="px-5 py-3 text-center">Std Dev ($\sigma$)</th>
+                                    <th class="px-5 py-3 text-center">95% Highest Density Interval (HDI)</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 text-slate-700">
+                                <tr class="hover:bg-slate-50/50 transition-colors">
+                                    <td class="px-5 py-3 font-semibold text-slate-900">Bush Share ($\theta_{\text{Bush}}$)</td>
+                                    <td class="px-5 py-3 text-center mono-text">727</td>
+                                    <td class="px-5 py-3 text-center mono-text font-bold text-slate-900">50.2%</td>
+                                    <td class="px-5 py-3 text-center mono-text">1.3%</td>
+                                    <td class="px-5 py-3 text-center mono-text">[47.7%, 52.7%]</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50/50 transition-colors">
+                                    <td class="px-5 py-3 font-semibold text-slate-900">Dukakis Share ($\theta_{\text{Dukakis}}$)</td>
+                                    <td class="px-5 py-3 text-center mono-text">583</td>
+                                    <td class="px-5 py-3 text-center mono-text font-bold text-slate-900">40.3%</td>
+                                    <td class="px-5 py-3 text-center mono-text">1.3%</td>
+                                    <td class="px-5 py-3 text-center mono-text">[37.9%, 42.7%]</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50/50 transition-colors">
+                                    <td class="px-5 py-3 font-semibold text-slate-900">Other / Undecided ($\theta_{\text{Other}}$)</td>
+                                    <td class="px-5 py-3 text-center mono-text">137</td>
+                                    <td class="px-5 py-3 text-center mono-text font-bold text-slate-900">9.5%</td>
+                                    <td class="px-5 py-3 text-center mono-text">0.8%</td>
+                                    <td class="px-5 py-3 text-center mono-text">[8.1%, 11.0%]</td>
+                                </tr>
+                                <tr class="bg-blue-50/60 font-semibold text-bayesian-navy">
+                                    <td class="px-5 py-3">National Lead Margin ($\theta_{\text{Bush}} - \theta_{\text{Dukakis}}$)</td>
+                                    <td class="px-5 py-3 text-center mono-text">+144</td>
+                                    <td class="px-5 py-3 text-center mono-text font-extrabold text-blue-700">+10.0%</td>
+                                    <td class="px-5 py-3 text-center mono-text">2.5%</td>
+                                    <td class="px-5 py-3 text-center mono-text font-bold text-blue-700">[+5.1%, +14.8%]</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <h3 class="text-xl font-bold text-slate-900 ui-text mt-10 mb-4">
+                    Graphical Models (Plate Notation): Complete Pooling vs. No Pooling
+                </h3>
+
+                <p>
+                    In Bayesian statistics, probabilistic graphical models (DAGs) using <strong>plate notation</strong> provide the most direct, visual way to understand the architecture of an assumption.
+                </p>
+
+                <p>
+                    In standard plate conventions:
+                </p>
+
+                <ul class="list-disc pl-6 space-y-2 mb-6 text-slate-700 font-serif">
+                    <li>
+                        <strong>Shaded circles ($y_j$):</strong> Represent <em>observed data</em>—the real counts gathered from the $1{,}447$ telephone interviews.
+                    </li>
+                    <li>
+                        <strong>Open circles ($\theta$ and $\theta_j$):</strong> Represent <em>latent parameters</em>—the hidden population proportions we seek to estimate.
+                    </li>
+                    <li>
+                        <strong>Rectangular plates ($j = 1 \dots 16$):</strong> Represent <em>replication</em>—indicating that the variables inside the box are repeated across all sixteen demographic strata.
+                    </li>
+                </ul>
+
+                <!-- Figure 8.2: Graphical Models Plate -->
+                <div class="my-10 overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-[0_4px_24px_rgba(15,23,42,0.04)]">
+                    <div class="px-6 py-4 bg-slate-50/80 border-b border-slate-200 flex flex-wrap justify-between items-center gap-3">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-bayesian-blue"></span>
+                            <span class="text-xs font-bold uppercase tracking-wider text-slate-700 ui-text">Figure 8.2 • Graphical Models (Plate Notation)</span>
+                        </div>
+                        <span class="text-xs text-slate-500 mono-text">Structural Comparison of Extreme Assumptions</span>
+                    </div>
+                    <div class="p-4 sm:p-6 bg-white flex justify-center">
+                        <img src="figures/ch8_graphical_models_pooling_vs_nopooling.svg" alt="Graphical models in plate notation comparing Complete Pooling and No Pooling" class="w-full h-auto rounded-lg" />
+                    </div>
+                    <div class="px-6 py-4 bg-slate-50/50 border-t border-slate-100 text-xs text-slate-500 leading-relaxed font-serif">
+                        <strong>Figure 8.2:</strong> <em>(Left) Complete Pooling:</em> The parameter vector $\theta$ resides <strong>outside</strong> the plate. Every stratum is locked to the identical proportion ($\tau^2 = 0$). <em>(Right) No Pooling:</em> The parameter vector $\theta_j$ resides <strong>inside</strong> the plate. Each stratum possesses its own independent parameter with zero information flow across borders ($\tau^2 = \infty$).
+                    </div>
+                </div>
+
+                <p>
+                    Look at the physical position of the latent circle:
+                </p>
+
+                <ul class="list-disc pl-6 space-y-2 mb-6 text-slate-700 font-serif">
+                    <li>
+                        <strong>In Complete Pooling (Left):</strong> $\theta$ is <em>outside</em> the box. There is only one global dial for the entire United States. Every single stratum draw $y_j \sim \text{Multinomial}(n_j, \theta)$ is wired directly to this single dial. This structure algebraically declares that the variance between strata is strictly zero ($\tau^2 = 0$).
+                    </li>
+                    <li>
+                        <strong>In No Pooling (Right):</strong> $\theta_j$ is pulled <em>inside</em> the box. There are sixteen separate dials. Each stratum has its own private Dirichlet prior, and not a single arrow connects Stratum 1 to Stratum 2. This structure algebraically declares that the variance between strata is infinite ($\tau^2 = \infty$).
+                    </li>
+                </ul>
+
+                <h3 class="text-xl font-bold text-slate-900 ui-text mt-10 mb-4">
+                    The Grand Comparison: The Two Flawed Extremes
+                </h3>
+
+                <p>
+                    Placing <strong>No Pooling</strong> and <strong>Complete Pooling</strong> side-by-side reveals a striking contrast that lies at the very heart of Bayesian hierarchical modeling:
+                </p>
+
+                <!-- Comparison Table Plate -->
+                <div class="my-8 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+                    <div class="px-5 py-3.5 bg-slate-50 border-b border-slate-200">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-700 ui-text">Side-by-Side Comparison: No Pooling vs. Complete Pooling</span>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm ui-text">
+                            <thead class="bg-slate-50/50 border-b border-slate-200 text-xs font-semibold uppercase tracking-wider text-slate-600">
+                                <tr>
+                                    <th class="px-5 py-3">Dimension</th>
+                                    <th class="px-5 py-3 text-left">Approach 1: No Pooling ($a_k = 1/16$)</th>
+                                    <th class="px-5 py-3 text-left">Approach 2: Complete Pooling ($a_k = 1$)</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 text-slate-700 font-serif">
+                                <tr class="hover:bg-slate-50/50 transition-colors">
+                                    <td class="px-5 py-3 font-semibold text-slate-900 ui-text">Core Assumption</td>
+                                    <td class="px-5 py-3">Every stratum is an isolated island; learning about the South tells us zero about the Midwest ($\tau = \infty$).</td>
+                                    <td class="px-5 py-3">All strata are completely identical; regional differences do not exist ($\tau = 0$).</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50/50 transition-colors">
+                                    <td class="px-5 py-3 font-semibold text-slate-900 ui-text">National Bush Lead</td>
+                                    <td class="px-5 py-3 mono-text font-semibold text-slate-900">+10.0% [5.1%, 14.7%]</td>
+                                    <td class="px-5 py-3 mono-text font-semibold text-slate-900">+10.0% [5.1%, 14.8%]</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50/50 transition-colors">
+                                    <td class="px-5 py-3 font-semibold text-slate-900 ui-text">Stratum 1 (Rural Northeast, $n=47$)</td>
+                                    <td class="px-5 py-3"><span class="mono-text font-bold text-slate-900">29.5%</span> [17.9%, 43.4%]<br><span class="text-xs text-slate-500">Faithfully reflects Dukakis territory, but noisy.</span></td>
+                                    <td class="px-5 py-3"><span class="mono-text font-bold text-rose-700">Forced to 50.2%</span> [47.7%, 52.7%]<br><span class="text-xs text-rose-600">Blatantly wrong: completely erases the local Dukakis lead.</span></td>
+                                </tr>
+                                <tr class="hover:bg-slate-50/50 transition-colors">
+                                    <td class="px-5 py-3 font-semibold text-slate-900 ui-text">Stratum 9 (Rural South, $n=21$)</td>
+                                    <td class="px-5 py-3"><span class="mono-text font-bold text-slate-900">57.2%</span> [35.9%, 76.7%]<br><span class="text-xs text-slate-500">Massive 40.8% interval; practically unusable.</span></td>
+                                    <td class="px-5 py-3"><span class="mono-text font-bold text-rose-700">Forced to 50.2%</span> [47.7%, 52.7%]<br><span class="text-xs text-rose-600">Blatantly wrong: erases strong Southern conservatism.</span></td>
+                                </tr>
+                                <tr class="hover:bg-slate-50/50 transition-colors">
+                                    <td class="px-5 py-3 font-semibold text-slate-900 ui-text">Failure Mode</td>
+                                    <td class="px-5 py-3 text-amber-800 bg-amber-50/40"><strong>High Variance:</strong> Overfits to small-sample noise; local estimates are fragile and wild.</td>
+                                    <td class="px-5 py-3 text-rose-800 bg-rose-50/40"><strong>High Bias:</strong> Underfits reality; pretends rural Mississippi and downtown Boston vote identically.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <p>
+                    Why are the national estimates under both models almost identical ($+10.0\%$)?
+                </p>
+
+                <p>
+                    Because in this specific CBS poll, the interview quota assigned to each stratum happened to be roughly proportional to its population share ($n_j / n \approx N_j / N$). Thus, weighting each person by $\frac{1}{1{,}447}$ (complete pooling) produced nearly the same national total as poststratifying by census weights (no pooling).
+                </p>
+
+                <p>
+                    <strong>But look at what happens at the local level.</strong>
+                </p>
+
+                <p>
+                    If you are running the Bush campaign and rely on <strong>No Pooling</strong>, Stratum 9 tells you that Bush's support could be anywhere from $36\%$ to $77\%$. You have no idea whether to deploy advertising money or pull out.
+                </p>
+
+                <p>
+                    If you rely on <strong>Complete Pooling</strong>, the model tells you that Bush has $50.2\%$ support everywhere in the country—in Boston, in Chicago, in rural Georgia, and in suburban California. You are blind to the electoral map.
+                </p>
+
+                <p>
+                    This is the impasse that baffled classical statistics. We are forced to choose between <strong>wild, noisy isolation</strong> (no pooling) or <strong>blind, geography-erasing homogenization</strong> (complete pooling).
+                </p>
+
+                <p class="text-lg font-semibold text-slate-900 ui-text">
+                    What if there is a third way? What if we could allow the sixteen strata to communicate with one another—borrowing statistical strength from the nation to stabilize small cells, while fiercely respecting genuine regional differences?
+                </p>
+            </section>
+
+            <!-- Section 9 -->
+            <section id="hierarchical-option-c">
+                <h2 class="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 ui-text mb-6">
+                    The Core Dilemma and the Logic of Option C
+                </h2>
+
+                <p>
+                    Every survey statistician eventually finds themselves trapped between two statistical absurdities.
+                </p>
+
+                <p>
+                    On one side stands <strong>Option A (No Pooling)</strong>. In this worldview, you treat every demographic cell as a sovereign, walled-off nation. If you called forty-seven people in the rural Northeast and twenty-nine happened to back Michael Dukakis, you take that number as absolute gospel. You report that Dukakis holds a commanding $32$-point lead in that region, completely ignoring the fact that if just five people had failed to pick up the telephone, the lead would have vanished into thin air. Option A respects local geography, but it worships sampling noise. It produces <strong>high-variance, fragile estimates</strong> that can send a political campaign chasing phantoms.
+                </p>
+
+                <p>
+                    On the other side stands <strong>Option B (Complete Pooling)</strong>. In this worldview, you declare that borders, geography, and population density are completely meaningless. You dump all $1{,}447$ respondents into one big national bucket and calculate a single average. The math is simple, and the credible intervals are reassuringly tight. But that precision is purchased through pure self-deception: it asserts that a farmer in rural Mississippi and an academic in downtown Cambridge vote with identical probabilities. Option B delivers tight intervals, but it is <strong>confidently blind</strong>. It produces <strong>high-bias, homogenized estimates</strong> that erase the entire electoral map.
+                </p>
+
+                <p>
+                    For decades, applied researchers were forced to choose their poison: <em>do you want estimates that are wildly noisy, or estimates that are confidently wrong?</em>
+                </p>
+
+                <div class="my-8 p-6 bg-slate-50 border-l-4 border-bayesian-blue rounded-r-xl border-y border-r border-slate-200">
+                    <h3 class="text-base font-bold text-slate-900 ui-text mb-2 flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-bayesian-blue"></span>
+                        The False Choice of Classical Statistics
+                    </h3>
+                    <p class="text-sm sm:text-base text-slate-700 font-serif leading-relaxed mb-0">
+                        Notice the rigid dichotomy: Option A forces between-strata variance to infinity ($\tau^2 = \infty$), asserting that learning about Georgia teaches you literally nothing about Alabama. Option B forces between-strata variance to zero ($\tau^2 = 0$), asserting that Georgia and Alabama are mathematically indistinguishable. Neither assertion reflects the physical world.
+                    </p>
+                </div>
+
+                <h3 class="text-xl font-bold text-slate-900 ui-text mt-8 mb-4">
+                    The Conceptual Breakthrough: Strata as a Community
+                </h3>
+
+                <p>
+                    Step away from the mathematical formulas for a moment and consider how human beings actually think about a national election.
+                </p>
+
+                <p>
+                    Are voters in the rural Midwest identical to voters in the urban West? Of course not. They face different local economies, different cultural histories, and different daily concerns.
+                </p>
+
+                <p>
+                    <strong>But are they completely unrelated alien species?</strong>
+                </p>
+
+                <p>
+                    Certainly not. They watch the same evening news. They watch the same presidential debates. They experience the same national inflation rates, borrow at the same federal interest rates, and vote in the same federal election on the first Tuesday of November. If George H.W. Bush is performing strongly among middle-class suburban voters in Ohio, that fact carries enormous, undeniable predictive value for what middle-class suburban voters are doing in Pennsylvania or Wisconsin.
+                </p>
+
+                <p>
+                    This is the profound insight behind <strong>Option C (Partial Pooling / Hierarchical Modeling)</strong>:
+                </p>
+
+                <div class="math-plate text-left sm:text-center">
+                    <p class="text-base sm:text-lg font-bold text-slate-900 ui-text mb-1">
+                        The Core Axiom of Hierarchical Bayes:
+                    </p>
+                    <p class="text-slate-600 font-serif italic mb-0">
+                        The sixteen strata are <strong>neither perfectly identical nor completely independent</strong>.<br>
+                        Each stratum possesses its own distinct local character, but all sixteen are drawn from a <strong>common, shared national distribution</strong>.
+                    </p>
+                </div>
+
+                <h3 class="text-xl font-bold text-slate-900 ui-text mt-8 mb-4">
+                    The Adaptive Shock Absorber: Shrinkage
+                </h3>
+
+                <p>
+                    Instead of dogmatically dictating that the variation between strata is zero or infinity, <strong>Option C treats the between-strata variation $\tau$ as an unknown parameter to be learned from the data itself</strong>.
+                </p>
+
+                <p>
+                    Once $\tau$ is treated as an active participant in the probability model, Bayes' theorem unleashes an extraordinary mechanism known as <strong>shrinkage</strong>:
+                </p>
+
+                <ul class="list-disc pl-6 space-y-3 mb-6 text-slate-700 font-serif">
+                    <li>
+                        <strong>When a cell has massive evidence (Large $n_j$):</strong> In Stratum 12 (urban South, $n_{12} = 182$), the local data speaks with an unmistakable roar. The likelihood overwhelms the national distribution, and the model's estimate remains almost entirely loyal to the local sample.
+                    </li>
+                    <li>
+                        <strong>When a cell has scarce evidence (Small $n_j$):</strong> In Stratum 9 (rural South, $n_9 = 21$), the local sample is a quiet whisper drowned in sampling noise. Here, the hierarchical model acts as a gentle, intelligent shock absorber: it borrows strength from the other fifteen strata, pulling the fragile local estimate inward toward the national consensus.
+                    </li>
+                </ul>
+
+                <p>
+                    Option C does not discard the local data, nor does it swallow it whole. It acts as an <strong>adaptive compromise engine</strong>: large, confident cells are allowed to stand proudly on their own feet, while small, vulnerable cells are supported by the collective strength of the nation.
+                </p>
+
+                <h3 class="text-xl font-bold text-slate-900 ui-text mt-10 mb-4">
+                    The Mathematical Vehicle: Escaping the Dirichlet Simplex
+                </h3>
+
+                <p>
+                    The philosophy of Option C is captivating, but when you sit down with paper and pencil to build it, you immediately hit a formidable mathematical barrier: <strong>the Dirichlet distribution cannot easily be made hierarchical across strata</strong>.
+                </p>
+
+                <p>
+                    Why does the Dirichlet hit a wall?
+                </p>
+
+                <p>
+                    In each stratum $j$, the proportion vector $\theta_j = (\theta_{1j}, \theta_{2j}, \theta_{3j})$ is imprisoned on a triangular surface known as a <strong>simplex</strong>:
+                </p>
+
+                <div class="math-plate">
+                    $$\theta_{1j} + \theta_{2j} + \theta_{3j} = 1, \quad 0 \le \theta_{kj} \le 1$$
+                </div>
+
+                <p>
+                    Because these three numbers must always sum to one, they are tightly handcuffed together:
+                </p>
+
+                <ul class="list-disc pl-6 space-y-4 mb-6 text-slate-700 font-serif">
+                    <li>
+                        <strong>The Negative Correlation Constraint:</strong> In a Dirichlet distribution, the covariance between <em>any</em> two distinct categories is mathematically forced to be strictly negative ($\operatorname{Cov}(\theta_k, \theta_m) < 0$).
+                    </li>
+                    <li>
+                        <strong>Boundedness on $[0, 1]$:</strong> You cannot place a standard bell curve (Normal distribution) directly on $\theta_j$ because normal curves range over the unbounded real line $(-\infty, +\infty)$, while probabilities cannot drop below $0$ or exceed $1$.
+                    </li>
+                    <li>
+                        <strong>Incompatibility with Linear Regressions:</strong> If you want to include demographic predictors (like urban density or regional economic growth), linear regression equations cannot easily operate inside the rigid triangular walls of a simplex without causing probabilities to spill over the boundaries.
+                    </li>
+                </ul>
+
+                <!-- Deep Dive Box: Proof of Negative Correlation -->
+                <div class="my-8 rounded-xl border border-slate-200 bg-white overflow-hidden shadow-sm">
+                    <div class="px-5 py-3.5 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-700 ui-text">Mathematical Deep Dive • Why Dirichlet Correlation is Always Negative</span>
+                        <span class="text-xs font-semibold text-bayesian-blue mono-text">Cov(θ_k, θ_m) &lt; 0</span>
+                    </div>
+                    <div class="p-6 text-sm leading-relaxed text-slate-700 font-serif space-y-4">
+                        <p class="mb-0">
+                            Why can't two categories in a Dirichlet distribution ever move in the same direction? The answer lies in the inescapable mathematics of a <strong>fixed, zero-sum pie</strong>.
+                        </p>
+
+                        <h4 class="text-base font-bold text-slate-900 ui-text pt-2 mb-1">
+                            1. The First-Principles Proof (The Constant Sum Constraint)
+                        </h4>
+                        <p class="mb-2">
+                            Because the categories represent exhaustive probabilities of a single state, they must sum to exactly one: $\sum_{k=1}^K \theta_k = 1$.
+                        </p>
+                        <p class="mb-2">
+                            Since $1$ is a constant, its variance across repeated draws is strictly zero:
+                        </p>
+                        <div class="math-plate my-3 py-3">
+                            $$\operatorname{Var}\left(\sum_{k=1}^K \theta_k\right) = \operatorname{Var}(1) = 0$$
+                        </div>
+                        <p class="mb-2">
+                            Expanding the variance of a finite sum into individual variances and pairwise covariances:
+                        </p>
+                        <div class="math-plate my-3 py-3">
+                            $$\operatorname{Var}\left(\sum_{k=1}^K \theta_k\right) = \sum_{k=1}^K \operatorname{Var}(\theta_k) + 2 \sum_{k < m} \operatorname{Cov}(\theta_k, \theta_m) = 0$$
+                        </div>
+                        <p class="mb-2">
+                            Rearranging to solve for the sum of all pairwise covariances:
+                        </p>
+                        <div class="math-plate my-3 py-3">
+                            $$\sum_{k < m} \operatorname{Cov}(\theta_k, \theta_m) = -\frac{1}{2} \sum_{k=1}^K \operatorname{Var}(\theta_k)$$
+                        </div>
+                        <p class="mb-0">
+                            Because the variance of any real, uncertain proportion is strictly positive ($\operatorname{Var}(\theta_k) > 0$), the right-hand side is strictly negative. Therefore, <strong>the sum of all pairwise covariances must be negative</strong>. On average across the categories, an increase in one slice <em>must</em> squeeze the others down.
+                        </p>
+
+                        <h4 class="text-base font-bold text-slate-900 ui-text pt-3 mb-1">
+                            2. The Exact Dirichlet Formula (Negative for Every Single Pair)
+                        </h4>
+                        <p class="mb-2">
+                            The proof above shows that covariances must be negative on average. But the Dirichlet distribution goes one step further: <strong>every single individual pair is strictly negative</strong>.
+                        </p>
+                        <p class="mb-2">
+                            For $\theta \sim \operatorname{Dirichlet}(\alpha_1, \dots, \alpha_K)$ with total concentration parameter $\alpha_0 = \sum_{k=1}^K \alpha_k$, the first and second moments are:
+                        </p>
+                        <div class="math-plate my-3 py-3">
+                            $$\mathbb{E}[\theta_k] = \frac{\alpha_k}{\alpha_0}, \qquad \mathbb{E}[\theta_k \theta_m] = \frac{\alpha_k \alpha_m}{\alpha_0(\alpha_0 + 1)} \quad (k \ne m)$$
+                        </div>
+                        <p class="mb-2">
+                            By definition, the covariance between category $k$ and category $m$ is:
+                        </p>
+                        <div class="math-plate my-3 py-3">
+                            $$\operatorname{Cov}(\theta_k, \theta_m) = \mathbb{E}[\theta_k \theta_m] - \mathbb{E}[\theta_k]\mathbb{E}[\theta_m] = \frac{\alpha_k \alpha_m}{\alpha_0(\alpha_0 + 1)} - \frac{\alpha_k \alpha_m}{\alpha_0^2}$$
+                        </div>
+                        <p class="mb-2">
+                            Factoring out $\frac{\alpha_k \alpha_m}{\alpha_0^2 (\alpha_0 + 1)}$:
+                        </p>
+                        <div class="math-plate my-3 py-3">
+                            $$\operatorname{Cov}(\theta_k, \theta_m) = \frac{\alpha_k \alpha_m}{\alpha_0^2 (\alpha_0 + 1)} \Big(\alpha_0 - (\alpha_0 + 1)\Big) = \mathbf{-\frac{\alpha_k \alpha_m}{\alpha_0^2 (\alpha_0 + 1)} < 0}$$
+                        </div>
+                        <p class="mb-2">
+                            Because all prior hyperparameter counts $\alpha_k > 0$ and $\alpha_0 > 0$, the product $\alpha_k \alpha_m$ is always positive. The leading negative sign guarantees that <strong>$\operatorname{Cov}(\theta_k, \theta_m)$ is strictly negative for every distinct pair $k \ne m$</strong> without exception!
+                        </p>
+                        <p class="mb-2">
+                            Similarly, normalizing by the marginal standard deviations yields the Pearson correlation:
+                        </p>
+                        <div class="math-plate my-3 py-3">
+                            $$\operatorname{Corr}(\theta_k, \theta_m) = \frac{\operatorname{Cov}(\theta_k, \theta_m)}{\sqrt{\operatorname{Var}(\theta_k)\operatorname{Var}(\theta_m)}} = \mathbf{-\sqrt{\frac{\alpha_k \alpha_m}{(\alpha_0 - \alpha_k)(\alpha_0 - \alpha_m)}} < 0}$$
+                        </div>
+
+                        <h4 class="text-base font-bold text-slate-900 ui-text pt-3 mb-1">
+                            3. Why This Paralyzes Hierarchical Survey Modeling
+                        </h4>
+                        <p class="mb-0">
+                            In a real-world election, voter dynamics do not obey the rigid negative handcuffs of a Dirichlet distribution. For instance, suppose an influx of high-energy campaign mobilization enters a region. The fraction of undecided voters ($\theta_3$) drops sharply, causing <strong>both</strong> Bush supporters ($\theta_1$) and Dukakis supporters ($\theta_2$) to surge simultaneously. 
+                            Under a Dirichlet distribution, this physical reality is mathematically impossible: the model cannot allow $\theta_1$ and $\theta_2$ to exhibit positive co-movement. If you want to model rich, positive regional correlations or demographic predictors, you must escape the Dirichlet simplex.
+                        </p>
+                    </div>
+                </div>
+
+                <h3 class="text-xl font-bold text-slate-900 ui-text mt-10 mb-4">
+                    Gelman's Coordinate Transformation: Two Decisions, Two Logits
+                </h3>
+
+                <p>
+                    To break out of the Dirichlet prison, Andrew Gelman and his co-authors introduced a brilliant coordinate transformation on page 209 of <em>Bayesian Data Analysis</em> (Equation 8.8).
+                </p>
+
+                <p>
+                    Instead of viewing the survey question as a monolithic three-way die, consider the <strong>two distinct cognitive steps</strong> every voter goes through when answering the pollster:
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
+                    <div class="p-5 rounded-xl border border-slate-200 bg-white shadow-sm">
+                        <div class="text-xs font-bold uppercase tracking-wider text-bayesian-blue ui-text mb-1">Step 1: The Turnout / Engagement Filter</div>
+                        <h4 class="text-base font-bold text-slate-900 ui-text mb-2">Have you made up your mind?</h4>
+                        <p class="text-sm text-slate-600 mb-0 font-serif leading-relaxed">
+                            Do you have a definite candidate preference in this election, or are you undecided / sitting on the fence?
+                        </p>
+                    </div>
+                    <div class="p-5 rounded-xl border border-slate-200 bg-white shadow-sm">
+                        <div class="text-xs font-bold uppercase tracking-wider text-emerald-600 ui-text mb-1">Step 2: The Partisan Choice</div>
+                        <h4 class="text-base font-bold text-slate-900 ui-text mb-2">Which candidate do you choose?</h4>
+                        <p class="text-sm text-slate-600 mb-0 font-serif leading-relaxed">
+                            Given that you have decided to vote, do you support George H.W. Bush or Michael Dukakis?
+                        </p>
+                    </div>
+                </div>
+
+                <p>
+                    Mathematically, this factors the three-way simplex into two uncoupled probabilities $\alpha_{1j}$ and $\alpha_{2j}$:
+                </p>
+
+                <div class="math-plate">
+                    $$\alpha_{1j} = \frac{\theta_{1j}}{\theta_{1j} + \theta_{2j}} \quad \text{(Bush share among decided voters)}$$
+                    $$\alpha_{2j} = 1 - \theta_{3j} = \theta_{1j} + \theta_{2j} \quad \text{(Proportion of voters who have decided)}$$
+                </div>
+
+                <p>
+                    Both $\alpha_{1j}$ and $\alpha_{2j}$ are clean probabilities strictly bounded between $0$ and $1$. 
+                </p>
+
+                <p>
+                    Now comes the key mathematical stroke: we map both probabilities from the bounded interval $(0, 1)$ to the <strong>unconstrained real line $(-\infty, +\infty)$</strong> using the <strong>logit (log-odds)</strong> transformation:
+                </p>
+
+                <div class="math-plate">
+                    $$\beta_{1j} = \text{logit}(\alpha_{1j}) = \log\left(\frac{\alpha_{1j}}{1 - \alpha_{1j}}\right) = \log\left(\frac{\theta_{1j}}{\theta_{2j}}\right)$$
+                    $$\beta_{2j} = \text{logit}(\alpha_{2j}) = \log\left(\frac{\alpha_{2j}}{1 - \alpha_{2j}}\right) = \log\left(\frac{1 - \theta_{3j}}{\theta_{3j}}\right) = \log\left(\frac{\theta_{1j} + \theta_{2j}}{\theta_{3j}}\right)$$
+                </div>
+
+                <h3 class="text-xl font-bold text-slate-900 ui-text mt-8 mb-4">
+                    The Physical Intuition of the $\beta$ Coordinates
+                </h3>
+
+                <p>
+                    These two new numbers, $\beta_{1j}$ and $\beta_{2j}$, are not abstract mathematical artifacts. They carry deep physical meaning:
+                </p>
+
+                <ul class="list-disc pl-6 space-y-3 mb-6 text-slate-700 font-serif">
+                    <li>
+                        <strong>$\beta_{1j}$ measures Partisan Preference (Bush vs. Dukakis):</strong>
+                        <ul class="list-circle pl-6 mt-1 space-y-1 text-slate-600 text-sm">
+                            <li>$\beta_{1j} = 0 \implies \log(1) = 0$: A dead heat. Bush and Dukakis are split exactly $50\% - 50\%$ among decided voters.</li>
+                            <li>$\beta_{1j} > 0$: Bush is leading in stratum $j$. For example, $\beta_{1j} = +0.693 \implies e^{0.693} \approx 2$, meaning Bush has a $2$-to-$1$ advantage ($67\%$ to $33\%$).</li>
+                            <li>$\beta_{1j} < 0$: Dukakis is leading in stratum $j$.</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <strong>$\beta_{2j}$ measures Voter Decisiveness (Engagement vs. Apathy):</strong>
+                        <ul class="list-circle pl-6 mt-1 space-y-1 text-slate-600 text-sm">
+                            <li>$\beta_{2j} \gg 0$: High decisiveness. Almost everyone in the stratum has picked a side; very few undecided voters remain.</li>
+                            <li>$\beta_{2j} \ll 0$: Low decisiveness. A massive pool of voters is uncommitted or alienated, making the stratum volatile and open to late campaign swings.</li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <h3 class="text-xl font-bold text-slate-900 ui-text mt-8 mb-4">
+                    The Inversion: Reconstructing Proportions from Coordinates
+                </h3>
+
+                <p>
+                    Because the logit function is strictly invertible, any pair of real numbers $(\beta_{1j}, \beta_{2j}) \in \mathbb{R}^2$ maps uniquely and flawlessly back to valid population proportions on the simplex:
+                </p>
+
+                <ol class="list-decimal pl-6 space-y-2 mb-6 text-slate-700 font-serif">
+                    <li>
+                        Invert the logits to recover probabilities:
+                        $$\alpha_{1j} = \text{logit}^{-1}(\beta_{1j}) = \frac{e^{\beta_{1j}}}{1 + e^{\beta_{1j}}}, \quad \alpha_{2j} = \text{logit}^{-1}(\beta_{2j}) = \frac{e^{\beta_{2j}}}{1 + e^{\beta_{2j}}}$$
+                    </li>
+                    <li>
+                        Reconstruct the three candidate shares:
+                        $$\theta_{3j} = 1 - \alpha_{2j} = \frac{1}{1 + e^{\beta_{2j}}}$$
+                        $$\theta_{1j} = \alpha_{1j} \alpha_{2j} = \left(\frac{e^{\beta_{1j}}}{1 + e^{\beta_{1j}}}\right) \left(\frac{e^{\beta_{2j}}}{1 + e^{\beta_{2j}}}\right)$$
+                        $$\theta_{2j} = (1 - \alpha_{1j}) \alpha_{2j} = \left(\frac{1}{1 + e^{\beta_{1j}}}\right) \left(\frac{e^{\beta_{2j}}}{1 + e^{\beta_{2j}}}\right)$$
+                    </li>
+                </ol>
+
+                <p>
+                    Check the sum: $\theta_{1j} + \theta_{2j} + \theta_{3j} = \alpha_{1j}\alpha_{2j} + (1 - \alpha_{1j})\alpha_{2j} + (1 - \alpha_{2j}) = \alpha_{2j} + 1 - \alpha_{2j} \equiv \mathbf{1}$.
+                </p>
+
+                <p>
+                    The sum to one is mathematically guaranteed for <em>any</em> real values of $\beta_{1j}$ and $\beta_{2j}$.
+                </p>
+
+                <p>
+                    By moving from the constrained triangle $(\theta_{1j}, \theta_{2j}, \theta_{3j})$ into the boundless Cartesian plane $(\beta_{1j}, \beta_{2j}) \in \mathbb{R}^2$, the door is kicked wide open: <strong>we can now apply the full, majestic machinery of Gaussian distributions, covariance matrices, and hierarchical shrinkage across all sixteen strata.</strong>
+                </p>
+
+                <h3 class="text-xl font-bold text-slate-900 ui-text mt-10 mb-4">
+                    The Hierarchical Graphical Model (Plate Notation)
+                </h3>
+
+                <p>
+                    With our unconstrained coordinates in hand, we can now visualize the complete architecture of <strong>Option C</strong> as a three-tier probabilistic graphical model.
+                </p>
+
+                <p>
+                    Notice how the geometry of the plate diagram elegantly solves the dilemma that crippled both Complete Pooling and No Pooling:
+                </p>
+
+                <!-- Figure 8.3: Hierarchical Graphical Model Plate -->
+                <div class="my-10 overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-[0_4px_24px_rgba(15,23,42,0.04)]">
+                    <div class="px-6 py-4 bg-slate-50/80 border-b border-slate-200 flex flex-wrap justify-between items-center gap-3">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                            <span class="text-xs font-bold uppercase tracking-wider text-slate-700 ui-text">Figure 8.3 • The Hierarchical Model in Plate Notation</span>
+                        </div>
+                        <span class="text-xs text-slate-500 mono-text">Option C: Partial Pooling &amp; Poststratification</span>
+                    </div>
+                    <div class="p-4 sm:p-6 bg-white flex justify-center">
+                        <img src="figures/ch8_graphical_model_hierarchical.svg" alt="Hierarchical Bayesian model in plate notation showing hyperpriors, stratum plate, and poststratification" class="w-full h-auto rounded-lg" />
+                    </div>
+                    <div class="px-6 py-4 bg-slate-50/50 border-t border-slate-100 text-xs text-slate-500 leading-relaxed font-serif">
+                        <strong>Figure 8.3:</strong> <em>Explicit Two-Stream Sequential Architecture. (Top) Level 1:</em> National hyperpriors for partisan preference $(\mu_1, \tau_1)$ and voter decisiveness $(\mu_2, \tau_2)$ sit above the plate, connected by cross-channel correlation $\rho$. <em>(Middle) Level 2:</em> Inside the plate $j = 1 \dots 16$, the two latent logit coordinates $\beta_{1j}$ and $\beta_{2j}$ are modeled as separate parallel streams. They map deterministically via the inverse logit to Bush share among decided voters $\alpha_{1j}$ and decided voter turnout $\alpha_{2j}$, recombining into the three-way simplex $\theta_j$ which generates the observed survey counts $y_j \sim \operatorname{Multinomial}(n_j, \theta_j)$. <em>(Bottom) Level 3:</em> Shrunken stratum proportions $\theta_j$ combine with census weights $W_j = N_j / N$ to yield the poststratified national lead $\Delta$.
+                    </div>
+                </div>
+
+                <h3 class="text-xl font-bold text-slate-900 ui-text mt-8 mb-4">
+                    The Generative Story Across the Three Tiers
+                </h3>
+
+                <p>
+                    Tracing the arrows from the top of Figure 8.3 to the bottom reveals the complete generative story of survey inference under Hierarchical Bayes:
+                </p>
+
+                <div class="space-y-4 my-6">
+                    <div class="p-5 rounded-xl border border-slate-200 bg-white shadow-sm">
+                        <h4 class="text-base font-bold text-slate-900 ui-text mb-2 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-bayesian-blue"></span>
+                            Level 1: The National Population (Above the Plate)
+                        </h4>
+                        <p class="text-sm text-slate-700 mb-2 font-serif leading-relaxed">
+                            At the highest level, the model maintains a bivariate Gaussian hyper-distribution governing the nation as a whole:
+                        </p>
+                        <div class="math-plate my-2 py-2">
+                            $$\mu = \begin{pmatrix} \mu_1 \\ \mu_2 \end{pmatrix}, \qquad \Sigma = \begin{pmatrix} \tau_1^2 & \rho \tau_1 \tau_2 \\ \rho \tau_1 \tau_2 & \tau_2^2 \end{pmatrix}$$
+                        </div>
+                        <p class="text-xs text-slate-600 mb-0 font-serif leading-relaxed">
+                            Here, $\mu_1$ is the national mean partisan preference (Bush vs. Dukakis), $\mu_2$ is the national mean decisiveness, and $\tau_1, \tau_2$ are the standard deviations measuring how widely regions diverge from one another. Crucially, $\rho$ captures the correlation between preference and turnout.
+                        </p>
+                    </div>
+
+                    <div class="p-5 rounded-xl border border-slate-200 bg-white shadow-sm">
+                        <h4 class="text-base font-bold text-slate-900 ui-text mb-2 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
+                            Level 2: The 16 Demographic Strata (Inside the Plate)
+                        </h4>
+                        <p class="text-sm text-slate-700 mb-2 font-serif leading-relaxed">
+                            Rather than lumping all parameters into an opaque vector, the model unpacks the decision into two distinct cognitive streams within each stratum $j = 1, \dots, 16$:
+                        </p>
+                        <ul class="list-disc pl-5 space-y-1.5 text-xs text-slate-700 font-serif mb-3">
+                            <li>
+                                <strong>Stream 1 (Partisan Preference):</strong> A latent log-odds parameter $\beta_{1j} \sim \mathcal{N}(\mu_1, \tau_1^2)$ maps via $\text{logit}^{-1}$ to $\alpha_{1j} = \frac{\theta_{1j}}{\theta_{1j}+\theta_{2j}}$, the proportion choosing Bush among decided voters.
+                            </li>
+                            <li>
+                                <strong>Stream 2 (Voter Decisiveness):</strong> A latent log-odds parameter $\beta_{2j} \sim \mathcal{N}(\mu_2, \tau_2^2)$ maps via $\text{logit}^{-1}$ to $\alpha_{2j} = 1 - \theta_{3j} = \theta_{1j} + \theta_{2j}$, the proportion who have made up their mind.
+                            </li>
+                        </ul>
+                        <p class="text-sm text-slate-700 mb-2 font-serif leading-relaxed">
+                            At the center of the plate, these two streams converge into the deterministic recombination junction, assembling the full 3-category simplex:
+                        </p>
+                        <div class="math-plate my-2 py-2">
+                            $$\theta_{1j} = \alpha_{1j}\alpha_{2j} \text{ (Bush)}, \qquad \theta_{2j} = (1 - \alpha_{1j})\alpha_{2j} \text{ (Dukakis)}, \qquad \theta_{3j} = 1 - \alpha_{2j} \text{ (Undecided)}$$
+                        </div>
+                        <p class="text-xs text-slate-600 mb-0 font-serif leading-relaxed">
+                            Finally, the local survey interviews $y_j = (y_{1j}, y_{2j}, y_{3j})$ are generated from the multinomial ballot likelihood: $y_j \sim \operatorname{Multinomial}(n_j, \theta_j)$.
+                        </p>
+                    </div>
+
+                    <div class="p-5 rounded-xl border border-emerald-200 bg-emerald-50/30 shadow-sm">
+                        <h4 class="text-base font-bold text-emerald-900 ui-text mb-2 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                            Level 3: Finite-Population Poststratification (Target Estimand)
+                        </h4>
+                        <p class="text-sm text-slate-700 mb-2 font-serif leading-relaxed">
+                            Because the strata have unequal representation in the survey compared to the true Census, the model reconstructs the national electorate by weighting each shrunken stratum proportion by its true Census share $W_j = N_j / N$:
+                        </p>
+                        <div class="math-plate my-2 py-2">
+                            $$\Delta_{\text{national}} = \sum_{j=1}^{16} W_j \left(\theta_{1j} - \theta_{2j}\right)$$
+                        </div>
+                        <p class="text-xs text-slate-600 mb-0 font-serif leading-relaxed">
+                            This yields the ultimate target of scientific interest: an honest, poststratified posterior distribution of the national election margin that reflects both local demographic realities and national borrowing of strength.
+                        </p>
+                    </div>
+                </div>
+
+                <h3 class="text-xl font-bold text-slate-900 ui-text mt-8 mb-4">
+                    The Contrast: Why This Solves the Structural Dilemma
+                </h3>
+
+                <p>
+                    Compare Figure 8.3 with our earlier diagrams in Figure 8.2:
+                </p>
+
+                <ul class="list-disc pl-6 space-y-2 mb-6 text-slate-700 font-serif">
+                    <li>
+                        <strong>In Complete Pooling:</strong> The parameter $\theta$ was trapped outside the plate. All sixteen strata were forced to share the exact same number, blinding us to local geography.
+                    </li>
+                    <li>
+                        <strong>In No Pooling:</strong> The parameters $\theta_j$ were inside the plate, but the space above the plate was empty. The sixteen strata were completely orphaned, leaving small sample cells defenseless against sampling noise.
+                    </li>
+                    <li>
+                        <strong>In Hierarchical Bayes (Figure 8.3):</strong> The sixteen strata have their own private parameters $\beta_j$ inside the plate, but they are <strong>connected to a loving parent $(\mu, \Sigma)$ above the plate</strong>. The arrows from $\mu$ and $\Sigma$ act like elastic springs. If a cell has a tiny sample size (like Stratum 9 with $n=21$), the spring gently pulls the noisy estimate toward the national consensus. If a cell has a massive sample size (like Stratum 12 with $n=182$), the local data anchors it firmly in place.
+                    </li>
+                </ul>
+            </section>
+
+            <!-- Section 10 -->
+            <section id="fitting-hierarchical-model">
+                <h2 class="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 ui-text mb-6">
+                    Fitting the Hierarchical Model: Shrinkage in Action
+                </h2>
+
+                <p>
+                    With our three-tier generative architecture in place, we can now translate Gelman's equations into executable computational code and feed the $1{,}447$ survey responses from the 1988 CBS election poll into the inference engine.
+                </p>
+
+                <p>
+                    To sample from the joint posterior distribution of all parameters—the national hyperpriors $(\mu, \Sigma)$, the sixteen stratum coordinates $(\beta_{1j}, \beta_{2j})$, and the poststratified national estimand $\Delta$—we implement the model in <strong>PyMC</strong> using the No-U-Turn Sampler (NUTS).
+                </p>
+
+                <h3 class="text-xl font-bold text-slate-900 ui-text mt-8 mb-4">
+                    The PyMC Implementation: Robust Non-Centered Sampling
+                </h3>
+
+                <p>
+                    In hierarchical models, sampling directly from $\beta_j \sim \mathcal{N}_2(\mu, \Sigma)$ can create a notorious geometric hazard known as <em>Neal's Funnel</em>: when the group variance $\tau$ is small, the posterior space pinches into a needle-thin crevice that traps gradient-based MCMC algorithms.
+                </p>
+
+                <p>
+                    To ensure effortless convergence, we employ a <strong>non-centered parameterization</strong>: we sample standard Gaussian noise $z_j \sim \mathcal{N}_2(0, I_2)$ and scale it via the Cholesky factor $L$ of the covariance matrix $\Sigma = L L^T$:
+                </p>
+
+                <!-- Code Block for PyMC Model -->
+                <div class="my-6 rounded-xl border border-slate-200 bg-slate-900 text-slate-100 overflow-hidden shadow-sm">
+                    <div class="px-5 py-2.5 bg-slate-800/90 border-b border-slate-700/80 flex items-center justify-between text-xs mono-text text-slate-300">
+                        <div class="flex items-center gap-2">
+                            <span>bda3_hierarchical_survey.py</span>
+                            <span class="text-slate-500">•</span>
+                            <span class="text-slate-400">PyMC 5.27 (NUTS)</span>
+                        </div>
+                        <a href="https://colab.research.google.com/github/saurabh2086/saurabh2086.github.io/blob/main/bda3/notebooks/ch8_stratified_pymc.ipynb" target="_blank" rel="noopener noreferrer" class="inline-flex items-center hover:opacity-85 transition-opacity" title="Open and run this PyMC model in Google Colab">
+                            <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab" class="h-5" />
+                        </a>
+                    </div>
+                    <pre class="p-5 text-xs sm:text-sm font-mono overflow-x-auto leading-relaxed text-slate-200"><code><span class="text-emerald-400">import</span> pymc <span class="text-emerald-400">as</span> pm
+<span class="text-emerald-400">import</span> numpy <span class="text-emerald-400">as</span> np
+
+<span class="text-slate-400"># 16 strata census shares W_j and survey counts y_j (n=1,447)</span>
+<span class="text-emerald-400">with</span> pm.Model() <span class="text-emerald-400">as</span> hierarchical_poll_model:
+    <span class="text-slate-400"># Level 1: National Hyperpriors</span>
+    mu = pm.Normal(<span class="text-amber-300">"mu"</span>, mu=<span class="text-sky-300">0.0</span>, sigma=<span class="text-sky-300">2.0</span>, shape=<span class="text-sky-300">2</span>)
+    chol, corr, stds = pm.LKJCholeskyCov(
+        <span class="text-amber-300">"chol_cov"</span>, n=<span class="text-sky-300">2</span>, eta=<span class="text-sky-300">2.0</span>, sd_dist=pm.HalfNormal.dist(sigma=<span class="text-sky-300">1.0</span>), compute_corr=<span class="text-sky-300">True</span>
+    )
+
+    <span class="text-slate-400"># Level 2: Non-centered Stratum Logit Coordinates (j = 1 .. 16)</span>
+    z = pm.Normal(<span class="text-amber-300">"z"</span>, mu=<span class="text-sky-300">0.0</span>, sigma=<span class="text-sky-300">1.0</span>, shape=(<span class="text-sky-300">16</span>, <span class="text-sky-300">2</span>))
+    beta = pm.Deterministic(<span class="text-amber-300">"beta"</span>, mu + pm.math.dot(z, chol.T))
+
+    <span class="text-slate-400"># Deterministic Inverse-Logits</span>
+    alpha_1 = pm.Deterministic(<span class="text-amber-300">"alpha_1"</span>, pm.math.invlogit(beta[:, <span class="text-sky-300">0</span>]))  <span class="text-slate-400"># Bush share among decided</span>
+    alpha_2 = pm.Deterministic(<span class="text-amber-300">"alpha_2"</span>, pm.math.invlogit(beta[:, <span class="text-sky-300">1</span>]))  <span class="text-slate-400"># Proportion decided</span>
+
+    <span class="text-slate-400"># Simplex Recombination</span>
+    theta_1 = pm.Deterministic(<span class="text-amber-300">"theta_1"</span>, alpha_1 * alpha_2)             <span class="text-slate-400"># Bush</span>
+    theta_2 = pm.Deterministic(<span class="text-amber-300">"theta_2"</span>, (<span class="text-sky-300">1.0</span> - alpha_1) * alpha_2)       <span class="text-slate-400"># Dukakis</span>
+    theta_3 = pm.Deterministic(<span class="text-amber-300">"theta_3"</span>, <span class="text-sky-300">1.0</span> - alpha_2)               <span class="text-slate-400"># Undecided</span>
+    theta = pm.Deterministic(<span class="text-amber-300">"theta"</span>, pm.math.stack([theta_1, theta_2, theta_3], axis=-<span class="text-sky-300">1</span>))
+
+    <span class="text-slate-400"># Ballot Likelihood</span>
+    obs = pm.Multinomial(<span class="text-amber-300">"obs"</span>, n=n_vec, p=theta, observed=counts)
+
+    <span class="text-slate-400"># Level 3: Finite-Population Poststratification Target</span>
+    national_bush = pm.Deterministic(<span class="text-amber-300">"national_bush"</span>, pm.math.dot(W_norm, theta_1))
+    national_duk = pm.Deterministic(<span class="text-amber-300">"national_duk"</span>, pm.math.dot(W_norm, theta_2))
+    national_alpha1 = pm.Deterministic(<span class="text-amber-300">"national_alpha1"</span>, national_bush / (national_bush + national_duk))
+    national_lead = pm.Deterministic(<span class="text-amber-300">"national_lead"</span>, <span class="text-sky-300">2.0</span> * national_alpha1 - <span class="text-sky-300">1.0</span>)</code></pre>
+                </div>
+
+                <p>
+                    Running $4$ independent Markov chains for $2{,}500$ draws each ($10{,}000$ posterior samples total) produces rapid convergence in under twenty seconds with <strong>zero divergent transitions</strong> and $\hat{R} \approx 1.00$ across all parameters.
+                </p>
+
+                <h3 class="text-xl font-bold text-slate-900 ui-text mt-8 mb-4">
+                    The Shrinkage Phenomenon: Decompressing BDA3 Table 8.3
+                </h3>
+
+                <p>
+                    What happens when the hierarchical model encounters the sixteen cells? The answer is laid bare in the table below, which reproduces and decompresses the core empirical findings of <strong>BDA3 Table 8.3</strong>:
+                </p>
+
+                <!-- Table 8.3 Replication -->
+                <div class="my-8 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+                    <div class="px-5 py-3.5 bg-slate-50 border-b border-slate-200 flex flex-wrap justify-between items-center gap-3">
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-700 ui-text">
+                            Table 8.3 Decompressed • Raw Sample vs. Hierarchical Posterior Estimates
+                        </span>
+                        <span class="text-xs text-slate-500 mono-text">Bush Share Among Decided Voters ($\alpha_{1j}$)</span>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm ui-text">
+                            <thead class="bg-slate-50/70 border-b border-slate-200 text-xs font-semibold uppercase tracking-wider text-slate-600">
+                                <tr>
+                                    <th class="px-4 py-3 text-center">Stratum $j$</th>
+                                    <th class="px-4 py-3">Region &amp; Density</th>
+                                    <th class="px-4 py-3 text-center">Census $W_j$</th>
+                                    <th class="px-4 py-3 text-center">Sample $n_j$</th>
+                                    <th class="px-4 py-3 text-right">Raw $\hat{\alpha}_{1j}$</th>
+                                    <th class="px-4 py-3 text-right font-bold text-bayesian-blue">Posterior Median</th>
+                                    <th class="px-4 py-3 text-center">95% Credible Interval</th>
+                                    <th class="px-4 py-3 text-center">Shrinkage Pull</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 text-slate-700 font-serif">
+                                <tr class="bg-rose-50/40 hover:bg-rose-50/70 transition-colors">
+                                    <td class="px-4 py-2.5 text-center font-bold text-slate-900 mono-text">1</td>
+                                    <td class="px-4 py-2.5 font-semibold text-slate-900">Northeast I (Rural)</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-xs">3.2%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text font-bold text-rose-600">47</td>
+                                    <td class="px-4 py-2.5 text-right mono-text font-bold text-rose-700">32.6%</td>
+                                    <td class="px-4 py-2.5 text-right mono-text font-bold text-bayesian-blue">51.2%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-xs">[37.1%, 57.7%]</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-xs text-rose-600 font-bold">+18.6% ↑</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50/50 transition-colors">
+                                    <td class="px-4 py-2.5 text-center font-bold text-slate-900 mono-text">2</td>
+                                    <td class="px-4 py-2.5">Northeast II</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-xs">3.2%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text">46</td>
+                                    <td class="px-4 py-2.5 text-right mono-text">51.1%</td>
+                                    <td class="px-4 py-2.5 text-right mono-text font-semibold text-slate-900">54.4%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-xs">[44.9%, 61.2%]</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-xs text-slate-500">+3.3% ↑</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50/50 transition-colors">
+                                    <td class="px-4 py-2.5 text-center font-bold text-slate-900 mono-text">3</td>
+                                    <td class="px-4 py-2.5">Northeast III</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-xs">11.5%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text font-semibold">167</td>
+                                    <td class="px-4 py-2.5 text-right mono-text">53.1%</td>
+                                    <td class="px-4 py-2.5 text-right mono-text font-semibold text-slate-900">54.6%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-xs">[48.2%, 59.8%]</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-xs text-slate-500">+1.5% ↑</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50/50 transition-colors">
+                                    <td class="px-4 py-2.5 text-center font-bold text-slate-900 mono-text">4</td>
+                                    <td class="px-4 py-2.5">Northeast IV (Urban)</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-xs">4.8%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text">69</td>
+                                    <td class="px-4 py-2.5 text-right mono-text">47.1%</td>
+                                    <td class="px-4 py-2.5 text-right mono-text font-semibold text-slate-900">53.1%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-xs">[43.2%, 59.0%]</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-xs text-slate-500">+6.0% ↑</td>
+                                </tr>
+                                <tr class="bg-rose-50/40 hover:bg-rose-50/70 transition-colors">
+                                    <td class="px-4 py-2.5 text-center font-bold text-slate-900 mono-text">5</td>
+                                    <td class="px-4 py-2.5 font-semibold text-slate-900">Midwest I (Rural)</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-xs">3.2%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text font-bold text-rose-600">47</td>
+                                    <td class="px-4 py-2.5 text-right mono-text font-bold text-rose-700">45.2%</td>
+                                    <td class="px-4 py-2.5 text-right mono-text font-bold text-bayesian-blue">53.7%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-xs">[42.7%, 59.9%]</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-xs text-rose-600 font-bold">+8.5% ↑</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50/50 transition-colors">
+                                    <td class="px-4 py-2.5 text-center font-bold text-slate-900 mono-text">6</td>
+                                    <td class="px-4 py-2.5">Midwest II</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-xs">6.5%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text">94</td>
+                                    <td class="px-4 py-2.5 text-right mono-text">50.0%</td>
+                                    <td class="px-4 py-2.5 text-right mono-text font-semibold text-slate-900">53.9%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-xs">[45.5%, 59.7%]</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-xs text-slate-500">+3.9% ↑</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50/50 transition-colors">
+                                    <td class="px-4 py-2.5 text-center font-bold text-slate-900 mono-text">7</td>
+                                    <td class="px-4 py-2.5">Midwest III</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-xs">8.0%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text font-semibold">116</td>
+                                    <td class="px-4 py-2.5 text-right mono-text">56.7%</td>
+                                    <td class="px-4 py-2.5 text-right mono-text font-semibold text-slate-900">55.7%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-xs">[49.3%, 62.3%]</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-xs text-slate-500">-1.0% ↓</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50/50 transition-colors">
+                                    <td class="px-4 py-2.5 text-center font-bold text-slate-900 mono-text">8</td>
+                                    <td class="px-4 py-2.5">Midwest IV (Urban)</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-xs">10.0%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text font-semibold">145</td>
+                                    <td class="px-4 py-2.5 text-right mono-text">62.0%</td>
+                                    <td class="px-4 py-2.5 text-right mono-text font-semibold text-slate-900">57.5%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-xs">[52.4%, 65.0%]</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-xs text-slate-500">-4.5% ↓</td>
+                                </tr>
+                                <tr class="bg-blue-50/40 hover:bg-blue-50/70 transition-colors">
+                                    <td class="px-4 py-2.5 text-center font-bold text-slate-900 mono-text">9</td>
+                                    <td class="px-4 py-2.5 font-semibold text-slate-900">South I (Rural)</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-xs">1.5%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text font-bold text-bayesian-blue">21</td>
+                                    <td class="px-4 py-2.5 text-right mono-text font-bold text-blue-700">66.7%</td>
+                                    <td class="px-4 py-2.5 text-right mono-text font-bold text-bayesian-blue">56.1%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-xs">[48.2%, 66.5%]</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-xs text-blue-600 font-bold">-10.6% ↓</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50/50 transition-colors">
+                                    <td class="px-4 py-2.5 text-center font-bold text-slate-900 mono-text">10</td>
+                                    <td class="px-4 py-2.5">South II</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-xs">6.6%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text">96</td>
+                                    <td class="px-4 py-2.5 text-right mono-text">53.6%</td>
+                                    <td class="px-4 py-2.5 text-right mono-text font-semibold text-slate-900">54.9%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-xs">[47.7%, 61.1%]</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-xs text-slate-500">+1.3% ↑</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50/50 transition-colors">
+                                    <td class="px-4 py-2.5 text-center font-bold text-slate-900 mono-text">11</td>
+                                    <td class="px-4 py-2.5">South III</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-xs">6.8%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text">99</td>
+                                    <td class="px-4 py-2.5 text-right mono-text">56.0%</td>
+                                    <td class="px-4 py-2.5 text-right mono-text font-semibold text-slate-900">55.4%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-xs">[49.0%, 61.7%]</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-xs text-slate-500">-0.6% ↓</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50/50 transition-colors">
+                                    <td class="px-4 py-2.5 text-center font-bold text-slate-900 mono-text">12</td>
+                                    <td class="px-4 py-2.5">South IV (Urban)</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-xs">12.6%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text font-bold text-slate-900">182</td>
+                                    <td class="px-4 py-2.5 text-right mono-text font-semibold">61.2%</td>
+                                    <td class="px-4 py-2.5 text-right mono-text font-bold text-slate-900">57.8%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-xs">[52.5%, 64.4%]</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-xs text-slate-500">-3.4% ↓</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50/50 transition-colors">
+                                    <td class="px-4 py-2.5 text-center font-bold text-slate-900 mono-text">13</td>
+                                    <td class="px-4 py-2.5">West I (Rural)</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-xs">2.3%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text">34</td>
+                                    <td class="px-4 py-2.5 text-right mono-text">51.5%</td>
+                                    <td class="px-4 py-2.5 text-right mono-text font-semibold text-slate-900">54.3%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-xs">[44.7%, 61.9%]</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-xs text-slate-500">+2.8% ↑</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50/50 transition-colors">
+                                    <td class="px-4 py-2.5 text-center font-bold text-slate-900 mono-text">14</td>
+                                    <td class="px-4 py-2.5">West II</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-xs">5.3%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text">77</td>
+                                    <td class="px-4 py-2.5 text-right mono-text">60.3%</td>
+                                    <td class="px-4 py-2.5 text-right mono-text font-semibold text-slate-900">56.7%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-xs">[50.3%, 64.7%]</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-xs text-slate-500">-3.6% ↓</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50/50 transition-colors">
+                                    <td class="px-4 py-2.5 text-center font-bold text-slate-900 mono-text">15</td>
+                                    <td class="px-4 py-2.5">West III</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-xs">8.6%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text font-semibold">124</td>
+                                    <td class="px-4 py-2.5 text-right mono-text">59.3%</td>
+                                    <td class="px-4 py-2.5 text-right mono-text font-semibold text-slate-900">56.4%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-xs">[50.9%, 63.4%]</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-xs text-slate-500">-2.9% ↓</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50/50 transition-colors">
+                                    <td class="px-4 py-2.5 text-center font-bold text-slate-900 mono-text">16</td>
+                                    <td class="px-4 py-2.5">West IV (Urban)</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-xs">5.7%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text">83</td>
+                                    <td class="px-4 py-2.5 text-right mono-text">60.5%</td>
+                                    <td class="px-4 py-2.5 text-right mono-text font-semibold text-slate-900">56.4%</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-xs">[50.3%, 64.7%]</td>
+                                    <td class="px-4 py-2.5 text-center mono-text text-xs text-slate-500">-4.1% ↓</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <h3 class="text-xl font-bold text-slate-900 ui-text mt-8 mb-4">
+                    Visualizing the Pull: Figure 8.4
+                </h3>
+
+                <p>
+                    Numbers on a spreadsheet can hide physical motion. When plotted graphically, the mathematical magic of partial pooling becomes unmistakably visible:
+                </p>
+
+                <!-- Figure 8.4: Shrinkage Forest Plot and National Density -->
+                <div class="my-10 overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-[0_4px_24px_rgba(15,23,42,0.04)]">
+                    <div class="px-6 py-4 bg-slate-50/80 border-b border-slate-200 flex flex-wrap justify-between items-center gap-3">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-bayesian-blue"></span>
+                            <span class="text-xs font-bold uppercase tracking-wider text-slate-700 ui-text">Figure 8.4 • Empirical Shrinkage in the 1988 Election Poll</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="text-xs text-slate-500 mono-text">BDA3 §8.3 (pp. 208–210)</span>
+                            <a href="https://colab.research.google.com/github/saurabh2086/saurabh2086.github.io/blob/main/bda3/notebooks/ch8_stratified_pymc.ipynb" target="_blank" rel="noopener noreferrer" class="inline-flex items-center hover:opacity-85 transition-opacity" title="Reproduce Figure 8.4 in Google Colab">
+                                <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab" class="h-5" />
+                            </a>
+                        </div>
+                    </div>
+                    <div class="p-4 sm:p-6 bg-white flex justify-center">
+                        <img src="figures/ch8_stratified_shrinkage.svg" alt="Forest plot of hierarchical shrinkage across 16 strata and poststratified national lead density" class="w-full h-auto rounded-lg" />
+                    </div>
+                    <div class="px-6 py-4 bg-slate-50/50 border-t border-slate-100 text-xs text-slate-500 leading-relaxed font-serif">
+                        <strong>Figure 8.4:</strong> <em>(Left Panel A)</em> The sixteen demographic strata sorted geographically. Hollow circles show the raw sample proportion $\hat{\alpha}_{1j}$, solid blue dots show the hierarchical posterior median $\alpha_{1j}$, and blue horizontal bars represent the 95% credible intervals. Colored arrows illustrate the direction and magnitude of shrinkage toward the national mean ($55.0\%$). Notice the massive $+18.6\%$ upward pull on Stratum 1 ($n=47$) and $-10.6\%$ downward pull on Stratum 9 ($n=21$). <em>(Right Panel B)</em> Posterior density of the nationwide Bush lead margin among decided voters. The hierarchical model (solid emerald) shifts the distribution rightward compared to no-pooling (dashed grey), expanding the lead from $+9.8\%$ to $+11.0\%$.
+                    </div>
+                </div>
+
+                <h3 class="text-xl font-bold text-slate-900 ui-text mt-8 mb-4">
+                    The Counterintuitive Paradox: Why Does Shrinkage Expand the Lead?
+                </h3>
+
+                <p>
+                    Look closely at Panel B of Figure 8.4, and a fascinating mathematical question presents itself:
+                </p>
+
+                <p class="font-serif italic text-slate-800 text-base pl-4 border-l-2 border-bayesian-blue my-4">
+                    "If the hierarchical model is shrinking estimates toward the center, why does the poststratified national lead <strong>increase</strong> from $+9.8\%$ to <strong>$+11.0\%$</strong>?"
+                </p>
+
+                <p>
+                    Intuition suggests that "shrinking toward the mean" should moderate outcomes, dampening extreme leads toward zero. Why does the Bush lead widen by over a full percentage point?
+                </p>
+
+                <p>
+                    Gelman explains this quiet paradox on page 209 of BDA3:
+                </p>
+
+                <div class="my-6 p-5 rounded-xl border border-blue-100 bg-blue-50/40 text-slate-800 font-serif leading-relaxed text-sm">
+                    <p class="font-bold text-bayesian-navy ui-text text-xs uppercase tracking-wider mb-2">The Sampling Imbalance Trap</p>
+                    <p class="mb-2">
+                        In the raw sample, <strong>Stratum 1</strong> (rural Northeast) showed Dukakis crushing Bush by an astonishing $62\%$ to $30\%$ (a $32$-point Dukakis lead). Likewise, <strong>Stratum 5</strong> (rural Midwest) showed Dukakis leading $49\%$ to $40\%$.
+                    </p>
+                    <p class="mb-2">
+                        Because phone poll quotas reached $47$ respondents in Stratum 1 and $47$ respondents in Stratum 5, these two rural cells were <strong>substantially oversampled</strong> relative to their tiny census population fractions ($W_1 = 3.2\%, W_5 = 3.2\%$).
+                    </p>
+                    <p class="mb-0">
+                        Under No Pooling, these small cells were treated as gospel. Their extreme Dukakis margins exerted an artificial downward drag on the entire national poststratification calculation. The hierarchical model, however, noticed that $n=47$ is far too small to sustain such an extreme divergence from the rest of the country. It pulled Stratum 1 up from $32.6\%$ to $51.2\%$ and Stratum 5 up from $45.2\%$ to $53.7\%$. By correcting these two small-sample flukes, the artificial drag was lifted, and Bush's estimated national lead climbed to its true population value of <strong>$+11.0\%$</strong>.
+                    </p>
+                </div>
+
+                <h3 class="text-xl font-bold text-slate-900 ui-text mt-8 mb-4">
+                    Model Checking: Gelman's Posterior Predictive Test
+                </h3>
+
+                <p>
+                    Whenever a statistical model shrinks real-world data, a vigilant analyst must ask a skeptical question: <strong>did we shrink too much?</strong>
+                </p>
+
+                <p>
+                    Did the Gaussian prior act like an aggressive steamroller, crushing legitimate cultural differences between rural New England and urban Chicago into a bland, artificial homogeneity?
+                </p>
+
+                <p>
+                    To verify that the model does not over-shrink, Gelman introduces a <strong>posterior predictive check</strong> (BDA3 p. 209–210) using a test statistic tailored to extreme behavior: the <strong>minimum observed Bush vote share</strong> across all sixteen strata:
+                </p>
+
+                <div class="math-plate">
+                    $$T(y) = \min_{j=1 \dots 16} \hat{\alpha}_{1j} = \min_{j=1 \dots 16} \frac{y_{1j}}{y_{1j} + y_{2j}}$$
+                </div>
+
+                <p>
+                    In the actual survey data, the lowest observed Bush share occurred in Stratum 1:
+                </p>
+
+                <div class="math-plate">
+                    $$T(y_{\text{obs}}) = \frac{14}{14 + 29} = \mathbf{0.326} \quad (32.6\%)$$
+                </div>
+
+                <p>
+                    If the model has over-shrunk the world, then simulated future surveys generated from the model parameters should never produce a cell as low as $32.6\%$.
+                </p>
+
+                <p>
+                    To test this, we draw $6{,}000$ parameter vectors $(\theta_1^{\text{rep}}, \dots, \theta_{16}^{\text{rep}})$ from the posterior, and for each draw, we simulate a complete replicated survey of $1{,}447$ respondents according to the Multinomial likelihood:
+                </p>
+
+                <div class="math-plate">
+                    $$y_j^{\text{rep}} \sim \operatorname{Multinomial}(n_j, \theta_j^{\text{rep}}), \quad j = 1, \dots, 16$$
+                </div>
+
+                <p>
+                    For each replicated dataset $y^{\text{rep}}$, we record the minimum Bush share: $T(y^{\text{rep}}) = \min_j \frac{y_{1j}^{\text{rep}}}{y_{1j}^{\text{rep}} + y_{2j}^{\text{rep}}}$.
+                </p>
+
+                <!-- Predictive Check Result Box -->
+                <div class="my-6 p-5 rounded-xl border border-slate-200 bg-white shadow-sm">
+                    <h4 class="text-sm font-bold text-slate-900 ui-text mb-2">Posterior Predictive Test Results ($6{,}000$ Simulations)</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center my-3">
+                        <div class="p-3 bg-slate-50 rounded-lg border border-slate-100">
+                            <span class="text-xs text-slate-500 uppercase tracking-wider block mb-1">Observed Minimum $T(y)$</span>
+                            <span class="text-lg font-bold text-slate-900 mono-text">0.326 (32.6%)</span>
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-lg border border-slate-100">
+                            <span class="text-xs text-slate-500 uppercase tracking-wider block mb-1">Replicated Median $T(y^{\text{rep}})$</span>
+                            <span class="text-lg font-bold text-bayesian-blue mono-text">0.413 (41.3%)</span>
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-lg border border-slate-100">
+                            <span class="text-xs text-slate-500 uppercase tracking-wider block mb-1">95% Predictive Interval</span>
+                            <span class="text-lg font-bold text-emerald-700 mono-text">[0.270, 0.500]</span>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-600 font-serif leading-relaxed mb-0">
+                        The observed minimum of $0.326$ sits comfortably within the 95% predictive interval $[0.270, 0.500]$ ($p \approx 0.91$). This confirms that the model has <strong>not over-shrunk the data</strong>: even though the underlying true parameter $\alpha_{1, 1}$ is estimated around $51\%$, the binomial sampling noise of interviewing only $47$ people is easily wide enough to produce an observed count as low as $32\%$ by pure random chance!
+                    </p>
+                </div>
+
+                <p>
+                    This is the crowning achievement of the hierarchical Bayesian paradigm in sample surveys: it separates <strong>genuine population heterogeneity</strong> from the <strong>ephemeral fog of sampling noise</strong>, providing local estimates that campaigns can trust and a national forecast that reflects reality.
+                </p>
+
+                <!-- Interactive Notebook / Google Colab Card -->
+                <div class="my-10 p-6 rounded-2xl border border-amber-200/90 bg-gradient-to-br from-amber-50/60 via-white to-orange-50/40 shadow-[0_4px_24px_rgba(245,158,11,0.08)]">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
+                        <div class="flex items-start gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shrink-0 text-amber-600">
+                                <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
+                                    <path d="M16.9 14.1c-.8-.8-2-1.3-3.2-1.3s-2.4.5-3.2 1.3c-.8.8-1.3 2-1.3 3.2s.5 2.4 1.3 3.2c.8.8 2 1.3 3.2 1.3s2.4-.5 3.2-1.3c.8-.8 1.3-2 1.3-3.2s-.5-2.4-1.3-3.2zm-9.8-4.2C7.9 9.1 9.1 8.6 10.3 8.6s2.4.5 3.2 1.3c.8.8 1.3 2 1.3 3.2s-.5 2.4-1.3 3.2c-.8.8-2 1.3-3.2 1.3s-2.4-.5-3.2-1.3c-.8-.8-1.3-2-1.3-3.2s.5-2.4 1.3-3.2zm13.6 0c.8.8 1.3 2 1.3 3.2s-.5 2.4-1.3 3.2c-.8.8-2 1.3-3.2 1.3s-2.4-.5-3.2-1.3c-.8-.8-1.3-2-1.3-3.2s.5-2.4 1.3-3.2c.8-.8 2-1.3 3.2-1.3s2.4.5 3.2 1.3z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="text-base font-bold text-slate-900 ui-text mb-1">
+                                    Interactive Computation in Google Colab
+                                </h4>
+                                <p class="text-xs sm:text-sm text-slate-600 font-serif leading-relaxed mb-0">
+                                    Run the entire analysis live in your browser: full 16-strata demographic dataset, conjugate Dirichlet-Multinomial models, the hierarchical bivariate logit model with LKJ Cholesky covariance, shrinkage shrinkage diagnostics, and Gelman's posterior predictive test.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="shrink-0 w-full sm:w-auto flex sm:flex-col items-center sm:items-end gap-2">
+                            <a href="https://colab.research.google.com/github/saurabh2086/saurabh2086.github.io/blob/main/bda3/notebooks/ch8_stratified_pymc.ipynb" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-amber-500 hover:bg-amber-600 text-white shadow-sm hover:shadow transition-all">
+                                <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M16.9 14.1c-.8-.8-2-1.3-3.2-1.3s-2.4.5-3.2 1.3c-.8.8-1.3 2-1.3 3.2s.5 2.4 1.3 3.2c.8.8 2 1.3 3.2 1.3s2.4-.5 3.2-1.3c.8-.8 1.3-2 1.3-3.2s-.5-2.4-1.3-3.2zm-9.8-4.2C7.9 9.1 9.1 8.6 10.3 8.6s2.4.5 3.2 1.3c.8.8 1.3 2 1.3 3.2s-.5 2.4-1.3 3.2c-.8.8-2 1.3-3.2 1.3s-2.4-.5-3.2-1.3c-.8-.8-1.3-2-1.3-3.2s.5-2.4 1.3-3.2zm13.6 0c.8.8 1.3 2 1.3 3.2s-.5 2.4-1.3 3.2c-.8.8-2 1.3-3.2 1.3s-2.4-.5-3.2-1.3c-.8-.8-1.3-2-1.3-3.2s.5-2.4 1.3-3.2c.8-.8 2-1.3 3.2-1.3s2.4.5 3.2 1.3z"/></svg>
+                                Open Notebook in Colab
+                            </a>
+                            <span class="text-[11px] text-slate-400 mono-text">ch8_stratified_pymc.ipynb</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Footer / Progress Bar -->
+        <footer class="mt-14 pt-6 border-t border-slate-200 text-xs text-slate-500 ui-text flex flex-wrap justify-between items-center gap-4">
+            <div>
+                <span>Bayesian Data Analysis (BDA3) Reading Series</span>
+                <span class="mx-2">•</span>
+                <span>Section 8.3: Sample Surveys</span>
+            </div>
+            <a href="../../index.html" class="text-bayesian-blue hover:underline font-medium">← Back to Portfolio Index</a>
+        </footer>
+
+    </div>
+</body>
+</html>

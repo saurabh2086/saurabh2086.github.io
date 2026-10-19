@@ -1,0 +1,208 @@
+{
+  "strata": [
+    {
+      "stratum": 1,
+      "label": "1. Northeast I (Rural)",
+      "n": 47,
+      "raw_bush": 0.2978723404255319,
+      "post_med_corr": 0.29497417571386564,
+      "ci_lower_corr": 0.17871686452089264,
+      "ci_upper_corr": 0.43434230597502066,
+      "post_med_flat": 0.2972691492328394,
+      "ci_lower_flat": 0.1844544413720734,
+      "ci_upper_flat": 0.42904984862234835
+    },
+    {
+      "stratum": 2,
+      "label": "2. Northeast II",
+      "n": 46,
+      "raw_bush": 0.5,
+      "post_med_corr": 0.4995056412647025,
+      "ci_lower_corr": 0.36040527516700566,
+      "ci_upper_corr": 0.6409212289254048,
+      "post_med_flat": 0.49006950863684395,
+      "ci_lower_flat": 0.35330900634084855,
+      "ci_upper_flat": 0.6246150413895245
+    },
+    {
+      "stratum": 3,
+      "label": "3. Northeast III",
+      "n": 167,
+      "raw_bush": 0.46706586826347307,
+      "post_med_corr": 0.4667345802388221,
+      "ci_lower_corr": 0.3941731672805735,
+      "ci_upper_corr": 0.5407966474024543,
+      "post_med_flat": 0.4639061397235532,
+      "ci_lower_flat": 0.3914303976032995,
+      "ci_upper_flat": 0.5376679377802203
+    },
+    {
+      "stratum": 4,
+      "label": "4. Northeast IV (Urban)",
+      "n": 69,
+      "raw_bush": 0.463768115942029,
+      "post_med_corr": 0.46406723439255704,
+      "ci_lower_corr": 0.34999086437743826,
+      "ci_upper_corr": 0.5809345149422097,
+      "post_med_flat": 0.4572159393588673,
+      "ci_lower_flat": 0.346626478791356,
+      "ci_upper_flat": 0.5698774943559278
+    },
+    {
+      "stratum": 5,
+      "label": "5. Midwest I (Rural)",
+      "n": 47,
+      "raw_bush": 0.40425531914893614,
+      "post_med_corr": 0.4030729651411723,
+      "ci_lower_corr": 0.2692521902966396,
+      "ci_upper_corr": 0.5466183402412153,
+      "post_med_flat": 0.39836668518875173,
+      "ci_lower_flat": 0.268642419498076,
+      "ci_upper_flat": 0.5381400531494772
+    },
+    {
+      "stratum": 6,
+      "label": "6. Midwest II",
+      "n": 94,
+      "raw_bush": 0.44680851063829785,
+      "post_med_corr": 0.4453483031946096,
+      "ci_lower_corr": 0.34701229509796355,
+      "ci_upper_corr": 0.546297137827934,
+      "post_med_flat": 0.4431629466248088,
+      "ci_lower_flat": 0.3475562696154184,
+      "ci_upper_flat": 0.5416403352154653
+    },
+    {
+      "stratum": 7,
+      "label": "7. Midwest III",
+      "n": 116,
+      "raw_bush": 0.5086206896551724,
+      "post_med_corr": 0.5094819768975016,
+      "ci_lower_corr": 0.4179965599437936,
+      "ci_upper_corr": 0.5971269227064832,
+      "post_med_flat": 0.5038934886864067,
+      "ci_lower_flat": 0.4143613814872378,
+      "ci_upper_flat": 0.5949779561332849
+    },
+    {
+      "stratum": 8,
+      "label": "8. Midwest IV (Urban)",
+      "n": 145,
+      "raw_bush": 0.5517241379310345,
+      "post_med_corr": 0.5521256062994249,
+      "ci_lower_corr": 0.4711272607703421,
+      "ci_upper_corr": 0.6304668728335928,
+      "post_med_flat": 0.5474877410876373,
+      "ci_lower_flat": 0.4678719601509786,
+      "ci_upper_flat": 0.6261210010354182
+    },
+    {
+      "stratum": 9,
+      "label": "9. South I (Rural)",
+      "n": 21,
+      "raw_bush": 0.5714285714285714,
+      "post_med_corr": 0.5710021406192246,
+      "ci_lower_corr": 0.35764107612932033,
+      "ci_upper_corr": 0.7655804652129917,
+      "post_med_flat": 0.5430574573345102,
+      "ci_lower_flat": 0.34405172715380095,
+      "ci_upper_flat": 0.7289433339042309
+    },
+    {
+      "stratum": 10,
+      "label": "10. South II",
+      "n": 96,
+      "raw_bush": 0.46875,
+      "post_med_corr": 0.4684801420254593,
+      "ci_lower_corr": 0.37186367141250953,
+      "ci_upper_corr": 0.5664965006193867,
+      "post_med_flat": 0.4655139178859673,
+      "ci_lower_flat": 0.36879892598826863,
+      "ci_upper_flat": 0.5614568513130774
+    },
+    {
+      "stratum": 11,
+      "label": "11. South III",
+      "n": 99,
+      "raw_bush": 0.5151515151515151,
+      "post_med_corr": 0.51525256847554,
+      "ci_lower_corr": 0.4174486952823055,
+      "ci_upper_corr": 0.6111958816355506,
+      "post_med_flat": 0.5097780971528472,
+      "ci_lower_flat": 0.4139238108361707,
+      "ci_upper_flat": 0.6040562202835823
+    },
+    {
+      "stratum": 12,
+      "label": "12. South IV (Urban)",
+      "n": 182,
+      "raw_bush": 0.554945054945055,
+      "post_med_corr": 0.5543941482716574,
+      "ci_lower_corr": 0.4825397470830581,
+      "ci_upper_corr": 0.6259609387564512,
+      "post_med_flat": 0.5514193490398553,
+      "ci_lower_flat": 0.4802695229936271,
+      "ci_upper_flat": 0.6222083332966873
+    },
+    {
+      "stratum": 13,
+      "label": "13. West I (Rural)",
+      "n": 34,
+      "raw_bush": 0.5,
+      "post_med_corr": 0.5000782258784041,
+      "ci_lower_corr": 0.33781081116480327,
+      "ci_upper_corr": 0.6616522153516625,
+      "post_med_flat": 0.4876963519391068,
+      "ci_lower_flat": 0.3314891982493017,
+      "ci_upper_flat": 0.6456662966634714
+    },
+    {
+      "stratum": 14,
+      "label": "14. West II",
+      "n": 77,
+      "raw_bush": 0.5324675324675324,
+      "post_med_corr": 0.5322652965784582,
+      "ci_lower_corr": 0.42128022488181627,
+      "ci_upper_corr": 0.6412395436204682,
+      "post_med_flat": 0.5248947127118597,
+      "ci_lower_flat": 0.41557202271576976,
+      "ci_upper_flat": 0.632058457763782
+    },
+    {
+      "stratum": 15,
+      "label": "15. West III",
+      "n": 124,
+      "raw_bush": 0.5403225806451613,
+      "post_med_corr": 0.5404646632279559,
+      "ci_lower_corr": 0.4505672090129089,
+      "ci_upper_corr": 0.6274059580949273,
+      "post_med_flat": 0.5361852623306136,
+      "ci_lower_flat": 0.4484358877143525,
+      "ci_upper_flat": 0.6221545388186237
+    },
+    {
+      "stratum": 16,
+      "label": "16. West IV (Urban)",
+      "n": 83,
+      "raw_bush": 0.5542168674698795,
+      "post_med_corr": 0.5530516973664705,
+      "ci_lower_corr": 0.44545990796412693,
+      "ci_upper_corr": 0.6584177673407837,
+      "post_med_flat": 0.5466142107774556,
+      "ci_lower_flat": 0.4397011472385049,
+      "ci_upper_flat": 0.6492764891043478
+    }
+  ],
+  "national_lead_corr": {
+    "mean": 0.09980257963334577,
+    "median": 0.10000039435422317,
+    "hdi_2.5": 0.05093935701461648,
+    "hdi_97.5": 0.1469734888571745
+  },
+  "national_lead_flat": {
+    "mean": 0.09741239476223557,
+    "median": 0.09726280552127287,
+    "hdi_2.5": 0.050889877621625175,
+    "hdi_97.5": 0.14285249691384536
+  }
+}
