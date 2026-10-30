@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unequal Probabilities of Selection and the Inspection Paradox — BDA3 Section 8.3</title>
+    <meta name="description"
+        content="Notes on BDA3 Section 8.3: Unequal Probabilities of Selection. When cluster sizes are unknown, why group averages mislead us, and how a joint hierarchical model makes sense of the Alcoholics Anonymous survey.">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400;1,6..72,600&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+
+    <!-- MathJax for LaTeX rendering -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bayesian: {
+                            bg: '#f7f9fb',
+                            text: '#191c1e',
+                            navy: '#131b2e',
+                            blue: '#0051d5',
+                            slate: '#596780',
+                            surface: '#ffffff',
+                            surfaceAlt: '#f8fafc',
+                            border: '#e2e8f0',
+                            accent: '#0f766e',
+                            amber: '#b45309'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Newsreader', Georgia, serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+            font-size: 1.125rem;
+            line-height: 1.75;
+            text-rendering: optimizeLegibility;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .ui-text {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        .mono-text {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        p {
+            margin-bottom: 1.25rem;
+            color: #334155;
+        }
+
+        strong {
+            color: #0f172a;
+        }
+
+        .callout-box {
+            border-left: 4px solid #0051d5;
+            background: #ffffff;
+            box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
+            border-radius: 0 0.75rem 0.75rem 0;
+            border-top: 1px solid #f1f5f9;
+            border-right: 1px solid #f1f5f9;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .math-plate {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            box-shadow: 0 2px 10px rgba(15, 23, 42, 0.03);
+            padding: 1.25rem 1.5rem;
+            margin: 1.25rem 0;
+            text-align: center;
+            overflow-x: auto;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+
+<body class="antialiased selection:bg-blue-100 selection:text-bayesian-navy">
+    <div class="max-w-[1320px] mx-auto px-4 sm:px-8 md:px-12 py-8">
+
+        <!-- Navigation -->
+        <nav class="mb-8 flex items-center justify-between border-b border-slate-200/80 pb-3.5">
+            <a href="../../index.html"
+                class="inline-flex items-center text-xs font-semibold text-slate-500 hover:text-bayesian-blue transition-colors ui-text uppercase tracking-wider">
+                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                Portfolio Index
+            </a>
+            <div class="flex items-center gap-3 text-xs text-slate-400 ui-text">
+                <span>BDA3 Study Notes</span>
+                <span>/</span>
+                <span class="text-slate-600 font-medium">Chapter 8</span>
+            </div>
+        </nav>
+
+        <!-- Header -->
+        <header class="mb-10">
+            <div class="flex flex-wrap items-center gap-2 mb-4">
+                <span
+                    class="px-2.5 py-1 bg-slate-100 border border-slate-200 text-slate-700 rounded-md text-xs font-semibold tracking-wide uppercase ui-text">
+                    BDA3 • Chapter 8 • Section 8.3
+                </span>
+                <span
+                    class="px-2.5 py-1 bg-blue-50 border border-blue-200 text-bayesian-blue rounded-md text-xs font-semibold tracking-wide uppercase ui-text">
+                    Unequal Probabilities &amp; Unknown Sizes
+                </span>
+            </div>
+
+            <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight leading-[1.15] text-slate-900 ui-text mb-4">
+                Unequal Probabilities of Selection and the Inspection Paradox
+            </h1>
+
+            <p class="text-lg md:text-xl text-slate-600 font-serif leading-relaxed italic mb-6">
+                When cluster sizes are unknown, why simple group averages mislead us, how attendance habits bias our data, and how a joint Bayesian model makes sense of the Alcoholics Anonymous survey.
+            </p>
+
+            <!-- Byline & Metadata Bar -->
+            <div class="flex flex-wrap items-center justify-between text-xs text-slate-500 border-y border-slate-200/80 py-3.5 gap-3 ui-text">
+                <div class="flex items-center gap-2">
+                    <span class="font-semibold text-slate-900">Saurabh Kumar Pandey</span>
+                    <span>•</span>
+                    <span>Gelman et al., BDA3 §8.3</span>
+                </div>
+                <div class="flex items-center gap-4 text-slate-400">
+                    <span>Reading Time: ~12 mins</span>
+                    <span>•</span>
+                    <span>Study Notes</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Narrative -->
+        <main class="space-y-12">
+
+            <!-- Section: The Loss of the Registry -->
+            <section id="loss-of-registry">
+                <h2 class="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 ui-text mb-6">
+                    The Loss of the Registry: When Cluster Sizes are Unknown
+                </h2>
+
+                <p>
+                    In the Melbourne schoolchildren study, our analysis relied on a really convenient administrative detail: <strong>we knew the exact size of every cluster in the city.</strong>
+                </p>
+
+                <p>
+                    Even for the nine hundred schools we never visited, the Department of Education had an official registry listing their total classroom counts ($M_k$) and student enrollments ($N_k$). When we needed to simulate the unobserved schools to estimate the citywide average, we could just plug those known numbers straight into our regression.
+                </p>
+
+                <p>
+                    In a lot of real-world surveys, though, we don't have that luxury at all:
+                </p>
+
+                <ul class="space-y-2 mb-6 ml-6 list-disc text-slate-700">
+                    <li><strong>Informal Support Networks:</strong> Mutual aid groups, bereavement circles, and addiction recovery programs keep no roll calls or rosters.</li>
+                    <li><strong>Public Health Drop-In Clinics:</strong> Needle exchanges, mobile health vans, and rural outreach centers have fluctuating daily attendance with no master lists.</li>
+                    <li><strong>Community &amp; Religious Gatherings:</strong> Congregations and neighborhood associations know how many physical meeting spots exist, but have no accurate counts of how many people belong to each.</li>
+                </ul>
+
+                <p>
+                    This is the exact problem in the nationwide triennial survey of <strong>Alcoholics Anonymous (AA)</strong> discussed at the end of Section 8.3.
+                </p>
+
+                <!-- Comparison Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
+                    <!-- Melbourne Card -->
+                    <div class="p-6 rounded-xl border border-blue-200 bg-blue-50/40 shadow-sm flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="px-2 py-0.5 bg-blue-100 text-blue-800 rounded font-semibold text-xs uppercase tracking-wider ui-text">
+                                    Melbourne Survey
+                                </span>
+                                <span class="text-xs text-blue-600 ui-text font-medium">Known Cluster Sizes</span>
+                            </div>
+                            <h4 class="text-base font-bold text-slate-900 ui-text mb-2">Administrative Roster Exists</h4>
+                            <p class="text-sm text-slate-600 leading-relaxed mb-4">
+                                For all $1{,}000$ schools, classroom counts $M_k$ and enrollments $N_k$ were fixed numbers in a government database.
+                            </p>
+                            <ul class="text-xs space-y-2 text-slate-700 ui-text">
+                                <li class="flex items-start gap-2">
+                                    <span class="text-blue-600 font-bold">✓</span>
+                                    <span><strong>Unsampled sizes:</strong> Known constants</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <span class="text-blue-600 font-bold">✓</span>
+                                    <span><strong>Model type:</strong> Univariate hierarchical regression on $M_k$</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- AA Card -->
+                    <div class="p-6 rounded-xl border border-amber-200 bg-amber-50/40 shadow-sm flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="px-2 py-0.5 bg-amber-100 text-amber-800 rounded font-semibold text-xs uppercase tracking-wider ui-text">
+                                    AA National Survey
+                                </span>
+                                <span class="text-xs text-amber-700 ui-text font-medium">Unknown Cluster Sizes</span>
+                            </div>
+                            <h4 class="text-base font-bold text-slate-900 ui-text mb-2">Zero Attendance Records</h4>
+                            <p class="text-sm text-slate-600 leading-relaxed mb-4">
+                                We know $\approx 6{,}400$ meeting groups exist, but nobody knows how many people attend each group.
+                            </p>
+                            <ul class="text-xs space-y-2 text-slate-700 ui-text">
+                                <li class="flex items-start gap-2">
+                                    <span class="text-amber-600 font-bold">⚠</span>
+                                    <span><strong>Unsampled sizes:</strong> Latent random variables ($x_j = \text{?}$)</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <span class="text-amber-600 font-bold">⚠</span>
+                                    <span><strong>Model type:</strong> Bivariate joint model for $(x_j, \theta_j)$</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="callout-box p-5 my-6 bg-slate-50">
+                    <p class="text-sm text-slate-700 m-0">
+                        <strong>The Fundamental Challenge:</strong> How do you estimate the true proportion of members across an entire nation when you don't even know how many people belong to the thousands of groups you never visited?
+                    </p>
+                </div>
+            </section>
+
+            <!-- Section 2: How Selection Actually Works in the Real World -->
+            <section id="causal-web-selection">
+                <h2 class="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 ui-text mb-6">
+                    How Selection Actually Works: The 5-Step Real-World Funnel
+                </h2>
+
+                <p>
+                    In theory, a fair survey is simple: <strong>every person should have the exact same chance of being picked</strong>.
+                </p>
+
+                <div class="math-plate py-2">
+                    $$\Pr(\text{Person } i \text{ is picked}) = \text{Constant for everyone}$$
+                </div>
+
+                <p>
+                    When this is true, the sample is a fair mirror of the population. You just average the numbers, and you are done.
+                </p>
+
+                <p>
+                    <strong>In the real world, this never happens.</strong>
+                </p>
+
+                <p>
+                    In the national Alcoholics Anonymous survey, nobody flipped a coin for each individual member. Instead, for someone's response to end up in our dataset, it had to pass through a chain of five real-world steps:
+                </p>
+
+                <!-- Clean, Simple 5-Step Flow -->
+                <div class="my-6 space-y-3 w-full">
+                    <!-- Step 1 -->
+                    <div class="flex items-start gap-3 p-4 rounded-lg border border-slate-200 bg-white shadow-sm">
+                        <span class="px-2.5 py-1 bg-blue-100 text-blue-800 text-xs font-bold rounded ui-text flex-shrink-0">Step 1</span>
+                        <div>
+                            <strong class="text-slate-900 block ui-text text-sm">Random process picks a group</strong>
+                            <p class="text-sm text-slate-600 m-0">
+                                Headquarters randomly draws 400 groups out of 6,400 across the country. Groups have an equal chance, but <em>individual people do not</em>.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="flex items-start gap-3 p-4 rounded-lg border border-slate-200 bg-white shadow-sm">
+                        <span class="px-2.5 py-1 bg-indigo-100 text-indigo-800 text-xs font-bold rounded ui-text flex-shrink-0">Step 2</span>
+                        <div>
+                            <strong class="text-slate-900 block ui-text text-sm">Group size ($x_j$) sets the local pool</strong>
+                            <p class="text-sm text-slate-600 m-0">
+                                Some groups have 10 regular members; others have 100. Being 1 in 10 gives you a much larger presence in your group than being 1 in 100.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="flex items-start gap-3 p-4 rounded-lg border border-slate-200 bg-white shadow-sm">
+                        <span class="px-2.5 py-1 bg-purple-100 text-purple-800 text-xs font-bold rounded ui-text flex-shrink-0">Step 3</span>
+                        <div>
+                            <strong class="text-slate-900 block ui-text text-sm">Day and weather impact attendance</strong>
+                            <p class="text-sm text-slate-600 m-0">
+                                Surveys are handed out on <em>one particular day</em>. A snowy Tuesday morning draws a completely different crowd than a clear Friday evening.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Step 4 -->
+                    <div class="flex items-start gap-3 p-4 rounded-lg border border-slate-200 bg-white shadow-sm">
+                        <span class="px-2.5 py-1 bg-amber-100 text-amber-900 text-xs font-bold rounded ui-text flex-shrink-0">Step 4</span>
+                        <div>
+                            <strong class="text-slate-900 block ui-text text-sm">Personal context impacts attendance (The Inspection Paradox)</strong>
+                            <p class="text-sm text-slate-600 m-0">
+                                A newcomer in acute distress may go every single day. A veteran with 20 years of sobriety may go once a month. 
+                                <strong>Someone attending 7 days a week is 7 times more likely to be in the room on survey day!</strong>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Step 5 -->
+                    <div class="flex items-start gap-3 p-4 rounded-lg border border-slate-200 bg-white shadow-sm">
+                        <span class="px-2.5 py-1 bg-emerald-100 text-emerald-800 text-xs font-bold rounded ui-text flex-shrink-0">Step 5</span>
+                        <div>
+                            <strong class="text-slate-900 block ui-text text-sm">People context impacts survey response</strong>
+                            <p class="text-sm text-slate-600 m-0">
+                                Sitting in the room is not enough—not everyone responds to the survey. A person's own context determines both whether they fill out the form ($n_j \approx \pi x_j$) and what they answer.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="callout-box p-5 my-6 bg-slate-50">
+                    <p class="text-sm text-slate-800 m-0 font-medium">
+                        <strong>The Big Takeaway:</strong> We did not sample <em>people</em> with equal probability. Both attendance and response are driven by the group pool, day and weather, and people's personal context.
+                    </p>
+                </div>
+
+                <h3 class="text-xl font-bold text-slate-800 ui-text mt-8 mb-3">
+                    The Causal Diagram
+                </h3>
+
+                <p>
+                    Here is how these five steps connect together into a simple causal diagram:
+                </p>
+
+                <!-- Causal DAG Diagram -->
+                <div class="my-8 p-6 rounded-xl border border-slate-200 bg-white shadow-sm w-full">
+                    <div class="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-4 ui-text text-center">
+                        Causal Diagram: The Chain of Selection and Response
+                    </div>
+
+                    <div class="flex justify-center">
+                        <svg viewBox="0 0 740 370" class="w-full h-auto" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                    <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#475569" />
+                                </marker>
+                                <marker id="arrow-red" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                    <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#dc2626" />
+                                </marker>
+                            </defs>
+
+                            <!-- ROW 1: Group Selection Pipeline -->
+                            <!-- Node 1: Random Process -->
+                            <g transform="translate(120, 55)">
+                                <rect x="-85" y="-18" width="170" height="36" rx="6" fill="#f8fafc" stroke="#64748b" stroke-width="1.5" />
+                                <text x="0" y="4" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" font-weight="700" fill="#1e293b">
+                                    Random Process
+                                </text>
+                            </g>
+
+                            <!-- Node 2: Group Selected -->
+                            <g transform="translate(355, 55)">
+                                <rect x="-85" y="-18" width="170" height="36" rx="6" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5" />
+                                <text x="0" y="4" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" font-weight="700" fill="#1e3a8a">
+                                    Group Selected
+                                </text>
+                            </g>
+
+                            <!-- Node 3: Group of People -->
+                            <g transform="translate(595, 55)">
+                                <rect x="-100" y="-18" width="200" height="36" rx="6" fill="#e0e7ff" stroke="#6366f1" stroke-width="1.5" />
+                                <text x="0" y="4" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" font-weight="700" fill="#3730a3">
+                                    Group of People (x<tspan font-size="9" dy="2">j</tspan><tspan font-size="12" dy="-2">)</tspan>
+                                </text>
+                            </g>
+
+                            <!-- Arrow: Random -> Group -->
+                            <path d="M 205 55 L 265 55" fill="none" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)" />
+
+                            <!-- Arrow: Group -> Group of People -->
+                            <path d="M 440 55 L 490 55" fill="none" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)" />
+
+
+                            <!-- ROW 2: The Three Forces Driving Attendance -->
+                            <!-- Node 4: Day & Weather -->
+                            <g transform="translate(120, 185)">
+                                <rect x="-85" y="-18" width="170" height="36" rx="6" fill="#fdf4ff" stroke="#d946ef" stroke-width="1.5" />
+                                <text x="0" y="4" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" font-weight="700" fill="#86198f">
+                                    Day &amp; Weather
+                                </text>
+                            </g>
+
+                            <!-- Node 5: Attendance -->
+                            <g transform="translate(355, 185)">
+                                <rect x="-90" y="-20" width="180" height="40" rx="8" fill="#f0f9ff" stroke="#0284c7" stroke-width="2" />
+                                <text x="0" y="4" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" font-weight="700" fill="#0369a1">
+                                    Attendance
+                                </text>
+                            </g>
+
+                            <!-- Node 6: People Context -->
+                            <g transform="translate(595, 185)">
+                                <rect x="-100" y="-20" width="200" height="40" rx="6" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.8" />
+                                <text x="0" y="4" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" font-weight="700" fill="#78350f">
+                                    People Context
+                                </text>
+                            </g>
+
+                            <!-- Arrow 1 into Attendance: Group of People -> Attendance -->
+                            <path d="M 555 73 L 395 163" fill="none" stroke="#6366f1" stroke-width="1.8" marker-end="url(#arrow)" />
+
+                            <!-- Arrow 2 into Attendance: Day & Weather -> Attendance -->
+                            <path d="M 205 185 L 260 185" fill="none" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)" />
+
+                            <!-- Arrow 3 into Attendance: People Context -> Attendance -->
+                            <path d="M 495 185 L 450 185" fill="none" stroke="#dc2626" stroke-width="2" marker-end="url(#arrow-red)" />
+
+
+                            <!-- ROW 3: Survey Response -->
+                            <!-- Node 7: Survey Response -->
+                            <g transform="translate(355, 315)">
+                                <rect x="-95" y="-20" width="190" height="40" rx="8" fill="#ecfdf5" stroke="#10b981" stroke-width="2" />
+                                <text x="0" y="4" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" font-weight="700" fill="#065f46">
+                                    Survey Response
+                                </text>
+                            </g>
+
+                            <!-- Arrow into Response: Attendance -> Survey Response -->
+                            <path d="M 355 205 L 355 290" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#arrow)" />
+
+                            <!-- Arrow into Response: People Context -> Survey Response -->
+                            <path d="M 555 205 L 415 292" fill="none" stroke="#dc2626" stroke-width="2" marker-end="url(#arrow-red)" />
+                        </svg>
+                    </div>
+                </div>
+
+                <h3 class="text-xl font-bold text-slate-800 ui-text mt-8 mb-3">
+                    Computing the Probability of Selection ($\pi_i$)
+                </h3>
+
+                <p>
+                    We can now use this causal diagram to compute the exact probability $\pi_i$ that any individual person $i$ (in group $j$) ends up in our survey dataset.
+                </p>
+
+                <p>
+                    Following the arrows from top to bottom, three events must happen in sequence:
+                </p>
+
+                <div class="math-plate py-4">
+                    $$\begin{aligned}
+                    \pi_i &= \Pr(\text{Person } i \text{ responds}) \\[8pt]
+                    &= \underbrace{\Pr(\text{Group } j \text{ selected})}_{\text{Step 1: Random Lottery}} 
+                    \;\times\; \underbrace{\Pr(\text{Attends}_i \mid \text{Group } j, \text{Day}, \text{Context}_i)}_{\text{Steps 2–4: Attendance Filter}} 
+                    \;\times\; \underbrace{\Pr(\text{Responds}_i \mid \text{Attends}_i, \text{Context}_i)}_{\text{Step 5: Response Filter}}
+                    \end{aligned}$$
+                </div>
+
+                <p>
+                    Look closely at the three terms on the right:
+                </p>
+
+                <ul class="space-y-2 mb-6 ml-6 list-disc text-slate-700">
+                    <li>
+                        <strong>Term 1 — Group Selection ($\frac{400}{6400} = \frac{1}{16}$):</strong> This first term is the <em>only</em> part that is equal for everyone.
+                    </li>
+                    <li>
+                        <strong>Term 2 — Attendance Probability ($p_{\text{attend}, i}$):</strong> Driven by Day &amp; Weather and Personal Context. A daily attendee has $p_{\text{attend}, i} = \frac{7}{7} = 1.0$, whereas a bi-weekly attendee has $p_{\text{attend}, i} = \frac{1}{14} \approx 0.071$.
+                    </li>
+                    <li>
+                        <strong>Term 3 — Response Probability ($p_{\text{resp}, i}$):</strong> Also driven by Personal Context. An engaged member may have $p_{\text{resp}, i} = 0.80$, while a private or hurried member may have $p_{\text{resp}, i} = 0.40$.
+                    </li>
+                </ul>
+
+                <h4 class="text-base font-bold text-slate-800 ui-text mt-6 mb-3">
+                    A 2-Person Concrete Example: Why $\pi_i$ Varies Wildly
+                </h4>
+
+                <p>
+                    Let us plug in the numbers for two different members—<strong>Alice</strong> (a newcomer in crisis) and <strong>Bob</strong> (a 10-year sober veteran)—to see how different their selection probabilities really are:
+                </p>
+
+                <!-- 2-Person Toy Ledger Table -->
+                <div class="my-6 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm w-full">
+                    <div class="px-6 py-4 bg-slate-50 border-b border-slate-200">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-600 ui-text">Selection Probability Ledger: $\pi_i$</span>
+                    </div>
+                    <table class="w-full text-left text-base ui-text">
+                        <thead class="bg-slate-50/50 border-b border-slate-200 text-xs font-semibold uppercase tracking-wider text-slate-600">
+                            <tr>
+                                <th class="px-6 py-4">Member &amp; Context</th>
+                                <th class="px-6 py-4">1. Group Picked</th>
+                                <th class="px-6 py-4">2. Attends on Day</th>
+                                <th class="px-6 py-4">3. Fills Form</th>
+                                <th class="px-6 py-4 text-right">Net Probability ($\pi_i$)</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 text-slate-700">
+                            <tr>
+                                <td class="px-6 py-4">
+                                    <strong class="text-slate-900 block">Alice (Newcomer)</strong>
+                                    <span class="text-sm text-slate-500">Sober 2 mos; attends daily</span>
+                                </td>
+                                <td class="px-6 py-4 mono-text text-sm">$\frac{1}{16}$ ($6.25\%$)</td>
+                                <td class="px-6 py-4 mono-text text-sm">$\frac{7}{7}$ ($100\%$)</td>
+                                <td class="px-6 py-4 mono-text text-sm">$0.80$ ($80\%$)</td>
+                                <td class="px-6 py-4 text-right font-bold text-bayesian-blue mono-text text-base">$0.0500$ ($5.00\%$)</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4">
+                                    <strong class="text-slate-900 block">Bob (Veteran)</strong>
+                                    <span class="text-sm text-slate-500">Sober 10 yrs; attends bi-weekly</span>
+                                </td>
+                                <td class="px-6 py-4 mono-text text-sm">$\frac{1}{16}$ ($6.25\%$)</td>
+                                <td class="px-6 py-4 mono-text text-sm">$\frac{1}{14}$ ($7.1\%$)</td>
+                                <td class="px-6 py-4 mono-text text-sm">$0.40$ ($40\%$)</td>
+                                <td class="px-6 py-4 text-right font-bold text-amber-700 mono-text text-base">$0.0018$ ($0.18\%$)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="callout-box p-5 my-6 bg-slate-50">
+                    <p class="text-sm text-slate-800 m-0">
+                        <strong>The $28\times$ Distortion:</strong> Even though Alice's group and Bob's group had the exact same $\frac{1}{16}$ chance of being selected, Alice's personal probability of landing in the dataset ($\pi_{\text{Alice}} = 5.0\%$) is <strong>28 times higher</strong> than Bob's ($\pi_{\text{Bob}} = 0.18\%$).
+                    </p>
+                </div>
+
+                <p>
+                    Because <strong>People Context</strong> simultaneously drives who shows up, who responds, and whether they have been sober for more than 5 years, each person has a completely different $\pi_i$. If we simply average the raw survey responses, our estimate will be heavily biased toward members like Alice.
+                </p>
+            </section>
+
+            <!-- Section 3: Deriving the Target Equation -->
+            <section id="deriving-target-estimand">
+                <h2 class="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 ui-text mb-6">
+                    Making Sense of a Biased Survey
+                </h2>
+
+                <p>
+                    So what should we do? How do we make sense of a survey when the data is this biased?
+                </p>
+
+                <p>
+                    Let's walk through it step by step—starting from the best-case scenario and seeing what the real world forces us to adjust.
+                </p>
+
+                <h3 class="text-xl font-bold text-slate-800 ui-text mt-8 mb-3">
+                    1. What Constitutes "Everyone"? (Defining $x_j$)
+                </h3>
+
+                <p>
+                    Picture the best-case scenario first: we ask <em>everyone</em> in Alcoholics Anonymous to take the survey, and <em>everyone</em> responds.
+                </p>
+
+                <p>
+                    <strong>But wait—what constitutes "everyone"?</strong>
+                </p>
+
+                <p>
+                    People leave and join these groups all the time. There is no membership list and no roll call. Because people are constantly flowing in and out, we can only talk about the <strong>average number of people who attend each group</strong>. Let's call that average attendance $x_j$.
+                </p>
+
+                <h3 class="text-xl font-bold text-slate-800 ui-text mt-8 mb-3">
+                    2. Can We Fill In the Missing Values from the Responses We Collected? ($\theta_j$)
+                </h3>
+
+                <p>
+                    Now, we just want to get our estimate—say, the fraction of members who have been sober for more than 5 years. Since we don't have everyone's response, can we fill out the missing values based on the responses we collected?
+                </p>
+
+                <p>
+                    We could if we assumed the selected people simply represent one big, uniform population.
+                </p>
+
+                <p>
+                    <strong>But these people are segregated into different groups.</strong> People in one group are often much more similar to each other than to people in other groups—a morning meeting in a retirement town looks very different from a late-night meeting near a university.
+                </p>
+
+                <p>
+                    Because groups differ, each group $j$ has its own local proportion $\theta_j$ of people who answer "Yes" (sober $> 5$ years). If we can get the statistics $(x_j, \theta_j)$ of each group, then we can combine them to compute the overall average.
+                </p>
+
+                <h3 class="text-xl font-bold text-slate-800 ui-text mt-8 mb-3">
+                    3. Writing Down the Overall Average
+                </h3>
+
+                <p>
+                    Once we have both numbers for each group $j$, the math is straightforward:
+                </p>
+
+                <ul class="space-y-2 mb-6 ml-6 list-disc text-slate-700">
+                    <li>Group $j$ has an average of <strong>$x_j$</strong> people.</li>
+                    <li>A fraction <strong>$\theta_j$</strong> of them answer "Yes"—which gives <strong>$x_j \theta_j$</strong> "Yes" people in group $j$.</li>
+                </ul>
+
+                <p>
+                    To compute the overall average across all $K = 6{,}400$ groups in the country, we add up the "Yes" people across all groups and divide by the total number of people across all groups:
+                </p>
+
+                <div class="math-plate py-4">
+                    $$\bar{Y} = \frac{\sum_{j=1}^K x_j \theta_j}{\sum_{j=1}^K x_j} = \frac{\text{Total "Yes" members across all } K \text{ groups}}{\text{Total members across all } K \text{ groups}}$$
+                </div>
+
+                <!-- 2-Group Toy Example -->
+                <div class="my-6 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm w-full">
+                    <div class="px-6 py-4 bg-slate-50 border-b border-slate-200">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-600 ui-text">Why Group Size Weighting ($x_j$) Matters: A 2-Group Toy Check</span>
+                    </div>
+                    <table class="w-full text-left text-base ui-text">
+                        <thead class="bg-slate-50/50 border-b border-slate-200 text-xs font-semibold uppercase tracking-wider text-slate-600">
+                            <tr>
+                                <th class="px-6 py-4">Group</th>
+                                <th class="px-6 py-4">Average Size ($x_j$)</th>
+                                <th class="px-6 py-4">Group "Yes" Rate ($\theta_j$)</th>
+                                <th class="px-6 py-4 text-right">"Yes" Members ($x_j \theta_j$)</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 text-slate-700">
+                            <tr>
+                                <td class="px-6 py-4 font-semibold text-slate-900">Group 1 (Small Rural Room)</td>
+                                <td class="px-6 py-4 mono-text">$10$ people</td>
+                                <td class="px-6 py-4 mono-text">$20\%$ ($0.20$)</td>
+                                <td class="px-6 py-4 text-right mono-text font-semibold">$10 \times 0.20 = 2$</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 font-semibold text-slate-900">Group 2 (Large City Hall)</td>
+                                <td class="px-6 py-4 mono-text">$90$ people</td>
+                                <td class="px-6 py-4 mono-text">$80\%$ ($0.80$)</td>
+                                <td class="px-6 py-4 text-right mono-text font-semibold">$90 \times 0.80 = 72$</td>
+                            </tr>
+                            <tr class="bg-slate-50/80 font-bold text-slate-900">
+                                <td class="px-6 py-4">Total Population</td>
+                                <td class="px-6 py-4 mono-text">$\sum x_j = 100$</td>
+                                <td class="px-6 py-4 text-slate-500 font-normal text-sm">Unweighted avg: $50\%$ (Wrong!)</td>
+                                <td class="px-6 py-4 text-right mono-text text-bayesian-blue">$\bar{Y} = \frac{74}{100} = 74\%$</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3 class="text-xl font-bold text-slate-800 ui-text mt-8 mb-3">
+                    4. What We Actually Have on Our Desk (The Missing Pieces)
+                </h3>
+
+                <p>
+                    Look at the formula for $\bar{Y}$ above: to evaluate it, we need $(x_j, \theta_j)$ for all $6{,}400$ groups. Compare that to what we actually have in hand:
+                </p>
+
+                <ul class="space-y-2 mb-6 ml-6 list-disc text-slate-700">
+                    <li>
+                        <strong>Only 400 groups responded:</strong> For the remaining $6{,}000$ unsampled groups, we have zero observations.
+                    </li>
+                    <li>
+                        <strong>Even in the 400 sampled groups, we don't see $x_j$ or $\theta_j$ directly:</strong> We only see $n_j$ returned questionnaires (around 20 per group) and $y_j$ "Yes" responses, which we can model with a Binomial distribution:
+                    </li>
+                </ul>
+
+                <div class="math-plate py-3">
+                    $$y_j \sim \text{Binomial}(n_j, \theta_j)$$
+                </div>
+
+                <div class="callout-box p-5 my-6 bg-slate-50">
+                    <p class="text-sm text-slate-700 m-0">
+                        <strong>A Quick Note on Within-Group Sampling:</strong> Strictly speaking, sampling $n_j$ people out of a group of size $x_j$ without replacement would involve a finite-population correction. Why can we ignore it here and just use $\text{Binomial}(n_j, \theta_j)$? Because $6{,}000$ entire groups weren't sampled at all! That uncertainty across the unsampled groups is so much larger than any small adjustment inside a single room.
+                    </p>
+                </div>
+
+                <p>
+                    So how do we estimate both the unknown group sizes $x_j$ and the unknown rates $\theta_j$ across all $6{,}400$ groups from just $(n_j, y_j)$ in 400 rooms? That leads directly to our next step: <strong>modeling $(x_j, \theta_j)$ together</strong>.
+                </p>
+            </section>
+
+            <!-- Section 4: Building the Joint Model -->
+            <section id="bivariate-joint-model">
+                <h2 class="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 ui-text mb-6">
+                    Building a Joint Model for $(x_j, \theta_j)$
+                </h2>
+
+                <p>
+                    Look at our target formula again: $\bar{Y} = \frac{\sum x_j \theta_j}{\sum x_j}$. To get the numerator, we multiply each group's size $x_j$ by its "Yes" rate $\theta_j$.
+                </p>
+
+                <h3 class="text-xl font-bold text-slate-800 ui-text mt-8 mb-3">
+                    1. Can We Model $x_j$ and $\theta_j$ Separately?
+                </h3>
+
+                <p>
+                    Our first instinct might be to keep things simple: build one model for group sizes $x_j$, build another separate model for group sobriety rates $\theta_j$, and multiply them together.
+                </p>
+
+                <p>
+                    <strong>Wait—what goes wrong if we treat $x_j$ and $\theta_j$ as independent?</strong>
+                </p>
+
+                <p>
+                    Think about how groups work in practice. Larger downtown meetings might have stronger sponsor networks and higher long-term sobriety rates $\theta_j$ than tiny groups—or the opposite could happen if large open meetings attract mostly newcomers.
+                </p>
+
+                <p>
+                    If $x_j$ and $\theta_j$ are related, then in the sum $\sum x_j \theta_j$, large $x_j$'s will consistently pair up with large (or small) $\theta_j$'s. If we model them separately, we completely miss that correlation. So we need a <strong>joint model</strong>: $p(x_j, \theta_j)$.
+                </p>
+
+                <h3 class="text-xl font-bold text-slate-800 ui-text mt-8 mb-3">
+                    2. Breaking $p(x_j, \theta_j)$ into Two Simple Pieces
+                </h3>
+
+                <p>
+                    Using basic probability, we can factor any joint distribution into two sequential steps:
+                </p>
+
+                <div class="math-plate py-3">
+                    $$p(x_j, \theta_j) = \underbrace{p(x_j)}_{\text{Step A: Group size}} \;\times\; \underbrace{p(\theta_j \mid x_j)}_{\text{Step B: Rate given size}}$$
+                </div>
+
+                <ul class="space-y-3 mb-6 ml-6 list-disc text-slate-700">
+                    <li>
+                        <strong>Step A — Group sizes $p(x_j)$:</strong> Across the $6{,}400$ groups, average attendance $x_j$ varies around some overall mean size $\mu_x$ with variance $\sigma_x^2$.
+                    </li>
+                    <li>
+                        <strong>Step B — Rate given size $p(\theta_j \mid x_j)$:</strong> Given a group's size $x_j$, we let its sobriety rate $\theta_j$ depend linearly on $x_j$ as $\alpha + \beta x_j$, with residual variance $\sigma_\theta^2$.
+                    </li>
+                </ul>
+
+                <p>
+                    Writing both steps as Normal distributions gives us our joint prior:
+                </p>
+
+                <div class="math-plate py-4">
+                    $$\begin{aligned}
+                    x_j &\sim \mathcal{N}(\mu_x, \; \sigma_x^2) \\[6pt]
+                    \theta_j \mid x_j &\sim \mathcal{N}(\alpha + \beta x_j, \; \sigma_\theta^2)
+                    \end{aligned}$$
+                </div>
+
+                <div class="callout-box p-5 my-6 bg-slate-50">
+                    <p class="text-sm text-slate-700 m-0">
+                        <strong>Why use Normal distributions here?</strong><br>
+                        You might immediately notice something odd: group sizes $x_j$ have to be positive ($x_j > 0$), and probabilities $\theta_j$ have to stay between $0$ and $1$, whereas a Normal distribution stretches from $-\infty$ to $+\infty$. Why use a Normal model anyway?<br><br>
+                        Because when everything is Normal and linear, we can work out the expectations by hand and see the exact algebraic formula for how group size variation shifts the national estimate. Once we understand how the pieces interact, we can always fit a bounded Log-Normal and Logit-Normal version on a computer.
+                    </p>
+                </div>
+
+                <h3 class="text-xl font-bold text-slate-800 ui-text mt-8 mb-3">
+                    3. Connecting the Hidden Parameters to Our Observed Data
+                </h3>
+
+                <p>
+                    The prior above describes the underlying parameters $(x_j, \theta_j)$ of each group. Next, we need to connect those hidden numbers to what we actually observe in our 400 returned packets—the "Yes" count $y_j$ and the number of returned forms $n_j$.
+                </p>
+
+                <p>
+                    We can link them with two approximations:
+                </p>
+
+                <!-- Two Bridges Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-6">
+                    <!-- Bridge 1: Outcome Track -->
+                    <div class="p-6 rounded-xl border border-emerald-200 bg-emerald-50/30 shadow-sm">
+                        <div class="text-xs font-bold uppercase tracking-wider text-emerald-800 ui-text mb-2">
+                            Bridge 1: From $y_j / n_j$ to $\theta_j$
+                        </div>
+                        <p class="text-sm text-slate-700 mb-3">
+                            In group $j$, the observed fraction of "Yes" answers is $\bar{y}_j = y_j / n_j$. For a Binomial count $y_j \sim \text{Bin}(n_j, \theta_j)$, the sample proportion has mean $\theta_j$ and variance $\frac{\theta_j(1-\theta_j)}{n_j}$.
+                        </p>
+                        <p class="text-sm text-slate-700 mb-3">
+                            Plugging in the observed fraction $\frac{y_j}{n_j}$ for $\theta_j$ in the variance gives the Normal approximation:
+                        </p>
+                        <div class="bg-white p-3 rounded-lg border border-emerald-200 text-center my-3 text-sm">
+                            $$\frac{y_j}{n_j} \sim \mathcal{N}(\theta_j, \; \sigma_j^2)$$
+                        </div>
+                        <p class="text-xs text-slate-600 m-0">
+                            <strong>Where does $n_j^3$ come from?</strong> Notice that $\sigma_j^2 = \frac{(y_j/n_j)(1 - y_j/n_j)}{n_j} = \frac{(y_j/n_j)((n_j - y_j)/n_j)}{n_j} = \frac{y_j(n_j - y_j)}{n_j^3}$. It is just the usual binomial proportion variance written over a common denominator.
+                        </p>
+                    </div>
+
+                    <!-- Bridge 2: Size Track -->
+                    <div class="p-6 rounded-xl border border-blue-200 bg-blue-50/30 shadow-sm">
+                        <div class="text-xs font-bold uppercase tracking-wider text-blue-800 ui-text mb-2">
+                            Bridge 2: From $n_j$ to $x_j$
+                        </div>
+                        <p class="text-sm text-slate-700 mb-3">
+                            How does the number of returned forms $n_j$ tell us about the group's size $x_j$? If $x_j$ people attend on average, and each person responds with probability $\pi$, we expect $\pi x_j$ forms back.
+                        </p>
+                        <p class="text-sm text-slate-700 mb-3">
+                            Modeling the count of returned forms as $n_j \sim \text{Poisson}(\pi x_j)$ (where mean equals variance) and using a Normal approximation gives:
+                        </p>
+                        <div class="bg-white p-3 rounded-lg border border-blue-200 text-center my-3 text-sm">
+                            $$n_j \sim \mathcal{N}(\pi x_j, \; \pi x_j)$$
+                        </div>
+                        <p class="text-xs text-slate-600 m-0">
+                            <strong>The Scaling Role of $\pi$:</strong> Each group's returned count $n_j$ gives us a noisy observation of $\pi x_j$, which lets us learn the relative distribution of group sizes across the country.
+                        </p>
+                    </div>
+                </div>
+
+                <h3 class="text-xl font-bold text-slate-800 ui-text mt-8 mb-3">
+                    4. Putting the Two Tracks Together
+                </h3>
+
+                <p>
+                    Combining the joint prior with the two data bridges (and placing a flat prior on the hyperparameters $\alpha, \beta, \sigma_x, \sigma_\theta, \pi$) gives us a two-track hierarchical model:
+                </p>
+
+                <!-- Two-Track Bivariate Model Diagram -->
+                <div class="my-8 p-6 rounded-xl border border-slate-200 bg-white shadow-sm w-full">
+                    <div class="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-4 ui-text text-center">
+                        Bivariate Hierarchical Architecture: Coupled Size &amp; Outcome Tracks
+                    </div>
+
+                    <div class="flex justify-center">
+                        <svg viewBox="0 0 740 330" class="w-full max-w-3xl h-auto" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <marker id="arrow-m" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                    <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#475569" />
+                                </marker>
+                                <marker id="arrow-blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                    <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#2563eb" />
+                                </marker>
+                            </defs>
+
+                            <!-- Level 1: National Hyperparameters -->
+                            <g transform="translate(190, 45)">
+                                <rect x="-110" y="-20" width="220" height="40" rx="6" fill="#f8fafc" stroke="#64748b" stroke-width="1.5" />
+                                <text x="0" y="5" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" font-weight="700" fill="#1e293b">
+                                    Size Hyperpriors (μ<tspan font-size="9" dy="2">x</tspan><tspan font-size="12" dy="-2">, σ</tspan><tspan font-size="9" dy="2">x</tspan><tspan font-size="12" dy="-2">)</tspan>
+                                </text>
+                            </g>
+
+                            <g transform="translate(550, 45)">
+                                <rect x="-120" y="-20" width="240" height="40" rx="6" fill="#f8fafc" stroke="#64748b" stroke-width="1.5" />
+                                <text x="0" y="5" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" font-weight="700" fill="#1e293b">
+                                    Regression Hyperpriors (α, β, σ<tspan font-size="9" dy="2">θ</tspan><tspan font-size="12" dy="-2">)</tspan>
+                                </text>
+                            </g>
+
+                            <!-- Level 2: Latent Group Parameters (All 6,400 Groups) -->
+                            <rect x="40" y="110" width="660" height="90" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-dasharray="4 4" />
+                            <text x="55" y="130" font-family="'Inter', sans-serif" font-size="10" font-weight="700" fill="#64748b">
+                                ALL K = 6,400 GROUPS (400 Sampled + 6,000 Unsampled)
+                            </text>
+
+                            <g transform="translate(190, 162)">
+                                <rect x="-110" y="-20" width="220" height="40" rx="6" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.8" />
+                                <text x="0" y="5" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" font-weight="700" fill="#1e3a8a">
+                                    True Group Size: x<tspan font-size="9" dy="2">j</tspan><tspan font-size="12" dy="-2"> ~ N(μ</tspan><tspan font-size="9" dy="2">x</tspan><tspan font-size="12" dy="-2">, σ</tspan><tspan font-size="9" dy="2">x</tspan><tspan font-size="8" dy="-6">2</tspan><tspan font-size="12" dy="4">)</tspan>
+                                </text>
+                            </g>
+
+                            <g transform="translate(550, 162)">
+                                <rect x="-125" y="-20" width="250" height="40" rx="6" fill="#ecfdf5" stroke="#10b981" stroke-width="1.8" />
+                                <text x="0" y="5" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" font-weight="700" fill="#065f46">
+                                    True Rate: θ<tspan font-size="9" dy="2">j</tspan><tspan font-size="12" dy="-2"> ~ N(α + βx</tspan><tspan font-size="9" dy="2">j</tspan><tspan font-size="12" dy="-2">, σ</tspan><tspan font-size="9" dy="2">θ</tspan><tspan font-size="8" dy="-6">2</tspan><tspan font-size="12" dy="4">)</tspan>
+                                </text>
+                            </g>
+
+                            <!-- Coupling Bridge: x_j -> theta_j -->
+                            <path d="M 300 162 L 420 162" fill="none" stroke="#2563eb" stroke-width="2.2" marker-end="url(#arrow-blue)" />
+                            <text x="360" y="153" text-anchor="middle" font-family="'Inter', sans-serif" font-size="11" font-weight="700" fill="#1d4ed8">
+                                Coupled via slope β
+                            </text>
+
+                            <!-- Level 3: Observed Data (400 Sampled Groups) -->
+                            <g transform="translate(190, 275)">
+                                <rect x="-115" y="-22" width="230" height="44" rx="6" fill="#ffffff" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="3 3" />
+                                <text x="0" y="-1" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" font-weight="700" fill="#0f172a">
+                                    Observed Count: n<tspan font-size="9" dy="2">j</tspan><tspan font-size="12" dy="-2"> ~ N(πx</tspan><tspan font-size="9" dy="2">j</tspan><tspan font-size="12" dy="-2">, πx</tspan><tspan font-size="9" dy="2">j</tspan><tspan font-size="12" dy="-2">)</tspan>
+                                </text>
+                                <text x="0" y="14" text-anchor="middle" font-family="'Inter', sans-serif" font-size="9" fill="#64748b">
+                                    [Observed in 400 sampled groups]
+                                </text>
+                            </g>
+
+                            <g transform="translate(550, 275)">
+                                <rect x="-125" y="-22" width="250" height="44" rx="6" fill="#ffffff" stroke="#10b981" stroke-width="1.5" stroke-dasharray="3 3" />
+                                <text x="0" y="-1" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" font-weight="700" fill="#0f172a">
+                                    Observed Ratio: y<tspan font-size="9" dy="2">j</tspan><tspan font-size="12" dy="-2">/n</tspan><tspan font-size="9" dy="2">j</tspan><tspan font-size="12" dy="-2"> ~ N(θ</tspan><tspan font-size="9" dy="2">j</tspan><tspan font-size="12" dy="-2">, σ</tspan><tspan font-size="9" dy="2">j</tspan><tspan font-size="8" dy="-6">2</tspan><tspan font-size="12" dy="4">)</tspan>
+                                </text>
+                                <text x="0" y="14" text-anchor="middle" font-family="'Inter', sans-serif" font-size="9" fill="#64748b">
+                                    [Observed in 400 sampled groups]
+                                </text>
+                            </g>
+
+                            <!-- Vertical Arrows -->
+                            <path d="M 190 65 L 190 137" fill="none" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow-m)" />
+                            <path d="M 550 65 L 550 137" fill="none" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow-m)" />
+                            <path d="M 190 182 L 190 248" fill="none" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow-m)" />
+                            <path d="M 550 182 L 550 248" fill="none" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow-m)" />
+                        </svg>
+                    </div>
+                </div>
+
+                <p>
+                    Now that we have the joint model in place, let's see what happens when we plug it into our target $\bar{Y} = \frac{\sum x_j \theta_j}{\sum x_j}$—something really interesting comes out of the expectation.
+                </p>
+            </section>
+
+            <!-- Section 5: Solving for the National Average -->
+            <section id="solving-national-average">
+                <h2 class="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 ui-text mb-6">
+                    Solving for the National Average: How Group Size Variance Shifts the Estimate
+                </h2>
+
+                <p>
+                    We now have all the pieces on the table to evaluate the overall proportion across all $K = 6{,}400$ groups:
+                </p>
+
+                <div class="math-plate py-3">
+                    $$\bar{Y} = \frac{\sum_{j=1}^K x_j \theta_j}{\sum_{j=1}^K x_j}$$
+                </div>
+
+                <h3 class="text-xl font-bold text-slate-800 ui-text mt-8 mb-3">
+                    1. Turning the Sum Over $6{,}400$ Groups into Expected Values
+                </h3>
+
+                <p>
+                    How do we compute a sum over $6{,}400$ groups when $6{,}000$ of them were never visited?
+                </p>
+
+                <p>
+                    First, divide both the numerator and the denominator by $K$:
+                </p>
+
+                <div class="math-plate py-3">
+                    $$\bar{Y} = \frac{\frac{1}{K}\sum_{j=1}^K x_j \theta_j}{\frac{1}{K}\sum_{j=1}^K x_j}$$
+                </div>
+
+                <p>
+                    Now the top is the <em>average of $x_j \theta_j$</em> across all groups, and the bottom is the <em>average of $x_j$</em> across all groups. Since $K = 6{,}400$ is large, we can approximate those sample averages over $K$ with their expected values under our model:
+                </p>
+
+                <div class="math-plate py-3">
+                    $$\bar{Y} \approx \frac{\text{E}(x_j \theta_j)}{\text{E}(x_j)}$$
+                </div>
+
+                <h3 class="text-xl font-bold text-slate-800 ui-text mt-8 mb-3">
+                    2. Working Through the Algebra Step by Step
+                </h3>
+
+                <p>
+                    In the book, this ratio jumps straight to the final expression. Let's work out both expectations step by step using our Normal model:
+                </p>
+
+                <ul class="space-y-4 mb-6 ml-6 list-disc text-slate-700">
+                    <li>
+                        <strong>Step A — The Denominator $\text{E}(x_j)$:</strong><br>
+                        Since $x_j \sim \mathcal{N}(\mu_x, \sigma_x^2)$, the expected size of a group is simply:
+                        $$\text{E}(x_j) = \mu_x$$
+                    </li>
+                    <li>
+                        <strong>Step B — The Numerator $\text{E}(x_j \theta_j)$:</strong><br>
+                        From $\theta_j \mid x_j \sim \mathcal{N}(\alpha + \beta x_j, \sigma_\theta^2)$, we can write $\theta_j = \alpha + \beta x_j + \epsilon_j$, where the residual $\epsilon_j$ has mean zero ($\text{E}[\epsilon_j \mid x_j] = 0$). Multiplying by $x_j$ and taking the expectation gives:
+                        $$\text{E}(x_j \theta_j) = \text{E}\big[\, x_j(\alpha + \beta x_j + \epsilon_j) \,\big] = \alpha \text{E}(x_j) + \beta \text{E}(x_j^2)$$
+                    </li>
+                    <li>
+                        <strong>Step C — Where $\sigma_x^2$ Enters:</strong><br>
+                        What is $\text{E}(x_j^2)$? Using the basic identity $\text{Var}(x_j) = \text{E}(x_j^2) - [\text{E}(x_j)]^2$, we can rewrite it as:
+                        $$\text{E}(x_j^2) = \mu_x^2 + \sigma_x^2$$
+                    </li>
+                </ul>
+
+                <p>
+                    Plugging $\text{E}(x_j) = \mu_x$ and $\text{E}(x_j^2) = \mu_x^2 + \sigma_x^2$ back into $\bar{Y} = \frac{\text{E}(x_j \theta_j)}{\text{E}(x_j)}$ gives:
+                </p>
+
+                <div class="math-plate py-4">
+                    $$\bar{Y} = \frac{\alpha \mu_x + \beta(\mu_x^2 + \sigma_x^2)}{\mu_x} = \underbrace{(\alpha + \beta \mu_x)}_{\text{Rate at average group size}} + \;\; \underbrace{\beta \frac{\sigma_x^2}{\mu_x}}_{\text{Size-Variance Correction}}$$
+                </div>
+
+                <h3 class="text-xl font-bold text-slate-800 ui-text mt-8 mb-3">
+                    3. Why Does $\beta \frac{\sigma_x^2}{\mu_x}$ Appear Here?
+                </h3>
+
+                <p>
+                    Take a second to look at that second term.
+                </p>
+
+                <p>
+                    If someone told you the average group size is $\mu_x$, your first guess might be to plug $\mu_x$ into the regression line and say the national average is $\alpha + \beta \mu_x$. <strong>Why do we have to add $\beta \frac{\sigma_x^2}{\mu_x}$? Why does the spread in group sizes ($\sigma_x^2$) change the national average?</strong>
+                </p>
+
+                <p>
+                    Let's test this with a simple 2-group example where $\alpha = 0$ and $\beta = 0.01$ (so a group of size $x_j$ has rate $\theta_j = 0.01 x_j$), and the average group size is $\mu_x = 50$:
+                </p>
+
+                <!-- 2-World Comparison Table -->
+                <div class="my-6 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm w-full">
+                    <div class="px-6 py-4 bg-slate-50 border-b border-slate-200">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-600 ui-text">Physical Intuition Check: Equal Group Sizes ($\sigma_x^2 = 0$) vs. Unequal Group Sizes ($\sigma_x^2 > 0$)</span>
+                    </div>
+                    <table class="w-full text-left text-base ui-text">
+                        <thead class="bg-slate-50/50 border-b border-slate-200 text-xs font-semibold uppercase tracking-wider text-slate-600">
+                            <tr>
+                                <th class="px-6 py-4">Scenario ($\mu_x = 50$ in both)</th>
+                                <th class="px-6 py-4">Group 1</th>
+                                <th class="px-6 py-4">Group 2</th>
+                                <th class="px-6 py-4">Size Variance ($\sigma_x^2$)</th>
+                                <th class="px-6 py-4 text-right">True National Average ($\bar{Y}$)</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 text-slate-700">
+                            <tr>
+                                <td class="px-6 py-4">
+                                    <strong class="text-slate-900 block">World A: Equal Groups</strong>
+                                    <span class="text-sm text-slate-500">No spread in sizes</span>
+                                </td>
+                                <td class="px-6 py-4 mono-text text-sm">
+                                    $x_1 = 50, \; \theta_1 = 50\%$<br>
+                                    <span class="text-slate-500">($25$ "Yes")</span>
+                                </td>
+                                <td class="px-6 py-4 mono-text text-sm">
+                                    $x_2 = 50, \; \theta_2 = 50\%$<br>
+                                    <span class="text-slate-500">($25$ "Yes")</span>
+                                </td>
+                                <td class="px-6 py-4 mono-text text-sm">$0$</td>
+                                <td class="px-6 py-4 text-right font-bold text-slate-900 mono-text text-base">$\frac{25 + 25}{100} = 50\%$</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4">
+                                    <strong class="text-slate-900 block">World B: Unequal Groups</strong>
+                                    <span class="text-sm text-slate-500">Same average $\mu_x = 50$!</span>
+                                </td>
+                                <td class="px-6 py-4 mono-text text-sm">
+                                    $x_1 = 10, \; \theta_1 = 10\%$<br>
+                                    <span class="text-slate-500">($1$ "Yes")</span>
+                                </td>
+                                <td class="px-6 py-4 mono-text text-sm">
+                                    $x_2 = 90, \; \theta_2 = 90\%$<br>
+                                    <span class="text-slate-500">($81$ "Yes")</span>
+                                </td>
+                                <td class="px-6 py-4 mono-text text-sm">$40^2 = 1600$</td>
+                                <td class="px-6 py-4 text-right font-bold text-bayesian-blue mono-text text-base">$\frac{1 + 81}{100} = 82\%$</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <p>
+                    Look at World B: the average group size is still $\mu_x = \frac{10 + 90}{2} = 50$, and the simple average of the two group rates is still $\frac{10\% + 90\%}{2} = 50\%$. <strong>Yet $82\%$ of the people in the nation say "Yes"!</strong>
+                </p>
+
+                <p>
+                    Why? Because when group sizes vary ($\sigma_x^2 > 0$), <strong>most of the people are in the larger groups</strong> ($90$ out of $100$ people belong to Group 2). And our formula gives the exact number:
+                </p>
+
+                <div class="math-plate py-3">
+                    $$\bar{Y} = \underbrace{0.01(50)}_{0.50} + \underbrace{0.01\left(\frac{1600}{50}\right)}_{+0.32 \text{ correction}} = 0.82 \quad (82\%)$$
+                </div>
+
+                <h3 class="text-xl font-bold text-slate-800 ui-text mt-8 mb-3">
+                    4. Three Cases to Consider
+                </h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5 my-6">
+                    <!-- Case 1 -->
+                    <div class="p-5 rounded-xl border border-slate-200 bg-white shadow-sm">
+                        <div class="text-xs font-bold uppercase tracking-wider text-slate-500 ui-text mb-1">Case 1: Independence</div>
+                        <div class="text-lg font-bold text-slate-900 ui-text mb-2">$\beta = 0 \implies \bar{Y} = \alpha$</div>
+                        <p class="text-sm text-slate-600 m-0">
+                            If group size $x_j$ has no relation to the response rate $\theta_j$, the correction disappears. Small and large groups share the same rate $\alpha$.
+                        </p>
+                    </div>
+
+                    <!-- Case 2 -->
+                    <div class="p-5 rounded-xl border border-blue-200 bg-blue-50/30 shadow-sm">
+                        <div class="text-xs font-bold uppercase tracking-wider text-blue-700 ui-text mb-1">Case 2: Positive Slope</div>
+                        <div class="text-lg font-bold text-slate-900 ui-text mb-2">$\beta > 0 \implies \text{Shifts Up}$</div>
+                        <p class="text-sm text-slate-600 m-0">
+                            If larger groups have higher rates $\theta_j$, the overall person-average is pulled <em>above</em> the average group rate by $+\beta \frac{\sigma_x^2}{\mu_x}$.
+                        </p>
+                    </div>
+
+                    <!-- Case 3 -->
+                    <div class="p-5 rounded-xl border border-amber-200 bg-amber-50/30 shadow-sm">
+                        <div class="text-xs font-bold uppercase tracking-wider text-amber-800 ui-text mb-1">Case 3: Negative Slope</div>
+                        <div class="text-lg font-bold text-slate-900 ui-text mb-2">$\beta < 0 \implies \text{Shifts Down}$</div>
+                        <p class="text-sm text-slate-600 m-0">
+                            If larger groups have lower rates $\theta_j$ (for example, more newcomers), the overall person-average is pulled <em>below</em> the average group rate.
+                        </p>
+                    </div>
+                </div>
+
+                <h3 class="text-xl font-bold text-slate-800 ui-text mt-8 mb-3">
+                    5. Why Real-World Surveys Get Hard—And How a Hierarchical Structure Helps
+                </h3>
+
+                <p>
+                    At the end of this section in the book, there is a very honest observation about how hard this gets in practice:
+                </p>
+
+                <div class="callout-box p-5 my-6 bg-slate-50">
+                    <p class="text-sm text-slate-700 m-0 italic">
+                        "In general, the analysis of sample surveys with unequal sampling probabilities can be difficult because of the large number of potential categories, each with its own model for the distribution of $y$ given $x$ and a parameter for the frequency of that category in the population. At this point, hierarchical models may be needed to obtain good results."
+                        <span class="block not-italic font-semibold text-slate-900 mt-1 text-xs ui-text">— Gelman et al., BDA3</span>
+                    </p>
+                </div>
+
+                <p>
+                    <strong>Why does this become so difficult?</strong>
+                </p>
+
+                <p>
+                    Think back to our causal diagram: a person's chance of ending up in the sample doesn't just depend on group size. It depends on a whole mix of factors—day of the week, weather, how often they attend, age, location, and personal circumstances. Once you slice the population across all of those factors, you end up with <strong>hundreds or thousands of small categories</strong>, and for <em>every category</em> you need to know two things:
+                </p>
+
+                <ol class="space-y-2 mb-6 ml-6 list-decimal text-slate-700">
+                    <li>
+                        <strong>The Outcome Model $p(y \mid x)$:</strong> How people in that specific category respond to the survey.
+                    </li>
+                    <li>
+                        <strong>The Population Frequency $p(x)$:</strong> How common that category actually is in the broader population.
+                    </li>
+                </ol>
+
+                <p>
+                    If we try to estimate every category on its own, the data thins out immediately—most cells will have only one or two people in the sample, or none at all.
+                </p>
+
+                <p>
+                    <strong>This is where the hierarchical structure really helps:</strong> instead of estimating each group or category in isolation, a hierarchical model shares information across them through partial pooling. Even when individual categories are sparse or unobserved, the shared population distribution $(\mu_x, \sigma_x, \alpha, \beta, \sigma_\theta)$ keeps the estimates grounded and lets us piece together a sensible estimate for the whole population.
+                </p>
+            </section>
+
+        </main>
+
+        <!-- Footer -->
+        <footer class="mt-16 pt-8 border-t border-slate-200 text-center text-xs text-slate-400 ui-text">
+            <p class="m-0">
+                Bayesian Data Analysis (BDA3) Study Notes • Saurabh Kumar Pandey
+            </p>
+        </footer>
+
+    </div>
+</body>
+
+</html>
