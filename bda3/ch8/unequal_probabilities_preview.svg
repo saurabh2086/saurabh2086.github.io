@@ -1,0 +1,211 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <!-- Subtle Academic Paper Grid -->
+    <pattern id="paperGrid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#e2e8f0" stroke-width="0.7" />
+    </pattern>
+
+    <!-- Arrow Marker -->
+    <marker id="arrDark" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#334155" />
+    </marker>
+  </defs>
+
+  <!-- Background: Clean Off-White Academic Paper -->
+  <rect width="1200" height="630" fill="#f8fafc" />
+  <rect width="1200" height="630" fill="url(#paperGrid)" />
+
+  <!-- Top Border Rule -->
+  <rect x="0" y="0" width="1200" height="6" fill="#0f172a" />
+
+  <!-- Top Header Section -->
+  <g transform="translate(56, 46)">
+    <!-- Academic Pill Badge -->
+    <rect x="0" y="0" width="285" height="28" rx="4" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.2" />
+    <text x="142.5" y="19" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="11.5" font-weight="bold" fill="#334155" letter-spacing="1.2">
+      BDA3 • SECTION 8.3 • SAMPLE SURVEYS
+    </text>
+
+    <!-- Main Title -->
+    <text x="0" y="68" font-family="Georgia, 'Times New Roman', serif" font-size="42" font-weight="bold" fill="#0f172a">
+      Unequal Probabilities of Selection
+    </text>
+    <text x="0" y="100" font-family="Georgia, 'Times New Roman', serif" font-size="19" font-style="italic" fill="#475569">
+      Making sense of biased surveys when group sizes (x<tspan font-size="13" dy="4">j</tspan><tspan font-size="19" dy="-4">) and selection probabilities (&#x03C0;</tspan><tspan font-size="13" dy="4">i</tspan><tspan font-size="19" dy="-4">) are unknown</tspan>
+    </text>
+  </g>
+
+  <!-- LEFT COLUMN: Causal Funnel & Selection Equation -->
+  <g transform="translate(56, 172)">
+    <rect x="0" y="0" width="515" height="382" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" />
+
+    <!-- Section Header -->
+    <text x="24" y="34" font-family="Helvetica, Arial, sans-serif" font-size="12" font-weight="bold" fill="#334155" letter-spacing="1">
+      1. REAL-WORLD SELECTION FUNNEL
+    </text>
+
+    <!-- Monochrome Academic Causal DAG -->
+    <!-- Row 1 Nodes -->
+    <g transform="translate(86, 76)">
+      <rect x="-62" y="-17" width="124" height="34" rx="4" fill="#f8fafc" stroke="#475569" stroke-width="1.4" />
+      <text x="0" y="5" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="12" font-weight="bold" fill="#0f172a">Random Pick</text>
+    </g>
+    <g transform="translate(252, 76)">
+      <rect x="-62" y="-17" width="124" height="34" rx="4" fill="#f8fafc" stroke="#475569" stroke-width="1.4" />
+      <text x="0" y="5" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="12" font-weight="bold" fill="#0f172a">Group Selected</text>
+    </g>
+    <g transform="translate(422, 76)">
+      <rect x="-68" y="-17" width="136" height="34" rx="4" fill="#f8fafc" stroke="#475569" stroke-width="1.4" />
+      <text x="0" y="5" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="12" font-weight="bold" fill="#0f172a">Group Pool (x<tspan font-size="9" dy="3">j</tspan><tspan font-size="12" dy="-3">)</tspan></text>
+    </g>
+
+    <!-- Arrows Row 1 -->
+    <line x1="148" y1="76" x2="184" y2="76" stroke="#334155" stroke-width="1.5" marker-end="url(#arrDark)" />
+    <line x1="314" y1="76" x2="348" y2="76" stroke="#334155" stroke-width="1.5" marker-end="url(#arrDark)" />
+
+    <!-- Row 2 Nodes -->
+    <g transform="translate(86, 152)">
+      <rect x="-62" y="-17" width="124" height="34" rx="4" fill="#f8fafc" stroke="#475569" stroke-width="1.4" />
+      <text x="0" y="5" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="12" font-weight="bold" fill="#0f172a">Day &amp; Weather</text>
+    </g>
+    <g transform="translate(252, 152)">
+      <rect x="-65" y="-18" width="130" height="36" rx="4" fill="#ffffff" stroke="#0f172a" stroke-width="1.8" />
+      <text x="0" y="5" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="13" font-weight="bold" fill="#0f172a">Attendance</text>
+    </g>
+    <g transform="translate(422, 152)">
+      <rect x="-68" y="-18" width="136" height="36" rx="4" fill="#f8fafc" stroke="#475569" stroke-width="1.4" />
+      <text x="0" y="5" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="12" font-weight="bold" fill="#0f172a">People Context</text>
+    </g>
+
+    <!-- Arrows into Attendance -->
+    <line x1="395" y1="93" x2="292" y2="133" stroke="#334155" stroke-width="1.5" marker-end="url(#arrDark)" />
+    <line x1="148" y1="152" x2="181" y2="152" stroke="#334155" stroke-width="1.5" marker-end="url(#arrDark)" />
+    <line x1="354" y1="152" x2="323" y2="152" stroke="#334155" stroke-width="1.5" marker-end="url(#arrDark)" />
+
+    <!-- Row 3 Node -->
+    <g transform="translate(252, 224)">
+      <rect x="-78" y="-18" width="156" height="36" rx="4" fill="#ffffff" stroke="#0f172a" stroke-width="1.8" />
+      <text x="0" y="5" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="13" font-weight="bold" fill="#0f172a">Survey Response</text>
+    </g>
+
+    <!-- Arrows into Response -->
+    <line x1="252" y1="170" x2="252" y2="200" stroke="#334155" stroke-width="1.5" marker-end="url(#arrDark)" />
+    <line x1="392" y1="170" x2="305" y2="204" stroke="#334155" stroke-width="1.5" marker-end="url(#arrDark)" />
+
+    <!-- Divider -->
+    <line x1="24" y1="262" x2="491" y2="262" stroke="#e2e8f0" stroke-width="1" />
+
+    <!-- Selection Probability Formula Box -->
+    <text x="24" y="288" font-family="Helvetica, Arial, sans-serif" font-size="11" font-weight="bold" fill="#475569" letter-spacing="0.8">
+      INDIVIDUAL SELECTION PROBABILITY
+    </text>
+
+    <rect x="24" y="300" width="467" height="62" rx="6" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2" />
+    <text x="257" y="327" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="15.5" font-style="italic" fill="#0f172a">
+      &#x03C0;<tspan font-size="11" dy="4">i</tspan><tspan font-size="15.5" dy="-4"> &#x2009;=&#x2009; Pr(Group j) &#x00D7; Pr(Attends</tspan><tspan font-size="11" dy="4">i</tspan><tspan font-size="15.5" dy="-4"> &#x2009;|&#x2009; Day, Context) &#x00D7; Pr(Responds</tspan><tspan font-size="11" dy="4">i</tspan><tspan font-size="15.5" dy="-4">)</tspan>
+    </text>
+    <text x="257" y="350" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#475569">
+      Daily attendee (5.0%) vs. Bi-weekly veteran (0.18%) &#x2192; 28&#x00D7; selection bias
+    </text>
+  </g>
+
+  <!-- RIGHT COLUMN: The Equations & Hierarchical Solution -->
+  <g transform="translate(595, 172)">
+    <rect x="0" y="0" width="549" height="382" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" />
+
+    <text x="26" y="34" font-family="Helvetica, Arial, sans-serif" font-size="12" font-weight="bold" fill="#334155" letter-spacing="1">
+      2. JOINT HIERARCHICAL MODEL &amp; ESTIMAND
+    </text>
+
+    <!-- Equation Block 1: Target Estimand & Data Likelihoods -->
+    <rect x="24" y="48" width="501" height="92" rx="6" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2" />
+
+    <!-- Left side of Block 1: Target Y-bar -->
+    <text x="42" y="70" font-family="Helvetica, Arial, sans-serif" font-size="10.5" font-weight="bold" fill="#64748b">
+      POPULATION TARGET
+    </text>
+    <text x="54" y="109" font-family="Georgia, 'Times New Roman', serif" font-size="22" font-style="italic" fill="#0f172a">
+      Y&#x0304; =
+    </text>
+    <!-- Fraction for sum(x_j theta_j) / sum(x_j) -->
+    <text x="150" y="95" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="18" font-style="italic" fill="#0f172a">
+      &#x2211; x<tspan font-size="13" dy="4">j</tspan><tspan font-size="18" dy="-4">&#x2009;&#x03B8;</tspan><tspan font-size="13" dy="4">j</tspan>
+    </text>
+    <line x1="110" y1="103" x2="190" y2="103" stroke="#0f172a" stroke-width="1.5" />
+    <text x="150" y="125" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="18" font-style="italic" fill="#0f172a">
+      &#x2211; x<tspan font-size="13" dy="4">j</tspan>
+    </text>
+
+    <!-- Vertical Divider in Block 1 -->
+    <line x1="226" y1="58" x2="226" y2="130" stroke="#cbd5e1" stroke-width="1.2" />
+
+    <!-- Right side of Block 1: Observed Bridges -->
+    <text x="246" y="70" font-family="Helvetica, Arial, sans-serif" font-size="10.5" font-weight="bold" fill="#64748b">
+      OBSERVED DATA BRIDGES
+    </text>
+    <text x="246" y="96" font-family="Georgia, 'Times New Roman', serif" font-size="17" font-style="italic" fill="#0f172a">
+      n<tspan font-size="12" dy="4">j</tspan><tspan font-size="17" dy="-4"> &#x2009;~&#x2009; N(&#x03C0;x</tspan><tspan font-size="12" dy="4">j</tspan><tspan font-size="17" dy="-4">, &#x03C0;x</tspan><tspan font-size="12" dy="4">j</tspan><tspan font-size="17" dy="-4">)</tspan>
+    </text>
+    <text x="246" y="124" font-family="Georgia, 'Times New Roman', serif" font-size="17" font-style="italic" fill="#0f172a">
+      y<tspan font-size="12" dy="4">j</tspan><tspan font-size="17" dy="-4"> / n</tspan><tspan font-size="12" dy="4">j</tspan><tspan font-size="17" dy="-4"> &#x2009;~&#x2009; N(&#x03B8;</tspan><tspan font-size="12" dy="4">j</tspan><tspan font-size="17" dy="-4">, &#x03C3;</tspan><tspan font-size="12" dy="4">j</tspan><tspan font-size="11" dy="-10">2</tspan><tspan font-size="17" dy="6">)</tspan>
+    </text>
+
+    <!-- Equation Block 2: Bivariate Prior -->
+    <rect x="24" y="154" width="501" height="82" rx="6" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2" />
+    <text x="42" y="176" font-family="Helvetica, Arial, sans-serif" font-size="10.5" font-weight="bold" fill="#64748b">
+      COUPLED PRIOR FOR GROUP SIZE &amp; GROUP RATE
+    </text>
+    <text x="274" y="212" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="19.5" font-style="italic" fill="#0f172a">
+      x<tspan font-size="13" dy="4">j</tspan><tspan font-size="19.5" dy="-4"> &#x2009;~&#x2009; N(&#x03BC;</tspan><tspan font-size="13" dy="4">x</tspan><tspan font-size="19.5" dy="-4">, &#x03C3;</tspan><tspan font-size="13" dy="4">x</tspan><tspan font-size="12" dy="-11">2</tspan><tspan font-size="19.5" dy="7">)   ,     &#x03B8;</tspan><tspan font-size="13" dy="4">j</tspan><tspan font-size="19.5" dy="-4"> &#x2009;|&#x2009; x</tspan><tspan font-size="13" dy="4">j</tspan><tspan font-size="19.5" dy="-4"> &#x2009;~&#x2009; N(&#x03B1; + &#x03B2;x</tspan><tspan font-size="13" dy="4">j</tspan><tspan font-size="19.5" dy="-4">, &#x03C3;</tspan><tspan font-size="13" dy="4">&#x03B8;</tspan><tspan font-size="12" dy="-11">2</tspan><tspan font-size="19.5" dy="7">)</tspan>
+    </text>
+
+    <!-- Equation Block 3: Final Solution with Variance Correction -->
+    <rect x="24" y="250" width="501" height="112" rx="6" fill="#f1f5f9" stroke="#334155" stroke-width="1.6" />
+    <text x="42" y="274" font-family="Helvetica, Arial, sans-serif" font-size="10.5" font-weight="bold" fill="#334155" letter-spacing="0.8">
+      POPULATION ESTIMATE WITH GROUP-SIZE VARIANCE SHIFT
+    </text>
+
+    <!-- Main Formula: Y-bar = E(x_j theta_j)/E(x_j) = (alpha + beta mu_x) + beta (sigma_x^2 / mu_x) -->
+    <text x="128" y="320" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="22" font-style="italic" fill="#0f172a">
+      Y&#x0304; &#x2248;
+    </text>
+    <!-- E(x_j theta_j) / E(x_j) -->
+    <text x="208" y="305" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="17" font-style="italic" fill="#0f172a">
+      E(x<tspan font-size="12" dy="4">j</tspan><tspan font-size="17" dy="-4">&#x2009;&#x03B8;</tspan><tspan font-size="12" dy="4">j</tspan><tspan font-size="17" dy="-4">)</tspan>
+    </text>
+    <line x1="168" y1="313" x2="248" y2="313" stroke="#0f172a" stroke-width="1.5" />
+    <text x="208" y="335" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="17" font-style="italic" fill="#0f172a">
+      E(x<tspan font-size="12" dy="4">j</tspan><tspan font-size="17" dy="-4">)</tspan>
+    </text>
+
+    <text x="348" y="320" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="22" font-style="italic" font-weight="bold" fill="#0f172a">
+      = (&#x03B1; + &#x03B2;&#x03BC;<tspan font-size="15" dy="5">x</tspan><tspan font-size="22" dy="-5">) + &#x03B2;</tspan>
+    </text>
+
+    <!-- sigma_x^2 / mu_x -->
+    <text x="462" y="304" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="20" font-style="italic" font-weight="bold" fill="#0f172a">
+      &#x03C3;<tspan font-size="13" dy="4">x</tspan><tspan font-size="13" dy="-11">2</tspan>
+    </text>
+    <line x1="440" y1="313" x2="484" y2="313" stroke="#0f172a" stroke-width="1.8" />
+    <text x="462" y="335" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="20" font-style="italic" font-weight="bold" fill="#0f172a">
+      &#x03BC;<tspan font-size="13" dy="4">x</tspan>
+    </text>
+
+    <text x="274" y="353" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#475569">
+      Most people belong to larger groups &#x2192; group size variance (&#x03C3;<tspan font-size="9" dy="3">x</tspan><tspan font-size="9" dy="-7">2</tspan><tspan font-size="11.5" dy="4">) shifts the overall mean</tspan>
+    </text>
+  </g>
+
+  <!-- Footer Bar -->
+  <g transform="translate(56, 588)">
+    <text x="0" y="0" font-family="Helvetica, Arial, sans-serif" font-size="14" font-weight="bold" fill="#0f172a">
+      Saurabh Kumar Pandey
+    </text>
+    <text x="172" y="0" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#64748b">
+      •   Bayesian Data Analysis Study Notes
+    </text>
+    <text x="1088" y="0" text-anchor="end" font-family="Courier, monospace" font-size="14" fill="#334155">
+      saurabh2086.github.io
+    </text>
+  </g>
+</svg>

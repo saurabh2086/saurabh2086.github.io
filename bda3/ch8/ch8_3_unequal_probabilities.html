@@ -8,6 +8,23 @@
     <meta name="description"
         content="Notes on BDA3 Section 8.3: Unequal Probabilities of Selection. When cluster sizes are unknown, why group averages mislead us, and how a joint hierarchical model makes sense of the Alcoholics Anonymous survey.">
 
+    <!-- Open Graph / LinkedIn Preview Tags -->
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Unequal Probabilities of Selection — BDA3 Section 8.3">
+    <meta property="og:description"
+        content="How to make sense of biased surveys when group sizes and selection probabilities are unknown: the Alcoholics Anonymous survey case study.">
+    <meta property="og:url" content="https://saurabh2086.github.io/bda3/ch8/ch8_3_unequal_probabilities.html">
+    <meta property="og:image" content="https://saurabh2086.github.io/bda3/ch8/unequal_probabilities_preview.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+
+    <!-- Twitter / X Card Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Unequal Probabilities of Selection — BDA3 Section 8.3">
+    <meta name="twitter:description"
+        content="How to make sense of biased surveys when group sizes and selection probabilities are unknown.">
+    <meta name="twitter:image" content="https://saurabh2086.github.io/bda3/ch8/unequal_probabilities_preview.png">
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -84,20 +101,18 @@
         }
 
         .callout-box {
-            border-left: 4px solid #0051d5;
-            background: #ffffff;
-            box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
-            border-radius: 0 0.75rem 0.75rem 0;
-            border-top: 1px solid #f1f5f9;
-            border-right: 1px solid #f1f5f9;
-            border-bottom: 1px solid #f1f5f9;
+            border-left: 3px solid #334155;
+            background: #f8fafc;
+            border-radius: 0 0.5rem 0.5rem 0;
+            border-top: 1px solid #e2e8f0;
+            border-right: 1px solid #e2e8f0;
+            border-bottom: 1px solid #e2e8f0;
         }
 
         .math-plate {
             background: #ffffff;
             border: 1px solid #e2e8f0;
-            border-radius: 0.75rem;
-            box-shadow: 0 2px 10px rgba(15, 23, 42, 0.03);
+            border-radius: 0.5rem;
             padding: 1.25rem 1.5rem;
             margin: 1.25rem 0;
             text-align: center;
@@ -134,11 +149,11 @@
         <header class="mb-10">
             <div class="flex flex-wrap items-center gap-2 mb-4">
                 <span
-                    class="px-2.5 py-1 bg-slate-100 border border-slate-200 text-slate-700 rounded-md text-xs font-semibold tracking-wide uppercase ui-text">
+                    class="px-2.5 py-1 bg-slate-100 border border-slate-200 text-slate-700 rounded text-xs font-semibold tracking-wide uppercase ui-text">
                     BDA3 • Chapter 8 • Section 8.3
                 </span>
                 <span
-                    class="px-2.5 py-1 bg-blue-50 border border-blue-200 text-bayesian-blue rounded-md text-xs font-semibold tracking-wide uppercase ui-text">
+                    class="px-2.5 py-1 bg-slate-100 border border-slate-200 text-slate-600 rounded text-xs font-medium tracking-wide uppercase ui-text">
                     Unequal Probabilities &amp; Unknown Sizes
                 </span>
             </div>
@@ -200,13 +215,13 @@
                 <!-- Comparison Cards -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
                     <!-- Melbourne Card -->
-                    <div class="p-6 rounded-xl border border-blue-200 bg-blue-50/40 shadow-sm flex flex-col justify-between">
+                    <div class="p-6 rounded-lg border border-slate-200 bg-white flex flex-col justify-between">
                         <div>
                             <div class="flex items-center gap-2 mb-3">
-                                <span class="px-2 py-0.5 bg-blue-100 text-blue-800 rounded font-semibold text-xs uppercase tracking-wider ui-text">
+                                <span class="px-2 py-0.5 bg-slate-100 border border-slate-200 text-slate-800 rounded font-semibold text-xs uppercase tracking-wider ui-text">
                                     Melbourne Survey
                                 </span>
-                                <span class="text-xs text-blue-600 ui-text font-medium">Known Cluster Sizes</span>
+                                <span class="text-xs text-slate-500 ui-text font-medium">Known Cluster Sizes</span>
                             </div>
                             <h4 class="text-base font-bold text-slate-900 ui-text mb-2">Administrative Roster Exists</h4>
                             <p class="text-sm text-slate-600 leading-relaxed mb-4">
@@ -214,11 +229,11 @@
                             </p>
                             <ul class="text-xs space-y-2 text-slate-700 ui-text">
                                 <li class="flex items-start gap-2">
-                                    <span class="text-blue-600 font-bold">✓</span>
+                                    <span class="text-slate-500 font-bold">•</span>
                                     <span><strong>Unsampled sizes:</strong> Known constants</span>
                                 </li>
                                 <li class="flex items-start gap-2">
-                                    <span class="text-blue-600 font-bold">✓</span>
+                                    <span class="text-slate-500 font-bold">•</span>
                                     <span><strong>Model type:</strong> Univariate hierarchical regression on $M_k$</span>
                                 </li>
                             </ul>
@@ -226,13 +241,13 @@
                     </div>
 
                     <!-- AA Card -->
-                    <div class="p-6 rounded-xl border border-amber-200 bg-amber-50/40 shadow-sm flex flex-col justify-between">
+                    <div class="p-6 rounded-lg border border-slate-200 bg-white flex flex-col justify-between">
                         <div>
                             <div class="flex items-center gap-2 mb-3">
-                                <span class="px-2 py-0.5 bg-amber-100 text-amber-800 rounded font-semibold text-xs uppercase tracking-wider ui-text">
+                                <span class="px-2 py-0.5 bg-slate-100 border border-slate-200 text-slate-800 rounded font-semibold text-xs uppercase tracking-wider ui-text">
                                     AA National Survey
                                 </span>
-                                <span class="text-xs text-amber-700 ui-text font-medium">Unknown Cluster Sizes</span>
+                                <span class="text-xs text-slate-500 ui-text font-medium">Unknown Cluster Sizes</span>
                             </div>
                             <h4 class="text-base font-bold text-slate-900 ui-text mb-2">Zero Attendance Records</h4>
                             <p class="text-sm text-slate-600 leading-relaxed mb-4">
@@ -240,11 +255,11 @@
                             </p>
                             <ul class="text-xs space-y-2 text-slate-700 ui-text">
                                 <li class="flex items-start gap-2">
-                                    <span class="text-amber-600 font-bold">⚠</span>
+                                    <span class="text-slate-500 font-bold">•</span>
                                     <span><strong>Unsampled sizes:</strong> Latent random variables ($x_j = \text{?}$)</span>
                                 </li>
                                 <li class="flex items-start gap-2">
-                                    <span class="text-amber-600 font-bold">⚠</span>
+                                    <span class="text-slate-500 font-bold">•</span>
                                     <span><strong>Model type:</strong> Bivariate joint model for $(x_j, \theta_j)$</span>
                                 </li>
                             </ul>
@@ -288,8 +303,8 @@
                 <!-- Clean, Simple 5-Step Flow -->
                 <div class="my-6 space-y-3 w-full">
                     <!-- Step 1 -->
-                    <div class="flex items-start gap-3 p-4 rounded-lg border border-slate-200 bg-white shadow-sm">
-                        <span class="px-2.5 py-1 bg-blue-100 text-blue-800 text-xs font-bold rounded ui-text flex-shrink-0">Step 1</span>
+                    <div class="flex items-start gap-3 p-4 rounded-lg border border-slate-200 bg-white">
+                        <span class="px-2.5 py-1 bg-slate-100 border border-slate-200 text-slate-700 text-xs font-semibold rounded ui-text flex-shrink-0">Step 1</span>
                         <div>
                             <strong class="text-slate-900 block ui-text text-sm">Random process picks a group</strong>
                             <p class="text-sm text-slate-600 m-0">
@@ -299,8 +314,8 @@
                     </div>
 
                     <!-- Step 2 -->
-                    <div class="flex items-start gap-3 p-4 rounded-lg border border-slate-200 bg-white shadow-sm">
-                        <span class="px-2.5 py-1 bg-indigo-100 text-indigo-800 text-xs font-bold rounded ui-text flex-shrink-0">Step 2</span>
+                    <div class="flex items-start gap-3 p-4 rounded-lg border border-slate-200 bg-white">
+                        <span class="px-2.5 py-1 bg-slate-100 border border-slate-200 text-slate-700 text-xs font-semibold rounded ui-text flex-shrink-0">Step 2</span>
                         <div>
                             <strong class="text-slate-900 block ui-text text-sm">Group size ($x_j$) sets the local pool</strong>
                             <p class="text-sm text-slate-600 m-0">
@@ -310,8 +325,8 @@
                     </div>
 
                     <!-- Step 3 -->
-                    <div class="flex items-start gap-3 p-4 rounded-lg border border-slate-200 bg-white shadow-sm">
-                        <span class="px-2.5 py-1 bg-purple-100 text-purple-800 text-xs font-bold rounded ui-text flex-shrink-0">Step 3</span>
+                    <div class="flex items-start gap-3 p-4 rounded-lg border border-slate-200 bg-white">
+                        <span class="px-2.5 py-1 bg-slate-100 border border-slate-200 text-slate-700 text-xs font-semibold rounded ui-text flex-shrink-0">Step 3</span>
                         <div>
                             <strong class="text-slate-900 block ui-text text-sm">Day and weather impact attendance</strong>
                             <p class="text-sm text-slate-600 m-0">
@@ -321,8 +336,8 @@
                     </div>
 
                     <!-- Step 4 -->
-                    <div class="flex items-start gap-3 p-4 rounded-lg border border-slate-200 bg-white shadow-sm">
-                        <span class="px-2.5 py-1 bg-amber-100 text-amber-900 text-xs font-bold rounded ui-text flex-shrink-0">Step 4</span>
+                    <div class="flex items-start gap-3 p-4 rounded-lg border border-slate-200 bg-white">
+                        <span class="px-2.5 py-1 bg-slate-100 border border-slate-200 text-slate-700 text-xs font-semibold rounded ui-text flex-shrink-0">Step 4</span>
                         <div>
                             <strong class="text-slate-900 block ui-text text-sm">Personal context impacts attendance</strong>
                             <p class="text-sm text-slate-600 m-0">
@@ -333,8 +348,8 @@
                     </div>
 
                     <!-- Step 5 -->
-                    <div class="flex items-start gap-3 p-4 rounded-lg border border-slate-200 bg-white shadow-sm">
-                        <span class="px-2.5 py-1 bg-emerald-100 text-emerald-800 text-xs font-bold rounded ui-text flex-shrink-0">Step 5</span>
+                    <div class="flex items-start gap-3 p-4 rounded-lg border border-slate-200 bg-white">
+                        <span class="px-2.5 py-1 bg-slate-100 border border-slate-200 text-slate-700 text-xs font-semibold rounded ui-text flex-shrink-0">Step 5</span>
                         <div>
                             <strong class="text-slate-900 block ui-text text-sm">People context impacts survey response</strong>
                             <p class="text-sm text-slate-600 m-0">
@@ -359,103 +374,100 @@
                 </p>
 
                 <!-- Causal DAG Diagram -->
-                <div class="my-8 p-6 rounded-xl border border-slate-200 bg-white shadow-sm w-full">
+                <div class="my-8 p-6 rounded-lg border border-slate-200 bg-white w-full">
                     <div class="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-4 ui-text text-center">
-                        Causal Diagram: The Chain of Selection and Response
+                        Figure 1: Causal Diagram of Group Selection, Attendance, and Survey Response
                     </div>
 
                     <div class="flex justify-center">
                         <svg viewBox="0 0 740 370" class="w-full h-auto" xmlns="http://www.w3.org/2000/svg">
                             <defs>
                                 <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                                    <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#475569" />
-                                </marker>
-                                <marker id="arrow-red" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                                    <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#dc2626" />
+                                    <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#334155" />
                                 </marker>
                             </defs>
 
                             <!-- ROW 1: Group Selection Pipeline -->
                             <!-- Node 1: Random Process -->
                             <g transform="translate(120, 55)">
-                                <rect x="-85" y="-18" width="170" height="36" rx="6" fill="#f8fafc" stroke="#64748b" stroke-width="1.5" />
-                                <text x="0" y="4" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" font-weight="700" fill="#1e293b">
+                                <rect x="-85" y="-18" width="170" height="36" rx="4" fill="#f8fafc" stroke="#475569" stroke-width="1.5" />
+                                <text x="0" y="4" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" font-weight="600" fill="#0f172a">
                                     Random Process
                                 </text>
                             </g>
 
                             <!-- Node 2: Group Selected -->
                             <g transform="translate(355, 55)">
-                                <rect x="-85" y="-18" width="170" height="36" rx="6" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5" />
-                                <text x="0" y="4" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" font-weight="700" fill="#1e3a8a">
+                                <rect x="-85" y="-18" width="170" height="36" rx="4" fill="#f8fafc" stroke="#475569" stroke-width="1.5" />
+                                <text x="0" y="4" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" font-weight="600" fill="#0f172a">
                                     Group Selected
                                 </text>
                             </g>
 
                             <!-- Node 3: Group of People -->
                             <g transform="translate(595, 55)">
-                                <rect x="-100" y="-18" width="200" height="36" rx="6" fill="#e0e7ff" stroke="#6366f1" stroke-width="1.5" />
-                                <text x="0" y="4" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" font-weight="700" fill="#3730a3">
+                                <rect x="-100" y="-18" width="200" height="36" rx="4" fill="#f8fafc" stroke="#475569" stroke-width="1.5" />
+                                <text x="0" y="4" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" font-weight="600" fill="#0f172a">
                                     Group of People (x<tspan font-size="9" dy="2">j</tspan><tspan font-size="12" dy="-2">)</tspan>
                                 </text>
                             </g>
 
                             <!-- Arrow: Random -> Group -->
-                            <path d="M 205 55 L 265 55" fill="none" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)" />
+                            <path d="M 205 55 L 265 55" fill="none" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)" />
 
                             <!-- Arrow: Group -> Group of People -->
-                            <path d="M 440 55 L 490 55" fill="none" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)" />
+                            <path d="M 440 55 L 490 55" fill="none" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)" />
 
 
                             <!-- ROW 2: The Three Forces Driving Attendance -->
                             <!-- Node 4: Day & Weather -->
                             <g transform="translate(120, 185)">
-                                <rect x="-85" y="-18" width="170" height="36" rx="6" fill="#fdf4ff" stroke="#d946ef" stroke-width="1.5" />
-                                <text x="0" y="4" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" font-weight="700" fill="#86198f">
+                                <rect x="-85" y="-18" width="170" height="36" rx="4" fill="#f8fafc" stroke="#475569" stroke-width="1.5" />
+                                <text x="0" y="4" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" font-weight="600" fill="#0f172a">
                                     Day &amp; Weather
                                 </text>
                             </g>
 
                             <!-- Node 5: Attendance -->
                             <g transform="translate(355, 185)">
-                                <rect x="-90" y="-20" width="180" height="40" rx="8" fill="#f0f9ff" stroke="#0284c7" stroke-width="2" />
-                                <text x="0" y="4" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" font-weight="700" fill="#0369a1">
+                                <rect x="-90" y="-20" width="180" height="40" rx="4" fill="#ffffff" stroke="#0f172a" stroke-width="1.8" />
+                                <text x="0" y="4" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" font-weight="700" fill="#0f172a">
                                     Attendance
                                 </text>
                             </g>
 
                             <!-- Node 6: People Context -->
                             <g transform="translate(595, 185)">
-                                <rect x="-100" y="-20" width="200" height="40" rx="6" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.8" />
-                                <text x="0" y="4" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" font-weight="700" fill="#78350f">
+                                <rect x="-100" y="-20" width="200" height="40" rx="4" fill="#f8fafc" stroke="#334155" stroke-width="1.5" />
+                                <text x="0" y="4" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" font-weight="600" fill="#0f172a">
                                     People Context
                                 </text>
                             </g>
 
                             <!-- Arrow 1 into Attendance: Group of People -> Attendance -->
-                            <path d="M 555 73 L 395 163" fill="none" stroke="#6366f1" stroke-width="1.8" marker-end="url(#arrow)" />
+                            <path d="M 555 73 L 395 163" fill="none" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)" />
 
                             <!-- Arrow 2 into Attendance: Day & Weather -> Attendance -->
-                            <path d="M 205 185 L 260 185" fill="none" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)" />
+                            <path d="M 205 185 L 260 185" fill="none" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)" />
 
                             <!-- Arrow 3 into Attendance: People Context -> Attendance -->
-                            <path d="M 495 185 L 450 185" fill="none" stroke="#dc2626" stroke-width="2" marker-end="url(#arrow-red)" />
+                            <path d="M 495 185 L 450 185" fill="none" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)" />
 
 
                             <!-- ROW 3: Survey Response -->
                             <!-- Node 7: Survey Response -->
                             <g transform="translate(355, 315)">
-                                <rect x="-95" y="-20" width="190" height="40" rx="8" fill="#ecfdf5" stroke="#10b981" stroke-width="2" />
-                                <text x="0" y="4" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" font-weight="700" fill="#065f46">
+                                <rect x="-95" y="-20" width="190" height="40" rx="4" fill="#ffffff" stroke="#0f172a" stroke-width="1.8" />
+                                <text x="0" y="4" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" font-weight="700" fill="#0f172a">
                                     Survey Response
                                 </text>
                             </g>
 
                             <!-- Arrow into Response: Attendance -> Survey Response -->
-                            <path d="M 355 205 L 355 290" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#arrow)" />
+                            <path d="M 355 205 L 355 290" fill="none" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)" />
 
                             <!-- Arrow into Response: People Context -> Survey Response -->
-                            <path d="M 555 205 L 415 292" fill="none" stroke="#dc2626" stroke-width="2" marker-end="url(#arrow-red)" />
+                            <path d="M 555 205 L 415 292" fill="none" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow)" />
                         </svg>
                     </div>
                 </div>
@@ -529,7 +541,7 @@
                                 <td class="px-6 py-4 mono-text text-sm">$\frac{1}{16}$ ($6.25\%$)</td>
                                 <td class="px-6 py-4 mono-text text-sm">$\frac{7}{7}$ ($100\%$)</td>
                                 <td class="px-6 py-4 mono-text text-sm">$0.80$ ($80\%$)</td>
-                                <td class="px-6 py-4 text-right font-bold text-bayesian-blue mono-text text-base">$0.0500$ ($5.00\%$)</td>
+                                <td class="px-6 py-4 text-right font-bold text-slate-900 mono-text text-base">$0.0500$ ($5.00\%$)</td>
                             </tr>
                             <tr>
                                 <td class="px-6 py-4">
@@ -539,7 +551,7 @@
                                 <td class="px-6 py-4 mono-text text-sm">$\frac{1}{16}$ ($6.25\%$)</td>
                                 <td class="px-6 py-4 mono-text text-sm">$\frac{1}{14}$ ($7.1\%$)</td>
                                 <td class="px-6 py-4 mono-text text-sm">$0.40$ ($40\%$)</td>
-                                <td class="px-6 py-4 text-right font-bold text-amber-700 mono-text text-base">$0.0018$ ($0.18\%$)</td>
+                                <td class="px-6 py-4 text-right font-bold text-slate-900 mono-text text-base">$0.0018$ ($0.18\%$)</td>
                             </tr>
                         </tbody>
                     </table>
@@ -658,7 +670,7 @@
                                 <td class="px-6 py-4">Total Population</td>
                                 <td class="px-6 py-4 mono-text">$\sum x_j = 100$</td>
                                 <td class="px-6 py-4 text-slate-500 font-normal text-sm">Unweighted avg: $50\%$ (Wrong!)</td>
-                                <td class="px-6 py-4 text-right mono-text text-bayesian-blue">$\bar{Y} = \frac{74}{100} = 74\%$</td>
+                                <td class="px-6 py-4 text-right mono-text text-slate-900">$\bar{Y} = \frac{74}{100} = 74\%$</td>
                             </tr>
                         </tbody>
                     </table>
@@ -781,8 +793,8 @@
                 <!-- Two Bridges Cards -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-6">
                     <!-- Bridge 1: Outcome Track -->
-                    <div class="p-6 rounded-xl border border-emerald-200 bg-emerald-50/30 shadow-sm">
-                        <div class="text-xs font-bold uppercase tracking-wider text-emerald-800 ui-text mb-2">
+                    <div class="p-6 rounded-lg border border-slate-200 bg-white">
+                        <div class="text-xs font-bold uppercase tracking-wider text-slate-700 ui-text mb-2">
                             Bridge 1: From $y_j / n_j$ to $\theta_j$
                         </div>
                         <p class="text-sm text-slate-700 mb-3">
@@ -791,7 +803,7 @@
                         <p class="text-sm text-slate-700 mb-3">
                             Plugging in the observed fraction $\frac{y_j}{n_j}$ for $\theta_j$ in the variance gives the Normal approximation:
                         </p>
-                        <div class="bg-white p-3 rounded-lg border border-emerald-200 text-center my-3 text-sm">
+                        <div class="bg-slate-50 p-3 rounded border border-slate-200 text-center my-3 text-sm">
                             $$\frac{y_j}{n_j} \sim \mathcal{N}(\theta_j, \; \sigma_j^2)$$
                         </div>
                         <p class="text-xs text-slate-600 m-0">
@@ -800,8 +812,8 @@
                     </div>
 
                     <!-- Bridge 2: Size Track -->
-                    <div class="p-6 rounded-xl border border-blue-200 bg-blue-50/30 shadow-sm">
-                        <div class="text-xs font-bold uppercase tracking-wider text-blue-800 ui-text mb-2">
+                    <div class="p-6 rounded-lg border border-slate-200 bg-white">
+                        <div class="text-xs font-bold uppercase tracking-wider text-slate-700 ui-text mb-2">
                             Bridge 2: From $n_j$ to $x_j$
                         </div>
                         <p class="text-sm text-slate-700 mb-3">
@@ -810,7 +822,7 @@
                         <p class="text-sm text-slate-700 mb-3">
                             Modeling the count of returned forms as $n_j \sim \text{Poisson}(\pi x_j)$ (where mean equals variance) and using a Normal approximation gives:
                         </p>
-                        <div class="bg-white p-3 rounded-lg border border-blue-200 text-center my-3 text-sm">
+                        <div class="bg-slate-50 p-3 rounded border border-slate-200 text-center my-3 text-sm">
                             $$n_j \sim \mathcal{N}(\pi x_j, \; \pi x_j)$$
                         </div>
                         <p class="text-xs text-slate-600 m-0">
@@ -828,67 +840,64 @@
                 </p>
 
                 <!-- Two-Track Bivariate Model Diagram -->
-                <div class="my-8 p-6 rounded-xl border border-slate-200 bg-white shadow-sm w-full">
+                <div class="my-8 p-6 rounded-lg border border-slate-200 bg-white w-full">
                     <div class="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-4 ui-text text-center">
-                        Bivariate Hierarchical Architecture: Coupled Size &amp; Outcome Tracks
+                        Figure 2: Bivariate Hierarchical Structure (Coupled Group Size &amp; Outcome Tracks)
                     </div>
 
                     <div class="flex justify-center">
                         <svg viewBox="0 0 740 330" class="w-full max-w-3xl h-auto" xmlns="http://www.w3.org/2000/svg">
                             <defs>
                                 <marker id="arrow-m" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                                    <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#475569" />
-                                </marker>
-                                <marker id="arrow-blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                                    <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#2563eb" />
+                                    <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#334155" />
                                 </marker>
                             </defs>
 
                             <!-- Level 1: National Hyperparameters -->
                             <g transform="translate(190, 45)">
-                                <rect x="-110" y="-20" width="220" height="40" rx="6" fill="#f8fafc" stroke="#64748b" stroke-width="1.5" />
-                                <text x="0" y="5" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" font-weight="700" fill="#1e293b">
+                                <rect x="-110" y="-20" width="220" height="40" rx="4" fill="#f8fafc" stroke="#475569" stroke-width="1.5" />
+                                <text x="0" y="5" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" font-weight="600" fill="#0f172a">
                                     Size Hyperpriors (μ<tspan font-size="9" dy="2">x</tspan><tspan font-size="12" dy="-2">, σ</tspan><tspan font-size="9" dy="2">x</tspan><tspan font-size="12" dy="-2">)</tspan>
                                 </text>
                             </g>
 
                             <g transform="translate(550, 45)">
-                                <rect x="-120" y="-20" width="240" height="40" rx="6" fill="#f8fafc" stroke="#64748b" stroke-width="1.5" />
-                                <text x="0" y="5" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" font-weight="700" fill="#1e293b">
+                                <rect x="-120" y="-20" width="240" height="40" rx="4" fill="#f8fafc" stroke="#475569" stroke-width="1.5" />
+                                <text x="0" y="5" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" font-weight="600" fill="#0f172a">
                                     Regression Hyperpriors (α, β, σ<tspan font-size="9" dy="2">θ</tspan><tspan font-size="12" dy="-2">)</tspan>
                                 </text>
                             </g>
 
                             <!-- Level 2: Latent Group Parameters (All 6,400 Groups) -->
-                            <rect x="40" y="110" width="660" height="90" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-dasharray="4 4" />
-                            <text x="55" y="130" font-family="'Inter', sans-serif" font-size="10" font-weight="700" fill="#64748b">
+                            <rect x="40" y="110" width="660" height="90" rx="6" fill="#f8fafc" stroke="#cbd5e1" stroke-dasharray="4 4" />
+                            <text x="55" y="130" font-family="'Inter', sans-serif" font-size="10" font-weight="600" fill="#64748b">
                                 ALL K = 6,400 GROUPS (400 Sampled + 6,000 Unsampled)
                             </text>
 
                             <g transform="translate(190, 162)">
-                                <rect x="-110" y="-20" width="220" height="40" rx="6" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.8" />
-                                <text x="0" y="5" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" font-weight="700" fill="#1e3a8a">
+                                <rect x="-110" y="-20" width="220" height="40" rx="4" fill="#ffffff" stroke="#0f172a" stroke-width="1.6" />
+                                <text x="0" y="5" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" font-weight="700" fill="#0f172a">
                                     True Group Size: x<tspan font-size="9" dy="2">j</tspan><tspan font-size="12" dy="-2"> ~ N(μ</tspan><tspan font-size="9" dy="2">x</tspan><tspan font-size="12" dy="-2">, σ</tspan><tspan font-size="9" dy="2">x</tspan><tspan font-size="8" dy="-6">2</tspan><tspan font-size="12" dy="4">)</tspan>
                                 </text>
                             </g>
 
                             <g transform="translate(550, 162)">
-                                <rect x="-125" y="-20" width="250" height="40" rx="6" fill="#ecfdf5" stroke="#10b981" stroke-width="1.8" />
-                                <text x="0" y="5" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" font-weight="700" fill="#065f46">
+                                <rect x="-125" y="-20" width="250" height="40" rx="4" fill="#ffffff" stroke="#0f172a" stroke-width="1.6" />
+                                <text x="0" y="5" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" font-weight="700" fill="#0f172a">
                                     True Rate: θ<tspan font-size="9" dy="2">j</tspan><tspan font-size="12" dy="-2"> ~ N(α + βx</tspan><tspan font-size="9" dy="2">j</tspan><tspan font-size="12" dy="-2">, σ</tspan><tspan font-size="9" dy="2">θ</tspan><tspan font-size="8" dy="-6">2</tspan><tspan font-size="12" dy="4">)</tspan>
                                 </text>
                             </g>
 
                             <!-- Coupling Bridge: x_j -> theta_j -->
-                            <path d="M 300 162 L 420 162" fill="none" stroke="#2563eb" stroke-width="2.2" marker-end="url(#arrow-blue)" />
-                            <text x="360" y="153" text-anchor="middle" font-family="'Inter', sans-serif" font-size="11" font-weight="700" fill="#1d4ed8">
+                            <path d="M 300 162 L 420 162" fill="none" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow-m)" />
+                            <text x="360" y="153" text-anchor="middle" font-family="'Inter', sans-serif" font-size="11" font-weight="600" fill="#334155">
                                 Coupled via slope β
                             </text>
 
                             <!-- Level 3: Observed Data (400 Sampled Groups) -->
                             <g transform="translate(190, 275)">
-                                <rect x="-115" y="-22" width="230" height="44" rx="6" fill="#ffffff" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="3 3" />
-                                <text x="0" y="-1" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" font-weight="700" fill="#0f172a">
+                                <rect x="-115" y="-22" width="230" height="44" rx="4" fill="#ffffff" stroke="#475569" stroke-width="1.5" stroke-dasharray="3 3" />
+                                <text x="0" y="-1" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" font-weight="600" fill="#0f172a">
                                     Observed Count: n<tspan font-size="9" dy="2">j</tspan><tspan font-size="12" dy="-2"> ~ N(πx</tspan><tspan font-size="9" dy="2">j</tspan><tspan font-size="12" dy="-2">, πx</tspan><tspan font-size="9" dy="2">j</tspan><tspan font-size="12" dy="-2">)</tspan>
                                 </text>
                                 <text x="0" y="14" text-anchor="middle" font-family="'Inter', sans-serif" font-size="9" fill="#64748b">
@@ -897,8 +906,8 @@
                             </g>
 
                             <g transform="translate(550, 275)">
-                                <rect x="-125" y="-22" width="250" height="44" rx="6" fill="#ffffff" stroke="#10b981" stroke-width="1.5" stroke-dasharray="3 3" />
-                                <text x="0" y="-1" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" font-weight="700" fill="#0f172a">
+                                <rect x="-125" y="-22" width="250" height="44" rx="4" fill="#ffffff" stroke="#475569" stroke-width="1.5" stroke-dasharray="3 3" />
+                                <text x="0" y="-1" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" font-weight="600" fill="#0f172a">
                                     Observed Ratio: y<tspan font-size="9" dy="2">j</tspan><tspan font-size="12" dy="-2">/n</tspan><tspan font-size="9" dy="2">j</tspan><tspan font-size="12" dy="-2"> ~ N(θ</tspan><tspan font-size="9" dy="2">j</tspan><tspan font-size="12" dy="-2">, σ</tspan><tspan font-size="9" dy="2">j</tspan><tspan font-size="8" dy="-6">2</tspan><tspan font-size="12" dy="4">)</tspan>
                                 </text>
                                 <text x="0" y="14" text-anchor="middle" font-family="'Inter', sans-serif" font-size="9" fill="#64748b">
@@ -907,10 +916,10 @@
                             </g>
 
                             <!-- Vertical Arrows -->
-                            <path d="M 190 65 L 190 137" fill="none" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow-m)" />
-                            <path d="M 550 65 L 550 137" fill="none" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow-m)" />
-                            <path d="M 190 182 L 190 248" fill="none" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow-m)" />
-                            <path d="M 550 182 L 550 248" fill="none" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow-m)" />
+                            <path d="M 190 65 L 190 137" fill="none" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow-m)" />
+                            <path d="M 550 65 L 550 137" fill="none" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow-m)" />
+                            <path d="M 190 182 L 190 248" fill="none" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow-m)" />
+                            <path d="M 550 182 L 550 248" fill="none" stroke="#334155" stroke-width="1.5" marker-end="url(#arrow-m)" />
                         </svg>
                     </div>
                 </div>
@@ -1054,7 +1063,7 @@
                                     <span class="text-slate-500">($81$ "Yes")</span>
                                 </td>
                                 <td class="px-6 py-4 mono-text text-sm">$40^2 = 1600$</td>
-                                <td class="px-6 py-4 text-right font-bold text-bayesian-blue mono-text text-base">$\frac{1 + 81}{100} = 82\%$</td>
+                                <td class="px-6 py-4 text-right font-bold text-slate-900 mono-text text-base">$\frac{1 + 81}{100} = 82\%$</td>
                             </tr>
                         </tbody>
                     </table>
@@ -1078,7 +1087,7 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-5 my-6">
                     <!-- Case 1 -->
-                    <div class="p-5 rounded-xl border border-slate-200 bg-white shadow-sm">
+                    <div class="p-5 rounded-lg border border-slate-200 bg-white">
                         <div class="text-xs font-bold uppercase tracking-wider text-slate-500 ui-text mb-1">Case 1: Independence</div>
                         <div class="text-lg font-bold text-slate-900 ui-text mb-2">$\beta = 0 \implies \bar{Y} = \alpha$</div>
                         <p class="text-sm text-slate-600 m-0">
@@ -1087,8 +1096,8 @@
                     </div>
 
                     <!-- Case 2 -->
-                    <div class="p-5 rounded-xl border border-blue-200 bg-blue-50/30 shadow-sm">
-                        <div class="text-xs font-bold uppercase tracking-wider text-blue-700 ui-text mb-1">Case 2: Positive Slope</div>
+                    <div class="p-5 rounded-lg border border-slate-200 bg-white">
+                        <div class="text-xs font-bold uppercase tracking-wider text-slate-500 ui-text mb-1">Case 2: Positive Slope</div>
                         <div class="text-lg font-bold text-slate-900 ui-text mb-2">$\beta > 0 \implies \text{Shifts Up}$</div>
                         <p class="text-sm text-slate-600 m-0">
                             If larger groups have higher rates $\theta_j$, the overall person-average is pulled <em>above</em> the average group rate by $+\beta \frac{\sigma_x^2}{\mu_x}$.
@@ -1096,8 +1105,8 @@
                     </div>
 
                     <!-- Case 3 -->
-                    <div class="p-5 rounded-xl border border-amber-200 bg-amber-50/30 shadow-sm">
-                        <div class="text-xs font-bold uppercase tracking-wider text-amber-800 ui-text mb-1">Case 3: Negative Slope</div>
+                    <div class="p-5 rounded-lg border border-slate-200 bg-white">
+                        <div class="text-xs font-bold uppercase tracking-wider text-slate-500 ui-text mb-1">Case 3: Negative Slope</div>
                         <div class="text-lg font-bold text-slate-900 ui-text mb-2">$\beta < 0 \implies \text{Shifts Down}$</div>
                         <p class="text-sm text-slate-600 m-0">
                             If larger groups have lower rates $\theta_j$ (for example, more newcomers), the overall person-average is pulled <em>below</em> the average group rate.
