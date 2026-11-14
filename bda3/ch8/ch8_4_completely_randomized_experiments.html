@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Designed Experiments: Completely Randomized Experiments — BDA3 Section 8.4</title>
+    <meta name="description"
+        content="Notes on BDA3 Section 8.4: Designed Experiments and Completely Randomized Experiments. Parallel universes, the stability assumption, the inclusion model p(I), and why within-person correlation vanishes from the likelihood.">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400;1,6..72,600&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+
+    <!-- MathJax for LaTeX rendering -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bayesian: {
+                            bg: '#f7f9fb',
+                            text: '#191c1e',
+                            navy: '#131b2e',
+                            blue: '#0051d5',
+                            slate: '#596780',
+                            surface: '#ffffff',
+                            surfaceAlt: '#f8fafc',
+                            border: '#e2e8f0'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Newsreader', Georgia, serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+            font-size: 1.125rem;
+            line-height: 1.75;
+            text-rendering: optimizeLegibility;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .ui-text {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        .mono-text {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        p {
+            margin-bottom: 1.25rem;
+            color: #334155;
+        }
+
+        strong {
+            color: #0f172a;
+        }
+
+        .callout-box {
+            border-left: 3px solid #334155;
+            background: #f8fafc;
+            border-radius: 0 0.5rem 0.5rem 0;
+            border-top: 1px solid #e2e8f0;
+            border-right: 1px solid #e2e8f0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .math-plate {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            padding: 1.25rem 1.5rem;
+            margin: 1.25rem 0;
+            text-align: center;
+            overflow-x: auto;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+
+<body class="antialiased selection:bg-slate-200 selection:text-slate-900">
+    <div class="max-w-[1320px] mx-auto px-4 sm:px-8 md:px-12 py-8">
+
+        <!-- Navigation -->
+        <nav class="mb-8 flex items-center justify-between border-b border-slate-200/80 pb-3.5">
+            <a href="../../index.html"
+                class="inline-flex items-center text-xs font-semibold text-slate-500 hover:text-slate-900 transition-colors ui-text uppercase tracking-wider">
+                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                Portfolio Index
+            </a>
+            <div class="flex items-center gap-3 text-xs text-slate-400 ui-text">
+                <span>BDA3 Study Notes</span>
+                <span>/</span>
+                <span class="text-slate-600 font-medium">Chapter 8</span>
+            </div>
+        </nav>
+
+        <!-- Header -->
+        <header class="mb-10">
+            <div class="flex flex-wrap items-center gap-2 mb-4">
+                <span
+                    class="px-2.5 py-1 bg-slate-100 border border-slate-200 text-slate-700 rounded text-xs font-semibold tracking-wide uppercase ui-text">
+                    BDA3 • Chapter 8 • Section 8.4
+                </span>
+                <span
+                    class="px-2.5 py-1 bg-slate-100 border border-slate-200 text-slate-600 rounded text-xs font-medium tracking-wide uppercase ui-text">
+                    Completely Randomized Experiments
+                </span>
+            </div>
+
+            <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight leading-[1.15] text-slate-900 ui-text mb-4">
+                Designed Experiments: Completely Randomized Experiments
+            </h1>
+
+            <p class="text-lg md:text-xl text-slate-600 font-serif leading-relaxed italic mb-6">
+                How to think about an experiment from duplicate parallel universes to the real world—why we need the stability assumption, how randomization makes treatment assignment ignorable, and why within-person correlation disappears from the likelihood.
+            </p>
+
+            <!-- Byline & Metadata Bar -->
+            <div class="flex flex-wrap items-center justify-between text-xs text-slate-500 border-y border-slate-200/80 py-3.5 gap-3 ui-text">
+                <div class="flex items-center gap-2">
+                    <span class="font-semibold text-slate-900">Saurabh Kumar Pandey</span>
+                    <span>•</span>
+                    <span>Gelman et al., BDA3 §8.4</span>
+                </div>
+                <div class="flex items-center gap-4 text-slate-400">
+                    <span>Reading Time: ~12 mins</span>
+                    <span>•</span>
+                    <span>Study Notes</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Narrative -->
+        <main class="space-y-12">
+
+            <!-- Section 1: Duplicate Universes and the 3D System -->
+            <section id="parallel-universes-3d">
+                <h2 class="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 ui-text mb-6">
+                    1. Starting from the Simplest Ideal: Duplicate Universes and the 3D System
+                </h2>
+
+                <p>
+                    In a sample survey, we passively observe a world that already exists. In an <strong>experiment</strong>, we actively intervene: we assign treatments to units, and we want to know what effect that treatment actually had.
+                </p>
+
+                <p>
+                    Before looking at any statistical formulas, let's picture the simplest possible setup where measuring a treatment effect would be effortless.
+                </p>
+
+                <h3 class="text-xl font-bold text-slate-800 ui-text mt-8 mb-3">
+                    One Person in Two Duplicate Universes
+                </h3>
+
+                <p>
+                    Suppose we have just <strong>one person</strong> (Person 1) in a single universe, and we give them the basic treatment $A$, observing their outcome $y_{A1}$.
+                </p>
+
+                <p>
+                    Now imagine we can create an <strong>exact duplicate universe</strong>—containing the exact same Person 1 at the exact same moment—and in that duplicate universe we give them the new treatment $B$, observing $y_{B1}$.
+                </p>
+
+                <div class="math-plate py-3">
+                    $$\text{Treatment Effect for Person 1} = y_{A1} - y_{B1}$$
+                </div>
+
+                <p>
+                    Because the person is identical in both universes, we don't have to worry about any confounding differences. And we can imagine doing the exact same thing for a second person (Person 2), giving them Treatment $A$ in one universe ($y_{A2}$) and Treatment $B$ in their duplicate universe ($y_{B2}$).
+                </p>
+
+                <h3 class="text-xl font-bold text-slate-800 ui-text mt-8 mb-3">
+                    A Three-Dimensional System of Universes $(X, Y, Z)$
+                </h3>
+
+                <p>
+                    Now, what if the biological or physical response of a person isn't a rigid, fixed number, but has some natural randomness to it? If we replicate the system for the exact same person and treatment multiple times, we can arrange all these parallel universes along a <strong>three-dimensional grid</strong>:
+                </p>
+
+                <ul class="space-y-2 mb-6 ml-6 list-disc text-slate-700">
+                    <li><strong>$X$-Axis (Treatments):</strong> Moving from Treatment $A$ to Treatment $B$.</li>
+                    <li><strong>$Y$-Axis (System Copies / Replications):</strong> Repeated copies of the exact same person-and-treatment system, capturing how the outcome fluctuates across repeated runs.</li>
+                    <li><strong>$Z$-Axis (People):</strong> Moving from Person 1 to Person 2, Person 3, $\dots$, Person $n$.</li>
+                </ul>
+
+                <!-- Interactive 3D Parallel-Universe Grid -->
+                <div class="my-8 p-6 rounded-lg border border-slate-200 bg-white w-full ui-text">
+                    <div class="flex flex-wrap items-center justify-between gap-3 mb-4 border-b border-slate-200 pb-3">
+                        <div>
+                            <div class="text-xs font-semibold uppercase tracking-wider text-slate-500">
+                                Figure 1: Interactive 3D Parallel-Universe Lattice (X: Treatment, Y: Copies, Z: People)
+                            </div>
+                            <div class="text-xs text-slate-500 mt-0.5">
+                                Drag on the canvas to rotate the 3D axes • Hover any node to inspect $(x, y, z)$ • Click a slice view on the right
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap gap-1.5" id="mode-buttons">
+                            <button data-mode="all" class="mode-btn px-2.5 py-1 rounded text-xs font-semibold border border-slate-800 bg-slate-900 text-white">
+                                Full 3D Grid
+                            </button>
+                            <button data-mode="person1" class="mode-btn px-2.5 py-1 rounded text-xs font-medium border border-slate-300 bg-slate-50 text-slate-700 hover:bg-slate-100">
+                                Person 1 Slice (Z = 1)
+                            </button>
+                            <button data-mode="rep1" class="mode-btn px-2.5 py-1 rounded text-xs font-medium border border-slate-300 bg-slate-50 text-slate-700 hover:bg-slate-100">
+                                Single Copy (Y = 1: n×2 Table)
+                            </button>
+                            <button data-mode="observed" class="mode-btn px-2.5 py-1 rounded text-xs font-medium border border-slate-300 bg-slate-50 text-slate-700 hover:bg-slate-100">
+                                Real-World Observed
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
+                        <div class="lg:col-span-2 border border-slate-200 rounded bg-slate-50/60 overflow-hidden">
+                            <canvas id="gridCanvas" width="760" height="380" class="w-full h-[360px] cursor-grab active:cursor-grabbing block"></canvas>
+                        </div>
+
+                        <div class="flex flex-col justify-between space-y-4 text-xs">
+                            <div class="p-4 rounded border border-slate-200 bg-slate-50 space-y-2.5">
+                                <div class="font-bold text-slate-900 uppercase tracking-wider">3D Coordinate Axes</div>
+                                <div class="flex items-start gap-2 text-slate-700">
+                                    <span class="font-bold text-slate-900">X:</span>
+                                    <span><strong>Treatment Axis</strong> — filled dark nodes ($A$) vs. open/slate nodes ($B$).</span>
+                                </div>
+                                <div class="flex items-start gap-2 text-slate-700">
+                                    <span class="font-bold text-slate-900">Y:</span>
+                                    <span><strong>System Copies</strong> — repeated realizations ($y = 1 \dots 4$) of the same person and treatment.</span>
+                                </div>
+                                <div class="flex items-start gap-2 text-slate-700">
+                                    <span class="font-bold text-slate-900">Z:</span>
+                                    <span><strong>People Axis</strong> — distinct individuals ($z = 1 \dots 4$).</span>
+                                </div>
+                            </div>
+
+                            <div class="p-4 rounded border border-slate-200 bg-white space-y-1.5 min-h-[125px]">
+                                <div class="font-bold text-slate-900 uppercase tracking-wider" id="insp-title">Node Inspector</div>
+                                <div class="text-slate-600" id="insp-coords">Hover over any sphere in the 3D grid to inspect its coordinates and outcome.</div>
+                                <div class="text-slate-900 mono-text font-medium pt-1" id="insp-val"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="text-xl font-bold text-slate-800 ui-text mt-8 mb-3">
+                    Collapsing the $Y$-Axis by Taking the Expectation
+                </h3>
+
+                <p>
+                    Look along the <strong>$Y$-axis</strong> (the system copies) for Person 1 in the grid above. Even for the exact same person, $y_{A1}$ and $y_{B1}$ can take slightly different values from one copy of the system to the next. That means any single realization mixes together two things:
+                </p>
+
+                <ol class="space-y-2 mb-6 ml-6 list-decimal text-slate-700">
+                    <li>The systematic shift from Treatment $A$ to Treatment $B$ (along the <strong>$X$-axis</strong>).</li>
+                    <li>The random copy-to-copy fluctuation of the system (along the <strong>$Y$-axis</strong>).</li>
+                </ol>
+
+                <p>
+                    How do we separate the treatment effect from that $Y$-axis noise? We take the <strong>expected value</strong> across the system copies, collapsing the $Y$-axis down to $\text{E}(y_{Ai}) - \text{E}(y_{Bi})$.
+                </p>
+            </section>
+
+            <!-- Section 2: Breaking Symmetry and the Stability Assumption -->
+            <section id="breaking-symmetry-stability">
+                <h2 class="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 ui-text mb-6">
+                    2. Breaking Symmetry and Why We Need the Stability Assumption
+                </h2>
+
+                <p>
+                    So far, our parallel universes have been completely isolated and symmetric—every person lived in their own private bubble with no external environment and no interaction with anyone else. Now let's walk this idealized setup back toward the real world step by step.
+                </p>
+
+                <h3 class="text-xl font-bold text-slate-800 ui-text mt-8 mb-3">
+                    Step 1: Adding the Environment and Breaking Clone Symmetry
+                </h3>
+
+                <p>
+                    First, people don't exist in a vacuum—they live inside an <strong>environment</strong>, and they each carry their own <strong>personal context</strong> (age, baseline health, genetics, habits).
+                </p>
+
+                <p>
+                    When we move along the $Z$-axis from Person 1 to Person $n$, we break the symmetry between people: each individual $i$ now has a different personal context ($\text{Context}_1 \neq \text{Context}_2 \neq \dots \neq \text{Context}_n$). So for any person $i$, their probabilistic outcome is shaped by three things at once:
+                </p>
+
+                <ul class="space-y-2 mb-6 ml-6 list-disc text-slate-700">
+                    <li><strong>The Treatment</strong> ($A$, $B$, or a third state where the person receives no treatment at all), governed by treatment parameters.</li>
+                    <li><strong>The Environment</strong>, governed by environment parameters.</li>
+                    <li><strong>Personal Context</strong>, specific to Person $i$.</li>
+                </ul>
+
+                <h3 class="text-xl font-bold text-slate-800 ui-text mt-8 mb-3">
+                    Step 2: Bringing People Together into Shared Universes (Why the Stability Assumption Appears)
+                </h3>
+
+                <p>
+                    Next, instead of keeping Person 1, Person 2, $\dots$, Person $n$ in separate private universes, we bring all $n$ people together into shared universes: a shared Treatment $A$ universe, a shared Treatment $B$ universe, and a shared No-Treatment universe.
+                </p>
+
+                <p>
+                    <strong>Look at what happens the moment people share the same universe:</strong> Person 1 and Person 2 can interact! They can influence each other's personal context, and through that interaction, one person's treatment can indirectly spill over and change another person's outcome.
+                </p>
+
+                <div class="callout-box p-5 my-6">
+                    <p class="text-sm text-slate-700 m-0">
+                        <strong>Where the Stability Assumption Comes From:</strong> If Person 1's treatment can alter Person 2's outcome, then Person 2 doesn't just have two potential outcomes $(y_{A2}, y_{B2})$—their outcome depends on what treatment <em>everyone else</em> received! To prevent that explosion, we introduce the <strong>stability assumption</strong>: the treatment applied to unit $i$ has no effect on the potential outcomes in the other $n - 1$ units.
+                    </p>
+                </div>
+
+                <p>
+                    Once the stability assumption holds, all the potential outcomes for the $n$ people in our study reduce cleanly to an <strong>$n \times 2$ matrix</strong> of observables $(y_{Ai}, y_{Bi})$ for $i = 1, \dots, n$:
+                </p>
+
+                <!-- Complete Data Matrix Table -->
+                <div class="my-6 overflow-hidden rounded-lg border border-slate-200 bg-white w-full">
+                    <div class="px-6 py-4 bg-slate-50 border-b border-slate-200">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-600 ui-text">Complete Set of Potential Outcomes ($n \times 2$ Matrix under the Stability Assumption)</span>
+                    </div>
+                    <table class="w-full text-left text-base ui-text">
+                        <thead class="bg-slate-50/50 border-b border-slate-200 text-xs font-semibold uppercase tracking-wider text-slate-600">
+                            <tr>
+                                <th class="px-6 py-4">Unit ($i$)</th>
+                                <th class="px-6 py-4">Outcome under Treatment $A$</th>
+                                <th class="px-6 py-4">Outcome under Treatment $B$</th>
+                                <th class="px-6 py-4 text-right">Unit Causal Effect</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 text-slate-700">
+                            <tr>
+                                <td class="px-6 py-3.5 font-semibold text-slate-900">Person $1$</td>
+                                <td class="px-6 py-3.5 mono-text">$y_{A1}$</td>
+                                <td class="px-6 py-3.5 mono-text">$y_{B1}$</td>
+                                <td class="px-6 py-3.5 text-right mono-text">$y_{A1} - y_{B1}$</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-3.5 font-semibold text-slate-900">Person $2$</td>
+                                <td class="px-6 py-3.5 mono-text">$y_{A2}$</td>
+                                <td class="px-6 py-3.5 mono-text">$y_{B2}$</td>
+                                <td class="px-6 py-3.5 text-right mono-text">$y_{A2} - y_{B2}$</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-2.5 text-slate-400">$\vdots$</td>
+                                <td class="px-6 py-2.5 text-slate-400">$\vdots$</td>
+                                <td class="px-6 py-2.5 text-slate-400">$\vdots$</td>
+                                <td class="px-6 py-2.5 text-right text-slate-400">$\vdots$</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-3.5 font-semibold text-slate-900">Person $n$</td>
+                                <td class="px-6 py-3.5 mono-text">$y_{An}$</td>
+                                <td class="px-6 py-3.5 mono-text">$y_{Bn}$</td>
+                                <td class="px-6 py-3.5 text-right mono-text">$y_{An} - y_{Bn}$</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3 class="text-xl font-bold text-slate-800 ui-text mt-8 mb-3">
+                    Step 3: Conditioning on $\theta$ and Defining the Overall Causal Estimand
+                </h3>
+
+                <p>
+                    To compare Treatment $A$ and Treatment $B$ fairly without being thrown off by random fluctuations in the environment and personal context, we condition on the underlying parameters $\theta$ governing the complete-data distribution $p(y_{Ai}, y_{Bi} \mid \theta)$.
+                </p>
+
+                <p>
+                    Depending on whether we care about the broader process generating the data or just the specific $n$ people in the room, we can write the overall causal effect in two ways:
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-6">
+                    <div class="p-6 rounded-lg border border-slate-200 bg-white">
+                        <div class="text-xs font-bold uppercase tracking-wider text-slate-700 ui-text mb-2">
+                            1. Superpopulation Causal Effect
+                        </div>
+                        <p class="text-sm text-slate-700 mb-3">
+                            Thinking of our units as drawn from a larger population distribution $p(y_{Ai}, y_{Bi} \mid \theta)$, the average causal effect is a function of the parameters $\theta$:
+                        </p>
+                        <div class="bg-slate-50 p-3 rounded border border-slate-200 text-center my-3 text-sm">
+                            $$\text{E}(y_{Ai} - y_{Bi} \mid \theta) = \text{E}(y_{Ai} \mid \theta) - \text{E}(y_{Bi} \mid \theta)$$
+                        </div>
+                        <p class="text-xs text-slate-600 m-0">
+                            Because expectation is linear, the expected same-person difference splits into the difference between the two marginal expectations.
+                        </p>
+                    </div>
+
+                    <div class="p-6 rounded-lg border border-slate-200 bg-white">
+                        <div class="text-xs font-bold uppercase tracking-wider text-slate-700 ui-text mb-2">
+                            2. Finite-Population Causal Effect
+                        </div>
+                        <p class="text-sm text-slate-700 mb-3">
+                            If our focus is specifically on the finite group of units under study, the causal effect is simply the average difference across those units:
+                        </p>
+                        <div class="bg-slate-50 p-3 rounded border border-slate-200 text-center my-3 text-sm">
+                            $$\bar{y}_A - \bar{y}_B = \frac{1}{n}\sum_{i=1}^n y_{Ai} - \frac{1}{n}\sum_{i=1}^n y_{Bi}$$
+                        </div>
+                        <p class="text-xs text-slate-600 m-0">
+                            Here, half of the $y_{Ai}$ values and half of the $y_{Bi}$ values are missing and must be imputed from the posterior predictive distribution.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 3: The Person in the Middle and Collapsing to Reality -->
+            <section id="person-in-the-middle-inclusion">
+                <h2 class="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 ui-text mb-6">
+                    3. The Person in the Middle and Collapsing to Reality ($I_i$ and $p(I)$)
+                </h2>
+
+                <p>
+                    Suppose Treatment $A$ is governed by a parameter $\theta_A$ and Treatment $B$ is governed by a separate parameter $\theta_B$. Even if $\theta_A$ and $\theta_B$ are completely independent of one another, look at the causal structure for any given person $i$:
+                </p>
+
+                <p>
+                    <strong>Both $y_{Ai}$ and $y_{Bi}$ happen to the same person $i$.</strong> If Person $i$ has a strong constitution or mild symptoms, both $y_{Ai}$ and $y_{Bi}$ will reflect that. In other words, the person sits right in the middle as a common cause of both potential outcomes:
+                </p>
+
+                <!-- Monochrome SVG Diagram: Person in the Middle -->
+                <div class="my-8 p-6 rounded-lg border border-slate-200 bg-white w-full">
+                    <div class="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-4 ui-text text-center">
+                        Figure 2: Within-Person Coupling Across Rows — Why $y_{Ai}$ and $y_{Bi}$ Are Correlated Given $\theta$
+                    </div>
+
+                    <div class="flex justify-center">
+                        <svg viewBox="0 0 760 280" class="w-full max-w-3xl h-auto" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                    <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#334155" />
+                                </marker>
+                            </defs>
+
+                            <!-- Left Parameter: theta_A -->
+                            <g transform="translate(80, 140)">
+                                <rect x="-50" y="-22" width="100" height="44" rx="4" fill="#f8fafc" stroke="#0f172a" stroke-width="1.6" />
+                                <text x="0" y="5" text-anchor="middle" font-family="'Inter', sans-serif" font-size="13" font-weight="700" fill="#0f172a">
+                                    Param θ<tspan font-size="9" dy="3">A</tspan>
+                                </text>
+                            </g>
+
+                            <!-- Right Parameter: theta_B -->
+                            <g transform="translate(680, 140)">
+                                <rect x="-50" y="-22" width="100" height="44" rx="4" fill="#f8fafc" stroke="#0f172a" stroke-width="1.6" />
+                                <text x="0" y="5" text-anchor="middle" font-family="'Inter', sans-serif" font-size="13" font-weight="700" fill="#0f172a">
+                                    Param θ<tspan font-size="9" dy="3">B</tspan>
+                                </text>
+                            </g>
+
+                            <!-- Row 1: Person 1 (Gets A -> y_B1 is ?) -->
+                            <g transform="translate(235, 55)">
+                                <rect x="-48" y="-18" width="96" height="36" rx="4" fill="#ffffff" stroke="#0f172a" stroke-width="1.6" />
+                                <text x="0" y="4" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" font-weight="700" fill="#0f172a">
+                                    y<tspan font-size="9" dy="2">A1</tspan><tspan font-size="11" dy="-2"> (Obs)</tspan>
+                                </text>
+                            </g>
+                            <g transform="translate(380, 55)">
+                                <rect x="-52" y="-18" width="104" height="36" rx="4" fill="#f8fafc" stroke="#475569" stroke-width="1.4" />
+                                <text x="0" y="4" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" font-weight="600" fill="#0f172a">
+                                    Person 1
+                                </text>
+                            </g>
+                            <g transform="translate(525, 55)">
+                                <rect x="-48" y="-18" width="96" height="36" rx="4" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.4" stroke-dasharray="3 3" />
+                                <text x="0" y="4" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" font-weight="600" fill="#64748b">
+                                    y<tspan font-size="9" dy="2">B1</tspan><tspan font-size="11" dy="-2"> = ?</tspan>
+                                </text>
+                            </g>
+
+                            <!-- Row 2: Person 2 (Gets B -> y_A2 is ?) -->
+                            <g transform="translate(235, 140)">
+                                <rect x="-48" y="-18" width="96" height="36" rx="4" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.4" stroke-dasharray="3 3" />
+                                <text x="0" y="4" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" font-weight="600" fill="#64748b">
+                                    y<tspan font-size="9" dy="2">A2</tspan><tspan font-size="11" dy="-2"> = ?</tspan>
+                                </text>
+                            </g>
+                            <g transform="translate(380, 140)">
+                                <rect x="-52" y="-18" width="104" height="36" rx="4" fill="#f8fafc" stroke="#475569" stroke-width="1.4" />
+                                <text x="0" y="4" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" font-weight="600" fill="#0f172a">
+                                    Person 2
+                                </text>
+                            </g>
+                            <g transform="translate(525, 140)">
+                                <rect x="-48" y="-18" width="96" height="36" rx="4" fill="#ffffff" stroke="#0f172a" stroke-width="1.6" />
+                                <text x="0" y="4" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" font-weight="700" fill="#0f172a">
+                                    y<tspan font-size="9" dy="2">B2</tspan><tspan font-size="11" dy="-2"> (Obs)</tspan>
+                                </text>
+                            </g>
+
+                            <!-- Row n: Person n (Gets A -> y_Bn is ?) -->
+                            <g transform="translate(235, 225)">
+                                <rect x="-48" y="-18" width="96" height="36" rx="4" fill="#ffffff" stroke="#0f172a" stroke-width="1.6" />
+                                <text x="0" y="4" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" font-weight="700" fill="#0f172a">
+                                    y<tspan font-size="9" dy="2">An</tspan><tspan font-size="11" dy="-2"> (Obs)</tspan>
+                                </text>
+                            </g>
+                            <g transform="translate(380, 225)">
+                                <rect x="-52" y="-18" width="104" height="36" rx="4" fill="#f8fafc" stroke="#475569" stroke-width="1.4" />
+                                <text x="0" y="4" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" font-weight="600" fill="#0f172a">
+                                    Person n
+                                </text>
+                            </g>
+                            <g transform="translate(525, 225)">
+                                <rect x="-48" y="-18" width="96" height="36" rx="4" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.4" stroke-dasharray="3 3" />
+                                <text x="0" y="4" text-anchor="middle" font-family="'Inter', sans-serif" font-size="12" font-weight="600" fill="#64748b">
+                                    y<tspan font-size="9" dy="2">Bn</tspan><tspan font-size="11" dy="-2"> = ?</tspan>
+                                </text>
+                            </g>
+
+                            <!-- Arrows from theta_A -->
+                            <path d="M 130 128 L 182 62" fill="none" stroke="#334155" stroke-width="1.4" marker-end="url(#arr)" />
+                            <path d="M 130 140 L 182 140" fill="none" stroke="#334155" stroke-width="1.4" marker-end="url(#arr)" />
+                            <path d="M 130 152 L 182 218" fill="none" stroke="#334155" stroke-width="1.4" marker-end="url(#arr)" />
+
+                            <!-- Arrows from theta_B -->
+                            <path d="M 630 128 L 578 62" fill="none" stroke="#334155" stroke-width="1.4" marker-end="url(#arr)" />
+                            <path d="M 630 140 L 578 140" fill="none" stroke="#334155" stroke-width="1.4" marker-end="url(#arr)" />
+                            <path d="M 630 152 L 578 218" fill="none" stroke="#334155" stroke-width="1.4" marker-end="url(#arr)" />
+
+                            <!-- Arrows from Person i to y_Ai and y_Bi -->
+                            <path d="M 328 55 L 288 55" fill="none" stroke="#334155" stroke-width="1.4" marker-end="url(#arr)" />
+                            <path d="M 432 55 L 472 55" fill="none" stroke="#334155" stroke-width="1.4" marker-end="url(#arr)" />
+
+                            <path d="M 328 140 L 288 140" fill="none" stroke="#334155" stroke-width="1.4" marker-end="url(#arr)" />
+                            <path d="M 432 140 L 472 140" fill="none" stroke="#334155" stroke-width="1.4" marker-end="url(#arr)" />
+
+                            <path d="M 328 225 L 288 225" fill="none" stroke="#334155" stroke-width="1.4" marker-end="url(#arr)" />
+                            <path d="M 432 225 L 472 225" fill="none" stroke="#334155" stroke-width="1.4" marker-end="url(#arr)" />
+
+                            <!-- Dots between Row 2 and Row n -->
+                            <text x="380" y="188" text-anchor="middle" font-family="'Inter', sans-serif" font-size="16" font-weight="700" fill="#64748b">⋮</text>
+                        </svg>
+                    </div>
+                </div>
+
+                <h3 class="text-xl font-bold text-slate-800 ui-text mt-8 mb-3">
+                    The Inclusion Indicator $I_i = (I_{Ai}, I_{Bi})$
+                </h3>
+
+                <p>
+                    When we run the actual experiment in our single real universe, a person who gets Treatment $A$ cannot also get Treatment $B$. As shown in Figure 2, <strong>one side of every row becomes missing (`?`)</strong>.
+                </p>
+
+                <p>
+                    To keep track of which universe we actually observe for each person $i$, we define a two-component indicator $I_i = (I_{Ai}, I_{Bi})$:
+                </p>
+
+                <ul class="space-y-2 mb-6 ml-6 list-disc text-slate-700">
+                    <li><strong>$I_i = (1, 0)$:</strong> Unit $i$ receives Treatment $A$ (we observe $y_{Ai}$, while $y_{Bi}$ is missing).</li>
+                    <li><strong>$I_i = (0, 1)$:</strong> Unit $i$ receives Treatment $B$ (we observe $y_{Bi}$, while $y_{Ai}$ is missing).</li>
+                    <li><strong>$I_i = (0, 0)$:</strong> Unit $i$ receives neither treatment (for example, a unit whose treatment has not yet been applied; both $y_{Ai}$ and $y_{Bi}$ are missing).</li>
+                </ul>
+
+                <p>
+                    Because no unit can receive both treatments at once, $I_{Ai}$ and $I_{Bi}$ can never both equal $1$. (And when $I_i = (0, 0)$ cannot occur, $I_{Bi}$ is simply $1 - I_{Ai}$.)
+                </p>
+
+                <h3 class="text-xl font-bold text-slate-800 ui-text mt-8 mb-3">
+                    The Probability of Assignment $p(I)$ in a Completely Randomized Experiment
+                </h3>
+
+                <p>
+                    Suppose $n$ is even, and we randomly assign exactly half of the units ($\frac{n}{2}$) to Treatment $A$ and the other half ($\frac{n}{2}$) to Treatment $B$.
+                </p>
+
+                <p>
+                    Out of $n$ units, there are $\binom{n}{n/2}$ possible ways to choose which $\frac{n}{2}$ units receive Treatment $A$. Because complete randomization gives every valid split the exact same chance:
+                </p>
+
+                <div class="math-plate py-4">
+                    $$p(I \mid y, \phi) = p(I) = \begin{cases} \binom{n}{n/2}^{-1} & \text{if } \sum_{i=1}^n I_{Ai} = \sum_{i=1}^n I_{Bi} = \frac{n}{2}, \;\; I_{Ai} \neq I_{Bi} \text{ for all } i, \\[8pt] 0 & \text{otherwise.} \end{cases}$$
+                </div>
+
+                <p>
+                    Notice why $p(I \mid y, \phi) = p(I)$: the probability of any valid assignment is just the known number $\binom{n}{n/2}^{-1}$, with no dependence on the potential outcomes $y$ or any unknown parameters $\phi$. That makes the treatment assignment <strong>known and strongly ignorable</strong>.
+                </p>
+            </section>
+
+            <!-- Section 4: What We Can Learn vs. What Vanishes in the Likelihood -->
+            <section id="likelihood-and-missing-correlation">
+                <h2 class="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 ui-text mb-6">
+                    4. What We Can Learn vs. What Vanishes in the Likelihood
+                </h2>
+
+                <p>
+                    Because the treatment assignment $p(I)$ is ignorable, we can infer the parameters $\theta$ directly from the observed data using $p(\theta \mid y_{\text{obs}}) \propto p(\theta)p(y_{\text{obs}} \mid \theta)$.
+                </p>
+
+                <h3 class="text-xl font-bold text-slate-800 ui-text mt-8 mb-3">
+                    How $p(y_{\text{obs}} \mid \theta)$ Splits into Two Separate Products
+                </h3>
+
+                <p>
+                    Look back at Figure 2: for every person who received Treatment $A$, $y_{Bi}$ is missing (`?`), so we integrate $p(y_{Ai}, y_{Bi} \mid \theta)$ over $y_{Bi}$, which leaves just the marginal distribution $p(y_{Ai} \mid \theta)$. Similarly, for every person who received Treatment $B$, integrating over their missing $y_{Ai}$ leaves $p(y_{Bi} \mid \theta)$.
+                </p>
+
+                <p>
+                    Multiplying across all $n$ units gives the observed-data likelihood:
+                </p>
+
+                <div class="math-plate py-4">
+                    $$p(y_{\text{obs}} \mid \theta) = \prod_{i:\, I_i = (1,0)} p(y_{Ai} \mid \theta) \prod_{i:\, I_i = (0,1)} p(y_{Bi} \mid \theta)$$
+                </div>
+
+                <p>
+                    Look at how clean that is: the first product only involves the parameters $\theta_A$ governing the marginal distribution of $y_{Ai}$, and the second product only involves the parameters $\theta_B$ governing the marginal distribution of $y_{Bi}$. If $\theta_A$ and $\theta_B$ are independent in the prior, we can analyze the Treatment $A$ group and the Treatment $B$ group completely separately!
+                </p>
+
+                <h3 class="text-xl font-bold text-slate-800 ui-text mt-8 mb-3">
+                    Why Finite-Population Inference Is Trickier Here Than in a Survey
+                </h3>
+
+                <p>
+                    What if we want the finite-population causal effect $\bar{y}_A - \bar{y}_B$ for our $n$ units? Once we have posterior draws of $\theta$, we need to fill in the missing half of the $n \times 2$ table—$(y_{A\,\text{mis}}, y_{B\,\text{mis}})$—by drawing from the posterior predictive distribution:
+                </p>
+
+                <div class="math-plate py-4">
+                    $$p(y_{\text{mis}} \mid \theta, y_{\text{obs}}) = \prod_{i:\, I_i = (1,0)} p(y_{Bi} \mid \theta, y_{Ai}) \prod_{i:\, I_i = (0,1)} p(y_{Ai} \mid \theta, y_{Bi})$$
+                </div>
+
+                <p>
+                    <strong>And here is the catch that we saw in Figure 2:</strong>
+                </p>
+
+                <ul class="space-y-2 mb-6 ml-6 list-disc text-slate-700">
+                    <li>To predict Person 1's missing $y_{B1}$ given their observed $y_{A1}$—that is, $p(y_{Bi} \mid \theta, y_{Ai})$—we need the full <strong>joint distribution</strong> $p(y_{Ai}, y_{Bi} \mid \theta)$, including the within-person correlation parameter $\theta_{AB} = \text{corr}(y_{Ai}, y_{Bi} \mid \theta)$.</li>
+                    <li><strong>But $\theta_{AB}$ never appears in the likelihood $p(y_{\text{obs}} \mid \theta)$!</strong> Because we never observe both $y_{Ai}$ and $y_{Bi}$ on the same person, the data gives us zero direct information about $\theta_{AB}$. Its posterior is just its conditional prior $p(\theta_{AB} \mid \theta_A, \theta_B)$ averaged over the posterior of $(\theta_A, \theta_B)$.</li>
+                </ul>
+            </section>
+
+            <!-- Section 5: Large-Sample Correspondence -->
+            <section id="large-sample-correspondence">
+                <h2 class="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 ui-text mb-6">
+                    5. When the Unknown Correlation Stops Mattering: Large-Sample Correspondence
+                </h2>
+
+                <p>
+                    If the data tells us nothing about the within-person correlation $\text{corr}(y_{Ai}, y_{Bi} \mid \theta)$, does that mean our causal conclusions are always at the mercy of an untestable prior guess about $\theta_{AB}$?
+                </p>
+
+                <p>
+                    <strong>No—for large populations, that sensitivity vanishes completely.</strong>
+                </p>
+
+                <p>
+                    Suppose our $n$ experimental units were themselves randomly sampled from a much larger finite population of $N$ units, and we want to estimate the average treatment effect $\bar{y}_A - \bar{y}_B$ across all $N$ units in that population (or the superpopulation difference $\text{E}(y_{Ai} \mid \theta_A) - \text{E}(y_{Bi} \mid \theta_B)$).
+                </p>
+
+                <p>
+                    When both $n$ and $N / n$ are large, the vast majority of the $N$ people in the population received <em>neither</em> treatment in our experiment—so their missing outcomes depend only on the separate marginal parameters $\theta_A$ and $\theta_B$, not on the within-person conditioning $p(y_{Bi} \mid \theta, y_{Ai})$. By the Central Limit Theorem, the posterior distribution of the causal effect simplifies to:
+                </p>
+
+                <div class="math-plate py-4">
+                    $$(\bar{y}_A - \bar{y}_B) \mid y_{\text{obs}} \;\approx\; \mathcal{N}\!\left(\bar{y}_{A\,\text{obs}} - \bar{y}_{B\,\text{obs}}, \;\; \frac{2}{n}\left(s_{A\,\text{obs}}^2 + s_{B\,\text{obs}}^2\right)\right)$$
+                </div>
+
+                <p>
+                    where $\bar{y}_{A\,\text{obs}}, \bar{y}_{B\,\text{obs}}$ and $s_{A\,\text{obs}}^2, s_{B\,\text{obs}}^2$ are the sample means and sample variances of the observed outcomes in the two treatment groups (each of size $\frac{n}{2}$, so $\frac{s_{A\,\text{obs}}^2}{n/2} + \frac{s_{B\,\text{obs}}^2}{n/2} = \frac{2}{n}(s_{A\,\text{obs}}^2 + s_{B\,\text{obs}}^2)$).
+                </p>
+
+                <!-- Summary Comparison Table -->
+                <div class="my-6 overflow-hidden rounded-lg border border-slate-200 bg-white w-full">
+                    <div class="px-6 py-4 bg-slate-50 border-b border-slate-200">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-600 ui-text">Summary: What Depends on the Unobservable Within-Person Correlation $\theta_{AB}$?</span>
+                    </div>
+                    <table class="w-full text-left text-base ui-text">
+                        <thead class="bg-slate-50/50 border-b border-slate-200 text-xs font-semibold uppercase tracking-wider text-slate-600">
+                            <tr>
+                                <th class="px-6 py-4">Target Estimand</th>
+                                <th class="px-6 py-4">Mathematical Form</th>
+                                <th class="px-6 py-4">Depends on $\theta_{AB}$?</th>
+                                <th class="px-6 py-4">Why?</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 text-slate-700 text-sm">
+                            <tr>
+                                <td class="px-6 py-4 font-semibold text-slate-900">Superpopulation Effect</td>
+                                <td class="px-6 py-4 mono-text">$\text{E}(y_{Ai} \mid \theta_A) - \text{E}(y_{Bi} \mid \theta_B)$</td>
+                                <td class="px-6 py-4 font-semibold text-slate-900">No</td>
+                                <td class="px-6 py-4">Depends only on the separate marginal parameters $\theta_A$ and $\theta_B$.</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 font-semibold text-slate-900">Finite-Sample Effect ($n$ units)</td>
+                                <td class="px-6 py-4 mono-text">$\frac{1}{n}\sum_{i=1}^n (y_{Ai} - y_{Bi})$</td>
+                                <td class="px-6 py-4 font-semibold text-slate-900">Yes (in small $n$)</td>
+                                <td class="px-6 py-4">Imputing $y_{Bi}$ from observed $y_{Ai}$ uses $p(y_{Bi} \mid \theta, y_{Ai})$, whose variance depends on $\text{corr}(y_{Ai}, y_{Bi} \mid \theta)$.</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 font-semibold text-slate-900">Large-Population Effect ($N \gg n$)</td>
+                                <td class="px-6 py-4 mono-text">$\bar{y}_A - \bar{y}_B$ across $N$ units</td>
+                                <td class="px-6 py-4 font-semibold text-slate-900">Vanishes as $N/n \to \infty$</td>
+                                <td class="px-6 py-4">Dominated by the $N - n$ unsampled units, which only depend on $\theta_A$ and $\theta_B$.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Footer -->
+        <footer class="mt-16 pt-8 border-t border-slate-200 text-center text-xs text-slate-400 ui-text">
+            <p class="m-0">
+                Bayesian Data Analysis (BDA3) Study Notes • Saurabh Kumar Pandey
+            </p>
+        </footer>
+
+    </div>
+
+    <!-- 3D Parallel-Universe Grid Script -->
+    <script>
+        (function () {
+            const canvas = document.getElementById('gridCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+
+            const NX = 2; // X: Treatment A (0), Treatment B (1)
+            const NY = 4; // Y: System Copies 1..4
+            const NZ = 4; // Z: People 1..4
+
+            const assignedTreatment = [0, 1, 0, 1];
+            const nodes = [];
+
+            for (let z = 0; z < NZ; z++) {
+                for (let y = 0; y < NY; y++) {
+                    for (let x = 0; x < NX; x++) {
+                        const basePerson = 10 + z * 2;
+                        const treatmentBoost = x === 0 ? 4.0 : 1.5;
+                        const copyNoise = ((y * 7 + z * 3 + x * 5) % 5 - 2) * 0.4;
+                        const outcome = (basePerson + treatmentBoost + copyNoise).toFixed(1);
+                        nodes.push({
+                            x, y, z,
+                            labelX: x === 0 ? 'Treatment A' : 'Treatment B',
+                            labelY: `Copy ${y + 1}`,
+                            labelZ: `Person ${z + 1}`,
+                            outcome
+                        });
+                    }
+                }
+            }
+
+            let rotAzimuth = -0.62;
+            let rotElevation = 0.42;
+            let isDragging = false;
+            let lastMouse = { x: 0, y: 0 };
+            let activeMode = 'all';
+            let hoveredNode = null;
+
+            function isNodeActive(n) {
+                if (activeMode === 'all') return true;
+                if (activeMode === 'person1') return n.z === 0;
+                if (activeMode === 'rep1') return n.y === 0;
+                if (activeMode === 'observed') return n.y === 0 && n.x === assignedTreatment[n.z];
+                return true;
+            }
+
+            function project3D(x, y, z, width, height) {
+                const cx = (x - (NX - 1) / 2) * 115;
+                const cy = (y - (NY - 1) / 2) * 56;
+                const cz = (z - (NZ - 1) / 2) * 56;
+
+                const cosA = Math.cos(rotAzimuth);
+                const sinA = Math.sin(rotAzimuth);
+                const rx = cx * cosA + cz * sinA;
+                const rz1 = -cx * sinA + cz * cosA;
+
+                const cosE = Math.cos(rotElevation);
+                const sinE = Math.sin(rotElevation);
+                const ry = cy * cosE - rz1 * sinE;
+                const rz = cy * sinE + rz1 * cosE;
+
+                const fov = 650;
+                const scale = fov / (fov + rz + 260);
+                return {
+                    sx: width / 2 + rx * scale,
+                    sy: height / 2 - ry * scale,
+                    depth: rz,
+                    scale
+                };
+            }
+
+            function draw() {
+                const dpr = window.devicePixelRatio || 1;
+                const rect = canvas.getBoundingClientRect();
+                if (canvas.width !== rect.width * dpr || canvas.height !== rect.height * dpr) {
+                    canvas.width = rect.width * dpr;
+                    canvas.height = rect.height * dpr;
+                }
+                ctx.save();
+                ctx.scale(dpr, dpr);
+                const W = rect.width;
+                const H = rect.height;
+
+                ctx.clearRect(0, 0, W, H);
+
+                const findNode = (x, y, z) => nodes.find(n => n.x === x && n.y === y && n.z === z);
+
+                // Draw lattice lines
+                for (const n of nodes) {
+                    const p1 = project3D(n.x, n.y, n.z, W, H);
+                    const neighbors = [
+                        findNode(n.x + 1, n.y, n.z),
+                        findNode(n.x, n.y + 1, n.z),
+                        findNode(n.x, n.y, n.z + 1)
+                    ];
+                    for (const nb of neighbors) {
+                        if (!nb) continue;
+                        const p2 = project3D(nb.x, nb.y, nb.z, W, H);
+                        const bothActive = isNodeActive(n) && isNodeActive(nb);
+                        ctx.beginPath();
+                        ctx.strokeStyle = bothActive ? 'rgba(51, 65, 85, 0.5)' : 'rgba(148, 163, 184, 0.25)';
+                        ctx.lineWidth = bothActive ? 1.4 : 0.8;
+                        ctx.moveTo(p1.sx, p1.sy);
+                        ctx.lineTo(p2.sx, p2.sy);
+                        ctx.stroke();
+                    }
+                }
+
+                // Draw 3D Coordinate Axes
+                const origin = project3D(-0.35, -0.35, -0.35, W, H);
+                const axX = project3D(1.45, -0.35, -0.35, W, H);
+                const axY = project3D(-0.35, 3.45, -0.35, W, H);
+                const axZ = project3D(-0.35, -0.35, 3.45, W, H);
+
+                function drawAxis(to, label) {
+                    ctx.beginPath();
+                    ctx.strokeStyle = '#0f172a';
+                    ctx.lineWidth = 1.8;
+                    ctx.moveTo(origin.sx, origin.sy);
+                    ctx.lineTo(to.sx, to.sy);
+                    ctx.stroke();
+
+                    ctx.fillStyle = '#0f172a';
+                    ctx.font = '600 12px Inter, sans-serif';
+                    ctx.fillText(label, to.sx + 6, to.sy + 4);
+                }
+
+                drawAxis(axX, 'X: Treatment (A vs B)');
+                drawAxis(axY, 'Y: System Copies');
+                drawAxis(axZ, 'Z: People (1..n)');
+
+                // Draw nodes back-to-front
+                const projected = nodes.map(n => {
+                    const p = project3D(n.x, n.y, n.z, W, H);
+                    return { ...n, ...p, active: isNodeActive(n) };
+                }).sort((a, b) => b.depth - a.depth);
+
+                for (const p of projected) {
+                    const isHovered = hoveredNode &&
+                        hoveredNode.x === p.x && hoveredNode.y === p.y && hoveredNode.z === p.z;
+                    const radius = (p.active ? 7.5 : 4.2) * p.scale * (isHovered ? 1.35 : 1);
+
+                    ctx.beginPath();
+                    ctx.arc(p.sx, p.sy, radius, 0, Math.PI * 2);
+
+                    if (p.active) {
+                        // Monochrome academic distinction: solid dark slate for Treatment A, light slate with dark border for Treatment B
+                        ctx.fillStyle = p.x === 0 ? '#0f172a' : '#cbd5e1';
+                        ctx.fill();
+                        ctx.lineWidth = isHovered ? 2.5 : 1.6;
+                        ctx.strokeStyle = '#0f172a';
+                        ctx.stroke();
+                    } else {
+                        ctx.fillStyle = 'rgba(203, 213, 225, 0.35)';
+                        ctx.fill();
+                        ctx.lineWidth = 1;
+                        ctx.strokeStyle = 'rgba(148, 163, 184, 0.45)';
+                        ctx.stroke();
+                    }
+                }
+
+                window.__projectedNodes = projected;
+                ctx.restore();
+            }
+
+            canvas.addEventListener('mousedown', e => {
+                isDragging = true;
+                lastMouse = { x: e.clientX, y: e.clientY };
+            });
+
+            window.addEventListener('mouseup', () => { isDragging = false; });
+
+            window.addEventListener('mousemove', e => {
+                const rect = canvas.getBoundingClientRect();
+                if (isDragging) {
+                    const dx = e.clientX - lastMouse.x;
+                    const dy = e.clientY - lastMouse.y;
+                    rotAzimuth += dx * 0.01;
+                    rotElevation = Math.max(-1.2, Math.min(1.2, rotElevation + dy * 0.01));
+                    lastMouse = { x: e.clientX, y: e.clientY };
+                    draw();
+                    return;
+                }
+
+                const mx = e.clientX - rect.left;
+                const my = e.clientY - rect.top;
+                if (mx < 0 || my < 0 || mx > rect.width || my > rect.height) return;
+
+                let closest = null;
+                let minDist = 16;
+                for (const p of (window.__projectedNodes || [])) {
+                    const d = Math.hypot(p.sx - mx, p.sy - my);
+                    if (d < minDist) {
+                        minDist = d;
+                        closest = p;
+                    }
+                }
+
+                if (closest !== hoveredNode) {
+                    hoveredNode = closest;
+                    const titleEl = document.getElementById('insp-title');
+                    const coordsEl = document.getElementById('insp-coords');
+                    const valEl = document.getElementById('insp-val');
+                    if (hoveredNode) {
+                        titleEl.textContent = `${hoveredNode.labelZ} • ${hoveredNode.labelX} • ${hoveredNode.labelY}`;
+                        coordsEl.textContent = `Coordinate: (x = ${hoveredNode.x}, y = ${hoveredNode.y + 1}, z = ${hoveredNode.z + 1})`;
+                        valEl.textContent = hoveredNode.active
+                            ? `Outcome y = ${hoveredNode.outcome} (Observed / Active)`
+                            : `Outcome y = ? (Missing in this slice)`;
+                    } else {
+                        titleEl.textContent = 'Node Inspector';
+                        coordsEl.textContent = 'Hover over any sphere in the 3D grid to inspect its coordinates and outcome.';
+                        valEl.textContent = '';
+                    }
+                    draw();
+                }
+            });
+
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    activeMode = btn.dataset.mode;
+                    document.querySelectorAll('.mode-btn').forEach(b => {
+                        b.className = 'mode-btn px-2.5 py-1 rounded text-xs font-medium border border-slate-300 bg-slate-50 text-slate-700 hover:bg-slate-100';
+                    });
+                    btn.className = 'mode-btn px-2.5 py-1 rounded text-xs font-semibold border border-slate-800 bg-slate-900 text-white';
+                    draw();
+                });
+            });
+
+            window.addEventListener('resize', draw);
+            draw();
+        })();
+    </script>
+</body>
+
+</html>
+
